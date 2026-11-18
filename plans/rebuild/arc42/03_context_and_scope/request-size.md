@@ -132,7 +132,7 @@
   Basis: measured and cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:173-174.
 
-- [ ] **CTX-688** The Bash tool description is 1,267 chars in stock and says run_in_background "keeps running across turns and re-invokes you when it exits". The plugin's is 179 chars with no word on background. The parameter text is equal. The Bash text in a real session stays unmeasured. The tool-text survey below gives 3,041 chars for the stock Bash text; the two figures come from different measures and both stay.
+- [ ] **CTX-688** The Bash tool description is 1,267 chars in stock and says run_in_background "keeps running across turns and re-invokes you when it exits". The plugin's is 179 chars with no word on background. The parameter text is equal. On 2.1.327 the stock text still says run_in_background "keeps running across turns and re-invokes you when it exits" and adds "Foreground `sleep` is blocked; use Monitor with an until-loop" (cc-inspect cli `tool` Bash, 2026-11-18), so the 1,267-char figure is the older build's and is kept as dated. The tool-text survey below gives 3,041 chars for the stock Bash text; the two figures come from different measures and both stay.
   Basis: measured.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:843.
 
@@ -145,18 +145,18 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:887-895.
 
 - [ ] **CTX-691** Tools the build does not load add 0 chars. A print request holds 25 tools in 73,587 chars; an interactive one holds 28 in 85,326. The three added are AskUserQuestion 5,196, EnterPlanMode 4,298, and ExitPlanMode 2,443 (the tool-text survey gives 4,333 and 2,464 for the two plan-mode tools, a different measure). A first run that typed only Enter exited at the trust screen ("workspace trust not accepted"). A tool that a setting or an account feature turns on is not measured. Built-in plugins (13 of 14) add 0 request chars with `-p`; `plugin-authoring` adds 268; only `init` among untouched slash commands adds request chars (67). Tools outside the default set (Glob, Grep, Task*) add 12,488 chars when `--tools` names them; the other 51 names load in neither mode. Measured on 2.1.321. 95 tools are present in 2.1.325; the cc-inspect `surface` tool list of 2.1.326 holds 97 names (2026-11-17).
-  Basis: measured (2.1.321). Status: unchecked (requests not re-measured on 2.1.326; only the name count was).
+  Basis: measured (2.1.321). Status: unchecked at 088a227c. The byte counts are dated 2.1.321 and bind to that build: a 2.1.327 print request with the fake API holds 12 tool names in 30,470 bytes of tools (cc-inspect cli, 2026-11-18), a different set, so the counts are not comparable and are not restated.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:868; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:856; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:413; cc-inspect `surface` kind tool, claude 2.1.326, 2026-11-17.
 
 - [ ] **CTX-692** Of 72 built-in tool names, 22 reach a -p request, by --tools name only. ToolSearch select: for 49 names answers "No matching deferred tools found". The pty run failed with "script: openpty: Operation not permitted", and the retry outside the sandbox was refused.
   Basis: measured in part.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:857.
 
-- [ ] **CTX-693** After the rebuild the rebuilt script repeats the baseline within 11 bytes (19,686 against 19,675). Stock is 43,099 and HEAD is 19,392 (system 7,139 chars against 6,756; messages 3,595 against 4,297). With a passing grade HEAD makes 3 side calls, the third a 3,854-byte Decider call to claude-haiku-5-5 from classic.Stop/useStopChecks/register.ts:19. With "ok" both arms make 2, because the unparsed grade blocks before the register check. No session has run HEAD, so the denial count after is unmeasured.
+- [ ] **CTX-693** After the rebuild the rebuilt script repeats the baseline within 11 bytes (19,686 against 19,675). Stock is 43,099 and HEAD is 19,392 (system 7,139 chars against 6,756; messages 3,595 against 4,297). With a passing grade HEAD makes 3 side calls, the third a 3,854-byte Decider call to claude-haiku-5-5 from classic.Stop/useStopChecks/register.ts:19. With "ok" both arms make 2, because the unparsed grade blocks before the register check. No session has run HEAD, so the denial count after is not claimed; it needs a session run on HEAD.
   Basis: measured.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:869.
 
-- [ ] **CTX-694** Request size per model grew 2.1 to 2.8 KB against 2.1.322 because session sections stay. The Stop prompt hook adds an 11.6 KB request per turn. `claude plugin validate` in 2.1.325 type-checks every file in `hooks/` (command-hook scripts moved to `scripts/`) and the build ships no `cc-plugin-claude-platform@builtin`: 2.1.326 registers that plugin under the id `claude-platform` (chunk-wvm9g54y.js@0, claude 2.1.326 binary), and a code search for `cc-plugin-claude-platform` finds no hit;  the type-check of `hooks/` is unverified in 2.1.326.
+- [ ] **CTX-694** Request size per model grew 2.1 to 2.8 KB against 2.1.322 because session sections stay. The Stop prompt hook adds an 11.6 KB request per turn. `claude plugin validate` in 2.1.325 type-checks every file in `hooks/` (command-hook scripts moved to `scripts/`) and the build ships no `cc-plugin-claude-platform@builtin`: 2.1.326 registers that plugin under the id `claude-platform` (chunk-syz79m2z.js@0 (2.1.327), claude 2.1.326 binary), and a code search for `cc-plugin-claude-platform` finds no hit; corrected on 2.1.327 (2026-11-18, probe with `claude plugin validate <path> --json`; flags `--json`, `--profile directory`, `--strict` from `claude plugin validate --help`): validate reads only modules named in `hooks/hooks.json` `modules` (paths resolve relative to hooks.json); an unlisted `hooks/bad.ts` gave `contents: []`. A listed module without a `register` export is an error; with one, a type error `const x: number = "a"` gave a warning `error TS2322` (line 1, column 7) and `success: true`. So it type-checks listed modules and reports type errors as warnings, not every file in `hooks/`.
   Basis: measured.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:103 (task 10.2, probes.md); openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:235; cc-inspect `code` search, claude 2.1.326, 2026-11-17.
 
@@ -189,7 +189,7 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:864.
 
 - [ ] **CTX-702** Measured on 2.1.319: first request tools 29,295 -> 7,633 bytes with the Mod; bare `-p` first request 18,065 vs baseline 36,902 (47,683 before deferring three tools); paid two-request session 9,228 vs 9,048 tokens; the second request cache-reads the whole first and writes 258-266 tokens; the prefix after handover differs only in `messages[1]` (engine-added environment block; not fixable, keep no code). With the plugin loaded the TUI starts in auto mode (the 2.1.326 release notes say sessions with no mode set now start in auto mode when the organization policy has not loaded); a compound command raised "Auto mode can't check actions" under the fake API (artifact).
-  Basis: measured (2.1.319). Status: unchecked (2.1.319-era numbers; not re-measured on 2.1.326).
+  Basis: measured (2.1.319). Status: unchecked at 088a227c. The numbers are dated 2.1.319 and bind to that build; the 2.1.327 request has a different tool set (see CTX-691), so they are kept as dated and not restated.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2609; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:65; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:262; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 ## Request Size
@@ -225,5 +225,10 @@
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:553 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
 
 - [ ] **CTX-710** A commenter keeps main sessions on a default autocompact of 150k-240k, treats a starting context above 60k as a concern, and launches workers with about 11k starting context and a 100k autocompact limit.
-  Basis: reported, one user, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:48 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
+
+- [ ] **CTX-849** An audit of 25 public repos found 45% with a root AGENTS.md or CLAUDE.md; the median file is 1,034 tokens (mean 1,627; range 21 to 6,249), and every session pays it first (reported, n=1 audit, tokenizer not stated).
+  Acceptance: the starter AGENTS.md of REQ-SETUP-026 and the root prompt are reported next to this median in the startup-context baseline of REQ-COST-021. Verification: inspection.
+  Basis: reported (n=1). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-buildwithclaude-comments-1xxwugm-every-claude-code-session-20261118T120522Z.md:29-45 (url: <https://www.reddit.com/r/BuildWithClaude/comments/1xxwugm/every_claude_code_session_pays_rent_on_your/>); reports/2026-11-18-research/dossier.md:171.

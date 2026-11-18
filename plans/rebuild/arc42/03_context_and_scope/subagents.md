@@ -110,14 +110,14 @@
 
 ## Subagents And Multi-Agent
 
-- [ ] **CTX-047** Reported, conflicting, version unstated: one commenter says subagents can spawn subagents up to 5 levels deep and recursion "gets messy fast"; model answers in the same thread state defaults of 3 layers of nesting and 20 concurrent subagents. CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS are named as circuit breakers. Checked in claude 2.1.326 with cc-inspect `code` search: both env names exist (chunk-07n5vvax.js@33038), the concurrent-subagent default is 20 (chunk-4h798pp0.js@4420957), and the spawn-depth function reads CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH with a constant 3 declared beside it (chunk-j1p9b5kw.js@341). The 5-level claim is unverified in 2.1.326.
+- [ ] **CTX-047** Reported, conflicting, version unstated: one commenter says subagents can spawn subagents up to 5 levels deep and recursion "gets messy fast"; model answers in the same thread state defaults of 3 layers of nesting and 20 concurrent subagents. CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS are named as circuit breakers. Checked in claude 2.1.327 with cc-inspect `code` search: both env names exist (chunk-2ew0jg68.js@33162), the concurrent-subagent default is 20 (chunk-m14bt1pz.js@4499737), and the spawn-depth function reads CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH with a constant 3 declared beside it (chunk-ja9j7x1x.js@341). The 5-level claim is false on 2.1.327: the spawn-depth default is 3 (`n=3`, gate `tengu_hazel_trellis`, chunk-ja9j7x1x.js@341), overridden by `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, and the refusal text reads "Subagent nesting limit reached (depth N of M)" (chunk-3v1e1y2y.js@42475).
   Basis: reported; names and the 20 default measured in the 2.1.326 binary.
-  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:154 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:128 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>); claude 2.1.326 binary chunk-07n5vvax.js@33038, chunk-4h798pp0.js@4420957, chunk-j1p9b5kw.js@341.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:154 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:128 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>); claude 2.1.327 binary chunk-2ew0jg68.js@33162, chunk-m14bt1pz.js@4499737, chunk-ja9j7x1x.js@341.
 
 ## Subagents And Multi-Agent
 
-- [ ] **CTX-048** Studies cited in a model answer, unchecked: arXiv 2511.00872, on code tasks multi-agent systems took substantially more steps (nearly 2x on repair and vulnerability detection) while single-agent was better at software development, code executability, and consistency; arXiv 2603.25928, a self-organizing multi-agent dev system used 1.65x the output tokens of plain Claude Code per submission attempt; arXiv 2606.13003 "The Illusion of Multi-Agent Advantage" (Jun 2026), auto-generated multi-agent systems underperform single-agent CoT plus self-consistency at up to 10x cost, while expert-architected ones beat auto-generated in performance and cost, so hand-designed decomposition beats model improvisation; Cognition "Don't Build Multi-Agents" mechanism: decisions disperse, context is not shared enough, actions carry implicit decisions, and parallel agents make conflicting ones.
-  Basis: cited via a model answer, unchecked.
+- [ ] **CTX-048** Studies cited in a model answer; the arXiv pages were fetched on 2026-11-18 and only one claim matches its abstract: arXiv 2511.00872 ("A Comprehensive Empirical Evaluation of Agent Frameworks on Code-centric Software Engineering Tasks") compares seven agent frameworks and names AgentOrchestra as having the longest trajectories and most correction attempts from coordination overhead, but its abstract gives no "nearly 2x" step figure and no multi-agent versus single-agent split; the answer's reading is, on code tasks multi-agent systems took substantially more steps (nearly 2x on repair and vulnerability detection) while single-agent was better at software development, code executability, and consistency; arXiv 2603.25928 ("TheBotCompany: Self-Organizing Multi-agent Systems for Continuous Software Development"; its abstract has no 1.65x or Claude Code comparison, so the figure is not confirmed), a self-organizing multi-agent dev system used 1.65x the output tokens of plain Claude Code per submission attempt; arXiv 2606.13003 "The Illusion of Multi-Agent Advantage" (Jun 2026; the abstract says automatic multi-agent systems "consistently underperform CoT-SC despite being up to 10x more expensive", confirmed), auto-generated multi-agent systems underperform single-agent CoT plus self-consistency at up to 10x cost, while expert-architected ones beat auto-generated in performance and cost, so hand-designed decomposition beats model improvisation; Cognition "Don't Build Multi-Agents" mechanism: decisions disperse, context is not shared enough, actions carry implicit decisions, and parallel agents make conflicting ones.
+  Basis: cited via a model answer; arXiv abs pages fetched with WebFetch on 2026-11-18 (a small model summarised each page): 2606.13003 confirmed, 2511.00872 and 2603.25928 exist but their abstracts do not state the quoted figures, which may sit in the full papers and are kept as the answer's reading. The Cognition mechanism is kept as cited, not fetched.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:51; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:52; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:53; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
 ## Subagents And Multi-Agent
@@ -134,8 +134,8 @@
 
 ## Subagents And Multi-Agent
 
-- [ ] **CTX-051** Anthropic-quoted via a model answer, citation unchecked: multi-agent uses 3-10x the tokens of single-agent for equal tasks (duplicated context, coordination, handoff summaries); agents use about 4x chat; a fresh subagent lacks history, read files, and invoked skills; verbose fan-out reports refill the protected window.
-  Basis: reported by a model answer, citation unchecked.
+- [ ] **CTX-051** Anthropic-quoted via a model answer; the 3-10x claim is confirmed in Anthropic's article "Building multi-agent systems: When and how to use them" ("multi-agent implementations typically use 3-10x more tokens than single-agent approaches for equivalent tasks", claude.com, live, read 2026-11-18). The article names duplicated context, coordination messages and handoff summaries as the cause. The "agents about 4x chat" figure is not in that article and is kept as reported. Claim: multi-agent uses 3-10x the tokens of single-agent for equal tasks (duplicated context, coordination, handoff summaries); agents use about 4x chat; a fresh subagent lacks history, read files, and invoked skills; verbose fan-out reports refill the protected window.
+  Basis: cited (claude.com article, live, 2026-11-18) for the 3-10x claim and its three causes; reported by a model answer for the 4x figure and the fresh-subagent lacks-history points.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:116 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
 ## Subagents And Multi-Agent
@@ -152,13 +152,13 @@
 
 ## Subagents And Multi-Agent
 
-- [ ] **CTX-054** Commenter claim, unmeasured: an unconstrained subagent's system prompt carries schemas for every tool, rule, and MCP server, and restricting tools (tools: [Read]) drops "hundreds of kilobytes". The poster's own breakdown was a guess.
-  Basis: reported, unmeasured.
+- [ ] **CTX-054** Commenter claim, measured in part on 2.1.327: an unconstrained subagent carries schemas for its tools, and restricting tools (`tools: Read`) shrinks the request. With the fake API, a `general-purpose` subagent request holds tools 16,179 bytes in a 28,097-byte request, and a custom agent with `tools: Read` holds tools 1,925 bytes in a 5,026-byte request, about 23 KB less (cc-inspect cli, 2026-11-18). The commenter's "hundreds of kilobytes" is not reproduced: this probe has no MCP servers or rules, so the figure scales with what a real session loads. The poster's own breakdown was a guess.
+  Basis: measured (2.1.327, fake API, no MCP servers) for the direction and the 23 KB gap; reported for "hundreds of kilobytes".
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261022T122153Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>).
 
 ## Subagents And Multi-Agent
 
-- [ ] **CTX-055** The built-in Explore agent inherits the main session model since Claude Code 2.1.198 (2026-07-01), so on Opus it bills Opus unless overridden; the `haiku` alias maps to Haiku 5.5 from 2.1.293 on the Anthropic API; nested subagents run to depth 5 (reported, model-generated, unverified). A spawn depth cap comes from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, concurrency 20).
+- [ ] **CTX-055** The built-in Explore agent inherits the main session model since Claude Code 2.1.198 (2026-07-01), so on Opus it bills Opus unless overridden; the `haiku` alias maps to Haiku 5.5 from 2.1.293 on the Anthropic API; nested subagents run to depth 5 (reported, model-generated; corrected: the spawn-depth default in 2.1.327 is 3, overridable by `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` or a GrowthBook value, chunk-ja9j7x1x.js@339). A spawn depth cap comes from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, concurrency 20).
   Basis: reported. Status: not applicable.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:90 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
@@ -172,7 +172,7 @@
 
 - [ ] **CTX-058** Subagent context cost: a narrow read-only custom agent (only `Read`, `model: sonnet`) cut a 5-agent review panel call from about 116k to about 30k tokens (measured; the guess is that general-purpose loads every tool schema including MCP servers); a type is split only for a repeated job; a new type loads after a Claude Code restart; `/context` shows the start split. The first request of a spawned subagent is about 29k tokens (394 starts, about 10M of 84M). Vercel cut 80% of tools and success went 80% to 100%; 50+ MCP tools cost about 72k tokens; a 90-tool server about 24,000. Subagent briefs that separate facts from recommendation (facts, hard constraints, files, leaning, disconfirming evidence, output format) let the subagent answer `supports plan`, `contradicts plan`, or `insufficient evidence`; otherwise an "independent" review is an echo.
   Basis: measured and reported. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2,23,42 (116k to 30k tokens per call; the all-tool-schemas explanation is the author's guess).
 
 ## Subagents And Multi-Agent
 
@@ -186,9 +186,9 @@
 
 - [ ] **CTX-061** `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` restores the full system prompt on Opus and Sonnet 5.5 (short about 5.6k chars against 26.8k). The short prompt lacks "don't reference current task", "default to writing no comments", the abstraction rules, the risky-action list, and the injection flag; the full prompt drops "report outcomes faithfully" and advises stashing before discard (unsafe in a shared tree). Measure before adopting. System prompt sizes are measured in two units on two settings and must not be mixed: the stock Claude Code system prompt is 6,174 bytes (probe baseline: 12 tools, fake API, `--setting-sources ""`); the full prompt is about 26.8k characters and the short prompt about 5.6k characters (one report, `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0`).
   Acceptance: Each figure names its unit and setting. Verification: inspection.
-  Basis: inferred (strings-derived; present in 2.1.326 as env `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` (str; cc-inspect `surface`, 2026-11-17)). Status: missing at 088a227c (`git grep SIMPLE_SYSTEM_PROMPT` finds nothing under `plugins/`). measured (6,174 bytes); reported (26.8k and 5.6k characters, n=2). The dossier rejected the 26.8k root-prompt claim because it contradicts the 6,174-byte baseline; the source does not say which setting each figure measures.
+  Basis: measured on 2.1.327 (cc-inspect cli, fake API, model claude-opus-5-5, 2026-11-18): the first request's system block is 6,274 bytes by default and with `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1`, and 27,820 bytes with `=0` (tools also grow, 30,470 to 46,533 bytes). The env is listed by cc-inspect `surface`. Status: missing at 088a227c (`git grep SIMPLE_SYSTEM_PROMPT` finds nothing under `plugins/`). measured (6,174 bytes); reported (26.8k and 5.6k characters, n=2). The dossier rejected the 26.8k root-prompt claim because it contradicts the 6,174-byte baseline; the source does not say which setting each figure measures.
   Status: n/a (fact).
-  Source: unresolved: no source line located for this claim; external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169; openspec/changes/2-1-325-rearchitecture/design.md:129,133.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169; openspec/changes/2-1-325-rearchitecture/design.md:129,133@088a227c9^ (related only: a cache-hit probe and `ENABLE_PROMPT_CACHING_1H`; these lines do not state the item's claim).
 
 ## Subagents And Multi-Agent
 
@@ -215,7 +215,7 @@
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:31 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
 - [ ] **CTX-067** Opus 5.5 and Fable now spawn subagents on their own without being asked, and care less about context limits, within about the past week.
-  Basis: reported, one user, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:91 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
 - [ ] **CTX-068** "Fan out subagents" yields only about 4-6 subagents; more needs a dynamic workflow or a tier of middle-manager agents, and the dynamic split then does not match the user's split.
@@ -227,7 +227,7 @@
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/>).
 
 - [ ] **CTX-070** Opus 5.5 gave better research answers for the first hours after history was deleted, and clogged context made it "more stupid" with more guardrails (research, not coding).
-  Basis: reported, one user, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:113 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfcot1/anyone_else_having_serious_quality_issues_with/>).
 
 ## Subagents And Multi-Agent
@@ -269,12 +269,12 @@
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:50; external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/>).
 
 - [ ] **CTX-080** One 20x user's weekly usage rose to 85% in three days; after telling Opus 5.5 to turn off subagents and agent teams, the next three days added 4%. The user also saw spawned agents step on each other.
-  Acceptance: The fact holds on claude 2.1.326 (unverified in 2.1.326); a probe compares weekly usage with and without subagents. Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported by one 20x user, not measured; weekly usage needs a paid account session over days, which the fake API does not produce.
   Basis: reported, one user (a second commenter reports spawned agents stepping on each other). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:673; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:681 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
 - [ ] **CTX-081** Delegating coding to Codex from Claude works by allowing Bash(codex exec:*), with the task and result in handoff files. Pitfalls on Windows: the call needs < /dev/null or it hangs on stdin; always pass -C with the repo path or it starts in the home folder; do not use --sandbox (it silently reads nothing); check the diff, because Codex sometimes says done when it is not.
-  Acceptance: The fact holds on claude 2.1.326 (unverified in 2.1.326) and the installed Codex CLI. Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported by one user, not measured; the `codex exec` flags need the installed Codex CLI and a paid account, which a fake-API probe does not cover. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:336 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
@@ -292,3 +292,13 @@
 - [ ] **CTX-084** A commenter asks whether cross review helps and cites arXiv 2607.21656 (<https://arxiv.org/abs/2607.21656>), a leaddev article and a Reddit thread as showing it does not. A reply says 2 of those state that Claude as reviewer lifted the pass rate, the instance of Codex reviewing Claude did not, and the models and versions were not visible; the reply treats benchmark results with a grain of salt.
   Basis: reported (two commenters; sources not opened).
   Source: external/2026-10-25_p2/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261025T155538Z.md:124-127 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
+
+- [ ] **CTX-835** On 2026-11-18 `/usage` in the user's GodHand session on 2.1.327 reported for the last 24 hours: weekly limit 75% used; main loop 98% of input tokens from cache with no misses; subagents on Sonnet 5.5 at $530.69 list price (18.7m output, 2.2b cache read, 49.7m cache write) against $133.31 on Opus 5.5; "general-purpose" subagents at 73% of usage; sessions with requests in 8 or more separate hours at 98% of usage.
+  Acceptance: `/usage` shows the per-model lines and the insights `subagent_heavy`/agent and `cron` (chunk-4dyhk64x.js@7794 and @10870 give their titles and the 8-hour rule). Verification: probe.
+  Basis: observed (user-supplied `/usage` output, 2026-11-18); read (chunk-4dyhk64x.js@7794, claude 2.1.327). Status: n/a (usage state).
+  Source: user decision, 2026-11-18 (user message in ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl, after line 671).
+
+- [ ] **CTX-836** The GodHand subagent transcripts changed in the 24 hours before 2026-11-18 hold 37 general-purpose workers that ran long: median 427 requests and 133 minutes, 90th percentile 1,863 requests and 592 minutes, maximum 2,052 requests; the six longest each compacted 17 to 22 times and made 1,598 to 1,948 Bash calls. Their Sonnet 5.5 usage, deduplicated by message id, was 28,706 requests, 16.8m output, 2.14b cache read and 49.5m cache write, about $506 at list price (read $214, output $168, write $124 at the 5-minute rate), so long-lived workers carried about 95% of the subagent cost. Workers in the other projects ran a median of 46 to 96 requests and 3 to 9 minutes.
+  Acceptance: the script below, run over `./*/*/subagents/*.jsonl` changed in the last 24 hours, reproduces the counts. Verification: probe.
+  Basis: measured (python3 -I over `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/*.jsonl` and `.meta.json`, deduplicated by `message.id`, 2026-11-18; compactions counted as system lines with a subtype holding "compact"). Status: n/a.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/; probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.

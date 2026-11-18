@@ -54,7 +54,7 @@
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2836.
 
-- [ ] **CTX-185** Write and Edit "read first" guard ("File has not been read yet") fires only when the model is in `nLn`'s list of 4.x and older models (claude-opus-4-6, haiku-4-5, opus-4-5, opus-4-1, opus-4-0, sonnet-4-5, sonnet-4-0, 3.x) or the path is not allowed without a prompt. Both arms overwrote `a.txt` without Read. NotebookEdit always enforces it (errorCode 9). In the TUI ($0 probe): the guard is skipped when the file has no read state, is not `.ipynb`, the model is not in `nLn`'s list, and a Read decision is "allow" for the path. An unread Write or Edit inside the workdir after a "Do you want to overwrite" dialog succeeds; an unread Write outside the workdir fails "File has not been read yet. Read it first before writing to it." On 5.x models the guard binds only where Read is not auto-allowed and for `.ipynb`. The prompting case is unchecked in `-p`.
+- [ ] **CTX-185** Write and Edit "read first" guard ("File has not been read yet") fires only when the model is in `nLn`'s list of 4.x and older models (claude-opus-4-6, haiku-4-5, opus-4-5, opus-4-1, opus-4-0, sonnet-4-5, sonnet-4-0, 3.x) or the path is not allowed without a prompt. Both arms overwrote `a.txt` without Read. NotebookEdit always enforces it (errorCode 9). In the TUI ($0 probe): the guard is skipped when the file has no read state, is not `.ipynb`, the model is not in `nLn`'s list, and a Read decision is "allow" for the path. An unread Write or Edit inside the workdir after a "Do you want to overwrite" dialog succeeds; an unread Write outside the workdir fails "File has not been read yet. Read it first before writing to it." On 5.x models the guard binds only where Read is not auto-allowed and for `.ipynb`. The prompting case needs an interactive session to answer the dialog; `-p` has no dialog, so the TUI probe above is the evidence.
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2711; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2712.
 
@@ -99,14 +99,14 @@
   Source: external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:37; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:51; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:59 (url: <https://www.reddit.com/r/nextjs/comments/1qbz5sf/vercels_agentbrowser_an_alternative_to/>).
 
 - [ ] **CTX-194** Claude Code retries overloaded responses, timeouts, and dropped connections up to 10 times with backoff and shows a "Retrying in Ns · attempt x/y" spinner line. While retrying, check the status page and switch with /model, since capacity is tracked per model. With no retry line, suspect a stale connection: quit, then run `claude --continue`.
-  Basis: reported by one commenter, unverified in 2.1.326; the 2.1.326 release notes say the retry notice now reads "retrying…" during the next attempt and that `claude -p` now shows output while it retries an overloaded request.
+  Basis: reported by one commenter, not measured. On 2.1.327 the spinner strings are `will retry in N · check your network` for a stalled reply (chunk-wr3rwknv.js@17592) and `next try in N · attempt a/b` (chunk-wr3rwknv.js@18744, auto-mode check), not `Retrying in Ns · attempt x/y`; the count of 10 retries was not located, and `CLAUDE_CODE_MAX_RETRIES` is the env override (chunk-2ew0jg68.js@45599). The 2.1.326 release notes say the retry notice now reads "retrying…" during the next attempt and that `claude -p` now shows output while it retries an overloaded request.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:79 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>).
 
 ## Tools And Output
 
-- [ ] **CTX-195** `TaskStop` of another task is not covered by the gate's owner check: Claude Code looks a task up in this session's task registry and otherwise answers "No task found with ID". The 2.1.326 binary holds that lookup and message (chunk-fkkma3m4.js@44889: `taskRegistry.get`, then name resolution, then the error); the message there also adds "Did you mean" and running-teammate hints. The task named the old module `chunk-kj840p5h.js@36960` with no binary version, and that module is not in 2.1.325. A path reached through `cd`, a variable, or a glob is compared as written (read).
+- [ ] **CTX-195** `TaskStop` of another task is not covered by the gate's owner check: Claude Code looks a task up in this session's task registry and otherwise answers "No task found with ID". The 2.1.326 binary holds that lookup and message (chunk-1vttvse2.js@45168 (2.1.327): `taskRegistry.get`, then name resolution, then the error); the message there also adds "Did you mean" and running-teammate hints. The task named the old module `chunk-kj840p5h.js@36960` with no binary version, and that module is not in 2.1.325. A path reached through `cd`, a variable, or a glob is compared as written (read).
   Basis: reported, task text.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:331; chunk-fkkma3m4.js@43779, @44889 (claude 2.1.326 binary).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:331; chunk-1vttvse2.js@44058, @44889 (claude 2.1.327 binary).
 
 ## Tools And Output
 
@@ -160,7 +160,7 @@
   Basis: measured 2026-11-06.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:71; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:73; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:187.
 
-- [ ] **CTX-207** CC subagent and mod facts: `tool.describe` events carry no thread; `engines["claude-code"]` gates install; `plugin validate` type-checks a TypeScript hooks module; the `tool.list` event exists; `subagentStatusLine` is removed (cited; in the 2.1.326 binary it is "deprecated in favor of mods and will stop working in a future release", so it is not removed there); plugin `settings.agent` is deprecated; 44 mod events; 33 classic events. 2.1.326: present (tool.list, tool.describe, `engines["claude-code"]`; binary string search); that `engines` gates install, and 44 mod events, are unverified in 2.1.326.
+- [ ] **CTX-207** CC subagent and mod facts: `tool.describe` events carry no thread; `engines["claude-code"]` gates install; `plugin validate` type-checks a TypeScript hooks module; the `tool.list` event exists; `subagentStatusLine` is removed (cited; in the 2.1.326 binary it is "deprecated in favor of mods and will stop working in a future release", so it is not removed there); plugin `settings.agent` is deprecated; 44 mod events; 33 classic events. 2.1.326: present (tool.list, tool.describe, `engines["claude-code"]`; binary string search); 2026-11-18 on 2.1.327: `engines` is a manifest field (chunk-ja5z738t.js@57798) and plugin diagnostics carry `engine-range-invalid` and `engine-range-exempt` ("an installed copy would not load here", chunk-dfwkett1.js@28092), which supports a load gate; the install-refusal path was not read. Mod event count is corrected: the 2.1.327 declarations list 159 events, 33 classic and 126 others (cc-inspect `surface` mod-api, counted by hand), not 44. `plugin validate` type-checks only modules named in hooks.json `modules`, and reports type errors as warnings (CTX-694).
   Basis: cited, observed.
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/design.md:30; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>).
 
@@ -170,7 +170,7 @@
 
 - [ ] **CTX-209** Opus 5.5 plan-level cost: users on Pro and Team report that they do not reach the weekly limit in 2-3 hour non-stop runs.
   Basis: reported.
-  Source: unresolved: the thread behind plan tag E:141 was not located by grep in external/.
+  Source: external/export-Is Claude Pro actually worth $20 just for one month for heavy coding-.jsonl:28 (a Pro user: 2-3 hours non-stop without exhausting the 5-hour limit) and external/export-Holy shit, it refuses to eat usage.jsonl:34 (20x user, no weekly rise). The weekly limit on Pro and Team in 2-3 hour runs is corrected to these two reports; no Team report was located.
 
 - [ ] **CTX-210** Agent-browser 0.39.1 reads 3 pages in 46.0k, 32.5k and 9.7k against raw HTML 392k, 248k and 318k bytes, in 0.7-3.4 s, and needs no sandbox (daemon socket); curl with an extractor gives 35.5k, 21.4k and 7.0k; an httpbin 403 gives an empty `cf-mitigated`, a challenge gives `cf-mitigated=challenge`.
   Basis: measured.
@@ -180,7 +180,7 @@
   Basis: measured; token figures other than the warning are bytes (no API key for a token count; the warning gives about 4 characters per token on this page).
   Source: lead session `0342617c`, 2026-11-17 (commands `curl`, `agent-browser read`, `node_modules/.bin/playwright-cli open|snapshot|find`); the user's paste of the `web_fetch` warning at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
 
-- [ ] **CTX-212** Claude Code 2.1.326 caps an MCP tool result at 25,000 tokens (`MAX_MCP_OUTPUT_TOKENS`, else a server-side value, else 25000; `chunk-z113k499.js@769`), cuts text past the cap with a notice, and saves only cut images to a file; its "Large MCP response" line is a UI warning above 10,000 estimated tokens (`Ns=1e4`, `chunk-zp33ck26.js@44804`). A large Bash output is instead saved to a file with a 2 KB preview ("Output too large ... Full output saved to", `chunk-6dkbe81p.js@7055`). A claudetto tool registered through `$.tool.register` reaches the model as MCP (`mcp__claudetto__web_fetch`), so it gets the cap and no file.
+- [ ] **CTX-212** Claude Code 2.1.327 caps an MCP tool result at 25,000 tokens (`MAX_MCP_OUTPUT_TOKENS`, else a server-side value, else 25000; `chunk-vxavegfm.js@768`), cuts text past the cap with a notice, and saves only cut images to a file; its "Large MCP response" line is a UI warning above 10,000 estimated tokens (`Ns=1e4`, `chunk-n9wersv3.js@45197`). A large Bash output is instead saved to a file with a 2 KB preview ("Output too large ... Full output saved to", `chunk-bwkc74bx.js@7110`). A claudetto tool registered through `$.tool.register` reaches the model as MCP (`mcp__claudetto__web_fetch`), so it gets the cap and no file.
   Basis: measured (code read, 2.1.326).
   Source: cc-inspect `search` on 2.1.326 at the offsets named; lead session `0342617c`, 2026-11-17.
 
@@ -189,19 +189,19 @@
   Source: lead session `0342617c`, 2026-11-17; user approval at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15578.
 
 - [ ] **CTX-214** verdict-cli (`tuandm/verdict-cli`, npm 0.1.1) is a persistent headless Chromium for UI verification, not page reading: ARIA snapshots with `@e` refs, `snapshot -i` (interactive only), `snapshot -D` (diff against the previous snapshot), `chain` for batched commands, encrypted auth profiles with a `handoff` to a shown window for SSO, MFA or CAPTCHA. Its README claims about 75 tokens per call against about 1,500 for Playwright MCP.
-  Basis: reported (README claim, unmeasured).
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: <https://raw.githubusercontent.com/tuandm/verdict-cli/HEAD/README.md> (read 2026-11-17); suggested by the user at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
 
 ## Tools And Output
 
 - [ ] **CTX-215** `sleep` chains are blocked in a Bash call; the agent waits with `run_in_background` or an `until` loop with a timeout.
   Acceptance: a `sleep 240; cat file` call is refused; an `until` loop with a timeout runs. Verification: probe.
-  Basis: observed in transcript, 2026-11-16. Status: unchecked, the blocking source was not named in the handoff.
+  Basis: measured on 2.1.327: a foreground Bash call `sleep 240; echo hi` returns `Blocked: sleep 240 followed by: echo hi. To wait for a condition, use Monitor with an until-loop ... use run_in_background: true` with errorCode 10 (cc-inspect cli, 2026-11-18); the check is in chunk-8vhagegy.js@113545 and runs only for a foreground call with no wall cap. The `until` loop half of the acceptance rests on that message text and was not run. Status: unchecked at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (Ruled out: sleep chains for waiting); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (hono dev run took 1,369 s, including a `sleep 240; cat` poll); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (handoff, Ruled Out).
 
-- [ ] **CTX-216** Claude Code 2.1.325 lists 95 tools with no MultiEdit, and `Edit` takes one `old_string` per call.
-  Acceptance: `cc-inspect surface tool` lists 95 tools and none named MultiEdit. Verification: probe.
-  Basis: measured. Status: unchecked, not re-probed.
+- [ ] **CTX-216** Claude Code 2.1.327 lists 97 tools with no MultiEdit (2.1.325 listed 95), and `Edit` takes one `old_string` per call.
+  Acceptance: `cc-inspect surface tool` lists the tools of the installed build and none is named MultiEdit. Verification: probe.
+  Basis: measured; re-measured on 2.1.327: `surface tool` lists 97 tool names and none is MultiEdit (cc-inspect surface, 2026-11-18). The 95 count was the 2.1.325 figure. Status: unchecked at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:2433 (cc-inspect `surface tool` result in the handoff).
 
 - [ ] **CTX-217** A `tool.describe` event carries only `tool`, `description`, `isDeferred` and `provider`, and its answer is cached per session until `$.ui.invalidate`, so one text serves every thread that sends the tool and a hook cannot answer the main thread and a subagent differently. Whether the engine sends a subagent the `Bash` schema at all was not run, since that needs a paid session.
@@ -211,3 +211,24 @@
 - [ ] **CTX-218** Search exclusions and read size: `Grep` honors `.gitignore` and `.ignore` except for files its `glob` matches; `Glob` lists ignored and hidden files by default; a `Read` deny hides a path from both; `Read` refuses a file over 262,144 bytes or 25,000 tokens. The plan keeps setup's ignore blocks, corrects their stated scope, and makes no mod and no `CLAUDE_CODE_GLOB_NO_IGNORE` change.
   Basis: measured (named as probe 2.11 of `ISSUES-2026-11-04-1500.md`; the probe text was not read here).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/feature-map.md:61.
+
+- [ ] **CTX-837** On 2.1.327 the Bash tool appends `< /dev/null` to a command unless the command holds a heredoc (`<<word`) or an input redirect; then the command inherits an open stdin. A program that reads stdin for want of a file argument (`wc -l` with an empty variable) blocks until the 120-second timeout moves it to the background.
+  Acceptance: `timeout 8 wc -l` returns 0 at once alone, and exits 124 after 8 seconds when the same command also holds a `cat <<'E'` heredoc. Verification: probe.
+  Basis: probed (Bash tool, claude 2.1.327, 2026-11-18); read (chunk-m14bt1pz.js@3706491: `$Rt` heredoc test, `Moo` and `Ooo`). Status: n/a (host behaviour).
+  Source: chunk-m14bt1pz.js@3706491 (claude 2.1.327, cc-inspect `code search` "< /dev/null", 2026-11-18); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e/subagents/agent-ac34edb36528989f5.jsonl:24-26.
+
+- [ ] **CTX-838** The project folders under `~/.claude/projects` begin with `-`, so a bare glob such as `ls */` or `ls -S */*.jsonl` there passes them to the program as options and fails ("unrecognized option"); a variable taken from that output is empty. With CTX-837 this left a subagent of this project waiting 122 seconds on `wc -l $f`.
+  Acceptance: `cd ~/.claude/projects; ls */` fails with "unrecognized option"; `ls ./*/` lists. Verification: probe.
+  Basis: probed (2026-11-18, reproduced by the main session as well). Status: n/a.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e/subagents/agent-ac34edb36528989f5.jsonl:24-26; probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+
+- [ ] **CTX-854** Code Mode pays off on tool fan-out with a small answer, mostly MCP calls, and not on file work. A public benchmark on 2.1.326 (6 tasks, 4 models, 2 runs per task and mode, 96 runs, auto mode, medium effort) measured these changes with Code Mode on:
+  - Totalling 120 records fetched through MCP: 84-94% less conversation growth in all 8 pairs; 62-77% fewer tokens processed; 23-28% of the recorded cost; 20-41% of the time.
+  - Reading and judging the same records: 65-83% less conversation growth.
+  - File work (find broken links; change an API at 36 call sites): conversation growth rose in 14 of 16 pairs, and repeat runs differed by up to 216%. Recorded cost on Opus 5.5 was about equal ($0.33-0.39 on against $0.32-0.33 off for links; $0.26-0.36 against $0.28-0.35 for the API change). With Code Mode off, every model already wrote one script for the file tasks.
+  - Every session started 13,055-13,106 tokens smaller. `/context` shows built-in tool definitions at 3.6k against 16.3k, and the deferred tool lists gone.
+  - Inside a script the tool-call count grows: one Opus 5.5 link check ran 1,174 tool calls, and one Haiku 5.5 run ran 344 failing shell calls.
+  The user reports the same split from other users. The benchmark's own caveats hold: 2 runs per cell, synthetic tickets with repeated wording that suit a sentence-count script, one effort level, and a clean configuration.
+  Acceptance: none (context). claudetto does not turn Code Mode on (OUT-118). It stays compatible when a user turns it on (REQ-GUARDS-078).
+  Basis: reported, third-party measurement (published scripts, transcripts and `/context` dumps; not rerun here). Read: the official page lists the same requirements and limits. The 2.1.327 reason list in chunk-g2wcp8ss.js holds no plugin or mod reason, although the page still lists "doesn't yet work with the plugin" and "an installed mod" (Differs). Status: n/a (host behaviour).
+  Source: external/2026-11-18_p2/reddit.com-r-claudeai-comments-1xymddk-i-benchmarked-claude-codes-code-20261118T181709Z.md:37-43,74,80-82 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xymddk/i_benchmarked_claude_codes_code_mode_across_4/>); github.com/Bicameral-AI/claude-code-mode-benchmark@deee7585 results/README.md (tables "Tokens Processed by Kind of Work", "Task Context and Requests", "Fixed Context", "Opus 5.5") and archive/claude-code-2.1.325/results/context/C0-opus-off-20261116-172859.md, C0-opus-on-20261116-172924.md; <https://code.claude.com/docs/en/code-mode> (read 2026-11-18); chunk-g2wcp8ss.js reason switch (claude 2.1.327, cleaned module, 2026-11-18); user report, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl).

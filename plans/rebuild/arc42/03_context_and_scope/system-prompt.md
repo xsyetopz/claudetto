@@ -16,10 +16,10 @@
 
 ## System Prompt And Context
 
-- [ ] **CTX-243** On 2.1.326 these flags exist (checked: `code` search of 2.1.326 finds each name in the CLI option lists): `--system-prompt`, `--system-prompt-file`, `--append-system-prompt`, `--append-system-prompt-file`, `--append-subagent-system-prompt`, `--exclude-dynamic-system-prompt-sections`, `--system-prompt-snapshot <on|off>`; the same lists also hold `--append-subagent-system-prompt-file` and `--plan-mode-instructions`; `autoMode` is present (chunk-m33vdkhs.js@183304). Which flags are hidden in `--help` was recorded on 2.1.325 (`-file` forms and `--append-subagent-system-prompt` hidden) and is unverified in 2.1.326. The last two flags of the first list are cache-related and not mentioned in the input; no repo use found.
+- [ ] **CTX-243** On 2.1.326 these flags exist (checked: `code` search of 2.1.326 finds each name in the CLI option lists): `--system-prompt`, `--system-prompt-file`, `--append-system-prompt`, `--append-system-prompt-file`, `--append-subagent-system-prompt`, `--exclude-dynamic-system-prompt-sections`, `--system-prompt-snapshot <on|off>`; the same lists also hold `--append-subagent-system-prompt-file` and `--plan-mode-instructions`; `autoMode` is present (chunk-ja5z738t.js@184432 (2.1.327)). Which flags are hidden in `--help` was recorded on 2.1.325 (`-file` forms and `--append-subagent-system-prompt` hidden) and is confirmed on 2.1.327: `--append-subagent-system-prompt`, `--append-subagent-system-prompt-file`, `--append-system-prompt-file` and `--system-prompt-file` are hidden, and `--append-system-prompt`, `--system-prompt`, `--exclude-dynamic-system-prompt-sections` and `--system-prompt-snapshot` are listed (chunk-rnt5hbrt.js@58278-60289). The last two flags of the first list are cache-related and not mentioned in the input; no repo use found.
   Acceptance: `claude --help` on 2.1.326 lists the visible flags. Verification: probe.
   Basis: measured. Status: missing at 088a227c (no repo use of the two cache flags).
-  Source: probe on claude 2.1.325, per the old plan; chunk-eafmz4at.js@787, chunk-eafmz4at.js@4352 (claude 2.1.326 binary); plugins/ grep at 088a227c for `system-prompt-snapshot` returned no line.
+  Source: probe on claude 2.1.325, per the old plan; chunk-avas472e.js@809 (2.1.327), chunk-avas472e.js@4374 (2.1.327; first read in claude 2.1.326 binary); plugins/ grep at 088a227c for `system-prompt-snapshot` returned no line.
 
 ## System Prompt And Context
 
@@ -34,7 +34,7 @@
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
 
 - [ ] **CTX-246** A tool vendor says an MCP server serving 90 tools costs about 24,000 tokens of schema on every turn, under 1,000 with a six-tool front door; an older CLAUDE.md policy "always use the index first" burns extra turns on jobs that did not need it.
-  Basis: vendor claim, reported, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:160 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
 
 - [ ] **CTX-247** Anthropic cut Claude Code's own system prompt for newer models by over 80%.
@@ -46,7 +46,7 @@
   Source: external/2026-10-25/reddit.com-r-claudeopus-comments-1xbxewx-after-being-on-opus-55-for-so-20261024T141009Z.md:127 (url: <https://www.reddit.com/r/Claudeopus/comments/1xbxewx/after_being_on_opus_55_for_so_long_i_forgot_how/>).
 
 - [ ] **CTX-249** CLAUDE.md loads into every sub-agent, and custom subagents reload the whole file on every spawn, so each line costs context in every child and constrains it; subagents inherit the main session's effort unless frontmatter pins model and effort. One user culled CLAUDE.md by 50%, moved rules to hooks then skills, and saw a noticeable difference.
-  Basis: reported, one user plus one commenter (the subagent-reload and effort-inheritance claim is unverified).
+  Basis: reported, one user plus one commenter (the subagent-reload and effort-inheritance claim: agent frontmatter has `model` and `effort` fields, chunk-b0yr0k8v.js@308864, and the built-in Explore agent sets `omitClaudeMd:true`, chunk-m14bt1pz.js@242090, so CLAUDE.md loading is per agent type; effort inheritance probed 2026-11-18, probes-open-five/probe4: with `--effort high` every subagent request carried `output_config.effort` high and none carried low, without the flag none carried high, and an agent whose frontmatter sets `effort: low` sent low on its own requests while the main requests stayed high, so a subagent inherits the parent effort when frontmatter sets none and frontmatter overrides it; the request-to-subagent mapping is inferred from tool sets).
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:94 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:67 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>).
 
 - [ ] **CTX-250** After compaction Claude Code re-injects the bodies of skills actually invoked, capped at 5,000 tokens per skill and 25,000 total, oldest dropped first, truncating from the start of the file; put the stay-on rule in the first lines and keep the body short.
@@ -72,13 +72,13 @@
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:53,136,143,147-149,490 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>); external/2026-11-06/reddit.com-r-claudecode-comments-1xorv25-woke-30-is-truly-back-20261106T080403Z.md:158-160,184 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xorv25/woke_30_is_truly_back/>).
 
 - [ ] **CTX-255** A commenter quotes harness prompt lines that say the opposite of a re-engagement hook: 'End your turn when the request is done or nothing is left that you can do without the user'; 'When one part of a task is blocked ... finish everything that does not depend on the stuck part, and open your final message with what is stuck'; 'When you have enough information to act, act'.
-  Basis: reported, quote unverified. Status: not applicable (outside fact).
+  Basis: measured (claude 2.1.327, 2026-11-18, cc-inspect `code` search, chunk-m14bt1pz.js). The program holds all three instructions with small wording differences. 'End your turn when the request is done or nothing is left that you can do without them' (the program says 'them', not 'the user') at @2774805; 'When one part of a task is blocked, unclear, or apparently wrong, the rest usually is not ... Finish everything that does not depend on the stuck part, and open your final message with what is stuck' at @2776525; 'When you have enough information to act, act. Do not re-derive facts already established ...' at @2800845, which a flag-read function (`tengu_cedar_lantern`, env override) switches on. Whether a given session receives each section is decided by flags the fake API does not set and was not probed. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqlgno-agents-knowingly-fail-to-complet-20261110T093545Z.md:282-291 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqlgno/agents_knowingly_fail_to_complete_tasks_in_order/>).
 
 ## System Prompt And Context
 
 - [ ] **CTX-256** Running claude -p showed build and gh tools injecting about 70% of one Rust project's context; the user is removing most of it.
-  Acceptance: The fact holds on claude 2.1.326 (unverified in 2.1.326); a probe of claude -p on a build-tool project shows the injected share. Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported by one user, not measured; the share depends on that user's Rust project, and `code run` against a fake API can show the injected tool bytes for a given project but was not run on theirs. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:908 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
@@ -129,7 +129,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl0mvp/claude_just_leak_its_internal_cds/>); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:181; external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>)
 
 - [ ] **CTX-268** The engine adds "<style> output style is active. Remember to follow..." every turn unless the style is default (22,320 `output_style` rows, about 20 tokens each, estimated). Only built-in styles carry `turnReminder`. The plugin style frontmatter allows only name, description, keep-coding-instructions, force-for-plugin, so a plugin style cannot change or empty it.
-  Basis: reported (read from `chunk-2x9ma4k7.js`, claude 2.1.325 binary, a module absent from the 2.1.325 install; counted). Status: confirmed in 2.1.326 at `chunk-4h798pp0.js@5833538` (reminder text, with the fallback "Remember to follow the specific guidelines for this style." when `turnReminder` is unset) and built-in styles carrying `turnReminder` at `chunk-4h798pp0.js@1043321`; counts are from 2.1.323 logs.
+  Basis: reported (read from `chunk-2x9ma4k7.js`, claude 2.1.325 binary, a module absent from the 2.1.325 install; counted). Status: confirmed in 2.1.326 at `chunk-m14bt1pz.js@5903876 (2.1.327)` (reminder text, with the fallback "Remember to follow the specific guidelines for this style." when `turnReminder` is unset) and built-in styles carrying `turnReminder` at `chunk-m14bt1pz.js@1056565 (2.1.327)`; counts are from 2.1.323 logs.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:649.
 
 - [ ] **CTX-269** `silent_turn_reminder` fires when the last 5 assistant messages hold no text, thinking summary, or user-facing tool call (flag `tengu_hushed_lark`). It fires at most 3 times per silent stretch; the timed variant runs at 60 s. Counts: 1,258 rows, up to 155 in one session, about 35 tokens each. A probe showed it fires as designed.

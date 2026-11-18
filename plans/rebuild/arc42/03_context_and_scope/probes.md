@@ -32,7 +32,7 @@
   Basis: measured.
   Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
 
-- [ ] **CTX-353** A clear issued while another prompt is queued rejects with "HooksError: the command was removed from the queue before it ran". The text "the prompt was removed from the queue before it ran" is present in 2.1.326 (chunk-4h798pp0.js@993601), so the exact message is unverified there.
+- [ ] **CTX-353** A clear issued while another prompt is queued rejects with "HooksError: the command was removed from the queue before it ran". The text "the prompt was removed from the queue before it ran" is present in 2.1.327 (chunk-m14bt1pz.js@1005617), and the command path in 2.1.327 reads "the command was removed from the queue before it ran" (chunk-m14bt1pz.js@5989824), so the exact message matches there.
   Basis: measured.
   Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
 
@@ -40,7 +40,7 @@
   Basis: measured.
   Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
 
-- [ ] **CTX-355** `$.session.compact()` in a headless (`-p`, SDK) session rejects with "not available in a headless (-p / SDK) session yet" (the same text is present in 2.1.326: chunk-xt4nsgp1.js@766390).
+- [ ] **CTX-355** `$.session.compact()` in a headless (`-p`, SDK) session rejects with "not available in a headless (-p / SDK) session yet" (the same text is present in 2.1.327: chunk-m14bt1pz.js@63563).
   Basis: measured.
   Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
 
@@ -75,10 +75,10 @@
   Basis: measured.
   Source: handover probe C, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb).
 
-- [ ] **CTX-363** A `session.compact` answer `{messages}` on trigger `auto` is not reachable on the fake API: the stub always reports 10 input tokens, `replies` does not override `POST /v1/messages`, and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 100k reads as the 100k minimum (`G0=1e5` on 2.1.325; `SD=1e5` in 2.1.326, checked by reading chunk-azerc2hq.js near offset 950). Read at `chunk-5121ahsh.js:950` on 2.1.325 as `G0=1e5`.
+- [ ] **CTX-363** A `session.compact` answer `{messages}` on trigger `auto` is not reachable on the fake API: the stub always reports 10 input tokens, `replies` does not override `POST /v1/messages`, and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 100k reads as the 100k minimum (`G0=1e5` on 2.1.325; `SD=1e5` in 2.1.326, `hL=1e5` in 2.1.327 at chunk-29d2mwq6.js@950). Read at `chunk-5121ahsh.js:950` on 2.1.325 as `G0=1e5`.
   Acceptance: the code at the line matches. Verification: inspection.
   Basis: measured.
-  Source: handover probe D, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); chunk-azerc2hq.js:950 (claude 2.1.326 binary; was chunk-5121ahsh.js:950 in 2.1.325); `chunk-5121ahsh.js:950` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
+  Source: handover probe D, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); chunk-29d2mwq6.js:950 (2.1.327) (claude 2.1.326 binary; was chunk-5121ahsh.js:950 in 2.1.325); `chunk-5121ahsh.js:950` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
 - [ ] **CTX-364** With a 60000-word `prompt.context` filler, then `/clear`, then a prompt, on Haiku 5.5, the `clear` hook's fork took 2401 ms and returned 365 characters; fork usage was 67542 cache-read, 5248 cache-write, 120 output tokens, $0.0018, against $0.0135 for the first turn; the next turn quoted `HANDOVER-CLEAR forkMs=2401`, so the `$.store` handover survived the clear and `prompt.context` injected it.
   Basis: measured.
@@ -129,7 +129,7 @@
 
 ## Probes And Experiments
 
-- [ ] **CTX-373** claudetto shall record these measured paid eval results (11 cases x 3 runs): Haiku 0.965 (+0.098, $0.22); Sonnet 0.948 (+0.052, $3.10); Opus 0.956 (+0.071, $6.38, stopped at $6 ceiling); `no-unasked-revert` lower with the plugin and did not reproduce; no case spawns a subagent, so agents are unmeasured.
+- [ ] **CTX-373** claudetto shall record these measured paid eval results (11 cases x 3 runs): Haiku 0.965 (+0.098, $0.22); Sonnet 0.948 (+0.052, $3.10); Opus 0.956 (+0.071, $6.38, stopped at $6 ceiling); `no-unasked-revert` lower with the plugin and did not reproduce; no case spawns a subagent, so no result covers agents and none is claimed for them.
   Acceptance: A paid run waits for the user's approval and budget report (task 10.3; reported). Verification: inspection.
   Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:255; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:262.

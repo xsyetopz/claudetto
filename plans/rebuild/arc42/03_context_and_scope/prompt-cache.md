@@ -5,7 +5,7 @@
 - [ ] **CTX-272** Subagent requests write the 5-minute cache tier unless `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` is set; the main session writes the 1-hour tier. `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL=1h` (v2.1.242+) cut one team's subagent cache rewrites from about 8% of a week to under 2%; lean subagent context cut average tokens from about 400K to 80K on the same workflows.
   Acceptance: A log of subagent requests with the variable unset shows 5-minute writes; the team figures stay marked reported. Verification: probe.
   Basis: measured by one poster (14-day logs, 17,574 main-session requests): 41 requests sent over an hour after the previous one wrote about 225k tokens each (0.2% of requests, 15% of all cache writes); 278 requests after a 5-60 minute gap wrote about 5k each; every main-session write was 1 hour while 2,696 of 2,701 subagent requests (17.6M tokens) wrote to the 5-minute tier; a test (44k written, wait 5:45, all 44k rewritten with 0 read) confirmed the 5-minute expiry. A commenter says 5 minutes applies on an API key, Bedrock, Vertex, Foundry, or a subscription in overage, and FORCE_PROMPT_CACHING_5M forces it. The team figures are reported by commenters.
-  Status: n/a (fact); no SUBAGENT_PROMPT_CACHE_TTL use at 088a227c (git grep found none). Variable present in claude 2.1.326 (code search `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`; settings text at chunk-m33vdkhs.js@275804: "Unset = automatic (5 minutes unless ENABLE_PROMPT_CACHING_1H=1)" and the variable "takes precedence"); the logs and the v2.1.242+ figure are not re-run in 2.1.326.
+  Status: n/a (fact); no SUBAGENT_PROMPT_CACHE_TTL use at 088a227c (git grep found none). Variable present in claude 2.1.327 (code search `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`; settings text at chunk-ja5z738t.js@278003: "Unset = automatic (5 minutes unless ENABLE_PROMPT_CACHING_1H=1)" and the variable "takes precedence"); the logs and the v2.1.242+ figure are not re-run in 2.1.327.
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:81,83,87,89,93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:133,245 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
 - [ ] **CTX-273** Resetting context at 225K tokens at task end cut cost 50-75% for one poster; on one commenter's logs a warm turn at 800k costs about 2x a turn at 200k, but a cold re-write at 800k costs about 22x a warm turn.
@@ -72,7 +72,7 @@
 
 - [ ] **CTX-283** Haiku 5.5 input over 100,000 tokens bills the whole request at five times ($0.10 to $0.50 per million input; $0.50 to $2.50 output).
   Acceptance: The price-step guard withholds a result that would cross 100,000 tokens. Verification: test.
-  Basis: cited (the dossier row names the guard; the price page was not re-read here). The plan states the rule as fact in two places and as unverified in a third.
+  Basis: cited and re-read (claude 2.1.327, 2026-11-18): platform docs `models/haiku-5-5/overview`, Pricing table, state $0.10 input and $0.50 output per MTok for prompts up to 100,000 tokens and $0.50 and $2.50 for prompts over 100,000 tokens; the same step applies to cache writes ($0.125 to $0.625 for 5m, $0.20 to $1 for 1h) and reads ($0.01 to $0.05). The rate is set by prompt size, so a request over 100,000 tokens bills at the higher rate for all its tokens. Confirmed. The plan states the rule as fact in two places and as unverified in a third.
   Status: have at 088a227c (HAIKU_PRICE_STEP = 100_000, "five times").
   Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:24; plugins/claudetto/hooks/features/price-step/price-step.ts:15,16@088a227c.
 
@@ -119,8 +119,16 @@
 ## Prompt Cache
 
 - [ ] **CTX-291** Fork subagents inherit the full conversation and reuse the parent's prompt cache; non-fork subagents have a separate cache and reload the CLAUDE.md hierarchy and git status on each spawn.
-  Basis: reported.
+  Basis: reported; the fork half is measured in CTX-839.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [ ] **CTX-839** A fork's first request on claude 2.1.327 repeats the parent's prefix. The tools are identical (30,470 B, the same list), and the model is the parent's. System blocks 1 and 2 are identical. System block 0, the billing header, gains ` cc_is_subagent=true;` (chunk-asj6f58y.js@1004680). The parent's message history follows byte for byte. Then come the Agent tool_use, the tool_result "Fork started — that fork is you.", and a fork boilerplate that ends in the directive and carries the new cache_control. The billing header already changes on every first-party request (cc_prev_req, cc_prompt_id, cc_turn_index in the same function), yet a main loop reads 98% of its input from cache (CTX-835), so block 0 is outside the cache match. A fork therefore reads the parent's cache up to the parent's last cached message. The boilerplate tells the fork to run one directive, spawn no subagents, report once and stop. That makes a fork a short-lived worker by default.
+  Basis: measured (request bytes); the cache hit is inferred from the bytes plus the 98% main-loop figure, because the fake API returns no cache usage.
+  Source: fork probe, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with an Agent call of subagent_type fork, requests 1 and 2 compared (reports/2026-11-18-research/handover-probes/probe-fork.log); chunk-asj6f58y.js@1004680 (claude 2.1.327, cc-inspect `code search` cc_is_subagent).
+
+- [ ] **CTX-842** On a subscription login under claude 2.1.327, the main loop writes its cache with a 1h TTL. A non-fork subagent writes with no ttl field, which is the 5-minute default. `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL=1h` gives the subagent 1h. A short-lived worker finishes within 5 minutes of its last write, so the default suits it, and its writes cost 1.25x instead of 2x at API list prices (on a subscription meter a 1h write costs only about 1.1 times a 5m write, CTX-846). A worker that waits longer than 5 minutes between turns re-writes its prefix. That is one more reason to end workers per slice (REQ-DELEGATION-065) rather than to raise their TTL.
+  Basis: measured (request bodies). Status: n/a (built-in behaviour).
+  Source: subagent TTL probe, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with `login` oauth and with the env set, an Agent call of subagent_type general-purpose (reports/2026-11-18-research/handover-probes/probe-ttl.log); env name from cc-inspect `surface` env, chunk-2ew0jg68.js:18928; write multipliers from https://platform.claude.com/docs/en/build-with-claude/prompt-caching (fetched 2026-11-18).
 
 ## Prompt Cache
 
@@ -131,7 +139,8 @@
 ## Prompt Cache
 
 - [ ] **CTX-293** Hypothesis from a commenter, untested: a cached prefix is readable only once the first response has started, so five subagents launched at once each pay the full write of the same system prompt and tools; start one first and the rest a few seconds later to turn the shared part into reads; check logs for equal write counts.
-  Basis: reported hypothesis, untested.
+  Acceptance: Resolved 2026-11-18, measured from the user's 299 subagent transcripts (Sonnet 5.5, 2.1.32x, reports/2026-11-18-research/ctx293/README.md). In 13 groups of subagents whose first replies came within 3 s of each other and no sibling had cached the shared prefix, all 51 members read 0 and wrote the whole prompt; in the 46 groups started after a sibling had cached it, all 248 members read the same 4,365 to 6,018 tokens. The hypothesis holds. The extra write is about $0.017 per cold sibling on Sonnet, so claudetto adds no launch delay (ADR-0177).
+  Basis: measured from transcripts.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261022T122153Z.md:82 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>).
 
 ## Prompt Cache
@@ -153,7 +162,7 @@
 
 - [ ] **CTX-297** Effort and model switch against the cache conflict: an effort switch keeps the cache on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1 (a docs quote posted by a commenter, two commenters) while a mod author measured 56-100% rewrites on Fable 5.1 and older Opus, and others report that changing effort or model mid-session invalidates. Per-message effort change (beta) is the single-turn route. Over about 80k requests cache reads were about 76% of cost and output about 8%; effort mostly changes the tool-call count. Unverified until measured.
   Basis: reported and cited, in conflict. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Source: external/export-Claude Code effort level and model selection - Claude.jsonl:4,5,7 (commenters: an effort change mid-session invalidates the prompt cache, with Fable 5.1 as the exception). The mod author's 56-100% rewrite measurement: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
 - [ ] **CTX-298** Prefix cache mechanics: a change earlier in the request (MCP tool list, rewritten instruction file, changed system prompt, timestamp, tool order) invalidates everything after; editing a past prompt or `/rewind` still hits up to the edit; read costs 0.1x, write 1.25x (5m) or 2x (1h). First-request prefix is identical across sessions (dev 16,333 bytes); 98.6% of root and 98.9% of subagent requests hit at 98% or more over 3 days; misses follow compaction, model switch, and gaps over 1 h or 300 s. Events that keep the prefix on 2.1.316 (measured): a skill or command added, an output style change, a Shift+Tab permission mode cycle, a file read then edit, an MCP toggle with tool search on, a subagent spawn, a rewind, a `/compact` request.
   Basis: measured, cited, and reported. Status: not applicable.
@@ -163,7 +172,7 @@
   Basis: measured (2.1.319) and cited. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts:118` writes `subagentPromptCacheTtl` only).
   Source: plugins/claudetto/hooks/features/setup/settings.ts:118@088a227c; external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:31.
 
-- [ ] **CTX-300** `/advisor` reads the full transcript on each call, uncached (one commenter: about $4 for a 500k call), and the prompt cache is keyed to model, so Fable never reads the main cache. The built-in Learning output style teaches as you go (unverified). Each advisor tool call triggers a full uncached read of the whole history per decision (docs link, not opened). The advisor stays disabled. /advisor handoff makes the other model re-read context, paying a cache write again when the last call is over five minutes old; one poster logged per request on a Max 20x account that subagent progress summaries alone cost 10 to 13% of a week with no off switch. An advisor saves only when the handoff is small, cached, and rare.
+- [ ] **CTX-300** `/advisor` reads the full transcript on each call, uncached (one commenter: about $4 for a 500k call), and the prompt cache is keyed to model, so Fable never reads the main cache. The built-in Learning output style asks the user to write 2-10 line code pieces for hands-on practice (chunk-m14bt1pz.js@1057645-1058240, 2.1.327), so "teaches as you go" is only partly right. Each advisor tool call triggers a full uncached read of the whole history per decision (docs link, not opened). The advisor stays disabled. /advisor handoff makes the other model re-read context, paying a cache write again when the last call is over five minutes old; one poster logged per request on a Max 20x account that subagent progress summaries alone cost 10 to 13% of a week with no off switch. An advisor saves only when the handoff is small, cached, and rare.
   Basis: reported. Status: have at 088a227c (the setting only: `plugins/claudetto/hooks/features/setup/settings.ts:178`). reported. reported. Status: not applicable (outside fact).
   Status: have at 088a227c (the setting only: plugins/claudetto/hooks/features/setup/settings.ts:178); the advisor stays disabled
   Source: plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:33; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:130; external/2026-10-01_p2/export-PSA- you don't need Fable for everything. Set it as your -advisor instead.jsonl:3 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wv4cux/psa_you_dont_need_fable_for_everything_set_it_as/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:162-164 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
@@ -178,7 +187,7 @@
 - [ ] **CTX-302** A main conversation on a subscription writes a 1-hour cache (measured 2.1.319); `subagentPromptCacheTtl: "1h"` puts `"ttl":"1h"` on subagent and side requests, not the main loop. The setting is present on 2.1.326 (checked: `code` search `subagentPromptCacheTtl` in 2.1.326 finds its schema entry).
   Acceptance: a request body shows the 1h marker on a subagent request after the setting is set. Verification: probe.
   Basis: measured. Status: have at 088a227c (`promptCacheTtl` setup group).
-  Source: openspec/changes/2-1-325-rearchitecture/design.md:131; openspec/specs/subagent-prompts/spec.md:112; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:69; chunk-m33vdkhs.js@275526 (claude 2.1.326 binary).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:131; openspec/specs/subagent-prompts/spec.md:112; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:69; chunk-ja5z738t.js@277725 (claude 2.1.327 binary).
 
 ## Prompt Cache
 
@@ -210,7 +219,7 @@
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:151 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
 
 - [ ] **CTX-309** Cache reads per thread are about tool calls times average context (130 calls at 150k is about 20M), so the two levers are calls per thread and context size, not a leak.
-  Basis: inferred arithmetic.
+  Basis: arithmetic, recomputed 2026-11-18: 130 calls times 150,000 tokens is 19,500,000, about 20M. The claim that this explains the poster's total, and the "not a leak" reading, are the commenter's and are kept as reported.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdlitv-22b-cacheread-tokens-in-one-proj-20261026T133020Z.md:84 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdlitv/22b_cacheread_tokens_in_one_project_normal_or_am/>).
 
 - [ ] **CTX-310** A measured fixed baseline of about 80k tokens (system prompt, tools, plugin skill lists) is re-paid on every turn while project instructions are only 1-2k; plugin and skill name+description lists load every turn even when unused, so trim to the core.
@@ -222,7 +231,7 @@
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xg2z2v-any-tips-to-avoid-using-so-much-20261027T071936Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xg2z2v/any_tips_to_avoid_using_so_much_usage/>).
 
 - [ ] **CTX-312** Running an Opus-low subagent under an Opus-medium parent is "not often worth it" because the cache is lost.
-  Basis: reported, one commenter, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:97 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
 
 ## Prompt Cache
@@ -231,3 +240,14 @@
   Acceptance: The figures hold as one user reports them; the 2.1.251 field is not checked against 2.1.326. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xksgor-things-that-quietly-break-your-p-20261102T140513Z.md:80 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xksgor/things_that_quietly_break_your_prompt_cache_in/>).
+
+- [ ] **CTX-846** On the user's subscription a 1-hour cache write costs about 1.1 times a 5-minute write on the weekly meter (measured 1.09, bounds 0.92 to 1.30), not the API list ratio of 2 / 1.25 = 1.6. A 1h write cost about 0.32% of the weekly limit per 1M tokens on Opus 5.5, and a 5m write about 0.29%. That matches one Max subscriber's report: about 1.1 times, 0.3% per 1M, from 9.2M tokens. The meter does not follow API prices: one 1% step took $24.98 of API-equivalent value at 1h and $17.03 at 5m. A second run (same day) put Sonnet 5.5 at 1.06 (bounds 0.89 to 1.20), about 0.21% of the weekly limit per 1M 5m-write tokens; a Sonnet write costs about 0.69 of an Opus write on the meter against 0.50 at API prices. The same run measured a cache read at 0.033 of an Opus 5m write (bounds 0.028 to 0.036), about 0.0096% per 1M read tokens, against the list ratio of 0.08. A third run measured a Sonnet read at 0.033 of a Sonnet 5m write (bounds 0.031 to 0.035), about 0.0069% per 1M read tokens, so the ratio is the same on both models. Reads therefore weigh less on the meter than list prices imply, but not nothing: 0.033 puts the 2.72B subagent read tokens of the sessions measured in ADR-0110 at about 57% of subagent meter cost and the 68.4M write tokens at 43%. Subscriber cost models in the plan therefore weight a 1h write at 1.1 times a 5m write and a read at 0.033 of a 5m write; API-key cost models keep the list prices of CTX-303 and CTX-511.
+  Acceptance: cost models used for subscriber decisions (REQ-COST-039, REQ-COST-046) weight a 1h write at 1.1 times a 5m write and cite this item; API-key models keep 2 and 1.25. Verification: inspection.
+  Basis: measured (A-B-A probe on the user's subscription, Claude Code 2.1.327, Opus 5.5, 2026-11-18: 11, 12 and 11 requests of 283,817 write tokens per 1% meter step for 1h, 5m and 1h; second run on Sonnet 5.5: 16, 17 and 16, then 333 Opus reads of 283,816 tokens per step after one write; third run: 509 Sonnet reads of 283,779 tokens per step; the meter has two decimals; weekly window only); reported (one user, n=1, 9.2M tokens). Status: n/a (service behaviour).
+  Source: reports/2026-11-18-research/surface-probes/meter-probe.md (three runs; meter-probe-2/log.jsonl, meter-probe-3/log.jsonl); reports/2026-11-18-research/surface-probes/meter-probe/log.jsonl; user instruction to run the probe, 2026-11-18 (session 2cf55002); external/2026-11-18/reddit.com-r-claudecode-comments-1xy6h6k-running-18-claude-code-session-20261117T224849Z.md:47,267 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xy6h6k/running_18_claude_code_sessions_at_once_and_half/>); reports/2026-11-18-research/dossier.md:24.
+
+## External Sweep, 2026-11-18
+
+- [ ] **CTX-863** A 30-60 minute test suite outlasts the prompt cache, so the next turn re-sends the whole conversation at write price (one user saw 600k-token contexts run uncached). The suite runs in the background with failures written to a file that the agent reads when it ends, and its raw output stays out of context; this matches the short-burst subagent design and CTX-477's TTL break-even.
+  Basis: reported (third-party); the cache arithmetic follows CTX-294.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwxkd2-are-my-subagents-running-a-blo-20261116T051347Z.md:29; external/2026-11-16/reddit.com-r-claudecode-comments-1xwxkd2-are-my-subagents-running-a-blo-20261116T051347Z.md:63.

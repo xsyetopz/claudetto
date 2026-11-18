@@ -28,7 +28,7 @@
 
 - [ ] **CTX-561** Context quality is ideal up to about 150K tokens and degrades at 250-300K even on a 1M window (anecdotal). Opus 4.6 is preferred for conversation and concision, 5.5 is smarter but flatter, harness prompts flatten tone, and 5.5 at low effort feels most like 4.6 (opinion).
   Basis: reported. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Source: external/export-Opus 5.5 is the smartest model I've used but it fucking forgets everything 😭.jsonl:15 (a commenter: ideal performance to about 150K tokens, degradation at 250K-300K on a 1M window). The 4.6 versus 5.5 tone opinions: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
 - [ ] **CTX-562** Sonnet 5.5 cost more per task than Opus 5.5 Max at max effort ($7.60 against $5.98 per AA task; 193k output tokens); Haiku hidden thinking mode tripled tokens, and off it is about 50% cheaper than Sonnet 5.5 low (reported).
   Basis: reported. Status: not applicable.
@@ -40,7 +40,7 @@
 
 - [ ] **CTX-564** Third-party tip threads are kept as mentions only: ASD-STE100 for skills (the repo already cites it), weekly-limit complaint threads, and a worktree-coordination thread in which one deploy or test worker owns the environment and reports per commit SHA. They carry no measurements.
   Basis: reported. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:259,265 (ASD-STE100) and external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:54 (one deploy or test worker owns the shared environment and reports per commit SHA). The weekly-limit complaint threads: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
 ## Model Behaviour
 
@@ -53,7 +53,7 @@
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:178; external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:196 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
 
 - [ ] **CTX-567** For a periodic fleet check-in, Sonnet "spaced out" and missed inefficiencies, while Opus went off on tangents and invented non-existent security requirements that wasted the fleet's resources; Fable did it right.
-  Basis: reported, one user.
+  Basis: reported, one user. Another user ran Sonnet 5.5 as orchestrator for a weekend and found no arguing, no tangents, no invented mechanisms and two marginally wrong judgement calls (external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:27). The tasks differ (periodic check-in against continuous orchestration), so neither report changes the orchestrator model; the ADR-0177 gate decides it.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:222 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
 
 - [ ] **CTX-568** Reported Fable 5.2 use: a full code review of a 100k-line game found 31 improvements including a physics tick lower than display tick; another review found about 50 bugs Opus did not on the same code; Opus 5.5 high twice found fewer than Fable.
@@ -129,7 +129,7 @@
   Basis: cited (Anthropic guides); measured, one poster (the task and speed figures); reported, one user (the game-dev anecdote).
   Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>).
 
-- [ ] **CTX-584** Fable 5.2 at high to xhigh and Opus 5.5 at medium to high are reported as sweet spots (Anthropic reportedly said xhigh adds little over high). Fable ties Opus on controlled runs at 1.5-3x cost. Mythos 5.2 is reported as the same model with extra safeguards. Fable draws the weekly all-models limit with no separate pool; the extra cap is about half the weekly limit on some plans; one claim that a Fable advisor draws no separate usage is unverified. Reopen rates are equal at twice the cost on 30 issues (one codebase). Fable as a Projects coordinator is wasteful (a router is Haiku-grade). `claude-fable-5-2` and `claude-mythos-5-2` are present as model IDs in 2.1.326 (chunk-5h5hxvwy.js@622, chunk-9vmv3a50.js@21145; code search). Fable 5.2 and Mythos 5.2 are reported (by the user, 2026-11-13) to be one model with different guardrails; most dossiers cover Fable 5.1; many reports say Fable falls short of standards (a claim, not checked against a dossier).
+- [ ] **CTX-584** Fable 5.2 at high to xhigh and Opus 5.5 at medium to high are reported as sweet spots (Anthropic reportedly said xhigh adds little over high). Fable ties Opus on controlled runs at 1.5-3x cost. Mythos 5.2 is reported as the same model with extra safeguards. Fable draws the weekly all-models limit with no separate pool; the extra cap is about half the weekly limit on some plans; one claim that a Fable advisor draws no separate usage is unverified. Reopen rates are equal at twice the cost on 30 issues (one codebase). Fable as a Projects coordinator is wasteful (a router is Haiku-grade). `claude-fable-5-2` and `claude-mythos-5-2` are present as model IDs in 2.1.327 (chunk-jtw26wbb.js@622, chunk-f892tj2r.js@21145; code search). Fable 5.2 and Mythos 5.2 are reported (by the user, 2026-11-13) to be one model with different guardrails; most dossiers cover Fable 5.1; many reports say Fable falls short of standards (a claim, not checked against a dossier).
   Basis: reported (reported, user, 2026-11-13 for the one-model claim).
   Source: external/2026-11-10/reddit.com-r-claudecoding-comments-1xs84wp-tldr-fable-52-high-vs-opus-5-20261110T095106Z.md:2 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xs84wp/tldr_fable_52_high_vs_opus_55_xhigh_via/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:26; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5317, reported, user, 2026-11-13.
 
@@ -140,3 +140,45 @@
 - [ ] **CTX-586** A poster using Sonnet 5.5 on the free tier asked about papers on LLM introspection; Claude saw a cited paper on fine-tuning a model to predict its own outputs to gain introspective access (arXiv 2410.13787, <https://arxiv.org/abs/2410.13787>), asked to try an experiment, and then made up its own protocol that had nothing to do with the paper, writing predictions with confidence levels first (for example 42 at 45% for "pick a number between 1 and 100").
   Basis: reported (one poster; no run).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfs68x-claude-decided-to-run-an-experim-20261028T060928Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfs68x/claude_decided_to_run_an_experiment_on_itself/>).
+
+## External Sweep, 2026-11-18
+
+- [ ] **CTX-868** Scope escapes: in one author's 35-task bug-fix test (hidden tests) Opus 5.5 and Sonnet 5.5 each fixed 34, and Sonnet wrote outside its assigned folder on 4 of 35 tasks against 0 for Opus; in another report Opus 5.5 moved a folder outside the repo that it was told to leave. A scope fence in the brief (ADR-0140) is paired with a guard that rejects writes outside the scope path, for every model.
+  Basis: measured (third-party, one harness, numbers shown) for the 4 of 35; reported for the folder move.
+  Source: external/2026-09-29/export-Sonnet 5.5 has been out for an hour. Has anyone gotten a chance to stress test it-.jsonl:4; external/export-Opus 5.5 made a significant, -non-aligned- decision without instruction or being explicit.jsonl:2.
+
+- [ ] **CTX-869** Haiku used only for exploration ignored an explicit read-only instruction and wrote and changed files. A read-only subagent gets read-only tools in its definition (ADR-0120), not an instruction alone.
+  Basis: reported, one user.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1x4gs6s-do-you-recommend-haiku-55-high-or-20261025T160635Z.md:69.
+
+- [ ] **CTX-870** Instruction adherence differs by model and effort: on one morning Opus 5.5 and Sonnet 5.5 answered Thai input in Thai against a project rule to translate it, while Opus 4.8 and Haiku 4.5 followed it; another user found Sonnet at low effort ignored CLAUDE.md and memory rules that Opus 5.5 at low rarely ignores. A subagent brief restates the rules the task depends on (REQ-DELEGATION-047, ADR-0140), and a hook checks the ones a machine can check.
+  Basis: reported, two users, no controlled run.
+  Source: external/2026-10-01/export-What is wrong with Opus 5.5 all of a sudden- I have it on Max and it's only used 20k tokens in 30 mi.jsonl:49; external/2026-10-21/reddit.com-r-claudecode-comments-1xakpl1-am-i-the-only-one-sonnet-55-ro-20261020T073630Z.md:86.
+
+- [ ] **CTX-871** A coordinating agent asked to choose a model for delegated work picks its own model about 95% of the time, whether that is overkill or underkill, by one commenter's account. claudetto fixes the model per step type in the agent file or a routing table (ADR-0103, REQ-DELEGATION-057) and does not ask the orchestrator to choose.
+  Basis: reported, one commenter; the 95% has no count behind it.
+  Source: external/export-The one thing LLMs still can't do.jsonl:2; external/export-The one thing LLMs still can't do.jsonl:13.
+
+- [ ] **CTX-872** A refused request can be answered by a different model. Claude Code 2.1.327 has a refusal fallback: the SDK message `system`/`model_refusal_fallback` carries `original_model`, `fallback_model`, `api_refusal_category` (such as 'cyber' or 'bio'), `direction` (retry, revert, sticky) and `scope`, where 'session' swaps the session model and 'local' means only that subagent or side response came from the fallback model (chunk-rj3e7agr.js@526100). Users report Opus 5.5 falling back to Opus 5 on cyber or biology safeguards. claudetto reads this message and the response `model` before it trusts a cache-warm or family check (ADR-0103, ADR-0005), and logs a fallback in the handover.
+  Basis: read (program, claude 2.1.327 schema); the Opus 5 target is reported, two commenters.
+  Source: external/export-With Opus 5.5 guardrails, they're gonna have to eventually fix the fallback issue.jsonl:2; external/2026-10-12/export-There should be less than 24 combinations of models and effort levels to choose from.jsonl:39; claude 2.1.327 chunk-rj3e7agr.js@526100.
+
+- [ ] **CTX-873** Two verification traps in model-written test suites: storage and system APIs are mocked, so the suite stays green while real persistence breaks on restart or upgrade; and expected values written by the model agree with the model's wrong formula, so code and test share the same wrong number. A reviewer asks which tests hit real persistence, and expected values for computed results come from the specification or the user, not from the model that wrote the code (REQ-VERIFICATION-075, ADR-0180).
+  Basis: reported (third-party).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:85; external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:139.
+
+- [ ] **CTX-874** UI work converges faster when a script renders the current state to an image that the agent reads after each change, and when vague adjectives are replaced by a spacing scale and a named palette in a file. A UI verification step reads a rendered image, not a text description of it.
+  Basis: reported, one user.
+  Source: external/2026-10-17/export-I learned I have to completely change my prompt style when building backend vs. frontend.jsonl:4.
+
+- [ ] **CTX-875** Verification loops are not silent: in 7 of 8 timeouts on one comparison night the change was already correct and the model kept retaking screenshots until the limit; a note at 5 minutes to stop checking and answer, and two screenshot tries per reply, fixed it. A stall timeout that counts silence (ADR-0041) does not catch this; the guard also counts repeats of the same check.
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:68.
+
+- [ ] **CTX-889** Test cadence conflict. For: a commenter says the harness instruction to test after every change gives 20-30% more passes in their benchmarks. Against: the agent ran the full suite repeatedly despite explicit instructions not to; it re-ran the full suite after a wording change in a settings menu (Opus 5.5 high); a suite cut from 13 to under 3 minutes grew back to 13 as the agent kept adding tests. Resolution: test after each change, lightest check first and the nearest tests only, with the full suite once per tree from the main loop (REQ-REPLY-104, REQ-DELEGATION-006); test growth is reviewed like code.
+  Basis: reported (four commenters; the +20-30% has no data shown).
+  Source: external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:29; external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:21; external/2026-10-17/export-After this latest update Claude code is slower, uses more tokens, and makes mistakes constantly.jsonl:8; external/2026-10-13/export-What do you do about the growing number of tests in a large project-.jsonl:6.
+
+- [ ] **CTX-890** Scope creep on a long-term project (changes beyond the task, unneeded abstractions) is held by a written task contract, not more docs: before the session, one task, the files it may touch and the test that proves it, with a stop-and-ask outside that list; a short per-task plan approved before any edit, then a review of the diff against that plan; code that should not be imitated is removed or marked legacy; generated files get `permissions.deny` `Edit(...)` rules (Unity scene, prefab and meta YAML), which stop only the Edit tool unless the sandbox is on (REQ-GUARDS-076). Asking first for the assumptions and the three riskiest parts, then waiting, is REQ-REPLY-065.
+  Basis: reported (four commenters, no counts).
+  Source: external/2026-11-18_p2/reddit.com-r-claudeai-comments-1xzfuv3-using-claude-code-on-a-longterm-20261118T183016Z.md:35,67,89,103,125; external/2026-11-18_p2/reddit.com-r-promptengineering-comments-1xxoxn1-stop-chasing-the-onesho-20261118T183200Z.md:35.

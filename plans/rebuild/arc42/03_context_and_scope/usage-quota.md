@@ -45,8 +45,8 @@
   Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:106; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:120.
 
 - [ ] **CTX-772** Multi-account reports: one user measured a 20x account at about 2-8% more weekly usage than two 5x accounts, with 4x the 5 h limit against 2x; another measured weekly about 28% per full 5 h session on 20x against 13-14% on 5x (weekly about 2x, 5 h 4x); an older measure gave 1.7x per seat; a dynamic adjustment by server load is suspected (inferred). Two 5x accounts hedge a runaway agent blocking a week; terms-of-service risk is disputed.
-  Basis: reported. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Basis: reported; the per-window weekly shares here are single readings inside the 12-48% range of CTX-855. Status: not applicable.
+  Source: external/2026-10-11/export-1x $200 account vs 2x $100 accounts.jsonl:5; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:80 (1.7x); external/2026-10-17/export-First session of the week of Max 20x- Weekly limit = 2 x session-.jsonl:30; external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:8.
 
 - [ ] **CTX-773** Headless billing (one poster, Pro, a single task, six runs): interactive entrypoints cost about 1.6-1.8% of the 5 h limit per API-equivalent dollar and headless (`sdk-py`, `claude -p`) about 5.2%, with 97-98% cache reads, so cache does not explain it; the transcript `entrypoint` field tells the mode. The poster's rule is bulk refactors interactive, headless for small scoped runs, and `/usage` compared before and after.
   Basis: reported. Status: not applicable.
@@ -54,7 +54,7 @@
 
 - [ ] **CTX-774** Orchestration through tmux windows plus a send-message tool, instead of subagents, is in use (reported). A worktree per parallel session works, and with 3-4 sessions the coordination cost exceeds the token cost (reported). A monthly API credit grant on Max and Team is reported (eligible 7 days after subscribing; the `claude -p` credit move is rumour), to be settled against the docs through clawdipedia-docs first.
   Basis: reported. Status: not applicable.
-  Source: unresolved: no source line located for this claim.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:43 (script-fed tmux session cost) and external/2026-10-11/export-This is incredible value for Max plans.jsonl:2 (monthly credits on Max and Team). The tmux send-message orchestration and worktree coordination-cost claims: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
 ## Usage Meter, Quota, And Plans
 
@@ -65,7 +65,7 @@
 
 ## Usage Meter, Quota, And Plans
 
-- [ ] **CTX-776** Several users reported Opus 5.5 usage dropping after launch and the same prompts consuming more on some days; one user reported bonus usage moving from +50% to a permanent +25%; quality complaints for Opus 5.5 (ignoring global instructions, bare minimum) came with no repro; "How is Claude doing today?" appeared 4-5 times a day (pressing good or bad shares the session with Anthropic); a commenter says Claude Code injects the user's email into the system prompt and commit authorship (issue number unchecked); remote control adds a conversation link to commit messages.
+- [ ] **CTX-776** Several users reported Opus 5.5 usage dropping after launch and the same prompts consuming more on some days; one user reported bonus usage moving from +50% to a permanent +25%; quality complaints for Opus 5.5 (ignoring global instructions, bare minimum) came with no repro; "How is Claude doing today?" appeared 4-5 times a day (pressing good or bad shares the session with Anthropic); a commenter says Claude Code injects the user's email into the system prompt and commit authorship (no issue number given in the post); remote control adds a conversation link to commit messages.
   Acceptance: each post states its claim. Verification: inspection.
   Basis: reported. Status: have at 088a227c.
   Source: external/2026-10-03/export-Mmmkay. I didn't believe others at first, but something is suddenly off with Opus 5.5.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wurd3e/mmmkay_i_didnt_believe_others_at_first_but/>); external/2026-10-04/export-Opus 5.5 - seems like it has begun.jsonl:9 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wu17jz/opus_55_seems_like_it_has_begun/>). Not located: the email, bonus-usage, and "How is Claude doing" lines.
@@ -73,7 +73,7 @@
 ## Usage Meter, Quota, And Plans
 
 - [ ] **CTX-777** One user on high effort reports 20% of weekly usage in one session where a week before they ran 4 to 5 sessions at max, so token use changed by about 90% in days; another says medium burned 20% of a Max 5 on two identical prompts.
-  Basis: reported, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:466 (url: <https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/>).
 
 - [ ] **CTX-778** Since about 9 Oct the 5-hour window looks about 15% bigger while the weekly limit barely moved, so a user who maxes every window hits the weekly cap after about 9% fewer windows; seen on all four accounts, provisional.
@@ -81,11 +81,11 @@
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:73 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
 
 - [ ] **CTX-779** Max 5x raises the 5h window 5x but the weekly cap only about 2-3x; about 15% of weekly equals one 5h window; a 5x user burned the weekly cap in about 3 days.
-  Basis: reported; the 2-3x figure is a poster impression, unconfirmed.
+  Basis: reported; the 2-3x figure is a poster impression and is contradicted by logged meters in CTX-855, which put 5x weekly at about 4.8x Pro. The weekly-to-window ratio is not a constant (CTX-855), so no plan code carries a fixed ratio.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:105 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
 
 - [ ] **CTX-780** One Pro user on Opus 5.5 High reports hitting the weekly limit with 4 days left after a month of intensive use; another on Opus 5.5 "extra" reports only 10% of the weekly limit after a full day. Plan tiers differ.
-  Basis: reported, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-aigamedev-comments-1xfcokl-advice-for-those-developing-gam-20261026T063549Z.md:401 (url: <https://www.reddit.com/r/aigamedev/comments/1xfcokl/advice_for_those_developing_games_with_ai_so_they/>).
 
 - [ ] **CTX-781** A heavy user reports the same usage on the API would have cost 17,500 USD a month against a 200 USD Max 20x plan; a 20x plan lasts about 15-20 h/week on Fable only, 30-50 h on Opus only, and an estimated 100-120 h on Sonnet only.
@@ -97,11 +97,11 @@
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:112 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
 
 - [ ] **CTX-783** One commenter reports Opus 4.6 costs more of the weekly usage than Opus 5.5.
-  Basis: reported, one user, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-25/reddit.com-r-claudeopus-comments-1xbxewx-after-being-on-opus-55-for-so-20261024T141009Z.md:179 (url: <https://www.reddit.com/r/Claudeopus/comments/1xbxewx/after_being_on_opus_55_for_so_long_i_forgot_how/>).
 
 - [ ] **CTX-784** A commenter says Opus max thinking uses 5.5 times the usage of normal thinking, and that Haiku can execute Opus plans; another replies Haiku is too stochastic even as a judge.
-  Basis: reported, one user each, unmeasured.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:216 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
 
 - [ ] **CTX-785** Long-lived interactive sessions in tmux that a script feeds messages cost about 1.07x the 5-hour meter of typing by hand, against 1.5x for `claude -p`; fresh `-p` alone is still 1.5x, so resume is not the cause. The interactive sample is about 8% of the author's work, so a strong hint only. The measure is on Max 20x.
@@ -145,7 +145,7 @@
   Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:29; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:284 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
 
 - [ ] **CTX-794** Launch offer: Fable may use up to half the weekly limit until the 16th, so a large jump on the 5 h bar is expected; three users reported 0 to 60% and 0 to 80% of the 5 h bar in one prompt on Fable 5.2.
-  Basis: reported, 1 comment plus 3 users.
+  Basis: reported, 1 comment plus 3 users. Two commenters say Fable counts only against the weekly limit and is absent from the $20 plan (external/2026-10-02/export-What are people testing that they are not only burning a week usage in a day, but also hitting the 5.jsonl:11; external/2026-10-07/export-20$ Claude Code subscription- How do you genuinely exhaust your weekly usage-.jsonl:8); the 5 h jumps here and the Pro-plan run of CTX-791 contradict both, so this item and CTX-791 stand.
   Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:385; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:304 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 - [ ] **CTX-795** Fable 5.2 Medium prose reads like Opus 5.5 (concise), but "load bearing" came back within two prompts; Fable 5.2 free resets apply to the Fable-specific weekly limit only (accounts differ, one to six resets; one user said it freed 12% of the weekly while Fable still consumed it).
@@ -171,17 +171,17 @@
 ## Usage Meter, Quota, And Plans
 
 - [ ] **CTX-800** One 20x user's rough hours per weekly limit are Fable 5.1 15-20 h, Opus 5.5 30-40 h, Sonnet 5.5 60-80 h; a migration document grown over 18 months took 30%+ of tokens before work began.
-  Acceptance: The fact is unverified in 2.1.326; hours vary by user, so this is a rough bound. Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported by one 20x user, not measured; hours vary by user, and quota use needs a paid account session, which the fake API does not produce.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:556 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
 - [ ] **CTX-801** One no-code Sonnet prompt in a new chat ate 12% of a weekly limit; another user's 5x weekly limit was estimated at 55M tokens and hit in 2 days.
-  Acceptance: The fact is unverified in 2.1.326; Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported by two users, not measured; quota use needs a paid account session, which the fake API does not produce.
   Basis: reported, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:465; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:779 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
 
 - [ ] **CTX-802** A done signal that arrives late can mean the session stalled at the shared account usage limit, not that a hook broke: every session on one account draws from the same pool, and the 5-hour bucket can stall many concurrent sessions.
-  Acceptance: The fact is unverified in 2.1.326; budget concurrent sessions per 5-hour bucket and check the usage window before the hook. Verification: probe.
+  Acceptance: Resolved 2026-11-18 as reported, not measured; budget concurrent sessions per 5-hour bucket and check the usage window before the hook. Verification: probe.
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:89 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/>).
 
@@ -201,3 +201,13 @@
   Acceptance: The facts hold as commenters report them; one cites the docs, which were not opened here. Verification: probe.
   Basis: reported, commenters; cited (docs, secondhand). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:57; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:59; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:61; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:104 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>).
+
+## External Sweep, 2026-11-18
+
+- [ ] **CTX-855** The share of the weekly limit that one full 5-hour window uses is not a constant. Logged meters put the Max 20x weekly limit at about 9.5x Pro (8.4-9.9x across sessions) and Max 5x at about 4.8x Pro; a second commenter puts 20x weekly at about 10x Pro and another at about 7x. Single readings of one full window on 20x range from about 12% to 48% of the week and change from week to week on the same account (one account: 3% of the window per 1% weekly, 4% the day before). claudetto pacing (REQ-COST-038) reads `/usage` and the `rate_limits` status-line fields for the account at hand and carries no fixed window-to-week ratio.
+  Basis: measured (third-party, numbers shown) for the 9.5x and 4.8x figures; reported for the single readings. CTX-779's 2-3x figure is contradicted.
+  Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbholz-measured-my-usage-on-pro-max-5x-20261021T101825Z.md:37; external/export-Question about 5 hour limits.jsonl:10; external/2026-10-12_p2/export-16 hours until my renewal- can the 20x plan handle 3 parallel projects-.jsonl:12; external/2026-10-02/export-What are people testing that they are not only burning a week usage in a day, but also hitting the 5.jsonl:9; external/2026-10-07/export-20$ Claude Code subscription- How do you genuinely exhaust your weekly usage-.jsonl:7; external/2026-10-07/export-Unexplained High Consumption with Opus Since Last Reset.jsonl:11; external/2026-10-12_p2/export-Weekly limit went to 35% in one night without ever hitting the 5-hour limit. I pulled the token coun.jsonl:7; external/2026-09-29_p2/export-Max 20 Limits are ridiculous-.jsonl:2.
+
+- [ ] **CTX-856** Haiku quota reports differ by task shape. A system-wide rename on Haiku used 8% of a $20 plan, which the commenter calls not much less than Sonnet, though fast. Fifty parallel Haiku agents that extracted data from about 500 PDFs moved the 5-hour bar about 1% and the weekly bar not at all. On a hard bug Haiku passed 62 of 66 hidden tests like Sonnet but took about 6 minutes against about 1. Wide mechanical extraction is the cheap Haiku case (REQ-DELEGATION-057); a reasoning-heavy task costs wall time even when it passes, so a routing acceptance names wall time next to quota.
+  Basis: reported, one commenter each, no method shown.
+  Source: external/export-Those of you actually using Haiku regularly- what am I missing-.jsonl:68; external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:169; external/2026-10-12/export-I tried to write a bug Claude couldn't fix. Took 3 made-up bugs and a real GitHub repo before Haiku.jsonl:7.
