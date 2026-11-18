@@ -3,10 +3,13 @@ import { describe, expect, test } from "claude-code/testing";
 
 const USAGE = { input_tokens: 1, output_tokens: 2, cache_read_input_tokens: 3, cache_creation_input_tokens: 4 };
 
-function world(on: On, env: Record<string, string> = {}, fork: ModelForkResult = { isAnswered: true, text: "HANDOVER", usage: USAGE }) {
+function world(on: On, env: Record<string, string> = {}, fork: ModelForkResult | Error = { isAnswered: true, text: "HANDOVER", usage: USAGE }) {
 	const seen: unknown[] = [];
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
-	on("model.fork", () => ({ value: fork }));
+	on("model.fork", () => {
+		if (fork instanceof Error) throw fork;
+		return { value: fork };
+	});
 	on("session.messages", () => ({ value: [{ role: "user", text: "fix the parser", toolUses: [] }] }));
 	on("session.usage", () => ({ value: { startedAt: 0, context: { tokens: 90000, window: 200000 }, rateLimits: [] } }));
 	on("process.run", (_$, e) => ({ value: { exitCode: 0, stdout: e.argv[1] === "rev-parse" ? "abc1234\n" : "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
@@ -40,6 +43,23 @@ describe("session.compact", () => {
 	test("a failed fork falls back to the transcript extract", async ($, on) => {
 		world(on, {}, { isAnswered: false, reason: "nothing-to-fork" });
 		const r = await $.session.compact({ trigger: "plugin", messages: [] });
+		expect(r.messages?.[0]?.text).toContain("- fix the parser");
+	});
+	test("a throwing fork leaves one debug line and still hands over", async ($, on) => {
+		// Arrange
+		world(on, {}, new Error("overloaded"));
+		const lines: string[] = [];
+		on("ui.log", (_$, e) => {
+			lines.push(`${e.to}: ${e.text}`);
+			return { value: undefined };
+		});
+
+		// Act
+		const r = await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(lines.length).toBe(1);
+		expect(lines[0]).toStartWith("debug: claudetto handover fork failed:");
 		expect(r.messages?.[0]?.text).toContain("- fix the parser");
 	});
 	test("manual compaction keeps core and appends the keep line", async ($, on) => {

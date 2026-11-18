@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+import { fault } from "../fault";
 
 /**
  * Raises a native notification when a turn stops on an API error. Vanilla
@@ -13,5 +14,5 @@ export function registerStopNotice(on: On): void {
 		const detail = e.error_details ? `: ${e.error_details}` : "";
 		await $.ui.notify(`The turn stopped on an API error (${e.error})${detail}. Reply to retry.`, { title: "claudetto" });
 		return result;
-	}).catch((_$, e, next) => next(e)); // A failed notification must not change the stop.
+	}).catch(($, e, next) => (fault($, "stop notice", next.error), next(e))); // A failed notification must not change the stop.
 }

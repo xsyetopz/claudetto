@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 import { resetRenewal } from "./renewal";
 import { isOff, PENDING, writeHandover } from "./writer";
+import { fault } from "../fault";
 
 const BLOCK = "claudetto:handover";
 
@@ -15,7 +16,7 @@ export function registerClear(on: On): void {
 		const { text } = await writeHandover($);
 		await $.store.set(PENDING, text);
 		return next(e);
-	}).catch((_$, e, next) => next(e));
+	}).catch(($, e, next) => (fault($, "clear", next.error), next(e)));
 	on("session.end", async (_$, e, next) => {
 		if (e.reason === "clear") resetRenewal();
 		return next(e);

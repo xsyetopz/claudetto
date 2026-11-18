@@ -21,6 +21,7 @@ export const parseSettings = (text: string): Json | undefined => {
 		const value: unknown = JSON.parse(text);
 		return isRecord(value) ? value : undefined;
 	} catch {
+		// Callers log the undefined result, so the parse error is not dropped.
 		return undefined;
 	}
 };

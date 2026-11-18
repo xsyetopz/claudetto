@@ -1,5 +1,6 @@
 import type { EngineInterface, ModelUsage } from "claude-code";
 import { compose, extract, FORK_PROMPT } from "./text";
+import { fault } from "../fault";
 
 /** A written handover and, when a fork wrote it, what the fork cost. */
 export type Handover = { text: string; usage?: ModelUsage };
@@ -26,7 +27,8 @@ async function git($: EngineInterface, argv: string[]): Promise<string> {
 	try {
 		const r = await $.process.run(["git", ...argv]);
 		return r.exitCode === 0 ? r.stdout.trim() : "";
-	} catch {
+	} catch (err) {
+		fault($, "git", err);
 		return "";
 	}
 }
@@ -44,8 +46,9 @@ export async function writeHandover($: EngineInterface): Promise<Handover> {
 			body = r.text;
 			usage = r.usage;
 		}
-	} catch {
+	} catch (err) {
 		// An API error takes the fallback like nothing-to-fork does.
+		fault($, "handover fork", err);
 	}
 	if (body === "") body = extract(await $.session.messages());
 	const head = await git($, ["rev-parse", "--short", "HEAD"]);

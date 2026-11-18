@@ -16,6 +16,7 @@
   Owner: kernel.
   Status: open.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
+  Status: partial at the next commit: every claudetto catch site writes the error to the debug log through hooks/fault.ts (compact.test.ts pins it; a mutant without the log fails). The 22 catch sites of claudetto-you-should-know remain.
 
 ## Verification And Honesty
 

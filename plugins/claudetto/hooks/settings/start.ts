@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+import { fault } from "../fault";
 
 import { repairSettings } from "../builtins/builtins";
 import { FILL_VERSION, fillSettings } from "./defaults";
@@ -35,5 +36,5 @@ export function registerStart(on: On): void {
 		}
 		if (added.length > 0) $.ui.log(`claudetto set ${added.length} unset default(s) in ${path}: ${added.join(", ")}.`);
 		return result;
-	}).catch((_$, e, next) => next(e)); // A failed settings write must not block the session.
+	}).catch(($, e, next) => (fault($, "settings fill", next.error), next(e))); // A failed settings write must not block the session.
 }

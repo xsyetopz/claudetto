@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 import { KEEP_LINE } from "./text";
 import { isAutoOff, isOff, writeHandover } from "./writer";
+import { fault } from "../fault";
 
 const AUTOMATIC = new Set(["auto", "precompute", "plugin"]);
 
@@ -29,5 +30,5 @@ export function registerCompact(on: On): void {
 			tokensAfter: Math.ceil(text.length / 4),
 			usage: usage ?? zero,
 		};
-	}).catch((_$, e, next) => next(e)); // A failed handover leaves the compaction to core.
+	}).catch(($, e, next) => (fault($, "handover", next.error), next(e))); // A failed handover leaves the compaction to core.
 }
