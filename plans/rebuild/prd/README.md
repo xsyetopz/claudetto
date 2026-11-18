@@ -4107,6 +4107,117 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:186.
 
+- [ ] **OUT-915** claudetto shall not carry CTX-314 (from `claude-code-surface.md`) as a checked context fact: Subagents do not respect the user's auto-compact threshold setting.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:203 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>)
+
+- [ ] **OUT-916** claudetto shall not carry CTX-316 (from `claude-code-surface.md`) as a checked context fact: Measured hook effect over 34,053 hook events (Nov 1-12, one poster): when a hook let the action through with a warning, the agent corrected on its next try 36% of the time; when it rejected the action and named the replacement command, 95%.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured by one outside poster over their own hook events; cannot be rerun on 2.1.327 and no shipped part in plugins/ depends on the percentages.
+  Basis: measured by the poster. In a small test a rejection stopped 3 of 3 but the agent took the suggested command 1 of 3; a rejection whose suggested path another rule blocked made the agent invent a path; a context note injected before a command did not stop it (3 of 3 ran).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:75,77,79 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>)
+
+- [ ] **OUT-917** claudetto shall not carry CTX-317 (from `claude-code-surface.md`) as a checked context fact: Auto memory's "feedback" note type is corrections plus approaches the user confirmed, so telling Claude "it works" is a signal it saves; the first 200 lines of the MEMORY.md index load each session.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported by a commenter; a search of the 2.1.327 bundle found no "first 200 lines" text, so it cannot be confirmed by a cheap probe.
+  Basis: reported (reported by a commenter citing docs, not measured; a constant 200 sits next to `MEMORY.md` handling at chunk-m14bt1pz.js@1644617, but its use as the index line limit was not read).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:93,97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/>)
+
+- [ ] **OUT-918** claudetto shall not carry CTX-318 (from `claude-code-surface.md`) as a checked context fact: Account-level experiments can change the model behind one model string.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter: account in "experiment 763" from Nov 1 to 6, during which claude-opus-5-5 knew news from late May 2026 that it does not know outside the experiment; same-week reports of extra unrequested additions, ignored CLAUDE.md and uppercase Go error strings from Fable 5.2.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvfbtd-opus-55-not-working-well-today-20261116T051607Z.md:57,59,95 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvfbtd/opus_55_not_working_well_today/>)
+
+- [ ] **OUT-919** claudetto shall not carry CTX-319 (from `claude-code-surface.md`) as a checked context fact: Long-session evidence from one poster's five longest sessions (29 to 54 h): three never compacted and peaked at 425k-490k; one auto compaction fired at 323k (Opus 5.5, CLI 2.1.322) while a same-model 54 h session on 2.1.321/2.1.322 reached 480k without one; the 36.5 h session's three drops (621k, 469k, 539k down to 32k-43k) were manual /compact.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured by one outside poster on 2.1.321 and 2.1.322 sessions; cannot be rerun on 2.1.327.
+  Basis: measured by the poster.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:57,65,67,71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>)
+
+- [ ] **OUT-920** claudetto shall not carry CTX-320 (from `claude-code-surface.md`) as a checked context fact: A CLAUDE.md prose pointer "look at AGENTS.md" is compacted with the conversation, while an `@AGENTS.md` import is re-read verbatim and not diluted.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, inferred, one commenter; compaction named factor 1 of instruction drift.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:96,97 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>)
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-921** claudetto shall not carry CTX-324 (from `claude-code-surface.md`) as a checked context fact: /usage flags sessions with requests in 8 or more hours, which matches the long-session violation.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: The "requests in 8 or more hours" text is not in the 2.1.327 bundle and the /usage flag needs a live account to see; no shipped part in plugins/ depends on it.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:42.
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-922** claudetto shall not carry CTX-337 (from `claude-code-surface.md`) as a checked context fact: With remote control enabled Claude Code puts a link to the conversation in the commit message, and commenters add that author emails always get committed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported by commenters; the 2.1.327 bundle has a Co-Authored-By text but no claude.ai session link text, so the remote-control claim cannot be confirmed cheaply.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-923** claudetto shall not carry CTX-338 (from `claude-code-surface.md`) as a checked context fact: A poster's subagent limits are 60 tool calls, a 100K-token soft handoff and a 150K hard limit; another poster's hook caps 20 agents per session.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:134; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:138.
+
+- [ ] **OUT-924** claudetto shall not carry CTX-340 (from `claude-code-surface.md`) as a checked context fact: Hook denial counts in the audited sessions: "Use Read, not the shell" 60 (claudetto), 184 (OpenSAD subagents), 88 (OpenJoystickDriver); "Use Write, not the shell" 34 and 199; "Worktree not created by this session" 48 and 13; "User remarked or asked; requested no work" 28, 21, 64 and 12; pkill or loop limit 16+16; the 15-minute agent limit 20 in OpenSAD subagents; pipe without pipefail 13 in subagents.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs of three projects; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted from session logs).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:59-66.
+
+- [ ] **OUT-925** claudetto shall not carry CTX-341 (from `claude-code-surface.md`) as a checked context fact: About 207 turns were lost to retries after denials in claudetto sessions (inferred), and the HooksError "was not resolved" from `$.fs.stat` on non-path Bash operands showed 224 lines from `useSetup/rules.ts:93` in OpenJoystickDriver and 1,818 in the audited session itself.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted; the 207 turns inferred).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:72-73.
+
+- [ ] **OUT-926** claudetto shall not carry CTX-342 (from `claude-code-surface.md`) as a checked context fact: The biggest sessions by cache read: claudetto 5709ef73 with 1,199 turns and 101.8M, clawdipedia 76585f31 with 1,508 turns and 133.6M, OpenJoystickDriver with about 1,400 turns and 114-124M; `design.md` was read 34 and 58 times in two claudetto sessions; persisted-output shows 0-3 hits per session, so it is not a driver.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:79-90.
+
+- [ ] **OUT-927** claudetto shall not carry CTX-343 (from `claude-code-surface.md`) as a checked context fact: Compaction sizes: claudetto 120 compactions, all auto, at 140-145k before and 18-22k after; OpenSAD 67 at 140-150k before, 8-26k after and 15-44k re-cache; one OpenSAD session compacted 15 times in 3 hours.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:108-113.
+
+- [ ] **OUT-928** claudetto shall not carry CTX-344 (from `claude-code-surface.md`) as a checked context fact: Four outside sources that call built-in compaction expensive were read on 2026-10-28 and none changed a value: the only one with a real sample fits its band on a window near 1M against the 300,000 this project sets, and the most-quoted figure (about $3.00 per compaction) appears in no source read.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside sources read on 2026-10-28 about compaction cost; not checkable on 2.1.327 and no shipped part in plugins/ depends on them.
+  Basis: reported (spec).
+  Source: openspec/specs/compaction-path/spec.md:68.
+
+- [ ] **OUT-929** claudetto shall not carry CTX-345 (from `claude-code-surface.md`) as a checked context fact: Measured on 2.1.319 with `claude-sonnet-5-5` and 32 held-out prompts per arm: the output-style checkbox line 21/32 (Wilson 0.483-0.796), the strict form 2/32 (0.017-0.201), the heading 20/32; base 0/32 on all three; total $2.21 and 1,316,831 tokens. The Write tool was denied by `--permission-mode default`, which inflates the checkbox count; only 7/32 plugin replies had a `!` command in a checkbox item; no rerun with write permission.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid sonnet-5-5 run on 2.1.319 (2.21 USD); cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-8/README.md:20-36.
+
+- [ ] **OUT-930** claudetto shall not carry CTX-346 (from `claude-code-surface.md`) as a checked context fact: Run 1 of the 18-23 test (Read text in context): turns 3.97 against base 3.00, output 692.2 against 355.8 (1.95x), 0.43 Stop blocks per session. Run 2 (text in stdout, 60 sessions, $2.61): turns 3.43 against 3.13 (1.096), job-op calls 4.20 against 4.47 (0.94), output 551.8 against 378.3 (1.46x, which misses the 1.25x bound), fixes 30/30 in both arms, 0 denials. The Stop block "names something the user has not seen" fired in 10 of 30 plugin sessions; those averaged 918.9 output tokens and 4.30 turns and the other 20 averaged 368.3 and 3.00. The cause (the grader reads the first `RESULT_CHARS` of each tool result) is not tested; it is moot for the rebuild, because ADR-0104 drops the Stop claim grader.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid runs on 2.1.319 with the dropped grader; cannot be rechecked without a paid model run.
+  Basis: measured (the cause is untested and concerns the dropped grader, ADR-0104).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-23/README.md:15-38.
+
+- [ ] **OUT-931** claudetto shall not carry CTX-347 (from `claude-code-surface.md`) as a checked context fact: `ours.sh` lists only the folder whose `.created-by-claudetto` holds this session's id; the mutant without the id check also lists other folders. `/tmp` is a link to `/private/tmp`, so `find` needs `-H` to list the seven `/tmp/probe-*` folders.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: ours.sh is not in plugins/ (a search finds no ours.sh or .created-by-claudetto there); /tmp is a link to /private/tmp on this machine (probe 2026-11-19) but the script is not a shipped part.
+  Basis: measured (2026-11-07).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-11/README.md:5-15.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
