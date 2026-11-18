@@ -4,6 +4,7 @@ import type { On } from "claude-code";
 
 import type { Ctx } from "./context";
 import { forgetDetached, isOpenView, rowOf, withViewCleared } from "./session-rows";
+import { fault, swallow } from "./fault";
 
 export function registerSession(on: On, ctx: Ctx): void {
 	on("session.detach", async ($, e, next) => {
@@ -20,8 +21,9 @@ export function registerSession(on: On, ctx: Ctx): void {
 			if (isOpenView(view) || view?.kind === "off") {
 				await $.store.set("sessions", withViewCleared(rows, e.sessionId));
 			}
-		} catch {
+		} catch (err) {
 			// the row is cleared at the next prompt
+			fault($, "session end", err);
 		}
 		return next(e);
 	});

@@ -4,6 +4,7 @@ import type { EngineInterface } from "claude-code";
 
 import { SEEN_MAX } from "./constants";
 import { withKnown } from "./parse";
+import { fault, swallow } from "./fault";
 
 export const stringLines = (value: unknown): string[] =>
 	Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
@@ -21,7 +22,8 @@ export async function markKnown($: EngineInterface, line: string): Promise<void>
 export async function aboutShown($: EngineInterface, id: string): Promise<string | undefined> {
 	try {
 		return (await $.state.get({ plugin: "claudetto-you-should-know", key: "aboutOpen", id })).value;
-	} catch {
+	} catch (err) {
+		fault($, "about read", err);
 		return undefined;
 	}
 }
@@ -35,7 +37,8 @@ export async function toggleAbout(
 		const ref = { plugin: "claudetto-you-should-know", key: "aboutOpen", id: args.sid } as const;
 		const read = await $.state.get(ref);
 		await $.state.set(ref, read.value === args.key ? "" : args.key, { ifVersion: read.version });
-	} catch {
+	} catch (err) {
+		fault($, "about toggle", err);
 		// a lost race or a refused write leaves the card as it was
 	}
 }

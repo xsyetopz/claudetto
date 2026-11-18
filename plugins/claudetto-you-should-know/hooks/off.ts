@@ -4,6 +4,7 @@ import type { EngineInterface } from "claude-code";
 
 import { EARLIER_NAMES, OFF_COMMAND, PLUGIN_NAME } from "./constants";
 import { rowOf, withRow } from "./session-rows";
+import { fault, swallow } from "./fault";
 
 export type OffState = {
 	readonly clearing: Map<string, Promise<void>>;
@@ -65,8 +66,9 @@ export async function clearOffLine(
 		} finally {
 			state.clearing.delete(sid);
 		}
-	} catch {
+	} catch (err) {
 		// the line stays until the next prompt
+		fault($, "off clear", err);
 	}
 }
 
@@ -77,7 +79,8 @@ export async function ranOffCommand($: EngineInterface, state: OffState): Promis
 		if (!state.confirmed.has(sid)) {
 			state.confirmed.add(sid);
 		}
-	} catch {
+	} catch (err) {
 		// nothing more to record
+		fault($, "off command", err);
 	}
 }
