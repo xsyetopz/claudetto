@@ -43,7 +43,7 @@ Same decision, other record: Claude Code settings written by setup. The shellfir
 
 Good: no gate code or false denials. Bad: no setting takes over the recreate gate, in-place and read-redirect denials, or the pid-ownership kill list; the advice stays in the Bash tool text.
 
-- The reproduced shapes above lose their mod check; the gap against the old gate is unmeasured.
+- The reproduced shapes above lose their mod check; the gap against the old gate has no baseline to compare (the gate code is in the 088a227c tree, but no run of it against these shapes is recorded). The revisit check is a run of the reproduced shapes against the permission rules.
 - Partial remains at 088a227c: `hooks/kernel/shell`, `features/temp-cleanup`, `features/protected`.
 - Good: the sandbox, `permissions` and `autoMode` are Claude Code's own gates.
 - Bad: plain forms miss `sh -c`, `git -C`, substitution, `export -p` and a redirect into `/etc`.

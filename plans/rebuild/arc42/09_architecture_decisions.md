@@ -73,7 +73,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0067](../adr/0067-goal-user-is-watching.md) | The User Is Watching; the Goal Is Rewritten Without Sleep Conditions | accepted | 2026-11-16 |
 | [ADR-0068](../adr/0068-handover-clear-hook.md) | Handover Through a command.run Clear Hook | accepted | 2026-11-16 |
 | [ADR-0069](../adr/0069-handover-knobs-mirror-compaction.md) | Handover Knobs Mirror Claude Code's Compaction Knobs | accepted | 2026-11-16 |
-| [ADR-0070](../adr/0070-handover-trigger-idle-or-size.md) | Hand Over On An Idle Gap Or Context Size, Never On Age | accepted | 2026-11-16 |
+| [ADR-0070](../adr/0070-handover-trigger-idle-or-size.md) | Hand Over On An Idle Gap Or Context Size, Never On Age | superseded by ADR-0178 | 2026-11-16 |
 | [ADR-0071](../adr/0071-handover-writer-fork-low-effort.md) | Write The Handover With A Low-Effort Fork | accepted | 2026-11-14 |
 | [ADR-0072](../adr/0072-holdout-script-picks-blind.md) | A Script Picks The Holdout Tasks Blind | superseded by ADR-0087 | 2026-11-16 |
 | [ADR-0073](../adr/0073-keep-ideas-not-files.md) | Keep Ideas, Not Files, From The Old Build | accepted | 2026-11-16 |
@@ -83,7 +83,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0077](../adr/0077-no-verbatim-user-quotes.md) | No Verbatim User Quotes | accepted | 2026-11-16 |
 | [ADR-0078](../adr/0078-one-file-per-concern.md) | One File Per Concern | accepted | 2026-11-16 |
 | [ADR-0079](../adr/0079-one-hook-kind-per-purpose.md) | Use Each Hook Kind For Its Purpose, Found By Probe | accepted | 2026-11-16 |
-| [ADR-0080](../adr/0080-one-prompt-type-stop-hook.md) | One Prompt-Type Stop Hook | accepted | 2026-11-16 |
+| [ADR-0080](../adr/0080-one-prompt-type-stop-hook.md) | One Prompt-Type Stop Hook | superseded by ADR-0104 | 2026-11-16 |
 | [ADR-0081](../adr/0081-overnight-decide-and-continue.md) | Nobody Answers Overnight, So Decide and Continue | superseded by ADR-0067 | 2026-11-16 |
 | [ADR-0082](../adr/0082-per-model-system-prompt.md) | One System Prompt per Model | accepted | 2026-11-16 |
 | [ADR-0083](../adr/0083-plan-gaps-all-after-check.md) | Take All Audit Gap Lines After A Check | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
@@ -165,7 +165,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0159](../adr/0159-sandbox-block-through-setup.md) | Sandbox Block Final Choices | accepted | recorded in openspec/specs/sandbox/spec.md:164 (day of decision not recorded) |
 | [ADR-0160](../adr/0160-session-age-handoff.md) | Handoff at Session Age | superseded by ADR-0070 | recorded in openspec/changes/2-1-325-rearchitecture/design.md:64 (day of decision not recorded) |
 | [ADR-0161](../adr/0161-setup-autocompact-env-removed.md) | Setup No Longer Writes Auto-Compact Overrides | superseded by ADR-0131 | recorded in openspec/changes/archive/2026-11-16-2-1-323/design.md:131 (day of decision not recorded) |
-| [ADR-0162](../adr/0162-silent-turn-reminder-off-only.md) | Silent-Turn Reminder Off with the Switch Alone | accepted | recorded in chunk-4h798pp0.js:3911181 (day of decision not recorded) |
+| [ADR-0162](../adr/0162-silent-turn-reminder-off-only.md) | Silent-Turn Reminder Off with the Switch Alone | accepted | recorded in chunk-m14bt1pz.js:3985537 (day of decision not recorded) |
 | [ADR-0163](../adr/0163-stale-statements.md) | Stale And Conflicting Statements Retired | superseded by the specs named in Source (no ADR holds the new wording) | recorded in openspec/specs/permission-policy/spec.md:50 (day of decision not recorded) |
 | [ADR-0164](../adr/0164-test-tampering-check-rejected.md) | Test-Tampering Check Not Built | accepted | recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:350 (day of decision not recorded) |
 | [ADR-0165](../adr/0165-time-cap-hook.md) | Cap Agent Run Time With a Hook | superseded by ADR-0041 | recorded in openspec/changes/archive/2026-11-13-feat-2-1-321/specs/run-limits/spec.md:166 (day of decision not recorded) |
@@ -175,7 +175,20 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0169](../adr/0169-tool-deferral.md) | Tool Trimming by Deferral | accepted | recorded in plugins/claudetto/hooks/features/surface/surface.ts@088a227c (day of decision not recorded) |
 | [ADR-0170](../adr/0170-tool-results-stay-folded.md) | Tool Results Stay Folded | accepted | recorded in openspec/specs/surface-trim/spec.md:222 (day of decision not recorded) |
 | [ADR-0171](../adr/0171-unseen-grade-by-sonnet.md) | The Unseen Grade Goes to Sonnet | accepted | recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:445 (day of decision not recorded) |
-| [ADR-0172](../adr/0172-version-floor-required-minimum.md) | Version Floor by requiredMinimumVersion | accepted | recorded in chunk-m33vdkhs.js:282983 and :281644 (day of decision not recorded) |
+| [ADR-0172](../adr/0172-version-floor-required-minimum.md) | Version Floor by requiredMinimumVersion | accepted | recorded in chunk-ja5z738t.js:285180 and :281644 (day of decision not recorded) |
 | [ADR-0173](../adr/0173-worktree-build-folder-sharing.md) | Worktree Build-Folder Sharing | accepted | recorded in openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:384 (day of decision not recorded) |
 | [ADR-0174](../adr/0174-you-should-know-observer.md) | You-Should-Know Observer on Model Call Only | accepted | recorded in openspec/changes/2-1-325-rearchitecture/items.json:122 (day of decision not recorded) |
 | [ADR-0175](../adr/0175-zsh-options-through-env-file.md) | Zsh Options Through the Env File | accepted | recorded in openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:560 (day of decision not recorded) |
+| [ADR-0176](../adr/0176-target-claude-code-2-1-327.md) | Target Claude Code 2.1.327 | accepted | 2026-11-18 |
+| [ADR-0177](../adr/0177-pragmatism-gate.md) | A Component Ships Only When It Beats Vanilla | accepted | 2026-11-18 |
+| [ADR-0178](../adr/0178-renewal-at-task-boundaries.md) | Renew the Session at Task Boundaries, Never on a Clock | accepted | 2026-11-18 |
+| [ADR-0179](../adr/0179-mcp-output-cap-10000.md) | MCP Output Capped at 10,000 Tokens | accepted | 2026-11-18 |
+| [ADR-0180](../adr/0180-behavioural-and-mutation-tests.md) | Behavioural Tests on Traces and Mutation of Plugin Rules | accepted | 2026-11-18 |
+| [ADR-0181](../adr/0181-evidence-before-reversing-work.md) | Evidence Before Reversing Finished Work | accepted | 2026-11-18 |
+| [ADR-0182](../adr/0182-plain-english-reply-rule.md) | The Reply Rule Names Plain English | accepted | 2026-11-18 |
+| [ADR-0183](../adr/0183-logic-checked-by-execution.md) | Logic Is Checked by Running It, Not by Review | accepted | 2026-11-18 |
+| [ADR-0184](../adr/0184-headless-renewal-by-driver.md) | Headless Renewal Is Sent by the Driver | accepted | 2026-11-18 |
+| [ADR-0185](../adr/0185-system-wide-disk-hygiene.md) | System-Wide Disk Hygiene | accepted | 2026-11-18 |
+| [ADR-0186](../adr/0186-slice-commits-as-boundaries.md) | Slice Commits Are the Context Boundaries | accepted | 2026-11-18 |
+| [ADR-0187](../adr/0187-local-incident-lab.md) | A Local Incident Lab Reproduces Agent Failures | accepted | 2026-11-18 |
+| [ADR-0188](../adr/0188-minimal-sandbox-free-pass.md) | Minimal Sandbox: Non-Destructive Commands Run Without a Prompt | accepted | 2026-11-18 |

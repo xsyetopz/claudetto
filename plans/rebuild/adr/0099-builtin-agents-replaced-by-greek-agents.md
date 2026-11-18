@@ -41,9 +41,9 @@ Why not the rewrite: in auto mode it costs the same extra turn as the engine's o
 - Good: no hook changes tool input, so auto mode reviews each `Agent` call as the model wrote it.
 - Bad: a call to `Explore`, `Plan`, `general-purpose`, `claude` or an untyped call costs one extra turn.
 - Bad: `fork` stays offered; it is selected only by name, when its gate is on.
-- `agent.offer` fires with `{ agent, description, source, provider }` (claude 2.1.326 `chunk-4h798pp0.js@80137`); the engine refuses a hook result that changes `agent`, `source` or `provider` (`chunk-fvkvyefp.js@209068`). Explore and Plan carry `source:"built-in"` (`chunk-4h798pp0.js@240106`, `@243435`).
-- `tool.call` pins only `tool`, `tool_use_id` and `agentId` (`chunk-fvkvyefp.js@212040`).
-- `EnterPlanMode` is deferred (`shouldDefer:!0`) and shares the enable gate of `ExitPlanMode` (`chunk-e5m0wp87.js@35185`, `chunk-fz0vez9c.js@10583`).
+- `agent.offer` fires with `{ agent, description, source, provider }` (claude 2.1.327 `chunk-m14bt1pz.js@81306`); the engine refuses a hook result that changes `agent`, `source` or `provider` (`chunk-b0yr0k8v.js@209229`). Explore and Plan carry `source:"built-in"` (`chunk-m14bt1pz.js@242181`, `@243435`).
+- `tool.call` pins only `tool`, `tool_use_id` and `agentId` (`chunk-b0yr0k8v.js@212201`).
+- `EnterPlanMode` is deferred (`shouldDefer:!0`) and shares the enable gate of `ExitPlanMode` (`chunk-6p2zxmr3.js@35363`, `chunk-e7a91x6y.js@10642`).
 - The register sketch written by the agent-route worker read `e.input.subagent_type` and set `input`, so it never mapped a call; this record replaces it.
 
 Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:87; openspec/changes/archive/2026-11-16-2-1-323/design.md:99; openspec/changes/archive/2026-11-16-2-1-323/tasks.md:89 (task 8.8); plugins/claudetto/agents/@088a227c; openspec/specs/surface-trim/spec.md:147; openspec/changes/archive/2026-11-16-2-1-323/specs/surface-trim/spec.md:38; openspec/specs/surface-trim/spec.md:208; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:98; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2122; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2250; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2395; clawdipedia.cc extend/mod-api/calls/agent (claude 2.1.323); clawdipedia.cc extend/mod-api/types/tool-command-config/tool-calls; cc-inspect `cli` probes on claude 2.1.326, 2026-11-17. Basis: user decision, 2026-11-05 and 2026-11-17 (AskUserQuestion); measured.

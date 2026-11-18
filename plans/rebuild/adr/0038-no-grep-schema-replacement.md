@@ -12,7 +12,7 @@ Can claudetto cut request size further, after the prompt and tool trims of 2.1.3
 ## Considered Options
 
 - Replace Grep through $.tool.register with a short schema, cutting up to 2,747 schema characters.
-- Measure the 46 unmeasured tools in a terminal run.
+- Measure the 46 tools that have no row yet in a terminal run.
 - Do neither.
 
 ## Decision Outcome

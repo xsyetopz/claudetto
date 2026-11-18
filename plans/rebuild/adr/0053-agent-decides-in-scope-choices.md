@@ -8,7 +8,7 @@ date: 2026-11-16
 
 The goal agent had kept "Jev for routine decisions", so it settled product choices alone, which the agent said conflicted with "ask when ambiguous and expensive".
 
-Agents stop to ask the user to approve choices inside the task: limits, flags, a reinstall, open questions. Each ask costs a turn.
+Agents stop to ask the user to approve choices inside the task: limits, flags, a reinstall, a choice the brief leaves to the agent. Each ask costs a turn.
 
 The agent left three choices to the user (block agreement openers, stop tools on a mid-turn complaint, stop setup copying rule files). Who decides?
 

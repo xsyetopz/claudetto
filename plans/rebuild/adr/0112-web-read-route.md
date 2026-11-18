@@ -43,6 +43,6 @@ Chosen option: the registered tool writing the extract to a file and returning a
 
 ### Confirmation
 
-A test reads the 2.1.326 release page and checks a return of at most 2 KB and a path on which `grep -n MCP` gives 21 lines. Unmeasured: the same comparison on more pages, and in tokens rather than bytes.
+A test reads the 2.1.326 release page and checks a return of at most 2 KB and a path on which `grep -n MCP` gives 21 lines. The decision rests on this one page and on bytes, not tokens. The revisit check is the same comparison on two more pages with a token count; a result above 2 KB reopens the route.
 
 Source: lead session `0342617c`, 2026-11-17 (commands and results in the context items of that date); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487; agent-browser 0.39.1, <https://github.com/vercel-labs/agent-browser>; `@playwright/cli` 0.1.24, <https://github.com/microsoft/playwright-cli>; verdict-cli 0.1.1, <https://github.com/tuandm/verdict-cli>; repository URLs from `npm view`, retrieved 2026-11-17.

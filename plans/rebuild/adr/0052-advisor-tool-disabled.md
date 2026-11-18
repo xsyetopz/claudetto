@@ -8,7 +8,7 @@ date: 2026-11-16
 
 A prompt cache is keyed to its model, so a Fable call cannot read the main thread's cache, and each advisor question of the rebuilt advisor paid full input price on Fable. Does claudetto keep a rebuilt advisor tool and `/advisor` command?
 
-`settings.ts:178` writes `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, while `/advisor` exists in 2.1.326 (chunk-4h798pp0.js:2480217).
+`settings.ts:178` writes `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`, while `/advisor` exists in 2.1.327 (chunk-m14bt1pz.js:2524204).
 
 Transcript record tx-x02/advisor-stays-disabled: The advisor tool is too expensive.
 
@@ -36,4 +36,4 @@ Same decision, other record: it stays off (`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`)
 
 Transcript record tx-x02/advisor-stays-disabled decided: keep it disabled. Setup writes `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`.
 
-Source: openspec/changes/archive/2026-11-16-2-1-323/specs/decide/spec.md:17 (Reason and Migration); plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; user decision, 2026-11-16 (User Answers); chunk-4h798pp0.js:2480217 (claude 2.1.326 binary); user decision, 2026-11-14 02:35 UTC, the Advisor tool goes if it cannot be cache-aligned (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:30659); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352.
+Source: openspec/changes/archive/2026-11-16-2-1-323/specs/decide/spec.md:17 (Reason and Migration); plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; user decision, 2026-11-16 (User Answers); chunk-m14bt1pz.js:2524204 (claude 2.1.327 binary); user decision, 2026-11-14 02:35 UTC, the Advisor tool goes if it cannot be cache-aligned (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:30659); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352.

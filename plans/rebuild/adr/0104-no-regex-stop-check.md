@@ -57,7 +57,7 @@ The cure for an agreeing or apologising opener has no regex Stop check; see the 
 
 The agreement opener needs another cure (see the reply risk).
 
-Agrees with the settled decision "no regex Stop check" (user decision, 2026-11-16). Basis: inferred.
+Agrees with the settled decision "no regex Stop check" (user decision, 2026-11-16). Basis: cited; the decision is read from the handoff that records it.
 
 Good: no false denials of remarks. Bad: no deterministic opener test; `AGREES` was kept as an anchored test in the 321 decisions and the user later ruled out word lists (superseded, see `[ADR-0121](0121-agrees-anchored-opener-test.md)`).
 

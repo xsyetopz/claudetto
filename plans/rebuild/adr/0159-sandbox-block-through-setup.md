@@ -59,6 +59,7 @@ gap-08--features-off-by-default-stay-unset (2026-11-04) left `sandbox.enabled` o
 - Bad: about 330 sandbox-off calls stay possible (see risk register).
 - Good: `gh api user` works in the sandbox.
 - Bad: a wider Mach lookup surface.
+- Amended by ADR-0188 (2026-11-18): setup now writes `autoAllowBashIfSandboxed: true`, adds `/opt/homebrew` to `allowWrite`, and excludes `claude *`; the rule "never write `autoAllowBashIfSandboxed`" no longer holds.
 
 The baseline setup group that turns the sandbox on conflicts with this rule and needs a change (`plugins/claudetto/hooks/features/setup/settings.ts:211-212` at 088a227c).
 

@@ -16,6 +16,6 @@ Route A: `agent.offer` withholds the built-ins and `tool.call` maps `Explore` to
 Chosen: Superseded by D323 (agent calls reach Claude Code unchanged). Reason kept: a deny rule would refuse, and a rewrite voids auto review.
 
 ## Consequences
-- Baseline keeps the mapping in plugins/claudetto/hooks/features/delegation/ with tests.
+- Baseline keeps the offer withholding (not the mapping) in plugins/claudetto/hooks/features/delegation/ with a test (`delegation.test.ts:41`).
 
-Source: openspec/specs/surface-trim/spec.md:147; plugins/claudetto/hooks/features/delegation@088a227c. Basis: inferred. Status: have at 088a227c. Not located: tags C:63, B:214, D:285.
+Source: openspec/specs/surface-trim/spec.md:147; plugins/claudetto/hooks/features/delegation@088a227c. Basis: cited (spec line 147 read; the baseline code read). Status: partial at 088a227c (`delegation.ts:7-8` withholds each `built-in` agent; `git show 088a227c:plugins/claudetto/hooks/features/delegation/delegation.ts` has no `Explore`, `Plan`, `Heracles`, `Artemis`, `Metis` or `fork` mapping, so only the offer half exists). The old tags C:63, B:214 and D:285 are not carried; this ADR is superseded, so the gap stays.

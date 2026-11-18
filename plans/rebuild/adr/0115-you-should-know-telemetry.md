@@ -22,4 +22,4 @@ Chosen: send none, by user decision on 2026-11-17 (asked through AskUserQuestion
 
 Good: no data leaves, and the plugin needs no `telemetry.log` or `telemetry.mark` call, which the 2.1.326 host serves to the `builtin` and `core` tiers only (openspec/specs/builtin-rebuild/spec.md:77). Bad: the plugin differs from the builtin in what it reports.
 
-Source: plugins/claudetto-you-should-know/.claude-plugin/plugin.json:4@088a227c; chunk-na8s6d5h.js@22380 (claude 2.1.326 binary, found by searching `you_should_know_proposed`; the 2.1.325 range @73182-92000 names a module absent from 2.1.325).
+Source: plugins/claudetto-you-should-know/.claude-plugin/plugin.json:4@088a227c; chunk-nvx1z6pc.js@22458 (2.1.327; first read in claude 2.1.326 binary, found by searching `you_should_know_proposed`; the 2.1.325 range @73182-92000 names a module absent from 2.1.325).

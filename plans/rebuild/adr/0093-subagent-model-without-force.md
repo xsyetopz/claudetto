@@ -32,7 +32,7 @@ Same decision, other record: the setup does not write `SUBAGENT_MODEL_FORCE`; th
 
 ## Consequences
 
-A lead's `Agent` call model ran four `Heracles` on Opus once, so an `agent.spawn` mod drops `model`; the root prompt names no subagent model. `CLAUDE_CODE_SUBAGENT_EFFORT` also exists on 2.1.325 (unverified in 2.1.326).
+A lead's `Agent` call model ran four `Heracles` on Opus once, so an `agent.spawn` mod drops `model`; the root prompt names no subagent model. `CLAUDE_CODE_SUBAGENT_EFFORT` also exists on 2.1.327 (verified on 2.1.327: chunk-2ew0jg68.js@44202).
 
 Subagents never run on Fable or Opus (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
 

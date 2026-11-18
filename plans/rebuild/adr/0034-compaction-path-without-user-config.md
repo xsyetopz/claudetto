@@ -20,6 +20,6 @@ Chosen: no userConfig on the compaction path. External cost claims change a defa
 ## Consequences
 
 - Good: fewer options to keep in step.
-- Unchecked: plugin.json at 088a227c was not grepped for the absence of these keys.
+- Checked: `git show 088a227c:plugins/claudetto/.claude-plugin/plugin.json` holds none of `compaction`, `pathOf`, `handoverThresholdTokens`, `cheapSummary` or `cheapSummaryEnabled`. It still holds `heavyContextTokens` (line 34), which the rebuild drops; `tools/manifest.test.ts` checks that at build.
 
 Source: openspec/specs/compaction-path/spec.md:58; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/compaction-path/spec.md:5.

@@ -30,4 +30,4 @@ None remain in the plugin; the old names appear only in the deleted OpenSpec.
 
 Basis: read. Status: superseded.
 
-Source: unresolved: no source line located for this claim.
+Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:648@088a227c9^ (first roster `search`, `plan`, `work`, `sweep`); openspec/changes/archive/2026-11-16-2-1-323/design.md:87-94@088a227c9^ (Artemis, Metis, Athena, Heracles; Artemis on Haiku).

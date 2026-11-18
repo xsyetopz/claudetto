@@ -21,7 +21,7 @@ Chosen: the `setopt no_nomatch no_equals` line in `CLAUDE_ENV_FILE`.
 
 The `/bin/bash` switch is refuted. macOS bash is 3.2, where `**` matches one level. Of 39,389 Bash commands, 104 used unquoted `**` and 70 ran, so the switch trades loud failures for silent ones.
 
-The source records the `ZDOTDIR` route only as a hypothesis, with no result, so it is not weighed here. The earlier finding that Claude Code still read `$HOME/.zshrc` is unconfirmed in the source.
+The `ZDOTDIR` route is not chosen. On 2.1.327 the shell snapshot pre-check scans the home rc files (`.zshenv`, `.zprofile`, `.zshrc`, `.zlogin`, and the bash files) and takes the slow path when `ZDOTDIR` is set (chunk-m14bt1pz.js@3701357-3701639); the alias installer writes `${ZDOTDIR||home}/.zshrc` (chunk-y8q079sf.js@5042); the sandboxed helper sets its own `ZDOTDIR` (chunk-bpr7n093.js@52155); and `ZDOTDIR` is on the dangerous-env lists. So Claude Code honours `ZDOTDIR` in some paths and reads `$HOME` rc files in others, and moving the option line there gains nothing over `CLAUDE_ENV_FILE`. Basis: read from code (2.1.327).
 
 ## Consequences
 

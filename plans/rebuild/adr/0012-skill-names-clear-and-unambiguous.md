@@ -21,7 +21,7 @@ Should claudetto adopt the naming advice K (domain-action-target names) for its 
 
 Chosen: skill names only. The user said on 2026-11-05 (session 6aee1921, 11:52:22 UTC) that built-in agent overrides and command overrides are fine, and only skill names that could conflict without being meant as overrides are not. The broad readings are superseded. Narrowing further is the user's call.
 
-Same decision, other record: adopted by the user as a claudetto style rule (clear, unambiguous names; no skill named after a built-in command). It is not a Claude Code requirement and stays unchecked as a Claude Code behavior. The built-in names come from `cc-inspect surface kind=slash-command`. It goes into C10.
+Same decision, other record: adopted by the user as a claudetto style rule (clear, unambiguous names; no skill named after a built-in command). It is not a Claude Code requirement and has no Claude Code source; it is a style rule, and the revisit check is a clash between a skill name and a name from `cc-inspect surface kind=slash-command`. The built-in names come from `cc-inspect surface kind=slash-command`. It goes into C10.
 
 ## Consequences
 

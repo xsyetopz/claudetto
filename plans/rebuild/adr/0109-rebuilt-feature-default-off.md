@@ -19,7 +19,7 @@ Chosen option: off by default until its cost is measured (user decision, AskUser
 
 ## Consequences
 
-* Good, because no tier pays an unmeasured cost.
+* Good, because no tier pays a cost that has no window-budget row.
 * Bad, because a user has to enable a feature by hand until rows exist.
 
 Source: openspec/specs/builtin-rebuild/spec.md:127.

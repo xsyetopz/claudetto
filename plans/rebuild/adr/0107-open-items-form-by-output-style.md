@@ -14,7 +14,7 @@ Facts on `!` (checked 2026-11-17 on 2.1.326, on the user's request to learn wher
 
 - `!` is shell mode of the interactive prompt: the typed command and its output enter the conversation, the model answers the output at once unless `respondToBashCommands` is `false`, and the command runs outside the sandbox unless the session is in strict sandbox mode (code.claude.com `interactive-mode`, section "Shell mode with `!` prefix").
 - In `-p` with stream-json input, a user message `! echo ZQXBANG$((40+2))` is not run: one request, and `ZQXBANG42` appears in no request or transcript (cc-inspect `cli` probe). A `!` step therefore helps only a user at the interactive prompt, not a `-p` or SDK caller.
-- The prompt stores the command as `<bash-input>…</bash-input>` (`chunk-e8tmjc74.js@21377`); remote (CCR) clients send it through an internal input frame that refuses a blank or too-long command with `<bash-stderr>Not run: …</bash-stderr>` (`chunk-bprgtdg6.js@337703`).
+- The prompt stores the command as `<bash-input>…</bash-input>` (`chunk-mxa8qkgm.js@21499`); remote (CCR) clients send it through an internal input frame that refuses a blank or too-long command with `<bash-stderr>Not run: …</bash-stderr>` (`chunk-rj3e7agr.js@337977`).
 - Unprobed: the interactive length limit, and whether a `!` command gets a terminal for a password or touch prompt.
 
 ## Considered Options
@@ -32,7 +32,7 @@ Chosen option: `- ! <command>`, with no checkbox and at most one command bullet 
 
 The wording "a command only the user can run" is replaced, because it makes the agent hand off whatever a gate refuses.
 
-Limit: with no Stop check, nothing catches a reply that ignores the style and writes `1.` instead. Unmeasured: how often the model follows the new line; that needs an eval run. The decision adds no parse and no word list, in line with the settled decision "no regex Stop check" (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
+Limit: with no Stop check, nothing catches a reply that ignores the style and writes `1.` instead. The follow rate has no number; the ADR-0177 eval run is the check, and a rate no better than vanilla drops the line. The decision adds no parse and no word list, in line with the settled decision "no regex Stop check" (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)).
 
 ## Confirmation
 

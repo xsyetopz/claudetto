@@ -10,7 +10,7 @@ Age since session start does not cool the prompt cache; an idle gap does. A hand
 
 Core auto compaction drops cache and context at its own trigger. A self-managed session cycle can write a handoff, clear the session, and resume from it. A cache read refreshes the TTL, which runs from the start of each request (platform docs, prompt-caching, "How prompt caching works"), so a 3 h session with steady turns stays warm, and a gap of 1 h or more leaves the whole prefix cold. At `088a227c` the `compaction` feature writes a handoff in place of the core summary (`plugins/claudetto/hooks/features/compaction/handoff.ts`; status: partial).
 
-Core auto compaction summarises the whole history with a model call and breaks the cached prefix. Claude Code 2.1.325 (unverified in 2.1.326) lets a `session.compact` hook answer `{messages}` and a `command.run` hook run before a clear. claudetto needs a cheaper way to carry work across a clear or a compaction.
+Core auto compaction summarises the whole history with a model call and breaks the cached prefix. Claude Code 2.1.327 lets a `session.compact` hook answer `{messages}` (or `{skip: reason}` to leave the history alone; claude-code.d.ts@235691) and a `command.run` hook run before a slash command such as a clear (claude-code.d.ts@229024); verified on 2.1.327. claudetto needs a cheaper way to carry work across a clear or a compaction.
 
 Users in the dossier report that compaction costs tokens and loses state. Some use two compactions plus a handover, some never compact, some set a low compaction window, some write Mods. What should claudetto do?
 
@@ -54,13 +54,13 @@ Transcript record tx-x03/handover-replaces-auto-compaction: The user asked why a
 
 Same decision, other record: the idle-gap cycle with the fork handover. Handover replaces core auto compaction by default.
 
-Chosen: handover replaces core auto compaction, on by default. The agent writes a handoff, clears the session, and resumes from it, without breaking the user's own `/clear`. The trigger is an idle gap or context size, not session age. A failed `/clear` fork falls back to a `$.session.messages()` extract. `compaction` handoff stays in `handoff.ts`.
+Chosen: handover replaces core auto compaction, on by default. The agent writes a handoff, clears the session, and resumes from it, without breaking the user's own `/clear`. The trigger is a task boundary above the break-even context size ([ADR-0178](0178-renewal-at-task-boundaries.md)), never session age or an idle gap. A failed `/clear` fork falls back to a `$.session.messages()` extract. `compaction` handoff stays in `handoff.ts`.
 
 Same decision, other record: handover. The agent writes a handoff, clears the session, and resumes from it. Handover extends the session cycle and supersedes its vanilla-`/clear` rule (see [ADR-0058](0058-clear-stays-vanilla.md)).
 
 Handover replaces compaction. The handover is created, the session is cleared by a Mod API call, and the handover goes in as the first prompt, as if it were a compact summary. It must cost less than built-in compaction. The most effective and stable variant is found by cheap trial and error and by probes. This is spec work first; probes are allowed.
 
-No core auto-compaction. The agent writes a handover at its handover window and a Mod API `/clear` starts fresh, or claudetto compacts itself through Mod API hooks, whichever a probe shows works. A session ends before 59 minutes. Matches the settled decision that handover replaces core auto-compaction and `/clear` stays. Supersedes none.
+No core auto-compaction. The agent writes a handover at its handover window and a Mod API `/clear` starts fresh, or claudetto compacts itself through Mod API hooks, whichever a probe shows works. On 2.1.327 the interactive path is `$.session.compact` and the headless path is a driver-sent `/clear` ([ADR-0184](0184-headless-renewal-by-driver.md)). Matches the settled decision that handover replaces core auto-compaction and `/clear` stays. Supersedes none.
 
 Same decision, other record: handoff by fork. The settled user decision applies: handover replaces core auto compaction by default; manual `/clear` stays and writes a handover first. Triggers `auto` and `precompute` answer the fork handover. The C file-handoff items and thresholds are superseded.
 

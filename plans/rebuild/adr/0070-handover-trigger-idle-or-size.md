@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0178
 date: 2026-11-16
 ---
 # Hand Over On An Idle Gap Or Context Size, Never On Age
@@ -22,3 +22,5 @@ Chosen: idle gap or context size. Supersedes `[ADR-0160](0160-session-age-handof
 The agent chose this from the docs; the handover summaries say the user was still to be told. `handoff.ts:67-83` (age since session start) is a recorded defect.
 
 Source: cited, platform docs prompt-caching page (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
+
+The trigger is superseded by [ADR-0178](0178-renewal-at-task-boundaries.md): renewal happens at a task boundary above break-even, and idle time and context size alone never trigger it.

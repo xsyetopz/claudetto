@@ -31,4 +31,4 @@ A test asserts the effort field of each agent file.
 
 Basis: reported. Status: partial at 088a227c (`plugins/claudetto/agents/*.md` effort fields; `plugins/claudetto/hooks/features/agent-model/model.ts`).
 
-Source: unresolved: no source line located for this claim.
+Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:87-94@088a227c9^ (effort per agent); openspec/changes/2-1-325-rearchitecture/design.md:358@088a227c9^ (medium effort by default, escalate per task).

@@ -6,7 +6,7 @@ date: 2026-11-16
 
 ## Context and Problem Statement
 
-Claude Code 2.1.325 (unverified in 2.1.326) exposes settings and env knobs for compaction. claudetto needs a knob for each part of handover.
+Claude Code 2.1.327 exposes settings and env knobs for compaction (verified on 2.1.327: settings `autoCompactEnabled` chunk-ja5z738t.js@295049, `autoCompactWindow` @280393, `idleCompaction` @296562, `precomputeCompactionEnabled` @295153; env `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` chunk-2ew0jg68.js@26747, `CLAUDE_CODE_AUTO_COMPACT_WINDOW` @28929, `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` @32646, `CLAUDE_CODE_SLEEP_COMPACT` @37616, `DISABLE_AUTO_COMPACT` @20670). claudetto needs a knob for each part of handover.
 
 Handover needs settings. The choice was the full mirror of Claude Code's compaction knobs when every part of compaction can be replaced, else a trimmed set. Every part was replaced in probes (Handover, probe G).
 
@@ -22,7 +22,7 @@ Transcript record tx-x02/handover-knob-mirror: The user asked that claudetto's h
 
 ## Decision Outcome
 
-Chosen: mirror. Each part has a replacement on 2.1.325 (unverified in 2.1.326) (probe G).
+Chosen: mirror. Each part has a replacement on 2.1.327 among the knobs verified in Context (probe G).
 
 | Claude Code | claudetto | Use |
 | --- | --- | --- |

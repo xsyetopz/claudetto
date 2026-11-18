@@ -30,4 +30,4 @@ The agent listing has no `claudetto:main`.
 
 Basis: read. Status: superseded.
 
-Source: unresolved: no source line located for this claim.
+Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:355@088a227c9^ (Setup removes the retired `claudetto:main` agent key); openspec/changes/archive/2026-11-16-2-1-323/design.md:24@088a227c9^ (`prompt.compose` replaces the body per model).
