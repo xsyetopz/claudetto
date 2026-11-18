@@ -631,17 +631,32 @@
   - Status: mitigated
   - Source: reports/2026-11-18-research/handover-probes/probe-f/probe.log (cc-inspect `code cli`, claude 2.1.327, 2026-11-18); reports/2026-11-18-research/handover.md Q2.
 
-- [ ] **RISK-489** A `session.compact` hook that returns its message in the wrong shape is skipped with one log line, and core runs its default summary, so the handover silently never lands.
+- [x] **RISK-489** A `session.compact` hook that returns its message in the wrong shape is skipped with one log line, and core runs its default summary, so the handover silently never lands.
   - Category: integration fault.
   - Cause: core accepts only `{role:"user", text, toolUses:[]}`; `{role, content}` and `{role, text}` are rejected (CTX-843).
   - Event: probe H runs 1 and 2 logged "session.compact hook skipped: returned the wrong shape" and fell back to the default summary.
   - Consequence: the handover is lost and the summarizer request is paid.
   - Likelihood: 3
   - Impact: 3
-  - Existing controls: none at 088a227c.
+  - Existing controls: the hook returns `{messages, tokensBefore, tokensAfter, usage}` with the accepted message shape; compact.test.ts runs it through the test kit check.
   - Response: mitigate.
   - Actions: a unit test runs the hook's return value through the same shape check; REQ-HANDOVER-023 acceptance checks the first message after a dogfood compaction.
   - Trigger: the log line "session.compact hook skipped" in a debug log.
   - Owner: handover
-  - Status: open
+  - Status: closed; probe, `claude` 2.1.327, 2026-11-18, fake API stub (reports/2026-11-18-research/handover-probes/probe-h/stub.ts), `claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`, auto trigger: the debug log reads "session.compact (auto): a hook's 2 messages stand (hooked by claudetto); core never ran".
   - Source: reports/2026-11-18-research/handover-probes/probe-h/run1/hook.log, run2/hook.log, probe.log.
+
+- [x] **RISK-490** A handover that answers an auto compaction at the start of a turn drops the prompt that opened the turn.
+  - Category: Defect
+  - Cause: core compacts before the new prompt is answered, so `e.messages` ends with that prompt; a hook that answers with the handover alone replaces it.
+  - Event: probe on claude 2.1.327 (stub reporting 195k input tokens, `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`, stream-json prompts `first one`, `second one`, 2026-11-18): the request after the compaction held the handover and not `second one`.
+  - Consequence: the model answers no prompt, and the user's request is lost without notice.
+  - Likelihood: 4
+  - Impact: 4
+  - Existing controls: the hook keeps the messages after the last assistant message, with their engine handles, after the handover.
+  - Response: mitigate.
+  - Actions: test "the prompt that opened the turn stays after the handover" in `plugins/claudetto/hooks/handover/compact.test.ts`.
+  - Trigger: a first request after a compaction whose last user text is not the prompt the user sent.
+  - Owner: handover
+  - Status: closed; the same probe after the change sent the handover followed by `second one`.
+  - Source: probe, `claude` 2.1.327, 2026-11-18, `$TMPDIR/hprobe3` (stub from reports/2026-11-18-research/handover-probes/probe-h/stub.ts with input tokens 195000), command `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`.
