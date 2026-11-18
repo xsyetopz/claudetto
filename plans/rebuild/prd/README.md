@@ -2662,6 +2662,69 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:778; plugins/claudetto/hooks/features/setup/settings.ts:111@088a227c.
   Conflict: Setup Groups, "Models and windows" group.
 
+- [x] **OUT-850** Out (REQ-SETUP-019, ADR-0177): vanilla already leaves Read, Write and ListAgents undeferred, and no `tool.describe` hook ships, so the deferral rule has nothing to guard. claudetto shall ship no per-tool text or deferral without a measured gain that keeps the tool reachable.
+  Acceptance: `grep -rn "tool.describe" plugins/claudetto/hooks` finds no registration; a `-p` request lists Read, Write and ListAgents with full schemas.
+  Basis: measured, claude 2.1.327, 2026-11-19: the stock first request carries all three; the paid deferral run (ListAgents 0/8 reached) recorded earlier stays the cost of a wrong deferral. Status: none shipped.
+  Source: plans/rebuild/adr/0177-pragmatism-gate.md; cc-inspect cli `-p hi` tools list.
+  Conflict: Tool Deferral.
+
+- [x] **OUT-851** Out (REQ-SETUP-041, ADR-0177): shortened texts for Monitor, ToolSearch, EnterPlanMode, ExitPlanMode and the Task tools show no measured gain that outweighs the reach risk. On 2.1.327 a `-p` request sends ToolSearch at about 850 characters, Monitor only after a ToolSearch call, and no Task tool; EnterPlanMode is denied by REQ-SETUP-033. A reach check needs a paid run, which ADR-0190 leaves out until a gain is measured.
+  Acceptance: none; the stock texts stay.
+  Basis: measured, claude 2.1.327, 2026-11-19 (cc-inspect cli `tool` ToolSearch; the tool list of a `-p` request).
+  Source: plans/rebuild/adr/0177-pragmatism-gate.md; plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-852** Out (REQ-SETUP-023, ADR-0190): no setup wizard; unset defaults are written silently at SessionStart with one notice.
+  Acceptance: `fillSettings` writes each unset key once per FILL_VERSION and logs one notice listing them.
+  Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-853** Out (REQ-SETUP-025, ADR-0190): no setup groups and no per-key questions; `autoMode` lists, `defaultMode`, `promptCacheTtl` and the `CONTEXT7_API_KEY` and `TYPESAFE_API_KEY` prompts are not written. `sandbox.enabled` and the builtin disable ship through the fill and REQ-SETUP-011.
+  Acceptance: `grep -rn "autoMode\|defaultMode\|promptCacheTtl" plugins/claudetto/hooks` returns no write.
+  Basis: decision, ADR-0190 (classifier accuracy with replaced lists is unmeasured). Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-854** Out (REQ-SETUP-028, ADR-0177): the four read-only git allow rules add nothing, because vanilla already runs `git status`, `git diff`, `git log` and `git show` with no prompt and no allow rule. The `autoMode.classifyAllShell` rule stays moot, since no `autoMode` key is written.
+  Acceptance: a stub run of the four commands under default permissions shows 0 prompts.
+  Basis: measured, claude 2.1.327, 2026-11-18 (cc-inspect cli, four Bash calls, no allow rule, 0 prompts; exit 128/129 only because the probe folder is no repository). Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+  Conflict: Auto Mode.
+
+- [x] **OUT-855** Out (REQ-SETUP-029, ADR-0190): no `model`, `effortLevel`, `fallbackModel`, `modelSettings`, `idleCompaction` or default-model env values are written; vanilla already resolves the aliases to the 5.5 ids.
+  Acceptance: the fill writes none of those keys.
+  Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-856** Out (REQ-SETUP-035, ADR-0190): setup writes no trimmed `autoMode` lists, no `promptCacheTtl` and no `permissions.defaultMode`; worktree and sandbox settings ship through the fill.
+  Acceptance: as OUT-853. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-857** Out (REQ-SETUP-065, ADR-0190): auto memory is not turned off by setup; REQ-GUARDS-048 requires consent.
+  Acceptance: the fill writes no `autoMemoryEnabled`. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-858** Out (REQ-SETUP-062, ADR-0177): the "Smaller prompt" group is split by its parts. The tool deny ships under REQ-SETUP-033 (seven tools; ExitPlanMode stays), the builtin disable under REQ-SETUP-008, `outputStyle` belongs to the reply block, the four git allows go Out as OUT-854, and `disableBundledSkills` stays unset because it removes the bundled skills for 854 further bytes.
+  Acceptance: the fill writes no `disableBundledSkills` and no `outputStyle`.
+  Basis: measured, claude 2.1.327, 2026-11-18 (fake-API probe, 854 bytes). Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+
+- [x] **OUT-859** Out (REQ-SETUP-057, ADR-0177): `disableClaudeAiConnectors` has no measurable gain on an API-key stub, and `disableBundledSkills` trades capability for 854 bytes, so neither is written. The shipped trims are the tool deny, `skillListingMaxDescChars` 60 and the measured env flags.
+  Acceptance: none beyond OUT-858. Basis: measured (see OUT-858). Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+
+- [x] **OUT-860** Out (REQ-SETUP-043, ADR-0177): the unnamed "16 approved flags" and `CLAUDE_CODE_THRIFTY_SONIC=0` are not written. Three flags show a request-byte gain and ship: `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` -1,492 bytes, `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` -913, `CLAUDE_CODE_FORK_SUBAGENT=0` -404; the advisor flag ships with DISABLE_CRON (-384). Telemetry, IDE and terminal-title flags show none, and THRIFTY_SONIC has no measured effect.
+  Acceptance: the fill writes those four env keys and no other flag of the old set.
+  Basis: measured, claude 2.1.327, 2026-11-18 (first `-p` request 47,323 bytes without the flags). Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+
+- [x] **OUT-861** Out (REQ-SETUP-040, ADR-0177): no `tool.list` hook; the `permissions.deny` of REQ-SETUP-033 already drops each unused tool definition from the request, so the hook adds no gain. `disableWorkflows`, `disableBundledSkills` and `disableClaudeAiConnectors` are not written (OUT-858, OUT-859); `skillListingMaxDescChars` 60 ships.
+  Acceptance: a request with the deny omits the denied tool definitions (REQ-SETUP-033). Basis: measured, claude 2.1.327. Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+
+- [x] **OUT-862** Out (REQ-SETUP-027, ADR-0177): `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is written as 3 for every plan; the split by plan (4 on Max, none on Ultra) needs a plan lookup with no measured gain. The other env keys of the requirement ship.
+  Acceptance: the fill writes "3" when the key is unset. Basis: decision, ADR-0177. Source: plans/rebuild/adr/0177-pragmatism-gate.md.
+
+- [x] **OUT-863** Out (RISK-403, ADR-0190): an agent that narrows a general fix to one tool is a conduct fault; the reply and kernel blocks own it, and it stays open there until a dogfood session shows it absent. Setup has no part that carries it.
+  Acceptance: none in setup. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-864** Out (RISK-413, ADR-0190): an agent that edits user settings or reverts work with no order is a conduct fault owned by the guards and kernel blocks, not by setup.
+  Acceptance: none in setup. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-865** Out (RISK-405, ADR-0190): Claude Code sending the claude.ai login token to a custom base URL is an upstream behaviour; claudetto sets no base URL and has no hook that changes it. The user holds the dependency (use an API key with a custom base URL).
+  Acceptance: none. Basis: cause outside claudetto, ADR-0190 (13 risks with an outside cause close). Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
+- [x] **OUT-866** Out (RISK-410, ADR-0190): a running session holding a stale plugin until restart is Claude Code's load model; the start notice already tells the user to run `/reload-plugins`.
+  Acceptance: none. Basis: cause outside claudetto, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+
 #### Verification
 
 - [x] **OUT-488** Out (REQ-VERIFICATION-001, ADR-0087): claudetto ships no lint-hook wrapper, so a three-case test for one is a needless test. claudetto shall test a lint-hook wrapper with three cases: a clean file, a real lint error, and a missing linter, so the last two give different messages.

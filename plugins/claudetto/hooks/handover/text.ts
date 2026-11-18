@@ -12,8 +12,6 @@ export const FORK_PROMPT = [
 	"- Files: the paths that matter and why.",
 	"- Commands: the exact check commands that pass or fail now.",
 	"- Constraints: every user correction, refusal, and consent, word for word.",
-	// Positive instructions with a reason, per Anthropic's prompting guide. REQ-REPLY-139: vanilla's
-	// summary lists all user messages, which carries passing opinions forward as standing preferences.
 	"Record only the rules the user set and facts that name their source, so the next session follows standing instructions and can recheck each fact.",
 	"State what is true now, so the next session starts from checked state.",
 	"Write it from this conversation alone, as one reply.",
@@ -38,7 +36,7 @@ export function extract(rows: readonly Row[]): string {
 /** The handover body followed by the git state read at that moment. */
 export function compose(body: string, head: string, status: string): string {
 	const git = [`git HEAD: ${head || "unknown"}`, "git status --short:", status || "(clean)"];
-	return [`# Handover from the previous session`, "", body.trim(), "", ...git].join("\n");
+	return [`# Handover From Previous Session`, "", body.trim(), "", ...git].join("\n");
 }
 
 /** Reads "70000", "70k" or "1.5M"; undefined for anything else. */

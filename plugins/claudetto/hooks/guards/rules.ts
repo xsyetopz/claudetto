@@ -67,6 +67,7 @@ export const DENY_WRITE: readonly string[] = [
 	"~/bin",
 	"~/.claude/plugins",
 	"~/.claude/hooks",
+	"/private/var/folders/**/xcrun_db*",
 ];
 
 export const DENY_READ: readonly string[] = [
@@ -78,7 +79,7 @@ export const DENY_READ: readonly string[] = [
 	"~/.git-credentials",
 ];
 
-export const ALLOW_WRITE: readonly string[] = ["~/", "/Volumes/", "/private/tmp", "/opt/homebrew"];
+export const ALLOW_WRITE: readonly string[] = ["~/", "/Volumes/", "/private/tmp", "/opt/homebrew", "/private/var/folders"];
 
 /** Commands that cannot run inside the sandbox (ADR-0159); `claude *` starts its own sandbox (ADR-0188). */
 export const EXCLUDED: readonly string[] = ["ps *", "top *", "sysctl *", "launchctl list", "claude *"];

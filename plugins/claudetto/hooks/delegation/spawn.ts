@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+import { fault } from "../fault";
 
 /** Fable, Mythos and Opus, by alias or full id (`claude-opus-5-5`, `claude-fable-5-2`). */
 const BARRED = /fable|mythos|opus/iu;
@@ -14,5 +15,5 @@ export function registerSpawn(on: On): void {
 			return { deny: `Subagents run on Sonnet or Haiku, because a delegated slice does not need ${e.model} and its cost. Re-call the Agent tool with model "sonnet" or "haiku", or leave model unset.` };
 		}
 		return next(e);
-	}).catch((_$, e, next) => next(e));
+	}).catch(($, e, next) => (fault($, "spawn model check", next.error), next(e)));
 }

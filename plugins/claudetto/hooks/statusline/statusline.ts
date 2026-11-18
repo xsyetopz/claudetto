@@ -1,0 +1,63 @@
+import type { On } from "claude-code";
+import { fault } from "../fault";
+
+/** What the line shows; each field is absent until the engine reports it. */
+export type Figures = {
+	readonly model?: string;
+	readonly contextPercent?: number;
+	readonly fiveHour?: number;
+	readonly sevenDay?: number;
+	readonly cacheHit?: number;
+};
+
+type Usage = {
+	readonly input_tokens: number;
+	readonly cache_read_input_tokens: number;
+	readonly cache_creation_input_tokens: number;
+};
+
+/** Share of a turn's prompt tokens the cache served, in whole percent; undefined when the turn had none. */
+export const cacheHitPercent = (usage: Usage): number | undefined => {
+	const total = usage.input_tokens + usage.cache_read_input_tokens + usage.cache_creation_input_tokens;
+	return total > 0 ? Math.round((usage.cache_read_input_tokens / total) * 100) : undefined;
+};
+
+/** The line: model, context, 5h/7d rate-limit percent and cache hit; fields the engine has not reported are left out. */
+export const formatLine = (f: Figures): string => {
+	const parts: string[] = [];
+	if (f.model !== undefined) parts.push(f.model);
+	if (f.contextPercent !== undefined) parts.push(`ctx ${Math.round(f.contextPercent)}%`);
+	if (f.fiveHour !== undefined) parts.push(`5h ${Math.round(f.fiveHour)}%`);
+	if (f.sevenDay !== undefined) parts.push(`7d ${Math.round(f.sevenDay)}%`);
+	if (f.cacheHit !== undefined) parts.push(`cache ${f.cacheHit}%`);
+	return parts.join(" | ");
+};
+
+/**
+ * Pins the minimal status line (ADR-0190, REQ-COST-004): `session.measure`
+ * moves context and rate limits, `turn.complete` the cache figure of the last
+ * main-loop turn. Subagent turns are skipped, since their cache is not the
+ * lead's. The figures live in this closure because a hook instance is per session.
+ */
+export function registerStatusline(on: On): void {
+	let figures: Figures = {};
+	on("session.measure", async ($, e, next) => {
+		const limit = (kind: string) => e.rateLimits.find((r) => r.kind === kind)?.percentUsed;
+		figures = {
+			...figures,
+			model: await $.session.model(),
+			contextPercent: e.context.percent,
+			fiveHour: limit("five_hour"),
+			sevenDay: limit("seven_day"),
+		};
+		$.ui.status(formatLine(figures));
+		return next(e);
+	}).catch(($, e, next) => (fault($, "status line", next.error), next(e)));
+	on("turn.complete", { reason: "answer" }, async ($, e, next) => {
+		if (e.agentId === undefined && e.usage !== undefined) {
+			figures = { ...figures, model: await $.session.model(), cacheHit: cacheHitPercent(e.usage) };
+			$.ui.status(formatLine(figures));
+		}
+		return next(e);
+	}).catch(($, e, next) => (fault($, "status line", next.error), next(e)));
+}

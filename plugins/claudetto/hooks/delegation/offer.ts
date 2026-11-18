@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+import { fault } from "../fault";
 
 /**
  * Hides the engine's built-in agent types from the model, except `fork`
@@ -8,6 +9,6 @@ import type { On } from "claude-code";
  */
 export function registerOffer(on: On): void {
 	on("agent.offer", (_$, e, next) => (e.source === "built-in" && e.agent !== "fork" ? { isOffered: false } : next(e))).catch(
-		(_$, e, next) => next(e),
+		($, e, next) => (fault($, "agent offer", next.error), next(e)),
 	);
 }
