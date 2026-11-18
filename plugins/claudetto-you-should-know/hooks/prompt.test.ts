@@ -1,6 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
-import { explainPrompt, proposePrompt } from "./prompt";
+import { ASKED_WAYS, explainPrompt, proposePrompt } from "./prompt";
+import { AFTER_KNOWN } from "./propose-text";
 import { parseExplanation } from "./cards";
 
 test("the propose prompt keeps the labels the parser reads and the none reply", () => {
@@ -32,17 +33,18 @@ test("the propose prompt places earlier offers and known topics in their own tag
 	expect(knowns).toContain("- KNOWN-ONE");
 });
 
-test("the propose prompt says a secret inside a command was not typed into the chat (REQ-062)", () => {
+test("the propose prompt carries the secret-in-a-command section whole (REQ-062)", () => {
 	// Arrange
-	const prompt = proposePrompt([], []);
+	const open = AFTER_KNOWN.indexOf("<safety_of_the_conversation>");
+	const section = AFTER_KNOWN.slice(open, AFTER_KNOWN.indexOf("</safety_of_the_conversation>") + 1).join("\n");
 
 	// Act
-	const clause = prompt.slice(prompt.indexOf("<safety_of_the_conversation>"));
+	const prompt = proposePrompt([], []);
 
 	// Assert
-	expect(clause).toContain("osascript");
-	expect(clause).toContain("was not typed into the chat");
-	expect(clause).toContain("only when a message from the person contains it");
+	expect(open).toBeGreaterThanOrEqual(0);
+	expect(section.split("\n").length).toBeGreaterThan(2);
+	expect(prompt).toContain(section);
 });
 
 test("the propose prompt asks for the session language and stays within its size budget (REQ-073)", () => {
@@ -70,7 +72,7 @@ test("the explain prompt carries the topic, the frame and the language rule, and
 	expect(first).toContain("Language instruction");
 	expect(first).not.toContain("<previous_explanation>");
 	expect(again).toContain("EARLIER-TEXT");
-	expect(again).toContain("with less detail");
+	expect(again).toContain(ASKED_WAYS.less_detail);
 });
 
 test("an explanation shaped as the explain prompt asks parses into a titled card", () => {
