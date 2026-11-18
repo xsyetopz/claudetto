@@ -1,11 +1,5 @@
 # Conflicts with Settled Decisions
 
-- [ ] **RT-038** The root decides who runs a slice by this algorithm: if the slice is smaller than one file read or about 5 requests, the root does it (a fresh Artemis writes about 5k and Heracles about 11k tokens before work; 6 runs on 2026-11-09); if it needs more than about 25k tokens of reads, Artemis reads; if it is a specified edit with a check command, Heracles at Sonnet; if it is design or cross-cutting, the root does it or passes `model: opus`. The cut-offs come from measurement. Measured delegation: two bounded fixes in parallel took 31 s and `/cost` $0.3012 (Opus root $0.2144, Sonnet workers $0.0861, Haiku $0.0008), and each worker used 62k-126k tokens.
-  Basis: measured. Status: partial at 088a227c (`plugins/claudetto/hooks/features/delegation/texts.ts`).
-  Source: plugins/claudetto/hooks/features/delegation/texts.ts@088a227c.
-  Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
+- [x] **RT-038** Moved Out as OUT-2597: needs a paid model run or a benchmark.
 
-- [ ] **RT-039** claudetto shall run a weekly holistic review: a per-project improvement-plan.md holds the instructions; the model reads it, reviews codebase diffs since the last review date, and writes findings sorted by criticality (high to low) and effort (low to high) with instructions for Opus workers, spawning no more than 4 subagents; it costs up to two 5 h Max sessions.
-  Basis: reported, 1 author.
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:130; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:132; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:144 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xta14a/examples_of_fable_doing_things_much_better_than/>).
-  Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
+- [x] **RT-039** Moved Out as OUT-2598: describes a part that plugins/ does not ship.

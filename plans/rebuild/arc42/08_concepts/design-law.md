@@ -10,7 +10,4 @@
   Basis: user decision. Status: partial at 088a227c (`.jscpd.json` and `AGENTS.md:38` hold the jscpd rule per `git grep -n jscpd 088a227c`; no runtime repeat check).
   Source: user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615); user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928).
 
-- [ ] **CC-081** claudetto writes its root prompt, tool and agent descriptions, and hook texts in block language; replies, docs, and the changelog keep full articles.
-  Acceptance: texts follow the block-language rule. Verification: inspection.
-  Basis: reported. Status: partial at 088a227c (rules/useBlockLanguage.md).
-  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1757).
+- [x] **CC-081** Moved Out as OUT-2632: third-party report with no probe.

@@ -10,6 +10,4 @@
 
 ## One Source for Agent Rules
 
-- [ ] **CC-018** claudetto shall keep one global file that holds the key rules as short numbered sections, and every other agent file points back to it; two files saying slightly different things is the real bug, because the agent follows whichever it read last.
-  Basis: reported (one commenter). Status: missing at 088a227c.
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xlujwl-claude-codes-docs-say-claudemd-i-20261102T140430Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlujwl/claude_codes_docs_say_claudemd_is_context_not/>).
+- [x] **CC-018** Moved Out as OUT-2670: third-party report with no probe.

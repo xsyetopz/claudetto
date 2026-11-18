@@ -4,6 +4,4 @@
   Basis: reported, cited, and measured (n=3 to 16). Status: partial at 088a227c (`plugins/claudetto/hooks/features/surface/surface.ts`; only `skills/docs` ships).
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:60; plugins/claudetto/hooks/features/surface/surface.ts@088a227c.
 
-- [ ] **CC-036** When a tool has a CLI, a short SKILL.md teaches it (`jq` for structured output, small example outputs) in place of an MCP schema paid every turn; MCP stays for deeply structured data or auth plumbing; deterministic work is mechanical and the agent does judgment.
-  Basis: reported by several, with one unquantified comparison. Status: have at 088a227c (`plugins/claudetto/skills/docs` uses a CLI).
-  Source: external/2026-10-07_p2/export-Skills + CLI is just better than MCP, right-.jsonl:7 (a skill that says to use the CLI, with 3 examples and a pipe through jq; MCP kept for typed or auth cases), :18 (small example outputs plus jq); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:93.
+- [x] **CC-036** Moved Out as OUT-2671: third-party report with no probe.

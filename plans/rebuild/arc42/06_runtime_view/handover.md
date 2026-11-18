@@ -9,10 +9,7 @@
 
 ## Clear Hook
 
-- [ ] **RT-025** Renewal splits by mode ([ADR-0184](../../adr/0184-headless-renewal-by-driver.md)). Interactive: the mod calls `$.session.compact({instructions})` between turns, and the `session.compact` hook returns the handover as the new messages. Headless (`-p`): the mod catches the rejection of `$.session.compact` and of a plugin-issued `/clear`, and the driver sends `/clear` or `/compact <instructions>` as a prompt.
-  Acceptance: under `-p`, the mod logs the caught rejection and the driver's `/clear` runs; interactively, one live probe shows the `session.compact` hook with trigger `plugin` and the handover as the first message after it. Verification: probe.
-  Basis: measured on claude 2.1.327 for `-p` (plugin clear discarded by `clearCommandQueue`, chunk-m14bt1pz.js@740648; `$.session.compact` rejected in headless, chunk-rap1tzf6.js@763945); the interactive path is probed: `$.session.compact` from `turn.complete` is accepted, the hook gets trigger `plugin`, and the handover becomes the first message (CTX-843). The 2.1.325 pass-through by `e.origin.kind === "plugin"` is refuted under `-p`. Status: missing at 088a227c.
-  Source: handover probes A and F, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with a repo plugin dir, stream-json prompts (reports/2026-11-18-research/handover-probes/probe-f/probe.log; reports/2026-11-18-research/handover.md Q2); handover probe H, claude 2.1.327, 2026-11-18, interactive TUI in tmux (reports/2026-11-18-research/handover-probes/probe-h/probe.log, run3/); session-cycle probe, claude 2.1.325, 2026-11-16 (recorded in plans/rebuild-curation.md at commit dc499712).
+- [x] **RT-025** Moved Out as OUT-2603: needs a live TUI or driver run to observe request order; no free probe.
 
 ## Store
 
