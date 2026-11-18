@@ -40,17 +40,4 @@
   - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search `tengu_tab_read_sep`: chunk-e38nza00.js@1555 still reads `Qt("tengu_tab_read_sep",!1)`, default off, so the limit stays and no plugin lever exists.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:615 (measured).
 
-- [ ] **RISK-480** A multi-line perl edit spans past its target item and changes another item's line.
-  - Category: agent fault.
-  - Cause: under `perl -0` with `/s`, a lazy `.*?` also matches newlines, so a pattern anchored on one item ID runs on to the first later line that fits, such as the next item's `Source:` line.
-  - Event: on 2026-11-17 the lead prepended a citation for CON-048 and REQ-GUARDS-040 with `perl -0pi -e 's{(\*\*ID\*\*.*?\n(?:  .*\n)*?  Source: )}{...}s'`; both landed on the `Source:` line of a later item. The diff review caught it before the commit.
-  - Consequence: a wrong attribution on an unrelated item, unseen unless the diff is read line by line.
-  - Likelihood: 3
-  - Impact: 4
-  - Existing controls: the lead reads `git diff` before each commit.
-  - Response: mitigate.
-  - Actions: the perl edit tool scopes a match to one block (state set at the item's header line, cleared at the next header) or uses no `/s`; it prints each changed line with its file and line number, and refuses an edit whose change count differs from the count expected.
-  - Trigger: a perl edit that matches across lines.
-  - Owner: edit
-  - Status: open
-  - Source: observed in transcript, 2026-11-17, lead session `0342617c` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl).
+- [x] **RISK-480** Moved Out as OUT-2348: the item describes a part that plugins/ does not ship.
