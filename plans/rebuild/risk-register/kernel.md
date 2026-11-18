@@ -201,6 +201,19 @@
 
 ## Long Run Stops on Error
 
+- [ ] **RISK-491** A response cut mid-stream stops an interactive turn until the user types "continue".
+  - Category: Defect
+  - Cause: core resumes a truncated response only for a subagent or a `-p` main loop (`H_`, chunk-8g2nr9dn.js@203426, 2.1.327); an interactive main loop ends the turn with an API-error message whose text ends "The response above may be incomplete." (chunk-m14bt1pz.js@3366150).
+  - Event: an interactive 2.1.327 session in auto mode stopped on "API Error: Connection lost mid-response. The response above may be incomplete." and resumed only after the user typed "continue" (user screenshot, 2026-11-19).
+  - Consequence: a long run halts unattended, and the work waits until the user returns.
+  - Likelihood: 3 before the control, 2 after it.
+  - Impact: 3
+  - Existing controls: `plugins/claudetto/hooks/notice/stop.ts` marks the cut at `classic.StopFailure` and, at the `turn.complete` with reason `error` that follows, submits one plugin-framed continuation when a surface draws the session; at most two resumes per ten minutes, then the error notice. The host refuses `$.prompt.submit` from a StopFailure hook ("submit from a later event (turn.complete)"), which sets the two-event shape.
+  - Response: mitigate.
+  - Actions: tests "a cut mid-response in a drawn session submits one continuation instead of a notice", "a third cut in a row notifies, so a dead link never loops" and "a cut in a -p run is left to core's own recovery" in `plugins/claudetto/hooks/notice/stop.test.ts` (54 of 54 pass, 2026-11-19). Open: a live cut in a dogfood session, to confirm on the real engine that StopFailure reaches the hook before `turn.complete`.
+  - Trigger: a dogfood transcript where a cut is followed by the error notice instead of the continuation, or by a typed "continue".
+  - Owner: kernel
+
 
 ## Safeguards and Guards
 
