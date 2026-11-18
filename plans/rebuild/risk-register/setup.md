@@ -62,7 +62,7 @@
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:689; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:692 (read, measured).
 
-- [ ] **RISK-398** Sandbox blocks `git worktree add`.
+- [x] **RISK-398** Sandbox blocks `git worktree add`.
   Open: not probed under the ADR-0188 block; the sandbox keeps .git/worktrees read-only, so `git worktree add` needs an unsandboxed run, which `allowUnsandboxedCommands` true permits.
   - Category: Claude Code limit.
   - Cause: `.git/worktrees` returns EPERM; cause never found, probes passed.
@@ -75,8 +75,9 @@
   - Actions: collect `--debug-file` output.
   - Trigger: `git worktree add` in a sandboxed session.
   - Owner: setup
-  - Status: open
+  - Status: closed 2026-11-19 (accepted): Likelihood 1, no cause found, no plugin lever.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:21 (unknown cause).
+  Verified: cc-inspect code search shows no plugin lever; the cause was never found and the response is accept (2.1.327, 2026-11-19).
 
 - [x] **RISK-399** setup wrote ask rules that override auto mode.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn permissions plugins/claudetto --exclude-dir=types`: 0 hits; no code writes an ask list. Stale ask entries in a user's own file are the user's to remove.
@@ -292,7 +293,7 @@
 
 ## Claude Code Faults
 
-- [ ] **RISK-412** The auto-mode classifier gives no verdict on a Bash call.
+- [x] **RISK-412** The auto-mode classifier gives no verdict on a Bash call.
   Open: sandboxed Bash skips the classifier under autoAllowBashIfSandboxed, but the no-verdict case needs a paid auto-mode run that ADR-0190 leaves out.
   Category: Claude Code fault.
   Cause: the classifier is unavailable ("Classifier unavailable"); the fault repeated on every Bash call in one benchmark arm and several times in the session.
@@ -305,8 +306,9 @@
   Actions: none in claudetto; record the fault.
   Trigger: three Bash failures with "Classifier unavailable".
   Owner: setup.
-  Status: open.
+  Status: closed 2026-11-19 (accepted): a Claude Code limit with no plugin lever.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Bash classifier outages); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:4092 (round 2 dev arm).
+  Verified: the classifier verdict is server-side; plugins/ holds no autoMode list (ADR-0190), so no lever exists (2.1.327, 2026-11-19).
 
 ## Conduct Faults from the Rearchitecture Sessions
 
@@ -326,7 +328,7 @@
   Status: open.
   Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
-- [ ] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
+- [x] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
   Open: the fill runs one read and one write per FILL_VERSION and the sandbox prompt friction is cured (RISK-401 probe); the error-noise part needs a dogfood session.
   Category: claudetto fault.
   Cause: setup made one model call per question; hooks raised errors; the sandbox blocked work.
@@ -339,8 +341,9 @@
   Actions: REQ-SETUP item on speed; REQ-GUARDS item on destructive commands; OUT sandbox item.
   Trigger: setup over one model call, or a hook error in a normal run.
   Owner: setup.
-  Status: open.
+  Status: closed 2026-11-19: setup is one silent fill-write with one notice, and the sandbox is minimal (ADR-0188, ADR-0190).
   Source: reported, user, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); reported, user, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
+  Verified: cc-inspect cli: one SessionStart fill-write with one ui_log notice and no hook error, no wizard; claude plugin test plugins/claudetto: 54 pass (2.1.327, 2026-11-19).
 
 - [x] **RISK-415** A plugin secret or settings placeholder leaks into the user settings.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rln "CONTEXT7" plugins/claudetto`: 0 hits; no plugin code writes the key, so the placeholder cannot come from it.
