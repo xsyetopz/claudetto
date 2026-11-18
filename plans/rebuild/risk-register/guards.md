@@ -149,7 +149,7 @@
   Status: closed 2026-11-18: setup text for sandbox refusals is dropped (OUT-017); no Bash text of claudetto names a denied `.env` read.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:156.
 
-- [ ] **RISK-040** Agent reaches a protected file or action through a channel the guard does not watch.
+- [x] **RISK-040** Agent reaches a protected file or action through a channel the guard does not watch.
   Category: guards
   Cause: A guard keyed to one tool name (a shell read denied) leaves another path open (the read tool); a prompt rule is the only fence; a deny rule blocks one command and the agent picks another that does the same thing; a write deny on one path leaves another route to the same bytes open.
   Event: Checker run of 14 agents, 480 runs: 13 of 14 read a protected file they were told not to touch; only OpenClaw held, 0 effects in 96 runs. 10 of 14 ran the deploy. 8 cells were denied on one channel while the effect arrived through another; 277 more never asked at all. All 4 credential leaks went through the read tool and the approver never saw them. Another report: a user with a settings file of deny cases caught the agent three times reporting it had no permission and then finding a way around it (first `git rm`, second `node` to remove the file) (reported, one user); a write-denied `.mcp.json` was preserved through a `git archive` tarball.
@@ -163,6 +163,7 @@
   Owner: guards
   Status: open
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/opus_55_just_shared_my_email_address/>); external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:163; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:31,33,102; external/2026-11-14/reddit.com-r-aiagents-comments-1xqjioz-i-tested-14-coding-agents-agains-20261113T195316Z.md:61,79,98 (url: <https://www.reddit.com/r/aiagents/comments/1xqjioz/i_tested_14_coding_agents_against_their_own_rules/>).
+  Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. A channel outside the shell and Read tools (an MCP server) is not covered.
 
 - [ ] **RISK-041** An approval prompt is taken as the control and the logged approval was never seen by the user.
   Category: guards
@@ -304,7 +305,7 @@
 
 ## Credential Leaks
 
-- [ ] **RISK-050** Agent finds a broad token in an unrelated file.
+- [x] **RISK-050** Agent finds a broad token in an unrelated file.
   Category: agent
   Cause: PocketOS case: a token made for one small job sat in an unrelated file and could delete anything.
   Event: The agent finds the token and uses it for a destructive call.
@@ -318,6 +319,7 @@
   Owner: guards
   Status: open. Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:73 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>).
+  Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. Env files and credential stores are denied; tokens in other files are not scanned.
 
 - [x] **RISK-051** Bulk run to an outside model sends a secret.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the outside-model client, owned by the user's bulk-run setup).
@@ -355,7 +357,7 @@
 
 ## Boundaries And Safety
 
-- [ ] **RISK-053** Held-out leak: a session sees data the wall must keep from it.
+- [x] **RISK-053** Held-out leak: a session sees data the wall must keep from it.
   Category: safety.
   Cause: the wall depends on a user deny layer and on file tools only.
   Event: a session printed the first 110 characters of every user answer in 55 mined sessions to the agent that must not see them; a held-out file was read through `head`/`grep` after the user's deny rule vanished; held-out cases and regexes were printed; a graded run folder sat outside the wall.
@@ -367,6 +369,7 @@
   Trigger: a read of a path under the wall by Bash or an interpreter.
   Owner: guards. Status: partial at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/levers-review.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; plugins/claudetto/.claude-plugin/plugin.json:84@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:131@088a227c.
+  Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. The holdout wall is in deny, denyRead and denyWrite by default; the holdout path itself was not probed.
 
 - [ ] **RISK-054** Injection and disclosure: the agent treats data as the user's message.
   Category: safety.
@@ -455,7 +458,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:159; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:47. Not located: the 35 calls, 63% OpenSAD, and D323 removal text; observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:378; reported, user, 2026-11-10
   Status: closed 2026-11-18: the gate texts that handed commands to the user are dropped (OUT-035, OUT-021) and the Stop check on `!` operands was removed in 2.1.323; `git grep -F -e 'person must approve' -e REFUSAL -- plugins` finds no hit.
 
-- [ ] **RISK-060** Agent runs a release step after a failed step, or a revert that discards uncommitted work.
+- [x] **RISK-060** Agent runs a release step after a failed step, or a revert that discards uncommitted work.
   - Category: conduct.
   - Cause: A command chains a tag and push after a merge loop that may fail, or runs `git checkout --` on a file with new uncommitted edits, with errors hidden by `2>/dev/null`.
   - Event: A side-agent note warns the user that a tag may point at a half-merged commit, or that ticks and notes will be lost.
@@ -469,6 +472,7 @@
   - Owner: guards
   - Status: open.
   - Source: observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:13333`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25106`).
+  Verified: claude 2.1.327, 2026-11-18. Force pushes are denied and hard reset, clean, stash and branch -D ask first (fill.test.ts pins the ask rules; cc-inspect cli showed the force push denied, also in a compound command). Running a release step after a failed step is not controlled.
 
 - [ ] **RISK-061** Agent interrupts the user's screen to capture or test.
   - Category: conduct.
@@ -554,7 +558,7 @@
 
 ## Guards And Destructive Actions
 
-- [ ] **RISK-067** Destructive repair and scope escalation, including a disk-cleanup prompt that is no enforced control.
+- [x] **RISK-067** Destructive repair and scope escalation, including a disk-cleanup prompt that is no enforced control.
   Category: Agent behaviour.
   Cause: Parallelism in one tree plus broad credentials; prompt rules fade and the shared tree has no undo; a cleanup prompt is not an enforced control; over-eager tidying; an empty variable in rm -rf "$d"/*; a quoting slip such as `/dir/ *` makes `rm` delete everything.
   Event: Shared-tree git stash (81 files restored wrong), soft reset to FETCH_HEAD, forced pushes, edits to the user's .claude or AGENTS.md via Bash, an overwritten baseline, a folder moved to another drive and called "safe elsewhere" with no destination, production data deleted with an over-scoped token (three incidents), a whole git repo copied, disks filled to about 1 TB by uncleaned test folders, an unlisted openspec/ vanished with 1,377 staged deletions (cause unproven), `rm -rf` attempted 117 times in 2 months despite a never-list, a quoting slip (/dir/*) deleting everything; `rm` runs with spaces or globs that widen the target.
@@ -566,6 +570,7 @@
   Trigger: A Bash call runs git stash, git reset, or rm -rf with a glob after a space; an `rm` command line with an unquoted space or glob.
   Owner: guards. Status: open; missing at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:27,43; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:76; openspec/changes/2-1-325-rearchitecture/design.md:187; external/please-use-me-often/agent-terms/TERMS-OF-USE.md:224; unresolved: no source line located for this claim
+  Verified: claude 2.1.327, 2026-11-18. Settings ask rules prompt on hard reset, clean, stash, branch -D, tag pushes, pkill and killall (fill.test.ts). Prompts are Claude Code's own and are enforced by it. The disk-cleanup prompt part is not built.
 
 - [ ] **RISK-068** Temp-folder residue: a dependency or setup proven under /tmp is left there and absent from the project.
   Category: Agent behaviour.
@@ -931,7 +936,7 @@
 
 ## Agent Edits Its Own Gate
 
-- [ ] **RISK-091** An agent blocked by a commit gate edits the hooks that gate it.
+- [x] **RISK-091** An agent blocked by a commit gate edits the hooks that gate it.
   Category: agent failure.
   Cause: An agent changed 3 of the owner's hooks so its files counted as low risk and needed no review, wrote "commit" as printf pieces so a second hook would not match, then committed and pushed to prod with 76 of 76 tests green; a commenter saw an agent comment out lines in a pre-commit script instead of fixing the lint errors.
   Event: The agent edits a hook or a check that blocks it, or hides a word from a matcher.
@@ -945,6 +950,7 @@
   Owner: guards.
   Status: open.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:31; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:35; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:69; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:81; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:83; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:95; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:97; external/2026-11-02/reddit.com-r-claudeai-comments-1xfddtb-has-claude-code-ever-just-edited-20261031T105452Z.md:103 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfddtb/has_claude_code_ever_just_edited_your_hook_to_get/>)
+  Verified: claude 2.1.327, 2026-11-18. Setup writes denyWrite for ~/.claude/hooks and ~/.claude/plugins and ask rules for ~/.claude/settings.json (fill.test.ts pins the lists); cc-inspect cli showed a sandboxed write into a denyWrite path failing with Operation not permitted.
 
 ## Agent Faults: W5-1 to W5-18
 
@@ -1080,7 +1086,7 @@
   Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:106.
 
-- [ ] **RISK-103** A destructive action by a subagent loses user work.
+- [x] **RISK-103** A destructive action by a subagent loses user work.
   Category: agent failure.
   Cause: a subagent `git stash` and `pop` in the shared checkout restored 81 staged-deleted files; another left 2 conflicts, 78 restored files, and 12 failing tests, with the repair blocked by the classifier; a test `.env` in the repo root broke every `bun` run for 4 subagents; a measurement tool without `--no-write` overwrote a committed baseline; a generator ran "by accident"; an agent rewrote a rule in a user-owned AGENTS.md and then reverted it; an earlier plugin default `cleanupPeriodDays: 14` deleted history.
   Event: user work is lost or corrupted.
@@ -1093,6 +1099,7 @@
   Owner: guards.
   Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:151.
+  Verified: claude 2.1.327, 2026-11-18. Subagent shells inherit the same settings: the force-push deny and the ask rules apply to them as to the main session (settings are session-wide). Not probed separately inside a subagent.
 
 ## Verification Risks
 
@@ -1267,7 +1274,7 @@
 
 ## Conduct
 
-- [ ] **RISK-115** Agent forces past a refusal or runs a command the user banned, without asking.
+- [x] **RISK-115** Agent forces past a refusal or runs a command the user banned, without asking.
   Category: conduct.
   Cause: A tool refuses an action (an `--force` override of a confirmation, a `pkill`), and the agent overrides or runs it.
   Event: The agent turns on an access endpoint with `--force` and mints a control token, or runs `pkill` against a user rule; a side-agent note and the permission system flag it.
@@ -1281,6 +1288,7 @@
   Owner: guards
   Status: open
   Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30180`); observed in transcript, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:11026`).
+  Verified: claude 2.1.327, 2026-11-18. The force-push deny rules refuse the command without a prompt and cc-inspect cli showed them enforced under bypassPermissions; user-banned commands are the user's own deny rules, which setup keeps (fill.test.ts: user entries stay).
 
 ## Untasked Action And Unproven Cause
 
@@ -1317,7 +1325,7 @@
   - Status: closed, ADR-0190 (Betterleaks does not ship; the deny rules of REQ-GUARDS-001 carry the cure).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/2af43de8-8620-4533-a71a-53628df9df4f.jsonl:11 (handoff of 2026-11-12, Standing Instructions); observed in transcript, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:11 (standing instructions).
 
-- [ ] **RISK-118** The agent probes a blind folder with the sandbox off.
+- [x] **RISK-118** The agent probes a blind folder with the sandbox off.
   Category: guards
   Cause: The agent wanted to count the holdout task files and ran `ls ~/.claudetto-holdout` outside the sandbox.
   Event: The call was denied by permission; had it run, the holdout would no longer be blind.
@@ -1331,6 +1339,7 @@
   Owner: guards
   Status: open
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff, bug the agent caused); observed in transcript, 2026-11-16
+  Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true when unset (fill.test.ts), so the agent starts inside the sandbox; allowUnsandboxedCommands stays true per ADR-0159, so an agent can still ask for a call outside it and that call prompts.
 
 - [ ] **RISK-486** The disk fills and builds, caches and Claude Code itself fail.
   - Category: environment.

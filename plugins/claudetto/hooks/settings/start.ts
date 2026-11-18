@@ -1,4 +1,4 @@
-import type { On } from "claude-code";
+import type { On, PluginOptions } from "claude-code";
 
 import { repairSettings } from "../builtins/builtins";
 import { FILL_VERSION, fillSettings } from "./defaults";
@@ -12,7 +12,8 @@ const MARK = "setup.filled";
  * one read and one write of user settings. Core allows one unmatched
  * `session.start` registration per plugin, so both share this hook.
  */
-export function registerStart(on: On): void {
+export function registerStart(on: On, options: PluginOptions = {}): void {
+	const walls = options["protectedPaths"];
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
 		const path = await userSettingsPath($);
@@ -23,7 +24,7 @@ export function registerStart(on: On): void {
 			return result;
 		}
 		const filled = (await $.store.get(MARK)) === FILL_VERSION;
-		const fill = filled ? undefined : fillSettings(repair.text);
+		const fill = filled ? undefined : fillSettings(repair.text, Array.isArray(walls) ? (walls as string[]) : undefined);
 		const added = fill?.added ?? [];
 		if (repair.drifted.length > 0 || added.length > 0) await $.fs.write(path, fill?.text ?? repair.text);
 		if (!filled) await $.store.set(MARK, FILL_VERSION);

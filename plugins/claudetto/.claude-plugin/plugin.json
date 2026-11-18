@@ -11,6 +11,28 @@
 	"engines": {
 		"claude-code": ">=2.1.327"
 	},
-	"keywords": ["context", "handover", "builtins"],
-	"version": "0.1.0"
+	"keywords": [
+		"context",
+		"handover",
+		"builtins"
+	],
+	"version": "0.1.0",
+	"userConfig": {
+		"protectedPaths": {
+			"type": "string",
+			"multiple": true,
+			"title": "Walled-off paths",
+			"description": "Folders no session may read or write: setup adds a Read deny rule and sandbox denyRead and denyWrite for each. Default: the held-out eval set.",
+			"default": [
+				"~/.claudetto-holdout"
+			]
+		},
+		"memoryFreeMinPercent": {
+			"type": "number",
+			"title": "Free memory share that holds new work",
+			"description": "Below this share of free memory, a new command or subagent is refused until runs end. 0 turns it off.",
+			"default": 20,
+			"min": 0
+		}
+	}
 }
