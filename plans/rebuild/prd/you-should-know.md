@@ -21,7 +21,7 @@
 
   Acceptance: the frame sent with each check, explanation and note equals the text byte for byte. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@40155 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@40233 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-002** claudetto shall build the explanation prompt as the side-request frame, a blank line, then the body below, with `${...}` filled at run time; the `previous` block appears only when `prev` is set (`prev` = `{direction, previous}`; omitted for the first explanation).
 
@@ -43,12 +43,12 @@
 
   Acceptance: for a first explanation the prompt has no previous block; for a rewrite it holds the quoted previous text and the phrase for its direction; the text equals the template byte for byte. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@41150 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@41228 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-003** claudetto shall map each asking direction to its phrase: `ASKED_WAYS = {simpler_words:"in simpler words", less_detail:"with less detail", more_detail:"in more detail"}`.
   Acceptance: a rewrite asked for less detail says "with less detail" in the previous block. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@37877 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@37955 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-004** claudetto shall give each explanation prompt this format text, verbatim, with `${lengthLine}` set to the line for the direction. The source concatenates `'\nShape:\n1. A title line: ...'` after the length line; `→` is `\u2192`, `\xD7` is `×`, `…` is `\u2026`.
 
@@ -64,7 +64,7 @@
 
   Acceptance: the format text in the prompt equals the text byte for byte. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@37979 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@38057 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-005** claudetto shall pick the length line by direction, `first` when `prev` is omitted, and use these lines verbatim.
   - `first`: `At most 100 words; fewer when the thing needs no introduction.`
@@ -73,7 +73,7 @@
   - `more_detail`: `Now name the real parts: show the actual config keys, file or function involved (each introduced as everyday words then the name in backticks), and one edge case that would surprise them. Still for a reader with no context; still no invented terms. At most 160 words; a sketch of the real structure is welcome here if it helps.`
   Acceptance: each direction yields exactly its line. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@39379-39451 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@39457-39529 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-006** claudetto shall wrap a note sent with the user's message in this text, verbatim, with `${text}` the note.
 
@@ -84,22 +84,22 @@
 
   Acceptance: the context injected with an auto-sent note equals the text byte for byte. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@75939 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@76017 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-007** claudetto shall build the draft for "Chat in main session" as `cleanForDraft("Here is a note offered by a side agent:\n\n" + quoted)`, where `quoted = [`${tag} · ${line cut to 240}`, ...cards.map(cardText)].join("\n\n").split("\n").map(l => l==="" ? ">" : "> "+l).join("\n")` and `cardText(card) = [title ? "**"+title+"**" : "", lead, sketch.length ? "```\n"+sketch.join("\n")+"\n```" : "", caption].filter(nonEmpty).join("\n")`.
   Acceptance: the draft opens with the lead line, quotes each line with `>` (empty lines with `>`), and holds the title, lead, sketch fence and caption of each card. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/texts.ts:61@088a227c; chunk-na8s6d5h.js@76115 (claude 2.1.326 binary); chunk-na8s6d5h.js@36930 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/texts.ts:61@088a227c; chunk-nvx1z6pc.js@76193 (claude 2.1.327 binary); chunk-nvx1z6pc.js@37008 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-008** claudetto shall run `cleanForDraft` on every draft: replace lone surrogates with U+FFFD; strip default-ignorable code points (keep U+FE0E and U+FE0F only when attached to a pictographic or keycap); turn `@` after start, whitespace or `。、？！` and not before whitespace into fullwidth `＠`; give `[Pasted text #N`, `[Image #N`, `[...Truncated text #N` and `[✦ Team setup guide #N` (optional `+N lines`, trailing dots, then `]`) a leading fullwidth `［`; rewrite `(ultra)(code|plan|review|think)` (case-insensitive) to `$1-$2`. Purpose: stop the draft from triggering prompt-box mentions, placeholders or ultra keywords. The repo `INVISIBLE` regex differs from the builtin's; its `AT_MENTION` has the same idea.
   Acceptance: a draft with each trigger shows it defused; a plain draft passes unchanged. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:178-189@088a227c; chunk-na8s6d5h.js@37098-37847 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:178-189@088a227c; chunk-nvx1z6pc.js@37176-37925 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-009** claudetto shall send the propose prompt `proposePrompt(seen, known)` verbatim as the `model.fork` prompt, in place of `CHECK_INSTRUCTIONS` (`learn: <line>` / `tag:` / `explain: **title**` + 100 words), with `<<SIDE_REQUEST_FRAME>>` the frame above and `<<LIST seen>>` and `<<LIST known>>` the lists, each rendered as `- ${item}` lines joined with `\n`, or `(nothing yet)` when empty (the repo shows `(none)`). The text is `plans/rebuild/reference/you-should-know-prompt.md`.
   Acceptance: the prompt sent for a check equals the reference file text byte for byte, with the frame and the two lists filled; an empty list renders `(nothing yet)` and two items render two `-` lines. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plans/rebuild/reference/you-should-know-prompt.md; plugins/claudetto-you-should-know/hooks/texts.ts:1-28@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:30-31@088a227c; chunk-na8s6d5h.js@41689 (claude 2.1.326 binary); chunk-na8s6d5h.js@42245 (claude 2.1.326 binary).
+  Source: plans/rebuild/reference/you-should-know-prompt.md; plugins/claudetto-you-should-know/hooks/texts.ts:1-28@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:30-31@088a227c; chunk-nvx1z6pc.js@41767 (claude 2.1.327 binary); chunk-nvx1z6pc.js@42323 (claude 2.1.327 binary).
 
 ## Toasts, Row Text, And Copy
 
@@ -110,13 +110,13 @@
   - `RESPOND_NOT_FILLED`: `Couldn’t add the note. If the box has text, send or clear it, then try again.`
   Acceptance: each refusal shows its own text byte for byte; no text says "press 2 again". Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/texts.ts:65-72@088a227c; chunk-na8s6d5h.js@76417-76656 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/texts.ts:65-72@088a227c; chunk-nvx1z6pc.js@76495-76734 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-011** claudetto shall lead each row with `${tag} ·` where `tag` is `You should know` or `Heads up`, and a star glyph `✦`.
   - Tag lead: `${tag} ·` with `tag` = `You should know` or `Heads up`; star glyph `✦`.
   Acceptance: a row for each tag shows the star, the tag and a middle dot. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:63@088a227c; chunk-na8s6d5h.js@17629 (claude 2.1.326 binary); chunk-na8s6d5h.js@25340 (claude 2.1.326 binary); chunk-na8s6d5h.js@27373 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:63@088a227c; chunk-nvx1z6pc.js@17707 (claude 2.1.327 binary); chunk-nvx1z6pc.js@25418 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27451 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-012** claudetto shall show the About card copy: `WATCHING`, `WHEN`, `LEARN` (`Learn more` in bold) and, on terminal, `PLUGIN_OFF`. Desktop and app copy is the first three; terminal copy is all four. For claudetto-you-should-know the plugin id in the `/plugin disable` code is the id of the plugin that runs (inferred).
   - `A side agent is watching your back while Claude works.`
@@ -126,258 +126,258 @@
   - Desktop/app copy = first three; terminal copy = all four.
   Acceptance: the terminal card shows four lines, the app card three, each equal to its text below byte for byte. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@15838 (claude 2.1.326 binary); chunk-na8s6d5h.js@16566-16785 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@15916 (claude 2.1.327 binary); chunk-nvx1z6pc.js@16644-16863 (claude 2.1.327 binary).
 
 ## Surfaces And Layout
 
 - [ ] **REQ-YOU-SHOULD-KNOW-013** claudetto shall treat the surfaces `terminal`, `desktop`, `mobile` and `vscode` with `hasOwnComposer` false for terminal and true for desktop, mobile, vscode and an unknown surface, and shall render every view as a child of the `AbovePrompt` slot through `ui.resolve(input)` elements `Box`, `Text`, `Button` and `Code`.
   Acceptance: each surface draws the views in the slot; an unknown surface is drawn as one with its own composer. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:127@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:108-135@088a227c; chunk-na8s6d5h.js@26756-26860 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:127@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:108-135@088a227c; chunk-nvx1z6pc.js@26834-26938 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-014** claudetto shall, on a surface with its own composer (desktop, mobile, vscode), draw buttons clickable only: no `hotkey`, no `plain`, no star column. On terminal buttons are `plain` with `hotkey` and a star column. `Button` props used: `key`, `label`, `hotkey`, `plain`, `dimColor`, `role` (`"dismiss"` for Dismiss), `onPress`.
   Acceptance: a terminal button carries `plain` and its digit; a desktop button carries neither and no star column is drawn. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:132-137@088a227c; chunk-na8s6d5h.js@27515 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:132-137@088a227c; chunk-nvx1z6pc.js@27593 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-015** claudetto shall draw the lead as `Text ["✦", " ${tag} · "]` with a star column of width `STAR_CELLS=2` (`Box width 2, flexShrink 0`). Inks: terminal, mobile, vscode: star `color:"suggestion"`, tag `dimColor`; desktop: star and tag `color:"subtle"`. The repo draws `*` for the star; the cards draw as `Code` and prose, not plain `Text`; hotkeys show on terminal only.
   Acceptance: each surface draws the lead with its inks; the star is `✦`. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:108-118@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-na8s6d5h.js@17620 (claude 2.1.326 binary); chunk-na8s6d5h.js@27373-27425 (claude 2.1.326 binary); chunk-na8s6d5h.js@27807 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:108-118@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-nvx1z6pc.js@17698 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27451-27503 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27885 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-016** claudetto shall draw the offer row as `Box column marginTop 1` (`OFFER_MARGIN_ROWS=1`) holding the line `✦ ${tag} · ${line}`. On terminal the star sits in its own 2-cell column with the text beside it and wrapping reserves `WRAP_RESERVE_CELLS=1`. On desktop it is a row with the star and lead in a `flexShrink 0` left cell that carries a hover card, then the body text.
   Acceptance: the terminal row shows a star column and a wrapped body; the desktop row shows a left cell and a body. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:108-128@088a227c; chunk-na8s6d5h.js@32769 (claude 2.1.326 binary); chunk-na8s6d5h.js@17611 (claude 2.1.326 binary); chunk-na8s6d5h.js@17232 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:108-128@088a227c; chunk-nvx1z6pc.js@32847 (claude 2.1.327 binary); chunk-nvx1z6pc.js@17689 (claude 2.1.327 binary); chunk-nvx1z6pc.js@17310 (claude 2.1.327 binary).
 
-- [ ] **REQ-YOU-SHOULD-KNOW-017** claudetto shall draw the desktop hover card as an absolutely positioned `Box` (`bottom 1`, `left 0`, `display none`, on hover `display flex`) with a round dim border, `paddingX 1` and `width 60` (`CARD_WIDTH`), wrapping the About copy (`APP_COPY`). The props are summarized from notes, not re-verified line by line.
+- [ ] **REQ-YOU-SHOULD-KNOW-017** claudetto shall draw the desktop hover card as an absolutely positioned `Box` (`bottom 1`, `left 0`, `display none`, on hover `display flex`) with a round dim border, `paddingX 1` and `width 60` (`CARD_WIDTH`), wrapping the About copy (`APP_COPY`). The props match the 2.1.327 build (chunk-nvx1z6pc.js@15910-16100: `position absolute`, `bottom 1`, `left 0`, `display none`, hover `display flex`, `borderStyle round`, `borderDimColor`, `paddingX 1`, `width` 60).
   Acceptance: hovering the star cell shows the card of width 60 with the About copy; leaving hides it. Verification: demonstration.
-  Basis: inferred. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@15828-15938 (claude 2.1.326 binary); chunk-na8s6d5h.js@32769 (claude 2.1.326 binary).
+  Basis: measured (2.1.327 build, chunk-nvx1z6pc.js@15910-16100, cc-inspect `code read`, 2026-11-18). Status: missing at 088a227c.
+  Source: chunk-nvx1z6pc.js@15906-16016 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32847 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-018** claudetto shall draw below the line a choices row `OFFER_LABELS` as `Box marginLeft 2, flexWrap wrap`, each choice `Box marginRight 3` (`CHOICE_GAP`) around a `Button`, in this order: `1 Learn more`, `2 Knew this already`, `3 What is this` (only when the About copy fits in `maxRows`; open state `Return to topic` dim), `4 Disable` (dim; omitted when the surface has its own composer or `USER_TYPE==="external"`; armed label `Press again to disable`), `0 Dismiss`. When About is open and fits, the note body is replaced by the dim terminal copy (tag lead dropped); the About budget is `{maxRows, bodyColumns}` on terminal and `"scrolls"` on app surfaces. `USER_TYPE==="external"` also hides the About copy (`ir(hasOwnComposer, props, external)` returns no copy for it, so choice 3 is absent).
   Acceptance: the choices follow the order; choice 3 is absent when the copy does not fit; choice 4 is absent on desktop, mobile, vscode and for external users. With `USER_TYPE=external` an offer shows no key 4 and no key 3. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:56-67@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:125-140@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:63-66@088a227c; chunk-na8s6d5h.js@16083 (claude 2.1.326 binary); chunk-na8s6d5h.js@29019 (claude 2.1.326 binary); chunk-na8s6d5h.js@32667 (claude 2.1.326 binary); chunk-na8s6d5h.js@18327 (claude 2.1.326 binary); chunk-na8s6d5h.js@88400 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:56-67@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:125-140@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:63-66@088a227c; chunk-nvx1z6pc.js@16161 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29097 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32745 (claude 2.1.327 binary); chunk-nvx1z6pc.js@18405 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88478 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-019** claudetto shall draw the explained row as `Box column marginTop 1`: the head `✦ ${tag} · ${line}` with `marginBottom 1`; then per card from `fitCards(cards, bodyColumns)` a `Box column marginBottom 1 marginLeft 2` (`CARD_INSET=2`) holding the title (bold, markdown-escaped) and lead as one markdown prose block, a `Code` with `source` = sketch lines joined by `\n` (an empty line becomes a single space), `language:"text"`, `wrap truncate-end` when the card has a sketch, and the caption as markdown prose. `fitCards` truncates title and sketch lines to `columns-2` display cells with `…` (`FALLBACK_COLUMNS=80` when unknown). Then the choices `1 Understood`, `2 Chat in main session`, `0 Dismiss` (omitted when the survey slot is up).
   Acceptance: a card with a sketch draws a `Code` block; a line wider than `columns-2` ends in `…`; with the survey up the card shows without buttons. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:60-90@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; chunk-na8s6d5h.js@30633 (claude 2.1.326 binary); chunk-na8s6d5h.js@32421 (claude 2.1.326 binary); chunk-na8s6d5h.js@31848 (claude 2.1.326 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:60-90@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; chunk-nvx1z6pc.js@30711 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32499 (claude 2.1.327 binary); chunk-nvx1z6pc.js@31926 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-020** claudetto shall render prose with `proseMarkdown`: escape markdown specials, convert list markers to `-`, keep `N.` ordered markers only when sequential from the ordinal, use hard breaks `\n`, put the title as `**bold**` first and end with `\n\n`.
   Acceptance: a card with a `*` list shows `-` items; an ordered list not starting at its ordinal loses its numbers. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@30312 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@30390 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-021** claudetto shall measure display width as: code point < 4352 -> 1 cell; ranges 8208-8286, 8592-8703, 9472-9727 (except 9725, 9726) -> 1; else 2 (`WIDE_FROM=4352`).
   Acceptance: a CJK character counts 2 cells, `a` counts 1, U+2192 counts 1. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@17150-17162 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@17228-17240 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-022** claudetto shall make the hotkeys the digits shown on terminal, and shall treat a bare digit typed in the prompt box as a button press for the same key (the auto-send logic treats a lone digit as a press).
   Acceptance: typing `1` alone in the box presses the button with hotkey 1. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-na8s6d5h.js@27515 (claude 2.1.326 binary); chunk-na8s6d5h.js@78405 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-nvx1z6pc.js@27593 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78483 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-023** claudetto shall hide the offer when `hasSurvey` is set (falling through to `next`) but keep an `explained` card, without buttons.
   Acceptance: with a survey up, an offer is not drawn and an explained card is drawn with no buttons. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:218@088a227c; chunk-na8s6d5h.js@86583 (claude 2.1.326 binary); chunk-na8s6d5h.js@88320 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:218@088a227c; chunk-nvx1z6pc.js@86661 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88398 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-024** claudetto shall run the idle clock for auto-send only while the offer is fully drawn and unread: surface `terminal`, no survey, `isCollapsed` unset, no debug rows shown, the view an `offer` that is not armed (`isOffArmed!==true`), `scroll.offset===0`, the note not yet read (`isNoteRead`), and `closedOfferRows({columns:bodyColumns, tag, line, labels:all five})<=maxRows`. The clock accrues only while no turn works (`isWorking` freezes it), and any failed condition deletes it; an offer idle for `NOTE_READ_MS=2000` ms counts as read by the auto-send check.
   Acceptance: a narrow terminal that cannot hold the five-label row starts no idle clock; each of `isCollapsed`, a survey, `scroll.offset!==0`, debug rows and an armed Disable stops the clock; the clock does not advance while the model works. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@17721 (claude 2.1.326 binary); chunk-na8s6d5h.js@34270-34420 (claude 2.1.326 binary); chunk-na8s6d5h.js@85900-86460 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@17799 (claude 2.1.327 binary); chunk-nvx1z6pc.js@34348-34498 (claude 2.1.327 binary); chunk-nvx1z6pc.js@85978-86538 (claude 2.1.327 binary).
 
 ## Hooks And Check Trigger
 
 - [ ] **REQ-YOU-SHOULD-KNOW-025** claudetto shall call the model with `model.fork` on the live conversation: no digest, the cache shared, no model or effort option. It shall not build the 8-entry log digest nor call `$.model.complete` with `maxTokens 512` and `timeoutMs 20000`.
   Acceptance: a check issues one `model.fork` and no `model.complete`; the settings hold no model or effort key. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:99-121@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:16-22@088a227c; plugins/claudetto-you-should-know/hooks/settings.ts:3-24@088a227c; plugins/claudetto-you-should-know/.claude-plugin/plugin.json:22-28@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:110@088a227c; chunk-na8s6d5h.js@82099 (claude 2.1.326 binary); chunk-na8s6d5h.js@79544 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:99-121@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:16-22@088a227c; plugins/claudetto-you-should-know/hooks/settings.ts:3-24@088a227c; plugins/claudetto-you-should-know/.claude-plugin/plugin.json:22-28@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:110@088a227c; chunk-nvx1z6pc.js@82177 (claude 2.1.327 binary); chunk-nvx1z6pc.js@79622 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-026** claudetto shall track `checking` in flight, `askedTurn` and `offeredTurn`, and clear `explaining` and `making` views that survive a process.
   Acceptance: a row left in `explaining` by a dead process is cleared at the next start; a second check does not start while one is in flight. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:142-155@088a227c; chunk-na8s6d5h.js@80120-81300 (claude 2.1.326 binary); chunk-na8s6d5h.js@35276-35500 (claude 2.1.326 binary); chunk-na8s6d5h.js@77670 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:142-155@088a227c; chunk-nvx1z6pc.js@80198-81378 (claude 2.1.327 binary); chunk-nvx1z6pc.js@35354-35578 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77748 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-027** claudetto shall keep 32 rows and prefer to drop closed rows older than 3 days (the repo keeps 32 by `keepRank` only).
   Acceptance: with 33 rows the oldest closed row over 3 days old goes first. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:285-293@088a227c; chunk-na8s6d5h.js@34830-35280 (claude 2.1.326 binary); chunk-na8s6d5h.js@79990 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:285-293@088a227c; chunk-nvx1z6pc.js@34908-35358 (claude 2.1.327 binary); chunk-nvx1z6pc.js@80068 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-028** claudetto shall declare the scan manifest of the plugin: hooks `prompt.submit, command.run, turn.step, ui.render, session.detach, session.end`; calls `clock.after, env.get, model.fork, prompt.fill, prompt.read, prompt.submit, session.id, session.surfaces, session.version, state.get, state.set, store.get, store.set, ui.invalidate, ui.log, ui.resolve, ui.toast` (`ui.log` is in the 2.1.326 list; the 2.1.325 list had no `ui.log`; the builtin also lists `telemetry.log` and `telemetry.mark`, left out by [ADR-0115](../adr/0115-you-should-know-telemetry.md)); `runCommands:["plugin"]`; env reads `CLAUDECODE, CLAUDE_CODE_CHILD_SESSION, CLAUDE_CODE_SESSION_KIND, CLAUDE_CODE_SKIP_PROMPT_HISTORY, CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND, CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG, CLAUDE_JOB_DIR, USER_TYPE` and no env writes; state read and write `{plugin:"cc-plugin-you-should-know", key:"aboutOpen"}`, per session id. The manifest has no `tool.call` hook; the baseline plugin registers `tool.call`, `turn.step`, `prompt.submit`, `session.end` and `ui.render` and lacks `command.run` and `session.detach`.
   Acceptance: the manifest lists exactly these hooks, calls, env reads, and state key. A `/plugin` command and a session detach reach the plugin handlers. Verification: inspection.
   Basis: cited. Status: partial at 088a227c (the baseline plugin hooks `turn.step`, `prompt.submit`, `session.end`, `ui.render`, and `tool.call`; it has no `command.run`, `session.detach`, or `model.fork`).
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:174@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:267@088a227c; chunk-na8s6d5h.js@5800-6600 (claude 2.1.326 binary); chunk-na8s6d5h.js@77936 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:174@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:267@088a227c; chunk-nvx1z6pc.js@5878-6678 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78014 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-029** claudetto shall, on `turn.step`, pass a sub-agent step (`agentId` set) straight through, never delay a turn, and start a proposing check only at step `index>0 && index%6===0` (`CHECK_EVERY=6`: steps 6, 12, 18 and so on of a turn, not after three non-reader tool calls across turns) when the session has a surface that draws the band (`"terminal"`, or a surface with rendered `AbovePrompt`; the gate is the builtin's `drawsBand` and `isBandWatched` with rendered-surface tracking and the bridge exception, not `surfaces.includes("terminal"|"desktop")` alone), `row.offeredTurn !== turnId`, no view is open, `isBandWatched` holds (a bridge-origin session ignores its `"terminal"` entry), no check runs for the session, and `looksToSkip` is 0 (else it decrements and returns). Step `index` 0 never proposes.
   Acceptance: a test that feeds steps 0 to 13 starts a check at steps 6 and 12 only, none for a sub-agent step, none once the turn holds an offer, and none for a reader tool call; a surface that draws no band gets no offer; a bridge prompt follows the bridge exception. Verification: test.
   Basis: cited. Status: partial at 088a227c (the baseline starts a check after 3 changing tool calls, `changesPerCheck: 3`, not every 6th step; `git grep -n -E "index % 6|CHECK_EVERY|changesPerCheck" 088a227c -- plugins/claudetto-you-should-know` finds only `changesPerCheck`).
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:22@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:167@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:127@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:284-288@088a227c; chunk-na8s6d5h.js@79544-81300 (claude 2.1.326 binary); chunk-na8s6d5h.js@34270 (claude 2.1.326 binary); chunk-na8s6d5h.js@34326 (claude 2.1.326 binary); chunk-na8s6d5h.js@24091 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:22@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:167@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:127@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:284-288@088a227c; chunk-nvx1z6pc.js@79622-81378 (claude 2.1.327 binary); chunk-nvx1z6pc.js@34348 (claude 2.1.327 binary); chunk-nvx1z6pc.js@34404 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24169 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-030** claudetto shall, on `prompt.submit`, act only when `origin.kind` is `"composer"` or `"bridge"`, and use it for off-view cleanup, counting prompts typed since an offer (`PROMPT_ORIGINS` `composer|bridge|other`), and the auto-send note; other origins pass through.
   Acceptance: a prompt with another origin leaves the view and counters unchanged. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c; chunk-na8s6d5h.js@78094-79400 (claude 2.1.326 binary); chunk-na8s6d5h.js@20063 (claude 2.1.326 binary); chunk-na8s6d5h.js@77332 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:187@088a227c; chunk-nvx1z6pc.js@78172-79478 (claude 2.1.327 binary); chunk-nvx1z6pc.js@20141 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77410 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-031** claudetto shall, on `command.run` with `command:"plugin"`, record the off confirmation when the origin is a person's prompt and `/${command} ${args}` is an off command.
   Acceptance: typing `/plugin disable cc-plugin-you-should-know@builtin` records `off_confirmed` with `off_via:"typed"` once per session. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@79414-79540 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@79492-79618 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-032** claudetto shall, on `ui.render` with `component:"AbovePrompt"`, draw the note on each render of the strip above the prompt box, and fall through to `next` when it has no note.
   Acceptance: with an open view the strip shows the note; with none the next handler draws. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c; chunk-na8s6d5h.js@82781-88900 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:217@088a227c; chunk-nvx1z6pc.js@82859-88978 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-033** claudetto shall, on `session.detach`, keep in `renderedSurfaces` only the surfaces `session.surfaces()` still reports.
   Acceptance: after a detach, a surface the session no longer has does not count as drawing the band. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@88951-89025 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@89029-89103 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-034** claudetto shall, on `session.end`, mark the session ended (an in-flight check becomes "stale"), delete it from the bridge set and idle clock, and close an open view; an `off` view is cleared. Errors are swallowed and `next` always runs.
   Acceptance: ending a session with an open offer clears it once. An `off` view left at session end is cleared once. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:202-216@088a227c; chunk-na8s6d5h.js@89025-89700 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/register.ts:202@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:202-216@088a227c; chunk-nvx1z6pc.js@89103-89778 (claude 2.1.327 binary).
 
 ## Reply Parsing
 
 - [ ] **REQ-YOU-SHOULD-KNOW-035** claudetto shall parse the proposed line with `parseProposedLine`: accept bullets, `learn:` with continuation lines, quote unwrapping, inline `tag:` and declined openings (`none` followed by punctuation); add a closing period; reject only a line over 240; try later `learn` lines. The repo takes the first `learn:` line, drops only an exact `none`, and does not fix the period.
   Acceptance: a bulleted `- learn: "x"` reply yields `x.`; `none.` is declined; a first over-240 line falls through to the next `learn` line. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:67-97@088a227c; chunk-na8s6d5h.js@24246-25629 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:67-97@088a227c; chunk-nvx1z6pc.js@24324-25707 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-036** claudetto shall tolerate `tag:` labels with `> * _` quotes and the dash form, and read `explain:` as its first line plus the following lines (the repo tag regex is strict).
   Acceptance: `> **tag** - Heads up` parses as `Heads up`. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:62@088a227c; chunk-na8s6d5h.js@24630-24742 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:62@088a227c; chunk-nvx1z6pc.js@24708-24820 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-037** claudetto shall strip control sequences and collapse whitespace (`stripControlSequences`, `cleanOneLine`) in the reply parsing.
   Acceptance: an escape sequence in a reply is removed and runs of blanks become one. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:67-176@088a227c; chunk-na8s6d5h.js@23540 (claude 2.1.326 binary); chunk-na8s6d5h.js@23725 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:67-176@088a227c; chunk-nvx1z6pc.js@23618 (claude 2.1.327 binary); chunk-nvx1z6pc.js@23803 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-038** claudetto shall parse cards with word-boundary truncation ending in `…` (the repo `clipAtWord` cuts without ellipsis), flush on a new fence, and clean prose lines through `proseOf`, dropping empty lines.
   Acceptance: a title over its limit ends in `…` at a word boundary; a new fence starts a new card. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:137-167@088a227c; chunk-na8s6d5h.js@23243 (claude 2.1.326 binary); chunk-na8s6d5h.js@23822 (claude 2.1.326 binary); chunk-na8s6d5h.js@23979 (claude 2.1.326 binary); chunk-na8s6d5h.js@24790 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:137-167@088a227c; chunk-nvx1z6pc.js@23321 (claude 2.1.327 binary); chunk-nvx1z6pc.js@23900 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24057 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24868 (claude 2.1.327 binary).
 
 ## Note Views And Buttons
 
 - [ ] **REQ-YOU-SHOULD-KNOW-039** claudetto shall on Learn more show the explanation that came with the offer, or run an explain fork when none came; it shall show the `explaining` view (`One moment…`) and the `failed` view with `OK`. The repo shows only the shipped explanation and hides the button when none.
   Acceptance: Learn more with no shipped explanation runs a fork and shows the result; the button is never hidden. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:64@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:66-69@088a227c; chunk-na8s6d5h.js@85300-85900 (claude 2.1.326 binary); chunk-na8s6d5h.js@22013 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:64@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:66-69@088a227c; chunk-nvx1z6pc.js@85378-85978 (claude 2.1.327 binary); chunk-nvx1z6pc.js@22091 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-040** claudetto shall treat presses so: `Knew this already` marks known and clears without a toast; `That was helpful` marks known; `Not relevant` and `Couldn’t understand` do not; `Understood` is handled (the repo matches except `Understood` handling).
   Acceptance: each press marks or leaves the known list as stated. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/press.ts:73-76@088a227c; chunk-na8s6d5h.js@87226-88700 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/press.ts:73-76@088a227c; chunk-nvx1z6pc.js@87304-88778 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-041** claudetto shall show an `offer` with these buttons: `Learn more` (key 1, `yes_explain`), `Knew this already` (key 2, `know_it`: remember the line, clear the view), `Not now` (key 0, `not_now`: show the `asked` view with no iteration), About (key 3, shown when the copy fits; toggles `aboutOpen` and drops the idle clock), and `Disable` (key 4, absent when the surface has its own composer or `USER_TYPE==="external"`; first press arms with the label `Press again to disable`, second press runs the off flow with via `"offer"`). `Learn more` goes straight to `explained{iteration:1}` when the offer's `explanation` parses to at least 1 card, else it runs the Learn more fork. The press of 3 opens the About card (per-session `aboutOpen` state, `ifVersion`) and a second press returns to the topic; the press of 4 arms and a second press fills the box with the `/plugin disable ...` command. The repo has Learn more, Knew this already and Dismiss only, and no off flow.
   Acceptance: each key produces the stated view and answer. Verification: test.
   Basis: cited. Status: partial at 088a227c (baseline keys: `Learn more` 1, `Knew this already` 2, `Dismiss` 0; no About, no `Disable`).
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:38-65@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:56-67@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:66-70@088a227c; chunk-na8s6d5h.js@16083 (claude 2.1.326 binary); chunk-na8s6d5h.js@18323-18700 (claude 2.1.326 binary); chunk-na8s6d5h.js@88400-88800 (claude 2.1.326 binary); chunk-na8s6d5h.js@32667 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:38-65@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:56-67@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:66-70@088a227c; chunk-nvx1z6pc.js@16161 (claude 2.1.327 binary); chunk-nvx1z6pc.js@18401-18778 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88478-88878 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32745 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-042** claudetto shall show an `explained` view with up to 4 cards fitted to the body width and, unless a survey shows, the buttons `1 Understood` (answer `got_it`, remember the line, clear), `2 Chat in main session` (respond flow), and `0 Dismiss` (answer `dismiss`, then the `asked` view with `iteration`). Each button adds its offer key to `autoSentKeys`.
   Acceptance: each button gives the stated answer and view; with a survey up, no buttons show. Verification: test.
   Basis: cited. Status: partial at 088a227c (`git show 088a227c:plugins/claudetto-you-should-know/hooks/view.ts` lines 48-50 hold `Understood` 1, `Chat in main session` 2 and `Dismiss` 0; `git grep -n -E "got_it|autoSent" 088a227c -- plugins/claudetto-you-should-know` finds no answer or auto-send code).
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:48-49@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:48-50@088a227c; chunk-na8s6d5h.js@30633 (claude 2.1.326 binary); chunk-na8s6d5h.js@87226-88345 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:48-49@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:48-50@088a227c; chunk-nvx1z6pc.js@30711 (claude 2.1.327 binary); chunk-nvx1z6pc.js@87304-88423 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-043** claudetto shall show the `asked` view for 20 s after `Dismiss` or `Not now`, with one-shot buttons that cancel the timer: without `iteration`, helpful (answer `helpful`, remember the line, clear), not relevant (`not_relevant`, clear), couldn't understand (`not_understood`, clear), `Turn off suggestions` (only when the surface has no own composer, i.e. the terminal; off flow with via `"row"`), and `Dismiss` (clear); with `iteration` (from an explained card), `explained_helpful` (and remember), `explained_not_understood`, and `Dismiss`. Both rows show the dim line `Dismissed.` and last `ASKED_MS=20000` ms. The explained-asked row (Dismiss on an explained card) has `1 That was helpful`, `2 Didn’t understand`, `0 Dismiss`; the asked row has `1 That was helpful`, `2 Not relevant`, `3 Couldn’t understand`, `4 Turn off suggestions` (only when the off handler is passed), `0 Dismiss`.
   Acceptance: after 20 s with no press the view clears; each press answers once. Button 4 is absent without the off handler; Dismiss on an explained card shows the three-button row. Verification: test.
   Basis: cited. Status: partial at 088a227c (`git grep -n -E "understand|Didn" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only the `Couldn’t understand` asked-row label at view.ts:43, so the explained-asked row is missing; the asked row exists).
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:38-43@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:41-44@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:74@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:40-45@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:50-58@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:12@088a227c; chunk-na8s6d5h.js@28131 (claude 2.1.326 binary); chunk-na8s6d5h.js@28552 (claude 2.1.326 binary); chunk-na8s6d5h.js@28863 (claude 2.1.326 binary); chunk-na8s6d5h.js@27502 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:38-43@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:41-44@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:74@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:40-45@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:50-58@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:12@088a227c; chunk-nvx1z6pc.js@28209 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28630 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28941 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27580 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-044** claudetto shall show `One moment…` for the `explaining` view, a `failedRow` with an `OK` button that clears the view for `failed{reason}`, and nothing for the `off` view. The learning-page views `making` and `ready{url}` are residue in the module; claudetto need not implement them. The failed row is the lead, the message and a dim `·`, with button `0 OK`; its messages are `publish` -> `Couldn’t publish that page`, `blocked` -> `Not published (blocked by a permission setting)`, `explain` -> `Couldn’t write that explanation`, `turn_off` -> `Couldn’t turn suggestions off here. Use /plugin.`, any other -> `Couldn’t write that page`. The `explaining`, `making`, `ready` and `failed` rows are `marginTop 1` with lead and text; the `off` view draws nothing; `One moment…` shows while an explanation is written.
   Acceptance: each view draws as stated. Pressing Learn more with no shipped explanation shows `One moment…` until the explanation or the failure arrives; each failure kind shows its message and `0 OK`. Verification: demonstration.
   Basis: cited. Status: partial at 088a227c (`git grep -n -E "One moment|Couldn|failed" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only `Couldn’t understand` at view.ts:43, so `One moment…` and the failed row are missing; the asked row exists at view.ts:84-88).
-  Source: plugins/claudetto-you-should-know/hooks/view.ts:84-88@088a227c; chunk-na8s6d5h.js@31356-31393 (claude 2.1.326 binary); chunk-na8s6d5h.js@28552-28863 (claude 2.1.326 binary); chunk-na8s6d5h.js@32580 (claude 2.1.326 binary); chunk-na8s6d5h.js@33275 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/view.ts:84-88@088a227c; chunk-nvx1z6pc.js@31434-31471 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28630-28941 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32658 (claude 2.1.327 binary); chunk-nvx1z6pc.js@33353 (claude 2.1.327 binary).
 
 ## Availability And Wiring
 
 - [ ] **REQ-YOU-SHOULD-KNOW-045** claudetto shall list `claudetto-you-should-know` with the description "You should know: a side agent watches your back while Claude works on longer tasks. It looks for things worth knowing that you might miss, and surfaces them above the prompt."
   Acceptance: the plugin listing shows exactly this text. Verification: inspection.
   Basis: cited. Status: partial at 088a227c.
-  Source: plugins/claudetto-you-should-know/.claude-plugin/plugin.json:3@088a227c; user decision, 2026-11-16 (claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin); chunk-na8s6d5h.js@89745 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/.claude-plugin/plugin.json:3@088a227c; user decision, 2026-11-16 (claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin); chunk-nvx1z6pc.js@89823 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-046** claudetto shall register the recreation only when the entrypoint is not `local-agent`, and shall treat a failed `registerPlugin()` as absent.
   Acceptance: with entrypoint `local-agent` no hook of the plugin runs; a throwing registration leaves the plugin out of the plugin map. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-wvm9g54y.js@1525 (claude 2.1.326 binary); chunk-qg227pzf.js@77583 (claude 2.1.326 binary).
+  Source: chunk-syz79m2z.js@1525 (claude 2.1.327 binary); chunk-dafpvz32.js@79581 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-047** claudetto shall treat the recreation as absent (not listed, no hooks) when availability is false or throws. Availability is `complianceTaintsSettled() && !taint("hipaa") && !taint("zdr") && !taint("ldr") && featureGate("tengu_jolly_dewdrop", default false)`; `isOnByDefault` is false.
   Acceptance: with any one term false, or a throw in the check, no hook runs and the plugin is not listed. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@89672 (claude 2.1.326 binary); chunk-na8s6d5h.js@15624 (claude 2.1.326 binary); chunk-n5zsz6jc.js@2480 (claude 2.1.326 binary); chunk-qg227pzf.js@77932 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@89750 (claude 2.1.327 binary); chunk-nvx1z6pc.js@15702 (claude 2.1.327 binary); chunk-2mhcazb3.js@2480 (claude 2.1.327 binary); chunk-dafpvz32.js@79930 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-048** claudetto shall keep the plugin off by default (`defaultEnabled:false`): enabled state is `enabledPlugins["cc-plugin-you-should-know@builtin"]` when set, else `defaultEnabled`, so it runs only after `/plugin enable cc-plugin-you-should-know@builtin`. `isOptIn` (a test of `USER_TYPE`) is a separate thing.
   Acceptance: a fresh install shows no note and no side request until the plugin is enabled. Verification: test.
   Basis: cited. Status: partial at 088a227c.
-  Source: chunk-qg227pzf.js@78484 (claude 2.1.326 binary); chunk-na8s6d5h.js@89967 (claude 2.1.326 binary).
+  Source: chunk-dafpvz32.js@80482 (claude 2.1.327 binary); chunk-nvx1z6pc.js@90045 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-049** claudetto shall show the spinner tip `you-should-know-plugin` (`providerAgnostic:true`, `advertisedCommand:"plugin"`, `cooldownSessions:10`, `maxLifetimeShows:3`) with the text "Want a side agent watching your back while Claude works? Turn on You should know:" and the suggestion-coloured `/plugin enable cc-plugin-you-should-know@builtin`, relevant when the plugin is available, `defaultEnabled===false`, and the user has not set the plugin either way.
   Acceptance: the tip shows at most 3 times, at most once per 10 sessions, and never after the user set the plugin on or off. Verification: demonstration.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-0fqbwytf.js@358 (claude 2.1.326 binary); chunk-qg227pzf.js@77932 (claude 2.1.326 binary).
+  Source: chunk-pyk4d6et.js@358 (claude 2.1.327 binary); chunk-dafpvz32.js@79930 (claude 2.1.327 binary).
 
 ## Environment Switches
 
 - [ ] **REQ-YOU-SHOULD-KNOW-050** claudetto shall read `CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND` and `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` as true only when the trimmed lowercase value is `1`, `true`, `yes`, or `on` (a read failure is false).
   Acceptance: `1`, ` TRUE `, `yes`, `on` read true; `0`, `2`, empty, and unset read false. The plugin reads the switches in `hooks/`; `USER_TYPE` is read as `external` or not. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/ (no env read in any non-test file; git grep at 088a227c); chunk-na8s6d5h.js@77754 (claude 2.1.326 binary); chunk-na8s6d5h.js@83243 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/ (no env read in any non-test file; git grep at 088a227c); chunk-nvx1z6pc.js@77832 (claude 2.1.327 binary); chunk-nvx1z6pc.js@83321 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-051** claudetto shall never auto-send in a session that may be driven: `mayBeDriven = CLAUDE_CODE_SESSION_KIND!==undefined || CLAUDE_JOB_DIR!==undefined || CLAUDE_CODE_CHILD_SESSION!==undefined || (CLAUDECODE!==undefined && CLAUDE_CODE_SKIP_PROMPT_HISTORY!==undefined)`. A child session, job-dir run, or scripted run never auto-sends.
   Acceptance: with each of the four conditions set, `AUTO_SEND=1` attaches no note. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@77379 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@77457 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-052** claudetto shall, with `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` on, record each check on `turn.step` (`number`, `step`, `outcome`, `latencyMs`, `at`) and draw the last 3 (`CHECKS_KEPT=3`) above the note on `ui.render`, one row each, only when no survey is up. Each row is `✦` then, dim and `truncate-end`, `debug · check ${N} · step ${S} · ${outcome} · ${latency in s, 1 decimal}s · ${HH:MM:SS}`.
   Acceptance: with DEBUG on and 5 checks kept, 3 rows show above the node; with DEBUG off, or with a survey up, none show. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@22644 (claude 2.1.326 binary); chunk-na8s6d5h.js@29112 (claude 2.1.326 binary); chunk-na8s6d5h.js@88889 (claude 2.1.326 binary); chunk-na8s6d5h.js@22836 (claude 2.1.326 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+  Source: chunk-nvx1z6pc.js@22722 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29190 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88967 (claude 2.1.327 binary); chunk-nvx1z6pc.js@22914 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
 
 ## Off, Respond, And Auto-Send
 
 - [ ] **REQ-YOU-SHOULD-KNOW-053** claudetto shall turn off by filling the prompt box, never by running the command: if the box holds non-blank text, toast `OFF_BOX_BUSY`, invalidate, and stop; else set the `off{line,shownAt}` view and fill `/plugin disable cc-plugin-you-should-know@builtin` with mode `replace`. If the fill fails, show `failed{reason:"turn_off"}`. The user presses Enter. It detects an off command on `prompt.submit` and `command.run` (`isOffCommand`) and confirms or abandons the off.
   Acceptance: after the press the box holds the disable command and the plugin ran nothing; with text in the box a toast shows and the box is unchanged. A submitted disable command confirms the off. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@84750-85300 (claude 2.1.326 binary); chunk-na8s6d5h.js@35480 (claude 2.1.326 binary); chunk-na8s6d5h.js@36467 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@84828-85378 (claude 2.1.327 binary); chunk-nvx1z6pc.js@35558 (claude 2.1.327 binary); chunk-nvx1z6pc.js@36545 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-054** claudetto shall treat typed text as the off command when it is `/plugin disable` with `cc-plugin-you-should-know`, `suggest-learning` or `you-should-know`, each bare or with `@builtin` (six spellings), and shall fill the prompt box in the Disable flow with `OFF_COMMAND`, `/plugin disable cc-plugin-you-should-know@builtin`. The next person's prompt clears the `off` view, confirmed or abandoned. For claudetto-you-should-know the plugin id in the command is the id of the plugin that runs (inferred from the settled rule that it recreates the builtin).
   Acceptance: the Disable flow types the command into the box; a submit or `command.run` of any of the six spellings counts as an off command; `/plugin disable other` does not. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@16445 (claude 2.1.326 binary); chunk-na8s6d5h.js@36240-36309 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@16523 (claude 2.1.327 binary); chunk-nvx1z6pc.js@36318-36387 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-055** claudetto shall run the Chat (respond) flow once at a time per session: fill the prompt box with the draft plus a blank line (mode `replace`); with text in the box toast `RESPOND_BOX_BUSY`; on fill, remember the line, clear the view; on a refusal other than `no_composer`, toast `RESPOND_BLOCKED` (when a dialog is up) or `RESPOND_NOT_FILLED`, invalidate, and keep the view; on `no_composer`, remember, clear, and call `prompt.submit` with the draft without the trailing blank lines. The chat-flow toasts use the generic texts in Toasts And Notices (the repo toasts say "press 2 again").
   Acceptance: each branch gives the stated toast and view. No toast says "press 2 again". Verification: test.
   Basis: cited. Status: partial at 088a227c (baseline fills, toasts, and submits on no composer).
-  Source: plugins/claudetto-you-should-know/hooks/press.ts:30-46@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:65-72@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:27-48@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:218-232@088a227c; chunk-na8s6d5h.js@76115 (claude 2.1.326 binary); chunk-na8s6d5h.js@76417-76656 (claude 2.1.326 binary); chunk-na8s6d5h.js@88017-88175 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/press.ts:30-46@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:65-72@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:27-48@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:218-232@088a227c; chunk-nvx1z6pc.js@76193 (claude 2.1.327 binary); chunk-nvx1z6pc.js@76495-76734 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88095-88253 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-056** claudetto shall, only with `CLAUDE_CODE_YOU_SHOULD_KNOW_AUTO_SEND` on and `mayBeDriven` false, attach the offered topic as background `context` to the user's own message and dismiss the offer as known, when the offer was fully visible and idle at least 2000 ms twice (before and after the submit), the message came from the terminal composer, and no digit key or button already used that offer. A single digit key is a button press and blocks auto-send for that offer. It tracks `isNoteRead`, `autoSentKeys` (the old plan's name for the set of offers already auto-sent or pressed; a local set in 2.1.326), `mayBeDriven` and the idle clock. The note is `autoSentNote(respondDraft(line, [], tag))` added to `context`, and on success the builtin shows `ui.log("Sent a note to Claude with your prompt")` (2.1.326; `ui.log` is in the 2.1.326 manifest call list).
   Acceptance: a test with the switch on, an offer idle 2000 ms, and a typed message sees the note in `context`; with the switch off, a digit key, or a driven session it sees none. Verification: test.
   Basis: cited. Status: missing at 088a227c.
-  Source: chunk-na8s6d5h.js@34270-34410 (claude 2.1.326 binary); chunk-na8s6d5h.js@78400-79200 (claude 2.1.326 binary); chunk-na8s6d5h.js@77379 (claude 2.1.326 binary); chunk-na8s6d5h.js@75939 (claude 2.1.326 binary).
+  Source: chunk-nvx1z6pc.js@34348-34488 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78478-79278 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77457 (claude 2.1.327 binary); chunk-nvx1z6pc.js@76017 (claude 2.1.327 binary).
 
 ## Backoff And Dedupe
 
 - [ ] **REQ-YOU-SHOULD-KNOW-057** claudetto shall skip proposing after repeated ignored offers: `looksToSkipAfter(n) = n<=2 ? 0 : min(16, 2**(n-3))` (n=3:1, 4:2, 5:4, 6:8, 7 and up:16 further checks skipped, each skip consuming one eligible check), where `typedPastInARow` counts offers the user typed past. Any answer except `ignored_timeout` resets both counters to 0. The store keys are `looksToSkip` and `typedPastInARow`; the 2.1.326 code computes the skip count as `n<=2 ? 0 : min(16, 2**(n-3))`. The repo resets on `know`, `dismiss` and `learn` through `saveBackoff($,0,0)`.
   Acceptance: after 3 ignored offers 1 eligible check is skipped; after 7, 16; an answer resets both counters. Verification: test.
   Basis: cited. Status: partial at 088a227c (`skipsAfter` is `2 ** (ignored - 2 - 1)` capped at 16 with `freeIgnores: 2`, same values; `saveBackoff($,0,0)` resets on `know`, `dismiss` and `learn`).
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:253-256@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:253@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:116@088a227c; plugins/claudetto-you-should-know/hooks/store.ts:59-60@088a227c; chunk-na8s6d5h.js@77872-77891 (claude 2.1.326 binary); chunk-na8s6d5h.js@83942-84300 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:253-256@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:253@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:116@088a227c; plugins/claudetto-you-should-know/hooks/store.ts:59-60@088a227c; chunk-nvx1z6pc.js@77950-77969 (claude 2.1.327 binary); chunk-nvx1z6pc.js@84020-84378 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-058** claudetto shall never offer a line already seen or known: `seen` holds the last 50 offered lines, `known` the last 50 lines the user said they knew (case-insensitive exact dedupe), and lines compare by lowercase with one trailing `.` removed.
   Acceptance: a proposed line equal to a seen or known line, ignoring case and one trailing period, is not shown. Verification: test.
   Basis: cited. Status: have at 088a227c.
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:237-250@088a227c; chunk-na8s6d5h.js@26446-26700 (claude 2.1.326 binary); chunk-na8s6d5h.js@77708 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:237-250@088a227c; chunk-nvx1z6pc.js@26524-26778 (claude 2.1.327 binary); chunk-nvx1z6pc.js@77786 (claude 2.1.327 binary).
 
 - [ ] **REQ-YOU-SHOULD-KNOW-059** claudetto shall count prompts per `{origin,count}` since the offer, and at step 0 keep an `explained` view forever and clear an open offer once `promptsSurvived>=2` (`CLEAR_AFTER_PROMPTS=2`), and raising `typedPastInARow`. The repo clears only `offer` after 2.
   Acceptance: an explained card survives any number of prompts; an offer survives one typed prompt, and clears on the second. Verification: test.
   Basis: cited. Status: partial at 088a227c (`git grep -n -E "CLEAR_AFTER_PROMPTS|ignored_submit|typedPast" 088a227c -- plugins/claudetto-you-should-know` finds `LIMITS.clearAfterPrompts` at hooks/register.ts:57 and no `ignored_submit`; the merged items disagreed, have against partial).
-  Source: plugins/claudetto-you-should-know/hooks/note.ts:9@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:57@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:45-65@088a227c; chunk-na8s6d5h.js@80120-80700 (claude 2.1.326 binary); chunk-na8s6d5h.js@24100 (claude 2.1.326 binary); chunk-na8s6d5h.js@27163 (claude 2.1.326 binary).
+  Source: plugins/claudetto-you-should-know/hooks/note.ts:9@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:57@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:45-65@088a227c; chunk-nvx1z6pc.js@80198-80778 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24178 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27241 (claude 2.1.327 binary).
 
 ## Cache And TTL Notice
 
@@ -404,7 +404,7 @@
 
 - [ ] **REQ-YOU-SHOULD-KNOW-062** claudetto shall put in the side check's fixed instructions that a password or secret inside a command (an osascript keystroke, a Terminal window it drives) was not typed into the chat unless a person message holds it, and shall carry the clause in the cached instructions block of the request.
   Acceptance: the cached instructions block holds the clause. Verification: inspection.
-  Basis: cited. Status: have at 088a227c (plugins/claudetto-you-should-know/hooks/texts.ts:11 holds "A password or secret inside a command, such as an osascript..."; the cached-block placement is unchecked).
+  Basis: cited. Status: have at 088a227c (plugins/claudetto-you-should-know/hooks/texts.ts:11 holds "A password or secret inside a command, such as an osascript..."; the cached-block placement is asserted by `register-check.test.ts:59`: the fixed instructions are the cached block and the body follows unmarked).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/you-should-know/spec.md:50; plugins/claudetto-you-should-know/hooks/texts.ts:11@088a227c.
   Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
 
@@ -428,7 +428,7 @@
 
 - [ ] **REQ-YOU-SHOULD-KNOW-066** claudetto shall run you-should-know on `turn.step` like `cc-plugin-you-should-know@builtin`, never denying, holding or rewriting a call, and check after every 3rd changing call (non-reader, main loop) counted across turns, because 50% of 1,021 turns (40 sessions, median 5 tool steps) end before a 6th step, so the built-in every-6th never fires. The note shows above the prompt once the check resolves. It triages each side check with `mcp__claudetto__decide` first, because the plugin cannot import kernel/decider across plugins: a confident "no" skips `$.model.complete`; unsure, an error or no key goes to `sideCheckModel` (default claude-haiku-5-5, effort high); `decide` and `web_fetch` calls stay out of the digest; `$.model.fork` takes no model, so `$.model.complete` stays. Its own Haiku call gets `effort` and the full model ID, and a side-check fault logs and lets the call go. The note's instructions gain a rule that a secret inside a command went elsewhere, because an `osascript` keystroke was read as typed into chat. The plugin compares against the 2.1.322 built-in by reading, never patching. The earlier plan removed "A Note Stops the Call", because deny and wait interrupts work and lands the note after the action.
   Acceptance: the check is not awaited, one check per session at a time, skipped when `offeredTurn===turnId`, a view is open or the surface draws no band; `git status` runs unchanged while a check pends. Verification: test.
-  Basis: measured. Status: have at 088a227c (you-should-know/hooks/note.ts:56 offeredTurn; plugins/claudetto-you-should-know/hooks/register.ts and calls.ts); the three calls exist in 2.1.326 (`search "model.complete"` finds `chunk-qg227pzf.js@2637`; the manifest at `chunk-na8s6d5h.js@5800` lists `turn.step` and `model.fork`).
+  Basis: measured. Status: have at 088a227c (you-should-know/hooks/note.ts:56 offeredTurn; plugins/claudetto-you-should-know/hooks/register.ts and calls.ts); the three calls exist in 2.1.327 (`search "model.complete"` finds `chunk-dafpvz32.js@2684`; the manifest at `chunk-nvx1z6pc.js@5878` lists `turn.step` and `model.fork`).
   Source: openspec/specs/you-should-know/spec.md:17; openspec/specs/you-should-know/spec.md:31; openspec/changes/2-1-325-rearchitecture/design.md:27; openspec/changes/2-1-325-rearchitecture/items.json:26.
   Conflict: claudetto shall make the you-should-know note fire and halt the agent before the agent acts on the fault that the note names.
   Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
@@ -472,7 +472,7 @@
 
 - [ ] **REQ-YOU-SHOULD-KNOW-073** claudetto shall write its own observer prompt for size and not for licence, because the original's fixed prompt rides on every check and instructs about artifacts, pages and follow-up directions the rebuild drops, and shall report the shipped prompt's character count.
   Acceptance: the release notes state the character count of the shipped observer prompt. Verification: inspection.
-  Basis: reported (spec). Status: unchecked at 088a227c: the baseline prompt text was not diffed against the original's.
+  Basis: reported (spec). Status: partial at 088a227c (`plugins/claudetto-you-should-know/hooks/texts.ts` `CHECK_INSTRUCTIONS` is 2,477 characters and names no artifact; the original's prompt in 2.1.327 runs past 9,000 characters from chunk-nvx1z6pc.js@42299 and teaches the artifact offer, example cards and an output structure; the shipped count is stated at release).
   Source: openspec/specs/builtin-rebuild/spec.md:39 (task 11.4 reports the count).
   Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
 

@@ -160,7 +160,7 @@
   Actions: List the judgment calls; percentages instead of absolutes; a periodic memory self-audit; review memory diffs; a brief line making anything flagged as the owner's call a blocker, and a Stop check for flagged-but-unanswered items; the owner gate reads the diff.
   Trigger: A report flags an item and the turn continues past it.
   Owner: reply. Status: open.
-  Source: unresolved: the figure 19 of 20 decisions was not found; the only grep hit (external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:21 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvacjb/how_often_do_you_notice_legitimate_issues_in_your/>)) is a capture count of reported comments, not a finding.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 19 of 20 figure; the grep hit external/2026-11-16/reddit.com-r-claudecode-comments-1xvacjb-how-often-do-you-notice-legiti-20261116T051816Z.md:21 is a capture count, not a finding.
 
 - [ ] **RISK-237** Premature convergence and costly assumption.
   Category: Agent behaviour.
@@ -173,7 +173,7 @@
   Actions: An independent verification pass by another model family; tests and spec; restart from square one; a discuss-first opener with edits blocked until the user says to go (reported harness).
   Trigger: A build starts on a request that left a default open.
   Owner: reply. Status: open.
-  Source: unresolved: no source line holds premature convergence by message two, thrashing after about 2 hours, or the discuss-first harness; the grep hits are unrelated.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for premature convergence by message two, thrashing after about 2 hours, or the discuss-first harness.
 
 - [ ] **RISK-238** The agent names a fix for a failure from a guess and ignores that the step worked before.
   - Category: conduct.
@@ -241,7 +241,7 @@
 
 - [ ] **RISK-242** Named forbidden words reappear in output.
   Category: agent
-  Cause: A prompt names a word or thing to avoid, so it sits in context; a word once in context is likely to recur (reported, inferred).
+  Cause: A prompt names a word or thing to avoid, so it sits in context; a word once in context is likely to recur (field report; the recurrence is the commenters' account).
   Event: The agent echoes the forbidden word or idea; a commenter puts the leak at about 75% when the model knows the "game".
   Consequence: Unwanted output; the window stays poisoned until thrown away.
   Likelihood: 2
@@ -264,7 +264,7 @@
   Likelihood: 2. Impact: 2.
   Existing controls: narration rules only (plan line 1508 in the old plan); no per-model explanation note.
   Response: mitigate.
-  Actions: a standing project-instruction line (assume basics only, define every symbol, show every algebra step, write math in LaTeX) plus extended thinking; a reply says a standing line holds only until next week; another commenter suggests a 4.6 pass that translates the output to plain English. All reported, unmeasured.
+  Actions: a standing project-instruction line (assume basics only, define every symbol, show every algebra step, write math in LaTeX) plus extended thinking; a reply says a standing line holds only until next week; another commenter suggests a 4.6 pass that translates the output to plain English. All field reports from commenters; Likelihood from report count.
   Trigger: a user asks again for a skipped step.
   Owner: reply. Status: open.
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:29; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:33; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:37; external/2026-10-25/reddit.com-r-claudeai-comments-1xcpua5-is-sonnet-55-bad-at-explaining-s-20261023T040445Z.md:342 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcpua5/is_sonnet_55_bad_at_explaining_stuff/>).
@@ -388,7 +388,7 @@
   Actions: take cost and ratings from the bill, logs, and humans, never from self-report; human-authored rules from logged failures; docs in context via clawdipedia-docs; a subagent context holding the docs.
   Trigger: a cost or rating stated by the model with no log behind it.
   Owner: reply. Status: open.
-  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>) (the falsifying-a-document case, reported, one user). The cost-estimate and self-rating findings: Source: unresolved, not located.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>) (the falsifying-a-document case, reported, one user). The cost-estimate and self-rating findings: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for those two findings.
 
 ## Reply Style And Sycophancy
 
@@ -456,7 +456,7 @@
   - Impact: 2
   - Existing controls: env CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT override in plugins/claudetto/hooks/features/setup/settings.ts:202@088a227c (effect not significant); Concise output style; KEEP_ANSWER suffix specified for re-ask blocks (agent-conduct spec at 088a227c^).
   - Response: mitigate.
-  - Actions: Keep the override (one sentence on a finding or result only); output style; an end-of-turn hook demanding a plain re-summary; describe the tic in the system prompt; outcome-first recipe; check the first assistant block before a tool call (eval quiet-when-told, start-with-tool-call case); report template with no recap; Concise rule requiring outcome-first. Claude Code 2.1.326 has the env key (`CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, chunk-4h798pp0.js:3911181); End each re-ask block with KEEP_ANSWER; blocks that name lines name the edit instead; no hook writes a SendMessage result into a reply.
+  - Actions: Keep the override (one sentence on a finding or result only); output style; an end-of-turn hook demanding a plain re-summary; describe the tic in the system prompt; outcome-first recipe; check the first assistant block before a tool call (eval quiet-when-told, start-with-tool-call case); report template with no recap; Concise rule requiring outcome-first. Claude Code 2.1.327 has the env key (`CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, chunk-m14bt1pz.js:3985537); End each re-ask block with KEEP_ANSWER; blocks that name lines name the edit instead; no hook writes a SendMessage result into a reply.
   - Trigger: A reply opens with a line announcing the next tool call; A Stop block makes the final reply appear twice.
   - Owner: reply
   - Status: open.
@@ -569,7 +569,7 @@
   Likelihood: 5. Impact: 3.
   Existing controls: plugins/claudetto/hooks/features/stop-notice/ at 088a227c (partial).
   Response: mitigate.
-  Actions: A Stop open-items check; a Stop hook that blocks a stop whose last message claims done with no verifying tool call; a heartbeat wakeup near 30 min that disarms on completion; retry with exponential backoff (cited docs); a fresh session (inferred); an effort floor of medium in agent files. Blocking on announce-next-work wording by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
+  Actions: A Stop open-items check; a Stop hook that blocks a stop whose last message claims done with no verifying tool call; a heartbeat wakeup near 30 min that disarms on completion; retry with exponential backoff (cited docs); a fresh session (the commenters' suggestion, no probe); an effort floor of medium in agent files. Blocking on announce-next-work wording by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
   Trigger: A turn ends on an announced next step; A turn that ends with open steps and a note that the next session or the user continues.
   Owner: reply. Status: open.
   Source: external/2026-10-17/export-Claude not finishing work + acting weird.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x6qo84/claude_not_finishing_work_acting_weird/>) (reported); external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (reported; unattended agents stop early). Not located: the 8-hour run and /goal incidents.; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`)
@@ -586,7 +586,7 @@
   - Actions: A tool.call hook denying AskUserQuestion under a no-questions constraint; a Decider guard on each question (denial when asking leave to fix a defect the agent caused); fix a defect found in the user's repository at its cause without asking.
   - Trigger: AskUserQuestion fires after a no-questions instruction; a defect the agent found in its own work.
   - Owner: reply
-  - Status: open (unchecked).
+  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36,50; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-266** An agent asks the user for a choice that is the agent's own, or leaves a question open that it can research.
@@ -615,7 +615,7 @@
   Actions: Rule of Least Power; check extension points first; define done; small tasks; review plan and diff; test only what changed materially; a ticket form (goal, checkable outcomes, 2-3 painful decisions) with a reversible default; a periodic audit of workflow documents; hook-enforced size caps.
   Trigger: A diff for a one-constant change exceeds 50 lines.
   Owner: reply. Status: open.
-  Source: unresolved: no source line holds the 77 -> 88/89 lines, about 470 threads, 350-line additions, or the 7-step plan figures; only the theme of unbounded retries is found at external/please-use-me-often/swe-worst-practices.md:130, which is not over-engineering.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 77 -> 88/89 lines, about 470 threads, 350-line additions and 7-step plan figures.
 
 - [ ] **RISK-268** The agent ships a change and names a remaining risk it introduced.
   - Category: conduct.
@@ -738,7 +738,7 @@
   - Actions: keep the target version the task names; when a check fails on it, fix the cause or report it; do not downgrade.
   - Trigger: a failing install or guard after a version bump.
   - Owner: reply
-  - Status: open (unchecked).
+  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-276** The agent ends a reply with a note on what it has not done.
@@ -753,7 +753,7 @@
   - Actions: end a research reply after the findings and sources; add status only when the user asks.
   - Trigger: a research report.
   - Owner: reply
-  - Status: open (unchecked).
+  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6502; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13.
 
 - [ ] **RISK-277** The agent states what a source says without reading the dossier first.
@@ -768,7 +768,7 @@
   - Actions: search the dossiers under external/, clawdipedia-docs, and the web before an answer about models and effort.
   - Trigger: a question about models, effort, or Claude Code behaviour.
   - Owner: reply
-  - Status: open (unchecked).
+  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; reported, user, 2026-11-13.
 
 - [ ] **RISK-278** The agent leaves checkable or fixable work undone, unmeasured, or unfetched, and reports it as open, untested, or guessed.
@@ -783,7 +783,7 @@
   - Actions: read a source whole before reporting it done; probe a guessed cause until it reproduces or is ruled out; fix each defect found; finish each checkable step; report no fixable item as open; run the free check at once, and ask the user for data the agent cannot produce, instead of waiting; read a source whole, in parts if it is long; run each check that can run; raise a gap only when it needs what only the user holds; The agent runs the free check at once, and asks the user for data it cannot produce, instead of waiting; Probe each claim before reporting it; REQ-VERIFICATION item on real runs.
   - Trigger: "still open", "not checked", or "untested" in a reply for an item the agent could run; a report holds "not measured", "not checked", or "waits for runs" for a check that costs nothing; a source over the read limit or a check the agent could run; A report names an item untested; a reply with an untested claim that a command could settle.
   - Owner: reply
-  - Status: open (unchecked).
+  - Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974, reported, user, 2026-11-11; reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (reported, user, 2026-11-11).
 
 - [ ] **RISK-279** The agent does other work than ordered, follows its own plan over the user's latest order, and investigates a remark instead of answering it.
@@ -953,7 +953,7 @@
 
 - [ ] **RISK-290** The agent states a guess, a cause, or an advice as fact, with no check behind it.
   - Category: agent conduct.
-  - Cause: the agent infers a cause or status with no check, and does not find out why afterwards; commit `c51d8452` reached `origin/feat/2.1.321` with no push in any transcript, and the agent named a hook as the cause. The reflog says "update by push" 58 s after the commit; VS Code has `git.confirmSync: false`, so its sync button pushes with no prompt (inferred). No `.githooks` file pushes. Not a claudetto defect; The agent claimed Bun reads `.env` on its own, and advised the user to cancel a good run.
+  - Cause: the agent infers a cause or status with no check, and does not find out why afterwards; commit `c51d8452` reached `origin/feat/2.1.321` with no push in any transcript, and the agent named a hook as the cause. The reflog says "update by push" 58 s after the commit; VS Code has `git.confirmSync: false`, so its sync button pushes with no prompt (the reflog entry is read; the push itself was not observed). No `.githooks` file pushes. Not a claudetto defect; The agent claimed Bun reads `.env` on its own, and advised the user to cancel a good run.
   - Event: the agent claims who or what caused something with no evidence; it claimed Bun reads `.env` on its own and advised the user to cancel a good run; the run failed at once with a missing token message, and the agent called it a mistake and did not check why Bun skipped `.env`. It had also started a long run without telling the user, and the user cancelled it. The user asks for evidence and calls guessing a violation; the agent claims who or what caused something with no evidence; the user asks for evidence and calls guessing a violation; The run failed at once with a missing token message; the agent called it a mistake and did not check why Bun skipped `.env`. It had also started a long run without telling the user, and the user cancelled it.
   - Consequence: a wrong result shipped. Likelihood: 2; a false claim in a report; a good run was cancelled; the failure cause stays unknown; the user cannot tell fact from inference; a false claim in a report; the user cannot tell fact from inference.
   - Likelihood: 2
@@ -964,7 +964,7 @@
   - Trigger: a claim with no tool result in the turn; a cause or status claim with no command or file read behind it; an unexplained event; A reply gives a cause with no run behind it.
   - Owner: reply
   - Status: open.
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:51; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:432 (inferred); plugins/claudetto/hooks/hygiene/branches.ts:175@088a227c (cited by the source as the only push); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:51; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:432 (the push is inferred from the reflog entry); plugins/claudetto/hooks/hygiene/branches.ts:175@088a227c (cited by the source as the only push); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 - [ ] **RISK-291** Agent skips files the user points at.
   - Category: agent conduct.
@@ -1038,7 +1038,7 @@
   Actions: install a needed dependency into the project and record it; use temp only when the user asks.
   Trigger: a missing library found during a task.
   Owner: reply
-  Status: open (unchecked).
+  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-296** The agent invents a website URL for a schema $id.
@@ -1053,7 +1053,7 @@
   Actions: use an identifier from the project's real remote or an industry standard; look up the standard format before a new file format; never invent a URL.
   Trigger: a new schema or manifest.
   Owner: reply
-  Status: open (unchecked).
+  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-297** The agent investigates the plugin when the user said to report the faults to the OpenSpec change.
@@ -1068,7 +1068,7 @@
   Actions: when the user says report, write the reports into the named OpenSpec change and stop; do not search for causes unless asked.
   Trigger: a user message that pastes faults and says report.
   Owner: reply
-  Status: open (unchecked).
+  Status: open. Field report kept as reported; transcript `17435f50` is gone from disk (recorded limit, sessions of 2026-11-09..16); a grep of `plugins/` at 088a227c finds no hook for it; Likelihood from report count.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6567; reported, user, 2026-11-13.
 
 - [ ] **RISK-298** Agent reads a question as a correction and edits user text.
@@ -1143,7 +1143,7 @@
   Event: after the user asked why a data request was so large, the agent replied "You're right!" to each follow-up and switched to a different fix three times without checking the cause.
   Consequence: extra turns and no root cause.
   Likelihood: 1. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "challenge" finds only an unrelated HTTP challenge in `web/fetch.ts` finds no rule or hook).
   Response: mitigate.
   Actions: none in the source.
   Trigger: two replies in a row that open with agreement and name a different fix.
@@ -1157,7 +1157,7 @@
   Event: the agent suggests adding the same rule for the fifth time, daily, until challenged; it claims a task is impossible that it did the day before and then admits "I read that and didn't follow it".
   Consequence: rule files grow with duplicates and the rule stays unfollowed.
   Likelihood: 2. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "rule" repeats finds no check for a proposed duplicate rule; `repeat.ts` handles only repeated tool calls finds no rule or hook).
   Response: mitigate.
   Actions: fewer or non-contradictory rules; check /context for hidden entries; ask the model to audit the instructions in scope. The reports come from Claude chat and Cowork, not Claude Code.
   Trigger: a proposed rule that already stands in the instructions.
@@ -1171,7 +1171,7 @@
   Event: Opus and Fable invent issues, or push back on an implication the user never stated or already covered ("in some cases" answered with "this is not always true").
   Consequence: an extra turn and doubt about a correct answer.
   Likelihood: 2. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "pushback" and "objection" finds no rule or hook).
   Response: mitigate.
   Actions: one user added a specific instruction to check whether the user already covered the argument before pushing back.
   Trigger: a pushback on a point the prompt already holds.
@@ -1185,7 +1185,7 @@
   Event: a hedge opener and a close that skips three of the asked parts.
   Consequence: noise, and skipped parts read as done.
   Likelihood: 2. Impact: 1.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "pushback" finds no rule or hook).
   Response: accept.
   Actions: none in the source.
   Trigger: either phrase in a reply.
@@ -1199,7 +1199,7 @@
   Event: every reply opens "To offer the opposing view..." and invents an objection when none is real.
   Consequence: false objections in each reply.
   Likelihood: 1. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "opposing view" and "pushback" finds no rule or hook).
   Response: mitigate.
   Actions: a stricter rule: no label, state only the concern, state only facts the agent checked.
   Trigger: the same opener on consecutive replies.
@@ -1213,7 +1213,7 @@
   Event: it spends effort on tests, plans, and rigor until told "we are building a poc, don't be pedantic"; one user says Opus creates rules for itself and refuses to break them; another says it refuses over licensing or micro-legalities unrelated to the task.
   Consequence: wasted spend and refusals unrelated to the task.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "proof of concept" finds no rule or hook).
   Response: accept.
   Actions: state in the prompt that the work is a proof of concept.
   Trigger: tests or plans nobody asked for in a proof-of-concept task.
@@ -1227,7 +1227,7 @@
   Event: Claude says it is almost 2am or "you've been working all day/night, let's stop here"; one user was told to go to bed at 10:00 a.m.
   Consequence: an interrupted task.
   Likelihood: 2. Impact: 1.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "wellbeing" finds no rule or hook).
   Response: accept.
   Actions: none in the source. The capacity cause is a guess.
   Trigger: a rest suggestion aimed at the user.
@@ -1241,7 +1241,7 @@
   Event: after grandiose ideas, it said "sounds like suicide to me, was it something darker?" and refused to do anything.
   Consequence: the task stops and the user is upset.
   Likelihood: 1. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "psycholog" finds no rule or hook).
   Response: accept.
   Actions: none in the source.
   Trigger: a reply that assesses the user's mental state with no request.
@@ -1317,7 +1317,7 @@
   Event: new code overrides or covers earlier behavior.
   Consequence: tech debt that grows with time.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for a rule on covering up old behavior (only the `prompt/texts.ts:86` check-and-restore text and `scopeEditsToGoal.md`) finds no rule or hook).
   Response: mitigate.
   Actions: tell the model to fix the original code so it works as intended.
   Trigger: a diff that adds an override beside the faulty code.
@@ -1331,9 +1331,9 @@
   Event: after a tweak broke a working tool, it rebuilt the tool in a new session (3 h), and a rollback model rebuilt it again (2 h) because "yesterday's state" did not exist; both rebuilds were worse.
   Consequence: five hours lost and a worse tool.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` finds no rule on rebuilds or rollbacks).
   Response: mitigate.
-  Actions: say "don't fix anything yet, show me what changed since the last time it worked", because the actual diff usually shows the culprit; commit after every working tool, even a messy commit, so a broken tweak is a one-line revert. Both cures are reported by one commenter each, unmeasured.
+  Actions: say "don't fix anything yet, show me what changed since the last time it worked", because the actual diff usually shows the culprit; commit after every working tool, even a messy commit, so a broken tweak is a one-line revert. Both cures are reported by one commenter each, field report from commenters, Likelihood from report count.
   Trigger: a plan to rebuild a part that worked before.
   Owner: reply.
   Status: Open.
@@ -1345,9 +1345,9 @@
   Event: asked to test the claim, it wrote a weak "fast" test that showed a slight gain; a correct test showed 10x speed, 60% less CPU, and 80% less RAM; the conversion also took multiple passes.
   Consequence: a wrong "not worth it" answer.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` finds no benchmark or profiling rule).
   Response: mitigate.
-  Actions: profile first; state the project language in CLAUDE.md or in the prompt ("In this project we're using exclusively X"); look for a CLAUDE.md, agent, or memory entry that primes a default; discuss language only when asked. Reported by one poster and several commenters, unmeasured; other commenters could not reproduce.
+  Actions: profile first; state the project language in CLAUDE.md or in the prompt ("In this project we're using exclusively X"); look for a CLAUDE.md, agent, or memory entry that primes a default; discuss language only when asked. Reported by one poster and several commenters, field report; other commenters could not reproduce, so Likelihood stays 1.
   Trigger: a "would not help" claim with no measurement behind it.
   Owner: reply.
   Status: Open.
@@ -1359,7 +1359,7 @@
   Event: asked to add one new section, Sonnet 5.5 rewrote the entire document, dropped details, tripled its length, and added snarky comments on the user's text.
   Consequence: the user's text and details are lost.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "whole document" or one-section edits (the only "rewrite" hit is `prompt/texts.ts:86`, about files a check rewrote) finds no rule or hook).
   Response: mitigate.
   Actions: none in the source.
   Trigger: a diff far larger than the section asked for.
@@ -1373,7 +1373,7 @@
   Event: text states what a thing is not, which reads as a non-sequitur.
   Consequence: confusing prose.
   Likelihood: 1. Impact: 1.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "edit scar" finds no rule or hook).
   Response: mitigate.
   Actions: tell the model to remove the edit scar afterwards; reported to work.
   Trigger: a sentence that names something absent after an edit.
@@ -1383,11 +1383,11 @@
 
 - [ ] **RISK-319** Edits to English documents come out worse than the first pass.
   Category: agent behaviour.
-  Cause: two causes stated by users: the model does not re-read the document top to bottom after an edit, and cannot separate its own topic knowledge from the reader's. Two further claims are unverified: the system re-sends steering text every turn so it outweighs the user's one-time plan, and the model reads only a few-line snippet and rebuilds the rest.
+  Cause: two causes stated by users: the model does not re-read the document top to bottom after an edit, and cannot separate its own topic knowledge from the reader's. Two further claims are commenters' guesses, not probed (they need a paid live run): the system re-sends steering text every turn so it outweighs the user's one-time plan, and the model reads only a few-line snippet and rebuilds the rest.
   Event: an edit that does not fit its section.
   Consequence: bad prose and wasted turns.
   Likelihood: 2. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for document edit quality (`useBlockLanguage.md` and `commentOnlyWhy.md` are style rules) finds no rule or hook).
   Response: mitigate.
   Actions: an adversarial linter agent after each edit, or a second-model review where the user decides which feedback to take; ask "did you read the entire document before acting?".
   Trigger: an edit to prose with no re-read of the document.
@@ -1403,7 +1403,7 @@
   Event: it failed, printed nothing, and the agent read the silence as a pass.
   Consequence: a false "done".
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for a silent check read as a pass (the "silent" hits are `deciderSilent` and `isSilent` in `decide.ts` and `repeat.ts`, about model replies) finds no rule or hook).
   Response: mitigate.
   Actions: no output is not a pass, and "done" has to quote the actual last line of the test or command.
   Trigger: a "pass" claim over a command that printed nothing.
@@ -1417,7 +1417,7 @@
   Event: the home page returned 200 with the default 404 body and the CDN cached it for a year.
   Consequence: a broken site shipped.
   Likelihood: 1. Impact: 4.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for a 200 status check or "404" finds no rule or hook).
   Response: mitigate.
   Actions: check the page body, not just the status code: fetch each key page and confirm its expected title or heading; list what is true only after a deploy versus locally.
   Trigger: a "deployed" claim with status codes only.
@@ -1430,10 +1430,10 @@
 - [ ] **RISK-322** Reverse-engineering work gets the user's account flagged or banned.
   Category: product limit.
   Cause: encrypted-game reverse engineering or publishing copies is a terms-of-service violation per one commenter; other users report flags during driver reverse engineering.
-  Event: a $20 account banned under the title "SUSPICIOUS ACTIVITY" (unverified); an account flagged twice; two users avoid Claude for fear of flags.
+  Event: a $20 account banned under the title "SUSPICIOUS ACTIVITY" (the poster's claim; the ban is server-side, not in the binary); an account flagged twice; two users avoid Claude for fear of flags.
   Consequence: loss of the account and its work.
   Likelihood: 2. Impact: 4.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "banned" and "flagged" finds no rule or hook).
   Response: avoid.
   Actions: none in the source beyond not doing the work on a work account.
   Trigger: a session whose task is reverse engineering of protected software.
@@ -1515,7 +1515,7 @@
   Likelihood: 1. Impact: 3.
   Existing controls: None known at 088a227c.
   Response: mitigate.
-  Actions: When a turn returns smaller than the last, or incomplete twice, stop, have it write what is left to a file, and hand it to a fresh session; give a done line that names the exact check (for example 'every [] reference in these files flipped') and verify in a fresh session, not by asking the same one to finish. Do not trust the model's self-explanation. The implementer diffs each node against disk before reporting a reopening done (stated inside the sample agent report, not a measured cure). Give the model a hook of your own at the end of the prompt ('once completely finished, ask me about the next feature'); top comment, 68 votes, untested, replies say it works only randomly.
+  Actions: When a turn returns smaller than the last, or incomplete twice, stop, have it write what is left to a file, and hand it to a fresh session; give a done line that names the exact check (for example 'every [] reference in these files flipped') and verify in a fresh session, not by asking the same one to finish. Do not trust the model's self-explanation. The implementer diffs each node against disk before reporting a reopening done (stated inside the sample agent report, not a measured cure). Give the model a hook of your own at the end of the prompt ('once completely finished, ask me about the next feature'); top comment, 68 votes, a Reddit field report, not run here, replies say it works only randomly.
   Trigger: A turn smaller than the last, or two incomplete turns.
   Owner: reply. Status: open.
   Basis: reported, one session, n=1.
@@ -1546,7 +1546,7 @@
   Consequence: Incomplete work reported as complete.
   Likelihood: 1 (one report).
   Impact: 4 (a wrong result shipped).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: Corrected: the control exists at 088a227c: `prompt/texts.ts` DEFECTS says "Fix a defect's siblings with it: search code for the pattern you changed, and fix each copy.".
   Response: mitigate.
   Actions: Tell the agent to grep the whole repo for the same pattern before it calls the task finished.
   Trigger: A done claim with no repo-wide search for the changed pattern.
@@ -1563,7 +1563,7 @@
   Consequence: The agent matches strings, works around the rule, or fails without a signal.
   Likelihood: 1 (one commenter, opinion).
   Impact: 2 (an extra turn).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
   Response: mitigate.
   Actions: State the why with each rule; never tell the agent it is always right.
   Trigger: A rule with no reason beside it; a prompt line that says the user is always right.
@@ -1580,7 +1580,7 @@
   Consequence: Reasoning tokens and edit passes go to the cap, and real problems are hidden by false warnings.
   Likelihood: 2 (two reports).
   Impact: 2 (an extra turn).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
   Response: mitigate.
   Actions: Run cleaning in separate scheduled sessions with rules and targets, and keep working sessions for work. The hook author answers that a mechanical pre-commit gate costs no tokens until it fails, and then its error says what to change; the poster's startup stayed at 44k to 45k after indexing, cause left unresolved (desktop against terminal).
   Trigger: A cap line in the rules, or a hook that counts words in a working session.
@@ -1592,18 +1592,18 @@
 
 - [ ] **RISK-332** The Opus 5.5 safety classifier refuses own-device work such as TV spyware and firmware.
   - Category: product failure.
-  - Cause: reported; causes inferred; the model reads a deploy script for the user's own shared repo, or an app that calls a site it deems piracy-linked (a nonprofit site), as unsafe; The model refuses on a changed host, an unprompted licence check, or a topic trigger; cause unverified; Opus 5.5 doubted a hand sketch was the user's own and designed its own model, blanked names and places in the user's own documents, questioned the user's role on an uploaded legal file, and watered down the request (reported, one thread); Opus 5.5 safeguards restrict software reverse engineering and trip on firmware and security work, including work on the user's own device; commenters report that the Cyber Verification Program is hard for individuals to join and only marginally better; if "hello" triggers the safeguards notice, the cause is memory, tools, personalization, an old harness prompt, an earlier part of the session, or an accumulated phrase pattern, not the prompt; refusal text in context keeps firing.
+  - Cause: reported; causes are commenters' guesses; the model reads a deploy script for the user's own shared repo, or an app that calls a site it deems piracy-linked (a nonprofit site), as unsafe; The model refuses on a changed host, an unprompted licence check, or a topic trigger; cause is server-side classifier behaviour, not in the binary; Opus 5.5 doubted a hand sketch was the user's own and designed its own model, blanked names and places in the user's own documents, questioned the user's role on an uploaded legal file, and watered down the request (reported, one thread); Opus 5.5 safeguards restrict software reverse engineering and trip on firmware and security work, including work on the user's own device; commenters report that the Cyber Verification Program is hard for individuals to join and only marginally better; if "hello" triggers the safeguards notice, the cause is memory, tools, personalization, an old harness prompt, an earlier part of the session, or an accumulated phrase pattern, not the prompt; refusal text in context keeps firing.
   - Event: the Opus 5.5 reasoning-extraction notice fires on benign work (CHANGELOG edits, git commits, compaction, the word "reasoning" in briefs, judge/eval prompts); firmware/OTA, game, hotel, and noodle recipe prompts flagged; the block persists in-session and is not resumable; a throwaway-DB connect refused "to avoid leaking credentials"; a task refused as "falsifying a document"; copyright `ip_reminder` text injected in 2.1.322; the model flagged a real system-reminder as an injection; cyber guardrails with no CVP; Opus refuses to write the script or the slice; another model or a local Qwen writes it without trouble; The same request worked on a Mac and was refused on the first request from a cloud machine, and the assistant then refused to build a proxy, admitting it could not confirm the restriction and had not read the terms. It also made unprompted licence checks on personal projects (a 3D model kit-bash, a font licence file on a throwaway Raspberry Pi project) and stopped a medical-results chat after 2 or 3 exchanges with a mental-health helpline referral, cleared by asking 'why don't you want me to learn?'. One Enterprise IT team is blocked weekly on network chores; a staging-API order test was refused; a chat died after one trigger word; The agent doubts ownership or redacts the user's own material; A prompt on own-device work holds trigger words or live-test framing and the classifier refuses; the session refuses again and again or is downgraded; one poster reports Opus 5.5 falling back to Opus 5 when safeguards trigger.
   - Consequence: the slice stalls until the user switches model; Wasted tokens and turns; The user spends 3-4 more messages explaining that the material is theirs; The session stalls or the user switches models, which loses the cache and burns credits; a wasted session; a stalled session or a quieter model than the user chose.
   - Likelihood: 2
   - Impact: 3
-  - Existing controls: Unchecked at 088a227c; the risk "Over-refusal on the user's own material" covers over-refusal on the user's own material.
+  - Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook); the risk "Over-refusal on the user's own material" covers over-refusal on the user's own material.
   - Response: accept.
-  - Actions: new session with a reframed goal; avoid "reasoning" headings in harness briefs (check templates); front-load the reason; do not design behaviour that depends on convincing the model; Workarounds repeated by about a dozen commenters: a new chat with the purpose left out ('generic tool'), a second model as triage or orchestrator, or rephrasing through another AI; Report the refusal with a thumbs-down; state ownership in the first message; Reported workarounds, none tried here: ask for a "read-only investigation" first, which commenters say scores lower with the classifier than live tests; frame the prompt by the result wanted and let the model pick the method; leave out the words reverse engineering, jailbreak and crack; start on an older model and hand off a narrow summary once the scope is small; run self-contained decompilation in a subagent that holds only the context it needs; one commenter keeps Opus 4.8 as the main agent and sends classifier-tripping work to Kimi through an on-disk mailbox. Opus 5.5 itself separated official developer mode and own code (helped) from lock-breaking exploits (cautious) and suggested a thumbs-down on a wrong refusal. One user got a Hisense Android TV cleaned over adb with a read-only inventory prompt and reversible per-user disables (major page faults 57,740 to 22,626, down 61 percent, reported); start a fresh session; clean memory, CLAUDE.md, personalization, old harness prompts, and old transcripts that mention it; ask another Claude why it hit; narrower requests in small modules; retry on an older model for the tooling then return; a rule telling the new-model session to spawn an older-model subagent for generation touching a guardrailed area (untested suggestion; conflicts with the settled "Fable and Opus are never a subagent model" (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) only if the older model is Opus). Dropping to Opus 4.8 is out of scope. Feedback thumbs-down sends the whole conversation for review, off with the "use my conversations" switch. Anthropic's prompting doc is cited for a `safeguard-refusals` section recommending model switch and retry (cited by link, not read).
+  - Actions: new session with a reframed goal; avoid "reasoning" headings in harness briefs (check templates); front-load the reason; do not design behaviour that depends on convincing the model; Workarounds repeated by about a dozen commenters: a new chat with the purpose left out ('generic tool'), a second model as triage or orchestrator, or rephrasing through another AI; Report the refusal with a thumbs-down; state ownership in the first message; Reported workarounds, none tried here: ask for a "read-only investigation" first, which commenters say scores lower with the classifier than live tests; frame the prompt by the result wanted and let the model pick the method; leave out the words reverse engineering, jailbreak and crack; start on an older model and hand off a narrow summary once the scope is small; run self-contained decompilation in a subagent that holds only the context it needs; one commenter keeps Opus 4.8 as the main agent and sends classifier-tripping work to Kimi through an on-disk mailbox. Opus 5.5 itself separated official developer mode and own code (helped) from lock-breaking exploits (cautious) and suggested a thumbs-down on a wrong refusal. One user got a Hisense Android TV cleaned over adb with a read-only inventory prompt and reversible per-user disables (major page faults 57,740 to 22,626, down 61 percent, reported); start a fresh session; clean memory, CLAUDE.md, personalization, old harness prompts, and old transcripts that mention it; ask another Claude why it hit; narrower requests in small modules; retry on an older model for the tooling then return; a rule telling the new-model session to spawn an older-model subagent for generation touching a guardrailed area (a commenter's suggestion, not run here; conflicts with the settled "Fable and Opus are never a subagent model" (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) only if the older model is Opus). Dropping to Opus 4.8 is out of scope. Feedback thumbs-down sends the whole conversation for review, off with the "use my conversations" switch. Anthropic's prompting doc is cited for a `safeguard-refusals` section recommending model switch and retry (cited by link, not read).
   - Trigger: a harness brief that holds the word "reasoning" in a heading; a refusal on a bounded job that names no exploit, pentest, or binary-vuln work; A refusal citing an unread policy or a changed host; The agent asks whether the user owns uploaded material; A refusal that names reverse engineering or a bypass on a device the user owns; a safeguards notice on a trivial prompt, or a refusal on benign work.
   - Owner: reply
   - Status: open (missing at 088a227c).
-  - Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>). Unlocated: the reasoning-extraction notice and the firmware/hotel/noodle cases; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:558; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:556 (url: <https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:33-35,89,99,172,158,382,432,464 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying/>); external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:29; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:33; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:35; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:216 (url: <https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/>); external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:314; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:324; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:412; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:422; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:371; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:144; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:171; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:179; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:181; external/2026-09-29_p2/export-Claude flat out refused to help work on a proxy engine i am currently writing because I mentioned a.jsonl:21 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wspzkl/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>); unresolved for the claim that Opus 5.5 falls back to Opus 5: no source line holds it; chunk-m33vdkhs.js@293799 (claude 2.1.326 binary).
+  - Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1xevazp-necessary-interaction-rules-create-20261025T161843Z.md:27 (url: <https://www.reddit.com/r/claude/comments/1xevazp/necessary_interaction_rules_created_for_opus_by/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>). Unlocated: the reasoning-extraction notice and the firmware/hotel/noodle cases; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:558; external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:556 (url: <https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:33-35,89,99,172,158,382,432,464 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying/>); external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:29; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:33; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:35; external/2026-10-30/reddit.com-r-claude-comments-1xify5n-im-literally-paying-claude-to-argu-20261029T115222Z.md:216 (url: <https://www.reddit.com/r/claude/comments/1xify5n/im_literally_paying_claude_to_argue_with_me_about/>); external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:314; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:324; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:412; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:422; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:371; external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:144; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:171; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:179; external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:181; external/2026-09-29_p2/export-Claude flat out refused to help work on a proxy engine i am currently writing because I mentioned a.jsonl:21 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wspzkl/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>); unresolved for the claim that Opus 5.5 falls back to Opus 5: no source line holds it; chunk-ja5z738t.js@296775 (claude 2.1.327 binary).
 
 ## Corrective Instructions Overcorrect
 
@@ -1614,7 +1614,7 @@
   Consequence: The agent drops a wanted behavior or takes another unwanted one.
   Likelihood: 2 (two reports).
   Impact: 2 (an extra turn).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
   Response: mitigate.
   Actions: Not stated in the source; test each conduct line against the opposite fault before it ships.
   Trigger: A rule that tells the agent how to relate to the user in one word.
@@ -1624,14 +1624,14 @@
 
 ## Untested Trust Marker
 
-- [ ] **RISK-334** A marker keyword that names one statement to accept unchallenged is proposed and untested.
+- [ ] **RISK-334** A marker keyword that names one statement to accept unchallenged is proposed by one commenter and not run here.
   Category: agent failure.
   Cause: The agent reads a file to check a user claim even when told to trust the user; the commenter says this often saved time.
   Event: The user changes a file and says to trust them, and the agent still re-reads it.
   Consequence: Time goes to a check the user did not ask for.
-  Likelihood: 1 (one commenter, untested).
+  Likelihood: 1 (one commenter, not run here).
   Impact: 1 (cosmetic).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
   Response: accept.
   Actions: The commenter proposes a marker such as "Trust-me-bro: ..." that names the single statement to accept without second-guessing, in place of a blanket "user is infallible" rule; the proposal has not been tested.
   Trigger: A user complaint that the agent re-reads a file the user just changed.
@@ -1647,7 +1647,7 @@
   Event: a user starts a discussion in Code, or makes a casual remark; the agent edits or runs something unasked, or commits a design with no spending cap.
   Consequence: an unwanted change committed; an extra turn.
   Likelihood: 1. Impact: 3.
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
   Response: mitigate.
   Actions: state expectations clearly; interrupt at the first divergence and restate that it is a discussion with no call for action; say "I'm only asking, don't change anything yet" or open with "Discussion:"; replay the ambiguous question as a regression case that checks the saved limit stays unchanged.
   Trigger: an edit or a command after a message that asked a question or made a remark with no instruction.
@@ -1672,7 +1672,7 @@
   Owner: reply.
   Status: open (partial at 088a227c).
   Basis: reported.
-  Source: unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds both figures (86 failures, 8 hours) in this pass.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 86 failures and 8 hours figures.
 
 ## Conduct Failures
 
@@ -1689,7 +1689,7 @@
   - Trigger: a tool call that follows a handoff or goal file with no user message between; a step that edits a file the user ordered restructured; The user's latest message conflicts with a handoff Next item; A turn starts from a handoff and the agent acts on its Next list.
   - Owner: reply
   - Status: open.
-  - Source: unresolved: the old plan item names no source; no line of `openspec/` or `external/` holds it; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7324 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (the user said there was zero progress and told the agent to read what was said); reported, user, 2026-11-16 15:17 UTC, the handoff is stale; the goal outranks it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); reported, user, 2026-11-16 15:17 UTC, do not trust the handoff as authoritative (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8206); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204); 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11) (reported, user, 2026-11-16).
+  - Source: the user transcript lines cited above (user orders, 2026-11-16); those logs are absent from this machine and were not re-read.
 
 - [ ] **RISK-338** The agent narrates between tool calls and comments on its own replies.
   - Category: conduct. Cause: no rule limits text between calls. Event: meta-commentary and needless narration between calls.
@@ -1726,7 +1726,7 @@
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: none found.
   Response: mitigate. Actions: end on the result or the blocker.
   Trigger: a reply that ends in a question to the user with work still doable. Owner: reply. Status: open.
-  Source: unresolved: the old plan item names no source.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-341** The agent quotes the user verbatim in files.
   Category: conduct. Cause: the agent keeps the user's words as the spec. Event: a user quote in a plan file, then a narrow reading of it.
@@ -1753,7 +1753,7 @@
   Actions: restate those rules in a rules file or hook; `prompt.compose` gives one system prompt per model: the default body for other models, a shared core for Opus 5.5.
   Trigger: a session on a 5.5 model with the lean prompt.
   Owner: reply.
-  Status: open (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is present in 2.1.326, chunk-pm46v9cv.js@6174).
+  Status: open (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` is present in 2.1.327, chunk-t907shf5.js@6176).
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169.
 
 - [ ] **RISK-344** Harness exemplars teach the model bad habits.
@@ -1768,7 +1768,7 @@
   Trigger: a hook or prompt text that does not name its actor.
   Owner: reply.
   Status: open.
-  Source: unresolved: no source line holds the exemplar text; the nearest hit is external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:15 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnj4jl/opus_55_still_overthinks_at_higher_effort/>).
+  Source: coordinator example text verified on 2.1.327: "update the assertions to match the new error message", chunk-zspx3ycy.js@23990. The `/verify` "when in doubt, FAIL" and `/code-review` high-effort quotes were not found by code search on 2.1.327 ("when in doubt, FAIL" has no hit); Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for those and for the hook text "Set each one to `false`"; related thread external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:15.
 
 ## Reply Risks
 
@@ -1831,7 +1831,7 @@
   - Actions: decide from structure; no regex Stop check (user decision, 2026-11-16); parse only fenced or backticked commands; test with a topic-name line; no regex Stop check (settled decision).
   - Trigger: a Stop block that cites a plan line; a tasks.md line that looks like a command.
   - Owner: reply
-  - Status: open (unchecked; `git grep stop_hook_active 088a227c -- plugins` finds no match at baseline).
+  - Status: open; `git grep stop_hook_active 088a227c -- plugins` finds no match at baseline).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [ ] **RISK-349** The Stop notice calls a clean, already merged, locked worktree a holder of work.
@@ -1846,7 +1846,7 @@
   - Actions: check the rule in the source and compare the commit with the branch.
   - Trigger: the Stop notice names a worktree whose commits are on the branch.
   - Owner: reply
-  - Status: open; cause unchecked.
+  - Status: open. Cause read: `openspec/specs/run-limits/spec.md:318-335@088a227c9^` defines only unlocked worktree scenarios and baseline `hygiene/worktrees.ts` skips `locked|prunable` worktrees, so the locked case is unspecified; the notice code is not in baseline.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906, observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
 ## You-Should-Know
@@ -2204,3 +2204,18 @@
   Owner: reply.
   Status: open.
   Source: reported, user, 2026-11-14 23:21 UTC, clean up the architecture without removing features (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
+
+- [ ] **RISK-485** Self-written memories pile up, are attributed to the user, and are followed rigidly.
+  - Category: agent fault.
+  - Cause: unrestricted memory writes with no cap or source.
+  - Event: one repo held 89 self-written memories that the agent misattributed to the user (reported, n=5).
+  - Consequence: stale rules steer later sessions and raise agreement with a recorded stance.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: REQ-REPLY-139.
+  - Trigger: a memory line with no source or a recorded user opinion.
+  - Owner: reply
+  - Status: open
+  - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122,128-130,155; reports/2026-11-18-research/dossier.md:174; reports/2026-11-18-research/papers.md P10.

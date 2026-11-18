@@ -43,7 +43,7 @@
   Consequence: Extra runtime and tokens on repeated work.
   Likelihood: 1 (one report; a second commenter in the same thread gives the cure).
   Impact: 2 (an extra turn per run).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c: a grep of `plugins/` for benchmark, faster, and speed found no rule outside tests.
   Response: mitigate.
   Actions: Have the agent review its own tooling critically; move repeated work into prebuilt scripts (no run-to-run hallucination, faster, no tokens spent writing it). A periodic prompt: "look back at the last two weeks of work, what kind of work was done over and over that we could just turn into a script". A Go tool measured about 50x faster than the Python original (reported, one user). A second commenter has the model build local tools for repetitive batch work instead of spending tokens on it .
   Trigger: The same helper script is rewritten across sessions, or a tool runs past a few seconds per call.

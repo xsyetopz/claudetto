@@ -9,7 +9,7 @@
   Consequence: blocked work for calls that break nothing.
   Likelihood: 3 (reproduced once from a log).
   Impact: 3.
-  Existing controls: none at baseline (plugins/claudetto-you-should-know exists; its keying is unchecked). The cure: key the offer by the call's tool_use_id (documented identical at every event of the call) and let other calls run their own check.
+  Existing controls: none at baseline (plugins/claudetto-you-should-know exists; a grep for `tool_use_id|toolUseId` in `plugins/claudetto-you-should-know/hooks/` at 088a227c finds none, so no keying by call id exists). The cure: key the offer by the call's tool_use_id (documented identical at every event of the call) and let other calls run their own check.
   Response: mitigate.
   Actions: key the offer by tool_use_id; test two concurrent calls with different verdicts.
   Trigger: two calls of one turn stopped by one note.

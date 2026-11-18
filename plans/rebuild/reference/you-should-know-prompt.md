@@ -1,6 +1,6 @@
 # you-should-know Propose Prompt
 
-Verbatim copy of the `proposePrompt(seen, known)` text of `cc-plugin-you-should-know@builtin`. Source: `chunk-na8s6d5h.js` in `/Users/krystian/.local/share/claude/versions/2.1.326` (`claude` 2.1.326); its `## Overview` line is at @42284. Measured 2026-11-17: the 33,926 bytes from the `## Overview` line through the closing sentence have md5 `239b95d31eeffae18e86089d34cfc8f2` in both 2.1.326 and 2.1.325 (`chunk-jc1ynf6x.js`@39500-72900), so the copy below holds for both. Requirements that use it: `prd/you-should-know.md`.
+Verbatim copy of the `proposePrompt(seen, known)` text of `cc-plugin-you-should-know@builtin`. Source: `chunk-na8s6d5h.js` in `/Users/krystian/.local/share/claude/versions/2.1.326` (`claude` 2.1.326); its `## Overview` line is at @42284 (2.1.327: `chunk-nvx1z6pc.js`@42362). Measured 2026-11-17: the 33,926 bytes from the `## Overview` line through the closing sentence have md5 `239b95d31eeffae18e86089d34cfc8f2` in both 2.1.326 and 2.1.325 (`chunk-jc1ynf6x.js`@39500-72900), so the copy below holds for both. Requirements that use it: `prd/you-should-know.md`.
 
 The `model.fork` prompt; the array of lines is joined with `\n`. Trailing double spaces are part of the text. `<<SIDE_REQUEST_FRAME>>` = the frame above; `<<LIST seen>>` and `<<LIST known>>` = list formatter output for the `seen` and `known` stores. Text between the `~~~~` fences is verbatim.
 

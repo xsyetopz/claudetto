@@ -41,7 +41,7 @@
   Actions: Keep the variable out of the written env set; a setup test pins its absence.
   Trigger: A setup change adds `CLAUDE_CODE_SCRIPT_CAPS` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`.
   Owner: setup. Status: Open.
-  Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-wqz933wn.js@8644; `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: unverified in 2.1.326. Not located: the old plan's P223 source.
+  Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-57bg7pbc.js@8656 (2.1.327); `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: verified on 2.1.327: when the variable is set, the mode becomes `default` and a notice reads `Permission mode forced to default`, chunk-rthqjjhy.js@3900. Dropped (2026-11-18) for the old plan's P223 source: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-397** Setup leaves retired rules installed.
   - Category: product defect.
@@ -95,9 +95,9 @@
   - Consequence: the user cannot have the agent work on its own project; an extra session.
   - Likelihood: 1
   - Impact: 3
-  - Existing controls: none; unverified agent explanation.
+  - Existing controls: none.
   - Response: accept.
-  - Actions: start the session without --plugin-dir; probe the deny list on claude 2.1.326 (the agent's deny-list explanation is unverified in 2.1.326); probe the deny list on claude 2.1.325.
+  - Actions: start the session without --plugin-dir; checked on 2.1.327 by code reading, no live probe: the explanation that the plugin root is on the sandbox deny list is not supported. The default write-deny names `.vscode`, `.idea`, `.claude/commands`, `.claude/agents` (chunk-kr4nf9qg.js@3888). Only `plugin eval` adds plugin directories to `denyWrite` (chunk-6zk0h247.js@158180). The refused edit more likely came from the auto-mode classifier, which the Cause line also names.
   - Trigger: a write refused under plugins/claudetto.
   - Owner: setup
   - Status: open.
@@ -126,12 +126,12 @@
   Event: a session transcript is deleted after 14 days.
   Consequence: past sessions the user or an audit needs are gone (user work lost).
   Likelihood: 2. Impact: 4.
-  Existing controls: the bundle default is 30 (claude 2.1.326 confirms default 30, min 1: the `cleanupPeriodDays` schema text reads "default: 30). Minimum 1", chunk-m33vdkhs.js@226356); an agent claimed 365 (reported, wrong).
+  Existing controls: the bundle default is 30 (claude 2.1.327 confirms default 30, min 1: the `cleanupPeriodDays` schema text reads "default: 30). Minimum 1", chunk-ja5z738t.js@227432); an agent claimed 365 (reported, wrong).
   Response: avoid.
   Actions: write no `cleanupPeriodDays` below the Claude Code default; a setup test asserts it.
   Trigger: a `cleanupPeriodDays` below 30 in a written settings file.
   Owner: setup. Status: mitigated at 088a227c (default 30).
-  Source: unresolved: no source line located for this claim.
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:43 (an earlier plugin release's `cleanupPeriodDays: 14` default had deleted the user's transcripts, SL 087f5a37); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:50.
 
 ## Agent Conduct
 
@@ -173,7 +173,7 @@
   Event: Claude Code can send the login token to the custom URL.
   Consequence: the login token leaks to the URL's server.
   Likelihood: 1. Impact: 5.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. A fake-API probe on 2.1.327 (`code cli`, login oauth, no ANTHROPIC_AUTH_TOKEN, 2026-11-18) ran, but the report does not expose request headers, so whether the login token reaches the base URL is open; a probe needs request-header capture.
   Response: avoid.
   Actions: always set a dummy ANTHROPIC_AUTH_TOKEN beside ANTHROPIC_BASE_URL. The same setup names ANTHROPIC_MODEL (line 103).
   Trigger: ANTHROPIC_BASE_URL in an environment with no ANTHROPIC_AUTH_TOKEN.
@@ -187,9 +187,9 @@
   Event: a listing that does not clear review.
   Consequence: no marketplace listing.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none. Directory review is server-side at Anthropic, not in the binary; one commenter's belief and one poster's two-week wait, kept as reported.
   Response: accept.
-  Actions: none in the source; unverified.
+  Actions: none in the source; field report, no local probe possible.
   Trigger: a submission with a hook that edits tool output.
   Owner: setup.
   Status: Open.

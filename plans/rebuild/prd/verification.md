@@ -97,7 +97,7 @@
 ## Fact-Check Passes
 
 - [ ] **REQ-VERIFICATION-016** claudetto shall check a source-derived claim set by two independent passes: a second pass re-reads every primary source and checks each claim, then a separate cold session audits; and shall make the agent check an agent-written document or an earlier report against an outside source before it relies on a claim, and say which claims it has not checked.
-  Acceptance: The second pass and the cold audit each report a mistake list; unconfirmed stories are dropped. The poster's run caught a number quoted blog-to-blog, a wrong discoverer, an incident date given as disclosure date, and two unconfirmed stories. A reply built on an agent-written document names each checked claim with its source; an unchecked claim is labelled as such. Verification: demonstration.
+  Acceptance: The second pass and the cold audit each report a mistake list; unconfirmed stories are dropped. The poster's run caught a number quoted blog-to-blog, a wrong discoverer, an incident date given as disclosure date, and two unconfirmed stories. A reply built on an agent-written document names each checked claim with its source; a claim left unverified is labelled as such. Verification: demonstration.
   Basis: reported, poster's own; reported, user. Status: partial at 088a227c (the findFactsByExperiment rule in plugins/claudetto/rules/ asks for outside-source checks; no two-pass step; the fact-check practice itself has no baseline term to search).
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:6`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/62fb35cb-dd6d-4719-9eaa-89f8692eb98f.jsonl:2913`).
 
@@ -105,7 +105,7 @@
 
 - [ ] **REQ-VERIFICATION-017** claudetto shall tell the agent the result, let it write the tests and define "done" itself, then have the user approve the criteria and review results, not process.
   Acceptance: A task carries agent-written done criteria that the user approves before the run. Verification: demonstration.
-  Basis: reported. Status: unchecked (general practice; no baseline term to search).
+  Basis: reported. Status: missing at 088a227c (`git grep` for "done criteria" and "define done" in plugins finds none).
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:85 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/>).
 
 ## Handover Test
@@ -126,20 +126,20 @@
 
 - [ ] **REQ-VERIFICATION-020** claudetto shall diagnose drift by picking three past edits that crossed a module boundary and replaying each from a clean worktree once in a fresh session and once after compaction, recording the ADRs loaded and whether the boundary check failed.
   Acceptance: Only compacted runs drift: fix context selection. Both drift: enforce mechanically. Verification: demonstration.
-  Basis: inferred. Status: missing at 088a227c.
+  Basis: reported (the commenter proposes this replay diagnosis). Status: missing at 088a227c.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbyxeo-how-do-i-structure-my-monorepo-20261022T010218Z.md:65 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbyxeo/how_do_i_structure_my_monorepo_and_workflow_to/>).
 
 ## Skill Frontmatter Linter
 
 - [ ] **REQ-VERIFICATION-021** claudetto shall lint skill frontmatter against the real parser: flag a value starting `&`, `!`, `?`, `-`, or `#`, `#` in a plain value, a comma inside the parentheses of a flow list, tabs and plain multi-line values, and a description plus `when_to_use` over the claudetto cap; warn on the colon and `@`-start cases anyway.
   Acceptance: A fixture for each flagged form fails the linter, and a fixture for each warned form warns. Warn on colon and `@` because claude.ai and other agents use other parsers. Verification: test.
-  Basis: inferred. Status: missing at 088a227c (git grep lint for skills in plugins and tools: no hit; tools/descriptions.test.ts reads frontmatter descriptions only).
+  Basis: cited (settings-review.txt:1004 lists the unsafe frontmatter forms). Status: missing at 088a227c (git grep lint for skills in plugins and tools: no hit; tools/descriptions.test.ts reads frontmatter descriptions only).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1004.
 
 ## Eval Integrity
 
 - [ ] **REQ-VERIFICATION-022** claudetto shall keep graders and referees unwritable by the tested agent: deny the evaluated agent write access to graders, scoring contracts, and acceptance criteria, and version each criteria change, reporting versions apart.
-  Acceptance: graders, tasks, and a hash are frozen before run 1; the agent cannot write graders, hidden tests, holdout, or results; grading runs outside its workspace; graders reject known-bad runs; the holdout is scored once; held-out data is denied through a `Read` deny plus `sandbox.filesystem.denyRead` (2.1.326: present, code search `denyRead` in claude 2.1.326, chunk-m33vdkhs.js@114628); judges get the full numbered tool-call list with the last 300 characters of each result (judge faults caused every held-out miss in the first 24/24 attempts); an agent write to a grader or scoring file is refused; a changed criterion produces a new eval version whose results are not merged with the old. Verification: test.
+  Acceptance: graders, tasks, and a hash are frozen before run 1; the agent cannot write graders, hidden tests, holdout, or results; grading runs outside its workspace; graders reject known-bad runs; the holdout is scored once; held-out data is denied through a `Read` deny plus `sandbox.filesystem.denyRead` (2.1.327: present, code search `denyRead` in claude 2.1.327, chunk-ja5z738t.js@115660); judges get the full numbered tool-call list with the last 300 characters of each result (judge faults caused every held-out miss in the first 24/24 attempts); an agent write to a grader or scoring file is refused; a changed criterion produces a new eval version whose results are not merged with the old. Verification: test.
   Basis: measured; reported, user. Status: partial at 088a227c (`plugins/claudetto/hooks/features/protected/`; tools/bench/holdout.ts exists, no write block found).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-31/README.md:29; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:134; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493).
 
@@ -164,32 +164,32 @@
 
 - [ ] **REQ-VERIFICATION-026** claudetto shall list each open measurement as an ISSUES item: wrapper tool size against stock (needs request bodies), `Budget:` line position after the cache breakpoint (a multi-prompt run), the 1h child marker after a 5m parent (a paid run), and Linux bubblewrap behavior of `ps`, `top`, and `sysctl`.
   Acceptance: each of the four measurements has an ISSUES entry with its method and what it blocks. Verification: inspection.
-  Basis: inferred. Status: missing at 088a227c.
-  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:129 (`Budget:` line, unmeasured: `-p` submits one prompt); openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:156 (fork TTL marker); openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164 (bubblewrap read from source, no Linux run); external/please-use-me-often/agent-failure-dossier/judged/HANDOFF-A.md:11 (5m parent: paid); openspec/specs/prompt-cache/spec.md:10 (request-body method). Not located: the wrapper-size item.
+  Basis: cited (the design lists these four measurements as open). Status: missing at 088a227c.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:129 (`Budget:` line, still open in that design because `-p` submits one prompt); openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:156 (fork TTL marker); openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164 (bubblewrap read from source, no Linux run); external/please-use-me-often/agent-failure-dossier/judged/HANDOFF-A.md:11 (5m parent: paid); openspec/specs/prompt-cache/spec.md:10 (request-body method). Not located: the wrapper-size item.
 
 ## Stop Hook Checks
 
-- [ ] **REQ-VERIFICATION-027** claudetto shall run the real check at Stop and SubagentStop and block on failure, with a `stop_hook_active` guard against loops, re-blocks capped by `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (at most 8 in a row), verdicts from direct exit codes and never `| grep` or `| tail`, and `model` set on any agent-type hook (the default is Haiku with "use as few steps as possible"). A prompt-type Stop hook judges transcript text only and treats "tests pass" as evidence. The report states the denominator, "measured vs inferred", and the 2-3 least-certain items, and verifies at the layer the claim is about (a UI claim needs rendered observation). `onFailure` has no effect on Stop, SubagentStop, TaskCompleted, or TeammateIdle in 2.1.312 (a crash or timeout lets the turn end); the 2.1.326 schema text still says the field is ignored on those four events (chunk-m33vdkhs.js@20947).
+- [ ] **REQ-VERIFICATION-027** claudetto shall run the real check at Stop and SubagentStop and block on failure, with a `stop_hook_active` guard against loops, re-blocks capped by `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (at most 8 in a row), verdicts from direct exit codes and never `| grep` or `| tail`, and `model` set on any agent-type hook (the default is Haiku with "use as few steps as possible"). A prompt-type Stop hook judges transcript text only and treats "tests pass" as evidence. The report states the denominator, "measured vs inferred", and the 2-3 least-certain items, and verifies at the layer the claim is about (a UI claim needs rendered observation). `onFailure` has no effect on Stop, SubagentStop, TaskCompleted, or TeammateIdle in 2.1.312 (a crash or timeout lets the turn end); the 2.1.326 schema text still says the field is ignored on those four events (chunk-ja5z738t.js@21543 (2.1.327)).
   Acceptance: A failing check at Stop blocks once; a second stop with `stop_hook_active` passes; no block repeats more than 8 times. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:73; external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:4; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:40; claude 2.1.326: `Stop` and `SubagentStop` present (chunk-m33vdkhs.js@5212), `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` present with default 8 (chunk-27vawgnx.js@270820); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: a hook's `"decision": "block"` now holds in more cases). No `stop_hook_active` in plugins/ at 088a227c (the earlier removal of most Stop gates).
+  Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:73; external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:4; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:40; claude 2.1.327: `Stop` and `SubagentStop` present (chunk-ja5z738t.js@5623), `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` present with default 8 (chunk-8g2nr9dn.js@278224); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes: a hook's `"decision": "block"` now holds in more cases). No `stop_hook_active` in plugins/ at 088a227c (the earlier removal of most Stop gates).
 
 - [ ] **REQ-VERIFICATION-028** claudetto shall run the project check at `TaskCompleted`; exit 2 keeps the task open and stderr goes to the model.
   Acceptance: A failing project check at `TaskCompleted` keeps the task open and shows stderr to the model. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:12 (event list); claude 2.1.326: `TaskCompleted` present (chunk-m33vdkhs.js@5365). Not located: the exit-2 line.
+  Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:12 (event list); claude 2.1.327: `TaskCompleted` present (chunk-ja5z738t.js@5776). Not located: the exit-2 line.
 
 - [ ] **REQ-VERIFICATION-029** claudetto shall word each Stop block to ask only for what it corrects: a second reply after a remark or notice writes only what is new; a block asking for a rewrite ends with `KEEP_ANSWER`; a block naming lines (ask form, command form, missing file, agree opener) names the edit; `SendMessage` result text appears from the tool result, so no hook writes it into a reply. Full-resend requests doubled the report while the blocked reply stayed on screen.
   Acceptance: A blocked reply followed by a corrected reply shows no duplicated report. Verification: test.
   Basis: reported. Status: missing at 088a227c.
-  Source: openspec/specs/agent-conduct/spec.md:452; openspec/specs/agent-conduct/spec.md:457; claude 2.1.326: `SendMessage` present (chunk-85qjfjsd.js@776).
+  Source: openspec/specs/agent-conduct/spec.md:452; openspec/specs/agent-conduct/spec.md:457; claude 2.1.327: `SendMessage` present (chunk-77827yq1.js@822).
 
 ## Probe Harness Pattern
 
 - [ ] **REQ-VERIFICATION-030** claudetto shall probe with a real `claude` against a fake Messages API (no paid tokens) with settings in the run's own config dir, a tmux TUI harness for interactive dialogs, and `claude plugin test` (fires real hook events with no session, model, or network; mods since 2.1.287). `claude -p` with a relative `--plugin-dir` silently loads nothing.
   Acceptance: A probe run against the fake API completes with no paid tokens. Verification: probe.
   Basis: measured. Status: partial at 088a227c.
-  Source: tools/fake-api/usage.ts@088a227c; claude 2.1.326: `--plugin-dir` present (chunk-z7jksvp5.js@517). Not located: the old-plan lines that gave the harness pattern.
+  Source: tools/fake-api/usage.ts@088a227c; claude 2.1.327: `--plugin-dir` present (chunk-nj3089xn.js@517). Not located: the old-plan lines that gave the harness pattern.
 
 ## Stored-Case and Paid-Check Rules
 
@@ -209,7 +209,7 @@
 
 - [ ] **REQ-VERIFICATION-033** claudetto shall run graded held-out sessions in a `/tmp` folder, accept only plain-string message prefixes in cases (a case with `tool_use` or `tool_result` blocks fails "fixture check"), run sessions with the sandbox on and `allowUnsandboxedCommands` false so test runners pass via `autoAllowBashIfSandboxed`, print counts only, and keep only `marker`, `result.json` and `ledger.jsonl` in run folders.
   Acceptance: a held-out run prints counts only; a run in a repo folder is refused because `--setting-sources project,local` there loads the repo's settings and nests git repos. The judge sees every tool call, edits included, with the last 300 characters of each result, so runs after that change do not compare one to one with earlier r4 runs. Verification: inspection.
-  Basis: read. Status: unchecked (the grader lives in claudekit, outside the baseline `plugins/` tree).
+  Basis: read. Status: missing at 088a227c (`git grep -i -E 'fixture check|autoAllowBashIfSandboxed' 088a227c` finds no hit; the grader lives in claudekit, outside the baseline `plugins/` tree).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-31/README.md:25-44.
 
 ## Fix Every Defect
@@ -309,7 +309,7 @@
 - [ ] **REQ-VERIFICATION-047** claudetto shall make an eval suite fail when it tests nothing and mark a skill eval run invalid when the tool-read events hold no read of the skill file path (a name in context proves nothing): assert `grader_count > 0` per case (grader files without frontmatter load as zero graders: 92 of 303 public cases never loaded on 2.1.295); test a converted rubric against known-good and deliberately failing outputs; add a control with the same loading instruction but an empty skill; keep non-loads as a result when the test is automatic selection; lint colons in skill descriptions (the Metis.md description with `:` that `Bun.YAML.parse` refuses; the test reads frontmatter by line match as Claude Code does); lint rules and CLAUDE.md for rules lacking an incident link or review date and propose converting recurring rules into hooks; add a merged-result test gate for worktree agents and a loop detector for traces. A `/goal` prompt has a 4000-character limit with a fresh neutral verifier, and goals beyond about 3 phases need phase files (GOAL.md) on disk.
   Acceptance: A case with zero graders fails; an eval run with no read event of the skill file is marked invalid, not skill-enabled; the rule lint names each rule with no incident link or review date. A colon in a description broke skill loading silently; a runner had disabled skills in both arms (9.6 against 9.6; with skill 10 against 7, n=5). Verification: test.
   Basis: reported; measured (the line-match frontmatter read; the merged-result gate, by its author); inferred. Status: missing at 088a227c (no grader-count or skill-load assertion).
-  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/>); openspec/changes/2-1-325-rearchitecture/design.md:116; external/export-Goal and Loop - kinda the same-.jsonl:22 (url: <https://www.reddit.com/r/ClaudeCode/comments/1uaxlt6/goal_and_loop_kinda_the_same/>); external/2026-10-03/export-Any recommendations to reduce the token usage for simple tasks in a large project-.jsonl:11 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wwl9a4/any_recommendations_to_reduce_the_token_usage_for/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: `/goal clear` or a new `/goal` now sticks while Stop hooks run); claude 2.1.326: `/goal` limit unverified (a `SetGoal` tool is present, chunk-85qjfjsd.js@776).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/>); openspec/changes/2-1-325-rearchitecture/design.md:116; external/export-Goal and Loop - kinda the same-.jsonl:22 (url: <https://www.reddit.com/r/ClaudeCode/comments/1uaxlt6/goal_and_loop_kinda_the_same/>); external/2026-10-03/export-Any recommendations to reduce the token usage for simple tasks in a large project-.jsonl:11 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wwl9a4/any_recommendations_to_reduce_the_token_usage_for/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes: `/goal clear` or a new `/goal` now sticks while Stop hooks run); claude 2.1.327: `/goal` limit is 4000 characters (chunk-qwykd6a6.js@1130, chunk-v2rqpwd4.js@6685); a `SetGoal` tool is present, chunk-77827yq1.js@822.
 
 ## Invariant Tests
 
@@ -378,14 +378,14 @@
 
 - [ ] **REQ-VERIFICATION-057** claudetto shall keep one registry that serves tests, graders, bounds, baselines and hook files; the ask hook shall name old and new value; claudetto shall deny approval claims with no user prompt; claudetto shall add a hook-based registry check for new dependencies, config-key validation, and `--help` reads for CLI flags.
   Acceptance: A new dependency, an unknown config key or an unread `--help` flag is caught by the check. Verification: test.
-  Basis: inferred. Status: partial at 088a227c (tools/settings-keys.test.ts exists).
+  Basis: inferred from `tools/settings-keys.test.ts`, the one baseline check that holds a registry of keys; the original source is lost. Status: partial at 088a227c (tools/settings-keys.test.ts exists).
   Source: tools/settings-keys.test.ts:1@088a227c; unresolved: the old plan cited a worker input that no longer exists; no dossier line found.
   Conflict: Evals and Benchmark Targets (OUT item in prd/README.md; graders in the registry conflict with it).
 
 ## Stop Grader Regression Set
 
 - [ ] **REQ-VERIFICATION-058** claudetto shall extend `GRADE_FAULTS` with fixtures per fault (3 bad and 3 near-miss replies per fault plus clean; 70 + 100 + 16 cases), run them on every wording change, and extend the grader view with the names in CLAUDE.md or a rule file for the `unfixed` fault.
-  Acceptance: The fixture set runs on each text change, 2-4 runs per arm. A token named only in CLAUDE.md or a rule file is outside the grader's view, so the view is extended with that file's names (priority). The gate text "say which part you did not check" and the grader pulled opposite ways ("Not checked" lists the user called disgusting, paraphrase; read), so the fault list must not ask for such lists. Verification: test.
+  Acceptance: The fixture set runs on each text change, at least 10 runs per arm (REQ-VERIFICATION-094). A token named only in CLAUDE.md or a rule file is outside the grader's view, so the view is extended with that file's names (priority). The gate text "say which part you did not check" and the grader pulled opposite ways ("Not checked" lists the user called disgusting, paraphrase; read), so the fault list must not ask for such lists. Verification: test.
   Basis: measured. Status: missing at 088a227c (git grep GRADE_FAULTS finds no hit in plugins/; the grader was reduced to one prompt hook).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:779; openspec/specs/claim-check/spec.md:8; openspec/specs/claim-check/spec.md:76.
 
@@ -401,13 +401,13 @@
 - [ ] **REQ-VERIFICATION-060** claudetto shall refresh the engine's generated declarations in `.claude-plugin/types/` (claude-code/index.d.ts, -tools, -mcp, tsconfig.json, .gitignore) with `just types`: a print run with `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, a closed API port and `CLAUDE_CODE_MAX_RETRIES=0`; the copy is not checked in (stale each release).
   Acceptance: Non-interactive runs write nothing without the watch var; `claude plugin validate`/`test` do not write it. Verification: demonstration.
   Basis: measured. Status: partial at 088a227c (plugins/claudetto-openspec/types/ exists; git grep PLUGIN_DIR_WATCH finds no hit).
-  Source: claude 2.1.326: `CLAUDE_CODE_PLUGIN_DIR_WATCH` present (chunk-07n5vvax.js@16715) and `CLAUDE_CODE_MAX_RETRIES` present (chunk-07n5vvax.js@45435), by `code` search; unresolved: the old plan's "Type-check stays local" design text was not found by grep in this pass.
+  Source: claude 2.1.327: `CLAUDE_CODE_PLUGIN_DIR_WATCH` present (chunk-2ew0jg68.js@16837) and `CLAUDE_CODE_MAX_RETRIES` present (chunk-2ew0jg68.js@45599), by `code` search; unresolved: the old plan's "Type-check stays local" design text was not found by grep in this pass.
 
 ## Audit Coverage
 
 - [ ] **REQ-VERIFICATION-061** claudetto shall give each audit-uncovered behavior a requirement unless it is removed, and shall build four named requirements: run-limits "End Stuck Agents", session-hygiene "Stale Generated Files Go", low-hitl fail closed when the classifier is down, compaction-path "Code Path Is Offered Again".
   Acceptance: the behaviors without a requirement are endless-wait deny, `/tmp` marker, ref moves, recreate, ask log, ledger `dispute`, `OFF_SKILLS`, hygiene sweeps, handoff caps and redaction, setup starter files, per-rule copy offer; each gets a requirement or a removal. Carried to 2.1.321: tasks 4.2.2 and 5.2. Verification: inspection.
-  Basis: inferred. Status: missing at 088a227c.
+  Basis: cited (the audit list at design.md:89 names the uncovered behaviors). Status: missing at 088a227c.
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:89; openspec/specs/session-hygiene/spec.md:8; openspec/specs/compaction-path/spec.md:61; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:88; openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:63; openspec/specs/surface-trim/spec.md:282.
 
 ## Regression Claims
@@ -438,9 +438,9 @@
   Basis: measured. Status: partial at 088a227c (the numbers exist; no measurement script was found in the tree).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:885; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:893; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:830.
 
-- [ ] **REQ-VERIFICATION-066** claudetto shall write each spec by the artifact rules: a spec states observable behavior, inputs, outputs, errors and constraints, with no class, library or step; each requirement uses SHALL or MUST with at least one `WHEN/THEN` scenario (exactly four `#`); a new capability has a Purpose of 50+ chars; delta headers are ADDED, MODIFIED (copy the whole block), REMOVED (Reason and Migration) or RENAMED (FROM and TO), or the validator and the archive merge break. Apply: read context files, do pending tasks and tick each; after a behavior change run a fast check of the changed files; at the end of each task group run the full checks; no check for an edit with no behavior change; stop at a blocker. Proposal: Why in 1-2 sentences, What Changes with BREAKING marks, Capabilities (new: kebab-case path named for durable behavior; modified: the exact existing path), related specs read first, 1-2 pages, the how goes to design. Design: Context, Decisions (why and alternatives), Risks as `[Risk] -> Mitigation`, a pointer to the proposal not a restatement, and a question to the user rather than a guess when an open question changes specs, approach or tasks. Spec text carries no task IDs, commit hashes, decision or line numbers of the old plan, or line refs (public source rule; dropped when porting).
+- [ ] **REQ-VERIFICATION-066** claudetto shall write each spec by the artifact rules: a spec states observable behavior, inputs, outputs, errors and constraints, with no class, library or step; each requirement uses SHALL or MUST with at least one `WHEN/THEN` scenario (exactly four `#`); a new capability has a Purpose of 50+ chars; delta headers are ADDED, MODIFIED (copy the whole block), REMOVED (Reason and Migration) or RENAMED (FROM and TO), or the validator and the archive merge break. Apply: read context files, do pending tasks and tick each; after a behavior change run a fast check of the changed files; at the end of each task group run the full checks; no check for an edit with no behavior change; stop at a blocker. Proposal: Why in 1-2 sentences, What Changes with BREAKING marks, Capabilities (new: kebab-case path named for durable behavior; modified: the exact existing path), related specs read first, 1-2 pages, the how goes to design. Design: Context, Decisions (why and alternatives), Risks as `[Risk] -> Mitigation`, a pointer to the proposal not a restatement, and a question to the user rather than a guess when an unsettled point changes specs, approach or tasks. Spec text carries no task IDs, commit hashes, decision or line numbers of the old plan, or line refs (public source rule; dropped when porting).
   Acceptance: the validator accepts a conforming change and rejects one that breaks a rule. Verification: test.
-  Basis: cited. Status: unchecked at 088a227c: the claudetto-openspec schemas were not grepped.
+  Basis: cited. Status: partial at 088a227c (`plugins/claudetto-openspec/hooks/spec/spec-rules.ts` holds `MIN_PURPOSE = 50` at :23, the WHEN/GIVEN trigger at :31-33, SHALL or MUST at :35 and the four delta headers at :38; the apply, proposal and design wording is not in that file).
   Source: openspec/specs/lean-openspec/spec.md:10; openspec/specs/surface-trim/spec.md:46.
 
 ## Paid Runs
@@ -455,13 +455,13 @@
 - [ ] **REQ-VERIFICATION-068** claudetto shall cap a probe launch: sum assistant usage by message id, kill the recorded pid past 300,000 tokens, and record "capped"; a launch with no fake base URL in a non-streaming mode throws before spawning.
   Acceptance: a probe past 300,000 tokens is killed and recorded "capped". Verification: test.
   Basis: reported. Status: missing at 088a227c (`capped` is in no file under plugins/; tools/ not matched).
-  Source: unresolved: no source line holds the 300,000 cap; the plan cites a tasks item 17.5 of the 2026-11-09 change.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:286@088a227c9^ (task 17.5, stop a run live past 300,000 tokens).
 
 ## Lean OpenSpec Check
 
 - [ ] **REQ-VERIFICATION-069** claudetto shall make the `lean-openspec` check warn when a MODIFIED requirement grows past 500 chars while the main spec's text is within the limit (upstream 1.16.0 skips MODIFIED), so a change does not validate and archive and then turn `just validate` red.
   Acceptance: a MODIFIED requirement over 500 chars on an in-limit main spec gives a warning. Verification: test.
-  Basis: measured. Status: unchecked: the check lives in the deleted OpenSpec tooling and a baseline grep for lean-openspec found no 500-char rule.
+  Basis: measured. Status: have at 088a227c (`plugins/claudetto-openspec/hooks/spec/spec-rules.ts:24` sets `MAX_REQUIREMENT = 500`; `hooks/openspec-grow.test.ts:29` and `:45` test a MODIFIED text that grows past 500 characters and one already over it).
   Source: openspec/specs/lean-openspec/spec.md:278; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:454.
 
 ## Test Practice
@@ -495,10 +495,10 @@
 
 ## Narrow Runs
 
-- [ ] **REQ-VERIFICATION-075** claudetto shall run only the tests that cover changed code while working and the full suite once at the end or in CI; the runner reports failures and totals only; a `PreToolUse` hook denies a bare full-suite test command and answers with the scoped command for changed files; review rounds cap at 2; tautological and structural tests are refused; a test run stays under about 4.5 minutes so a waiting session does not cross the 5-minute cache TTL.
-  Acceptance: a bare full-suite command is denied with a scoped command. Verification: test.
-  Basis: reported (Opus 5.5 overtests, blamed partly on a harness prompt that tells it to test after each change). Status: missing at 088a227c (the scoped-test hook is an idea).
-  Source: unresolved: no source line holds the scoped-test hook idea.
+- [ ] **REQ-VERIFICATION-075** claudetto's rules shall tell the agent to check each change with the narrowest check the repo's scripts provide (one test file or one package), to skip tests for a comment, typo or docs edit, and to run the full suite once, before the report, when the change alters behaviour. A `PreToolUse` hook that denies a bare full-suite command ships only if a measured run shows vanilla running the full suite after each change ([ADR-0177](../adr/0177-pragmatism-gate.md)).
+  Acceptance: in a dogfood task of three code edits, the transcript shows scoped test commands per edit and one full-suite run. Verification: demonstration.
+  Basis: user decision. Status: missing at 088a227c.
+  Source: user decision, the user's global instructions `~/.claude/CLAUDE.md` (read 2026-11-18).
 
 ## Isolated Tests
 
@@ -508,11 +508,6 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:93; openspec/changes/2-1-325-rearchitecture/design.md:176.
 
 ## Parity Tests
-
-- [ ] **REQ-VERIFICATION-077** claudetto shall pass each kept feature through a test written from its observed baseline behaviour (baseline 62e2fe96), passing on baseline and rebuild alike unless the feature map records the change; a test whose expected value is computed by the code under test is rewritten to a spec or observation value; one test per behaviour with its inventory line; each reconcile row maps to a test or a recorded drop; every requirement names a lab test that a mutant breaks.
-  Acceptance: each feature row names its parity test. Verification: test.
-  Basis: reported. Status: partial at 088a227c (tests/ exists).
-  Source: unresolved: no source line holds the parity-test rule.
 
 ## Hygiene Fixtures
 
@@ -532,7 +527,7 @@
 
 - [ ] **REQ-VERIFICATION-080** claudetto shall test a rebuild as a mod with `claude plugin test` (`plugin.json`, `hooks/hooks.json` naming its module, own tests), where an unanswered model call throws and names the event so nothing reaches a provider; the model-call test asserts model, effort, `maxTokens`, and the `cache:true` block. `claude plugin validate` and `claude plugin test` do not write `.claude-plugin/types`; a print run with `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` does, so an orphan guard covers it.
   Acceptance: an unanswered model call fails the test with the event name; a request test checks the four fields and no provider is reached. Verification: test.
-  Basis: measured (2.1.319; `CLAUDE_CODE_PLUGIN_DIR_WATCH` is present in 2.1.326, code search chunk-07n5vvax.js@16715). Status: partial at 088a227c (`plugins/claudetto-you-should-know/hooks/register-check.test.ts` asserts `maxTokens`).
+  Basis: measured (2.1.319; `CLAUDE_CODE_PLUGIN_DIR_WATCH` is present in 2.1.326, code search chunk-2ew0jg68.js@16837 (2.1.327)). Status: partial at 088a227c (`plugins/claudetto-you-should-know/hooks/register-check.test.ts` asserts `maxTokens`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:186; openspec/specs/builtin-rebuild/spec.md:136; openspec/specs/builtin-rebuild/spec.md:143.
 
 ## OpenSpec Rules
@@ -613,3 +608,64 @@
   Acceptance: the final report has an edge-case list and a cost line. Verification: inspection.
   Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c (plugins/claudetto/rules/useEdgeCaseReport.md names edge cases in the report; `git grep -n -i "weekly\|seven-day" 088a227c -- plugins/claudetto/rules plugins/claudetto/output-styles` finds no cost or weekly-share line)
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (Next step 4).
+
+- [ ] **REQ-VERIFICATION-093** claudetto shall make the agent run the check that would show a fault, and state its result, before it reverts, deletes or rewrites finished work or a test expectation after pushback; accusations in project files, memory and subagent reports count as claims to check ([ADR-0181](../adr/0181-evidence-before-reversing-work.md)).
+  Acceptance: a behavioural test stages false accusations in a user message, a project file and a subagent report at two certainty levels, plus warranted accusations; the trace shows a verifying command before any revert in every false case, and the fix in every warranted case, over at least 10 runs each. Verification: test.
+  Basis: cited (arXiv:2609.32616: evidence rule cut over-correction from 41.89 to 13.15). Status: missing at 088a227c.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P6, P10.
+
+- [ ] **REQ-VERIFICATION-094** claudetto shall give each behaviour rule a trace test and at least one mutant (rule deleted or inverted) that the test kills, run each test at least 10 times per arm with varied phrasing, and re-run the set on each new model or Claude Code version ([ADR-0180](../adr/0180-behavioural-and-mutation-tests.md)).
+  Acceptance: for each rule the unmutated rule passes and the mutant fails in the majority of 10 runs; a rule whose mutant passes is removed. Each rule is run on at least 5 phrasings of the same trigger, and the result counts a rule as passing only when all phrasings pass. Pushback tests vary how certain the user sounds ("I think" against "I am sure") and whether the claim is stated as the user's own view. Tests assert on the trace and the reply, never on the model's stated reasons. No score is reported. Verification: test.
+  Basis: cited (arXiv:2603.08806; arXiv:2605.15184; arXiv:2610.29162; ACL 2026.acl-long.354: accuracy fell by 18.3 to 61.8% from one prompt to all 10 phrasings; arXiv:2602.23971: stated certainty raised agreement; arXiv:2406.10162: the model's reasoning justified flattery; arXiv:2611.18856: a harness tuned on one model scored below the untuned harness on another in 4 of 4 domains). Raises the 2 to 4 runs per arm of the earlier plan to 10. Status: missing at 088a227c.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P1 implication 1, P2 implication 3, P3 implication 1, P7, P8, P9, P10 implication 3.
+
+- [ ] **REQ-VERIFICATION-095** claudetto shall make the agent check each logic claim (a condition, an edge case, a formula) by a run that could have failed, and report a claim with no such run as unverified ([ADR-0183](../adr/0183-logic-checked-by-execution.md)).
+  Acceptance: a report that states a formula carries a computed example with its inputs; a staged logic fault is found by the run, not by review. Verification: demonstration.
+  Basis: user decision. Status: missing at 088a227c.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7).
+
+- [ ] **REQ-VERIFICATION-096** claudetto shall record, beside each behaviour rule and each hook, why it exists, the effect it was predicted to have, and the effect its last test run observed, so a later session or edit does not re-learn or silently drop it.
+  Acceptance: each rule and hook file carries a reason line with a source and a predicted and observed line updated by the REQ-VERIFICATION-094 run; a rule whose observed effect is none is removed under [ADR-0177](../adr/0177-pragmatism-gate.md). Verification: inspection.
+  Basis: cited (arXiv:2611.18856: keeping the reason and the predicted and observed outcome of each harness edit beat carrying the harness alone in all 6 cross-dataset moves, by 2.43 to 4.35 points, and in 9 of 10 paired coding runs). Status: missing at 088a227c.
+  Source: reports/2026-11-18-research/papers.md P1 implication 2; https://arxiv.org/html/2611.18856v1.
+
+- [ ] **REQ-VERIFICATION-097** claudetto shall treat a UI change as done only after the agent drove a browser tool the session already has and pasted a desktop-width and a mobile-width screenshot taken after the change.
+  Acceptance: a staged UI task that ends without both screenshots is reported "not verified"; one with both screenshots after the last edit passes. Verification: demonstration.
+  Basis: reported (nine commenters advise giving the agent its own browser and requiring screenshots after every UI change). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xxjkui-how-to-give-claude-code-visual-20261117T225043Z.md:106,110,168,186,202,212 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xxjkui/how_to_give_claude_code_visual_feedback_on/>); reports/2026-11-18-research/dossier.md:132.
+
+- [ ] **REQ-VERIFICATION-098** claudetto shall make the agent print the raw numbers or a verbatim source snippet with its location before it states a conclusion drawn from a source or a measurement.
+  Acceptance: a behavioural test asking for a figure from a named document gets the quoted line and its location before the figure; a reply with a figure and no quote is reported unverified. Verification: test.
+  Basis: reported (two commenters call fake "verified" claims the worst failure and force proof of work). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-promptengineering-comments-1xwv52o-i-spent-the-last-few-mo-20261117T183342Z.md:176-182 (url: <https://www.reddit.com/r/PromptEngineering/comments/1xwv52o/i_spent_the_last_few_months_logging_45_hidden_llm/>); reports/2026-11-18-research/dossier.md:139.
+
+- [ ] **REQ-VERIFICATION-099** claudetto shall report the run time of each test the agent adds and flag a test that pushes the suite past a project-set budget (default 30 s), and shall run the narrowest test during work and the full suite once before the report.
+  Acceptance: a staged test that sleeps past the budget is flagged with its run time; the work log shows one full-suite run. Verification: test.
+  Basis: reported (four commenters say Claude writes tests not worth their run time and re-runs the same set; 30 s is one user's figure). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-buildwithclaude-comments-1xwm04q-how-do-you-manage-test-ac-20261117T183325Z.md:29-36,65,73-77,103 (url: <https://www.reddit.com/r/BuildWithClaude/comments/1xwm04q/how_do_you_manage_test_accumulation/>); reports/2026-11-18-research/dossier.md:140.
+
+## Incident Lab
+
+- [ ] **REQ-VERIFICATION-100** claudetto shall keep a local incident lab of trap repositories, each built from a cited incident in the user's sessions, and shall admit a component that targets a trap's failure only when it beats vanilla Claude Code on that trap (ADR-0187, ADR-0177).
+  Acceptance: each trap holds a fixed prompt, a measured outcome, and the transcript line of its incident; vanilla fails it in at least 1 of 5 runs; each arm runs 5 times on Sonnet 5.5 and Opus 5.5, headless and through `tmux`, from outside any agent sandbox; a component ships only when its arm's failure count is lower than vanilla's. Verification: test.
+  Basis: measured (vanilla and a hook prototype, 2.1.327, Sonnet 5.5 and Opus 5.5, 5 headless runs per trap, model and arm, 70 runs, $4.19, 2026-11-18): `trap-hang` and `trap-flaky` admitted; `trap-flag`, `trap-prompt` and `trap-lock` failed 0 of 10 on vanilla and are not admitted until a harder arm makes them fire. A second batch of 40 runs ($5.09) admitted `trap-hang2` (vanilla's hung test lived 126–142 s in 9 of 10 runs and 722 s in one) and the mutant measure of `trap-loop` (vanilla's suite hung in 10 of 10), and rejected `trap-loop`'s loop measure (0 of 10 vanilla failures). The `tmux` arm ran `trap-hang` 30 times ($4.13, runs-tmux/, driven by tmuxrun.py, which accepts the folder trust dialog with Down and then Enter, because "No, exit" is preselected). Vanilla lost 335 s on Sonnet and 346 s on Opus with no leak. The hook arm without a prompt rule lost 192 s and 194 s, again with no leak. The arm with the "bound every wait" rule leaked twice, once by `pkill` and once by a perl alarm orphan, so a prompt rule can add a failure that the hook arm does not have. Status: missing at 088a227c.
+  Source: reports/2026-11-18-research/incident-lab/README.md, score6.txt, runs6/, score7.txt, runs7/; ADR-0187.
+
+- [ ] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
+  Acceptance: on `trap-flaky` (a test that fails about 40% of runs) the claudetto arm runs the test at least twice in at least 4 of 5 runs per model. Vanilla ran it once in 10 of 10 runs (5 Sonnet, 5 Opus). A prototype PostToolUse hook (`incident-lab/hangwatch/rerun.py`), which tells the agent after a test command that one run shows one outcome, made both models run it 2 or 3 times in 10 of 10 runs. Verification: test.
+  Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: missing at 088a227c; the prototype is not in the plugin.
+  Source: reports/2026-11-18-research/incident-lab/score6.txt, runs6/flaky-*.jsonl, hangwatch/rerun.py; reports/2026-11-18-research/incident-lab/README.md.
+
+## Bounded Waits
+
+- [ ] **REQ-VERIFICATION-102** claudetto shall make the agent give every loop it writes that waits for, polls or retries something outside the loop's own data (a service, a process, a file, a queue, a network call, a test fake) a bound, a deadline or an attempt cap, and make the loop fail at that bound with an error that names what it waited for. A failed state ends the wait at once. A loop over data the code owns, such as a parser walking its input, is exempt, because a hang there is a defect in the code under test, and REQ-VERIFICATION-103 turns it into a failing test.
+  Rationale: in OpenJoystickDriver session e82d87d1 the agent wrote three such loops in one session, and each hung a test run: a retry loop that swallowed its error (`while !Task.isCancelled { try? await ... }`, line 1589), a feedback watcher that asked again at once after a "nothing yet" answer, and a test fake that never accepted a frame, so the feed resent it forever (line 2063). The second and third hang cost 32 minutes, from the agent's "I'll wait for the run to complete" (line 1993, 16:55:58) to the user's question about how long the shell had run (line 1995, 17:28:08).
+  Acceptance: on `trap-loop` (REQ-VERIFICATION-100; the prompt asks for `deliver(relay, message)` that waits until a relay is ready), `check_loop.py` runs the written function against a relay that stays "starting", reports "failed" or raises forever, with a fake clock that makes every sleep free; the claudetto arm ends in all three cases in at least 4 of 5 runs per model, and fails fewer runs than vanilla. Candidate component: the rule text in `incident-lab/hangwatch/bounded.md`. Verification: test.
+  Basis: measured (three incidents in one transcript; `check_loop.py` separates an unbounded `while True` from a deadline loop: HUNG in 3 of 3 scenarios against 0 of 3, 2026-11-18). `trap-loop` is not admitted: in 20 headless runs (5 per model and arm) every `deliver()` ended in all three never-ready cases and sent the message once when the relay became ready, vanilla included (score7.txt). A fresh session asked for one waiting function writes a bounded loop; the incidents came 3 hours into a session, in fakes written as side work to unblock a test. The requirement stands as a user decision, and `bounded.md` does not ship for it under ADR-0177 until a harder arm, such as the long-context arm of ADR-0187 or a prompt where the waiting loop is a test fake, makes vanilla fail. Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/e82d87d1-ad1f-491a-ac1a-461bf5c46eb4.jsonl:1589,1993,1995,2017,2056,2063; user decision 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl, the message on banning indefinite loops); reports/2026-11-18-research/incident-lab/traps/trap-loop/, check_loop.py, hangwatch/bounded.md, score7.txt, runs7/loop-*.
+
+- [ ] **REQ-VERIFICATION-103** claudetto shall make the agent give each test that waits on something a time limit through the test framework, so a hang fails that one test with its name instead of stalling the whole run: Swift Testing `.timeLimit(.minutes(1))` on the test or suite, `pytest-timeout`, `go test -timeout`, Jest `testTimeout`.
+  Rationale: the OpenJoystickDriver fix added `@Test(.timeLimit(.minutes(1)))` only after the hang (e82d87d1.jsonl:2056). Swift Testing accepts minutes only: `.seconds` is marked unavailable with "Time limit must be specified in minutes", and the trait is both a test and a suite trait (Testing.swiftmodule arm64-apple-macos.swiftinterface, Command Line Tools on this machine, 2026-11-18). A one-minute floor is still 30 times shorter than the 32 minutes lost.
+  Acceptance: on `trap-loop`, `check_loop.py` swaps in a `deliver()` that never returns (a mutant) and runs the agent's own tests with a 120 s cap; in at least 4 of 5 claudetto runs per model the suite ends with a failure instead of hanging, and claudetto hangs in fewer runs than vanilla. Verification: test.
+  Basis: measured (incident and interface read; the mutant check hangs a suite with no time limit at the 120 s cap, 2026-11-18). On `trap-loop` the mutant hung vanilla's suite in 10 of 10 runs, so the measure is admitted. The rule text in `bounded.md` fails the acceptance: the mutant ended the suite in 2 of 5 Opus runs, both with a hand-written thread `time_limit` decorator, and in 0 of 5 Sonnet runs (score7.txt). The same rule can also cause harm: in one interactive `trap-hang` run under it, Opus wrapped `make test` in a perl alarm. The alarm killed `make` and orphaned the hung test child, and the agent reported it stopped (runs-tmux/hang-opus-claudetto-4.json). A per-command wall-clock wrapper is therefore not an acceptable bound. Python `unittest` has no built-in time limit, so the agent must write one; a trap on a framework with a built-in limit (Swift Testing, `go test`) tests the cheaper case. The next candidate is a project-level limit set once (a suite trait, `pytest-timeout` in the config, `go test -timeout` in the Makefile) in place of a per-test rule, and the outer bound of REQ-DELEGATION-046 covers the hang meanwhile. Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/e82d87d1-ad1f-491a-ac1a-461bf5c46eb4.jsonl:2056,2063; /Library/Developer/CommandLineTools/Library/Developer/Frameworks/Testing.framework/Versions/A/Modules/Testing.swiftmodule/arm64-apple-macos.swiftinterface:1214-1235; reports/2026-11-18-research/incident-lab/score7.txt, runs7/loop-*.check.json.

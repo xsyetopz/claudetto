@@ -17,12 +17,12 @@
 
 - [ ] **REQ-SETUP-003** claudetto shall answer each of 27 local commands with `/<name> is off in claudetto.` through `command.run` (0 requests) and hide it with `command.describe` `isHidden: true`; `/restart` and `/loop` are not claudetto's and `/loop` stays off.
   Acceptance: each blocked command makes 0 requests; `/help` Commands tab shows 60 names against stock 80 (20 gone; 7 others are absent from stock `/help`; a count of 80-27=53 does not match, the figure counts differently); `/stick` typeahead matches nothing, but an exact full name still shows its row (26 of 27). The saving is UI rows, not tokens. Verification: probe.
-  Basis: measured, claude 2.1.318. Status: have at 088a227c (`OFF_COMMANDS` with `command.run` and `command.describe` hooks, plugins/claudetto/hooks/features/surface/surface.ts:113-120, `isHidden: true` at :119; the count 27 was not re-checked; `isHidden` appears in setup.mock.ts and surface.test.ts). In 2.1.326 the hook names `command.run` and `command.describe` exist (chunk-qg227pzf.js@4122); `$.command.run` unverified in 2.1.326.
+  Basis: measured, claude 2.1.318. Status: have at 088a227c (`OFF_COMMANDS` with `command.run` and `command.describe` hooks, plugins/claudetto/hooks/features/surface/surface.ts:113-120, `isHidden: true` at :119; the count 27 was not re-checked; `isHidden` appears in setup.mock.ts and surface.test.ts). In 2.1.326 the hook names `command.run` and `command.describe` exist (chunk-dafpvz32.js@4169 (2.1.327)); `$.command.run` is verified on 2.1.327 (claude-code.d.ts@156319; the `command.run` event @229024 fires for a slash command or a plugin call to `$.command.run`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2938; openspec/specs/surface-trim/spec.md:183; plugins/claudetto/hooks/features/surface/surface.ts:113@088a227c; plugins/claudetto/hooks/features/surface/surface.ts:119@088a227c.
 
 - [ ] **REQ-SETUP-004** claudetto shall answer a bare `/statusline` from a Mod `skill.prompt` text of 323 chars, so no subagent run starts.
   Acceptance: bare `/statusline` takes 32 ms and 0 tokens (file route 3.99 s and 55,376 tokens); no `statusline-setup` Agent call is made, since with `amod` withholding `statusline-setup` the baseline pass-through gives "Agent type 'statusline-setup' not found". Verification: probe.
-  Basis: measured, claude 2.1.318. The stock text is 90 chars and its first subagent request alone is 20,234 bytes. Status: partial at 088a227c (`STATUSLINE_DESCRIPTION` and `statuslineEdit` in the setup feature; no `/statusline` override found in the surface feature). The hook name `skill.prompt` exists in 2.1.326 (chunk-qg227pzf.js@4206).
+  Basis: measured, claude 2.1.318. The stock text is 90 chars and its first subagent request alone is 20,234 bytes. Status: partial at 088a227c (`STATUSLINE_DESCRIPTION` and `statuslineEdit` in the setup feature; no `/statusline` override found in the surface feature). The hook name `skill.prompt` exists in 2.1.326 (chunk-dafpvz32.js@4253 (2.1.327)).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2966; plugins/claudetto/hooks/features/setup/setup.ts:38@088a227c.
 
 - [ ] **REQ-SETUP-005** claudetto shall replace the `/init` text with a shorter Mod `skill.prompt` that names `mcp__claudetto__ask`.
@@ -57,20 +57,20 @@
 
 ## Builtin Disable
 
-- [ ] **REQ-SETUP-010** claudetto shall keep the 14 builtin ids in one constant, and diff it against the registration list on each Claude Code release.
+- [ ] **REQ-SETUP-010** claudetto shall keep the builtin ids that the supported Claude Code build registers in one constant (13 on 2.1.327; 14 on 2.1.325 and 2.1.326, which also registered `cc-plugin-claude-test`), and diff it against the registration list on each Claude Code release.
   Acceptance: one constant holds the ids; a release check fails when the registration list differs from it. Verification: test.
   Basis: cited. Status: partial at 088a227c (one constant of 11 ids, `plugins/claudetto/hooks/features/setup/settings.ts:64`).
-  Source: plugins/claudetto/hooks/features/setup/settings.ts:64@088a227c; chunk-qg227pzf.js@78493 (claude 2.1.326 binary: the builtin registry `builtinPlugins`, ids `<name>@builtin`, enabled from settings `enabledPlugins`; the count 14 was not seen in the slice read; the 2.1.325 citation was chunk-yjs2ay06.js@72522, `yY()` registers 14).
+  Source: plugins/claudetto/hooks/features/setup/settings.ts:64@088a227c; chunk-dafpvz32.js@80491 (2.1.327; first read in claude 2.1.326 binary: the builtin registry `builtinPlugins`, ids `<name>@builtin`, enabled from settings `enabledPlugins`; the 2.1.325 citation was chunk-yjs2ay06.js@72522, `yY()` registers 14); chunk-syz79m2z.js@450-1844 (2.1.327: 13 registrations, no `cc-plugin-claude-test`; see CTX-440).
 
-- [ ] **REQ-SETUP-011** claudetto shall, at session start, read user settings and write `false` for any of the 14 builtin ids that is not `false`, then tell the user to run `/reload-plugins` (interactive) or restart (headless).
-  Acceptance: after a drift, user settings hold `false` for all 14 ids and the user sees the notice; a launch after the write loads no builtin. The 14 ids include `cc-plugin-privacy@builtin`. Verification: probe.
+- [ ] **REQ-SETUP-011** claudetto shall, at session start, read user settings and write `false` for any id in the REQ-SETUP-010 constant that is not `false`, then tell the user to run `/reload-plugins` (interactive) or restart (headless).
+  Acceptance: after a drift, user settings hold `false` for every id in the constant and the user sees the notice; a launch after the write loads no builtin. The ids include `cc-plugin-privacy@builtin`. Verification: probe.
   Basis: user decision, 2026-11-16; measured. Status: partial at 088a227c (settings.ts:63-77 `BUILTIN_PLUGINS_OFF` lists 11 ids and no `cc-plugin-privacy@builtin`; no session-start drift repair; `git grep -n privacy 088a227c -- plugins` finds no privacy id)
   Source: user decision, 2026-11-16; probe: cc-inspect `cli`, claude 2.1.325, a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call, 2026-11-16 (old plan); see [ADR-0057](../adr/0057-builtin-disable-in-user-settings.md); user answer through AskUserQuestion, 2026-11-16 18:04 UTC, all 14 builtins off, perl allowed with a diff hook, settings rewritten (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5034); probe, `claude` 2.1.325, 2026-11-16, cc-inspect `cli` `--settings` with all 14 ids `false` gave `[]` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
 
 - [ ] **REQ-SETUP-012** claudetto shall write the version floor with `requiredMinimumVersion`, not `minimumVersion`.
   Acceptance: an older Claude Code exits at startup with the floor set. Verification: probe.
   Basis: measured. Status: missing at 088a227c (`git grep -n requiredMinimumVersion 088a227c -- plugins` finds none; settings.ts:146 writes `minimumVersion: MINIMUM_VERSION`)
-  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807), `chunk-gywtf5sd.js:281772` (claude 2.1.325 binary).
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807), `chunk-gywtf5sd.js:281772` (claude 2.1.325 binary; the module is gone from 2.1.327). Corrected on 2.1.327: `requiredMinimumVersion` is in the settings schema (chunk-ja5z738t.js@285180: "Minimum Claude Code version required to start ... exits at startup ... Only enforced from managed (policy) settings") and the startup check reads it from `policySettings` only (chunk-4dxjsc3b.js@565 and @1300, VERSION 2.1.327), so a floor in user or project settings does not stop an older Claude Code; `minimumVersion` is a separate key that only prevents downgrades when switching to the stable channel (chunk-ja5z738t.js@285180).
 
 ## Tool Notices
 
@@ -98,7 +98,7 @@
 
 - [ ] **REQ-SETUP-016** claudetto shall write `env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` so that text between tool calls holds a finding, result, or error, because the server text asks the model to say in a few words what it is doing, which draws narration; claudetto's text asks one sentence about a finding or result and "Say nothing about your next call"; the output style drops "the next action".
   Acceptance: the setup features-off group writes the key to that custom text; which of `CLAUDE_CODE_SILENT_TURN_REMINDER: "0"` (a disabling group) and the text wins is checked; the effect is claimed as none. Verification: inspection; probe.
-  Basis: measured. The effect is not significant: 24/204 vs 31/204 announced, p=0.385; an earlier run 13/136 vs 23/136, p=0.106; keep it as a cheap setting. The harness reads the reminder from env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, then server flag `tengu_hushed_lark_text`, then the default text; a settings `env` value replaces the text on the tool result (probe-130). Claude 2.1.326: the env names `CLAUDE_CODE_SILENT_TURN_REMINDER_SECONDS` and `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` are present (chunk-07n5vvax.js@17982); the gates `tengu_hushed_lark` and `tengu_hushed_lark_text` and `_TURNS` unverified in 2.1.326. Status: have at 088a227c (`settings.ts:188`, `settings.ts:202`).
+  Basis: measured. The effect is not significant: 24/204 vs 31/204 announced, p=0.385; an earlier run 13/136 vs 23/136, p=0.106; keep it as a cheap setting. The harness reads the reminder from env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, then server flag `tengu_hushed_lark_text`, then the default text; a settings `env` value replaces the text on the tool result (probe-130). Claude 2.1.327 registers four env names: `CLAUDE_CODE_SILENT_TURN_REMINDER` (tri-state), `_SECONDS` (int, min 1), `_TEXT` (string) and `_TURNS` (int, min 1) (chunk-2ew0jg68.js@18065, @18105, @18153, @18198; cc-inspect `surface env`, 2026-11-18); the gates `tengu_hushed_lark` and `tengu_hushed_lark_text` and the turns gate are verified on 2.1.327: chunk-m14bt1pz.js@3985607 reads env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT`, then `tengu_hushed_lark_text`, then the default; @3986208 reads env `CLAUDE_CODE_SILENT_TURN_REMINDER_TURNS`, then `tengu_hushed_lark`. Status: have at 088a227c (`settings.ts:188`, `settings.ts:202`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:285; openspec/specs/surface-trim/spec.md:337; plugins/claudetto/hooks/features/setup/settings.ts:202@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:188@088a227c.
   Conflict: Setup Contract.
 
@@ -142,7 +142,7 @@
 
 - [ ] **REQ-SETUP-022** claudetto shall never write `disableAllHooks`, `disableSkillShellExecution`, `disableSideloadFlags`, `disableCommandPluginSources` (a key that stops its own hooks, skills, or sideloaded folder), nor any key that removes /login, /logout, /doctor, or the updater, and shall never `permissions.deny` a tool whose removal raises the request: removing ToolSearch adds 37,936 chars, Skill 8,720, and Bash saves 407 but takes the shell away. A shortened prompt piece that changes behavior on the task set is reverted and the run recorded.
   Acceptance: a setup test asserts none of these keys is written and fails when ToolSearch is in `permissions.deny`, naming +37,936. Verification: test.
-  Basis: measured (claude 2.1.317); current numbers unverified in 2.1.326. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`); missing as a test at 088a227c; no git grep for `disableSideloadFlags` or the +37,936 figure was run in plugins/.
+  Basis: measured (claude 2.1.317); corrected on 2.1.327 by a fake-API request probe (`-p` mode, temp project, bytes; baseline 47,323): deny ToolSearch +28,025 (was +37,936), deny Skill +8,855 (was +8,720), deny Bash -594 (was -407), deny Workflow, ScheduleWakeup and ReportFindings -12,823; `disableSideloadFlags` is present (chunk-ja5z738t.js@263136). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`); missing as a test at 088a227c; no git grep for `disableSideloadFlags` or the +37,936 figure was run in plugins/.
   Source: openspec/specs/surface-trim/spec.md:51; openspec/specs/surface-trim/spec.md:8; openspec/specs/surface-trim/spec.md:31; openspec/specs/surface-trim/spec.md:80; openspec/changes/archive/2026-11-09-release-2-1-319/specs/surface-trim/spec.md:9.
 
 ## Setup Contract
@@ -155,16 +155,17 @@
 
 ## Sandbox Settles Shell Commands
 
-- [ ] **REQ-SETUP-024** claudetto shall enable the built-in sandbox so `sandbox.autoAllowBashIfSandboxed` (default true) approves sandboxed commands with no prompt and no classifier call, set `allowUnsandboxedCommands` true so a blocked command retries outside under the permission flow, and list no domains by hand. Setup text for sandbox refusals is dropped.
-  Acceptance: a setup write holds `sandbox.enabled` and no hand-listed `allowedDomains`. Verification: test.
-  Basis: reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`).
-  Source: openspec/specs/sandbox/spec.md:8; openspec/specs/sandbox/spec.md:80; openspec/specs/setup/spec.md:283.
+- [ ] **REQ-SETUP-024** claudetto shall enable the built-in sandbox and write `sandbox.autoAllowBashIfSandboxed: true`, which approves sandboxed commands with no prompt and no classifier call, set `allowUnsandboxedCommands` true so a blocked command retries outside under the permission flow, and list no domains by hand. Setup text for sandbox refusals is dropped.
+  Acceptance: a setup write holds `sandbox.enabled`, `autoAllowBashIfSandboxed: true`, and no hand-listed `allowedDomains`. Verification: test.
+  The key is written because its default is not fixed: when unset it is the inverse of the server gate `bot_protected_tengu_compiled_pudding` (`autoAllowBashIfSandboxed ?? !gate`, chunk-1yrzf3wn.js@1116482), and the settings schema documents it as false. Unset, an account with the gate on gets a permission prompt for every sandboxed command.
+  Basis: reported; default measured by code read of 2.1.327 (2026-11-18). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`).
+  Source: openspec/specs/sandbox/spec.md:8; openspec/specs/sandbox/spec.md:80; openspec/specs/setup/spec.md:283; chunk-1yrzf3wn.js@1116482 and chunk-ja5z738t.js@138689 (claude 2.1.327); ADR-0188.
 
 ## Setup Groups
 
 - [ ] **REQ-SETUP-025** claudetto shall write one setup group per setting a plugin cannot write (Smaller prompt `enabledPlugins` false list, `autoMode` `$defaults`-preserving lists, `sandbox.enabled`, `defaultMode` when missing, `promptCacheTtl`), ask once per missing env key (`CONTEXT7_API_KEY`, `TYPESAFE_API_KEY`), keep every user scalar through `fill`, and show each group's reason.
   Acceptance: a setup run on an empty and on a populated settings file writes each group, keeps each user scalar, and shows each group's `why`. Verification: test.
-  Basis: read. Status: have at 088a227c (`settings.ts:93` `enabledPlugins`, `:101-102` `defaultMode` and `autoMode` with a `why`, `:117` `promptCacheTtl: "1h"`; `key.ts:24-25` the two env keys). Claude 2.1.326: the `promptCacheTtl` setting is present (chunk-m33vdkhs.js@275038); `autoMode` unverified in 2.1.326.
+  Basis: read. Status: have at 088a227c (`settings.ts:93` `enabledPlugins`, `:101-102` `defaultMode` and `autoMode` with a `why`, `:117` `promptCacheTtl: "1h"`; `key.ts:24-25` the two env keys). Claude 2.1.327: the `promptCacheTtl` setting is present (chunk-ja5z738t.js@277237); `autoMode` is verified on 2.1.327 (chunk-ja5z738t.js@184717).
   Source: openspec/specs/setup/spec.md:207 ("Smaller prompt" group); plugins/claudetto/hooks/features/setup/settings.ts:93-117@088a227c; plugins/claudetto/hooks/features/setup/key.ts:24-25@088a227c. Not located: the setup decisions 8-9 text itself.
   Conflict: Auto Mode.
 
@@ -191,16 +192,16 @@
 
 ## Shorter Tool Texts
 
-- [ ] **REQ-SETUP-030** claudetto shall shorten the descriptions of Workflow (22,331 chars loaded), DesignSync, ScheduleWakeup, ReportFindings, Agent, Bash, and AskUserQuestion through `tool.describe`, and consider `skill.prompt` shortening of bundled skills (hypothesis, none built).
+- [ ] **REQ-SETUP-030** claudetto shall shorten the descriptions of Workflow (3,496 chars stock on 2.1.327), DesignSync, ScheduleWakeup, ReportFindings, Agent, Bash, and AskUserQuestion through `tool.describe`, and consider `skill.prompt` shortening of bundled skills (none built; each cut ships only on a measured check, ADR-0177).
   Acceptance: each listed tool carries a description of 200 chars or fewer in the first request. Verification: probe (`just prompt-bytes`).
-  Basis: inferred. Status: partial at 088a227c (`trim.ts:3-7` lists Workflow, ScheduleWakeup, DesignSync; the other texts are not cut there). In 2.1.326 the DesignSync tool is present (chunk-new13ydm.js@1089); the other tools are unverified in 2.1.326.
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:412 (Workflow, ScheduleWakeup, ReportFindings manuals); plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c. Not located: the 22,331-char figure.
+  Basis: measured (12,823 bytes removed from a `-p` request, 2.1.327, cc-inspect `code cli`); the 200-char target is this plan's own design choice, inferred from that saving. Status: partial at 088a227c (`trim.ts:3-7` lists Workflow, ScheduleWakeup, DesignSync; the other texts are not cut there). In 2.1.327 the DesignSync tool is present (chunk-k1sz9xwz.js@1089); on 2.1.327 Workflow, ScheduleWakeup, ReportFindings, and DesignSync are in the tool list (chunk-1vttvse2.js), and denying Workflow, ScheduleWakeup and ReportFindings removes 12,823 bytes from a `-p` request.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:412 (Workflow, ScheduleWakeup, ReportFindings manuals); plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c. History: the 22,331-char figure is the Workflow text after the 2.1.321 plugin grew it from 5,355 stock (CTX-060); the 2.1.327 stock description measures 3,496 characters (probe L, reports/2026-11-18-research/handover-probes/probe-l/workflow-description-2.1.327.txt).
 
 ## Setup-Written Permission Rules
 
 - [ ] **REQ-SETUP-031** claudetto shall write `permissions.ask` for `Bash(git reset *)`, `Bash(git update-ref *)`, `Bash(git branch -f *)`, `Bash(git worktree remove *)`, and branch delete; `permissions.deny` for `Bash(pkill *)` and `Bash(killall *)`; `permissions.allow` for read-only commands (`git status`); keep each user rule (`Bash(ls)`); no mod judges a Bash command; read and write advice stays in Bash tool text.
   Acceptance: A setup run on a settings file holding `Bash(ls)` adds the rules and keeps `Bash(ls)`. Verification: test.
-  Basis: reported (the gap against the old gate is unmeasured). Status: have at 088a227c.
+  Basis: reported (ADR-0125 records the replacement; the old gate is not in the baseline tree, so no gap against it can be measured). Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/setup/command-rules.test.ts:6@088a227c; plugins/claudetto/hooks/features/setup/command-rules.ts@088a227c; [ADR-0125](../adr/0125-bash-gate-replaced-by-permission-rules.md).
 
 ## Setup Fallback When Hooks Do Not Run
@@ -208,13 +209,13 @@
 - [ ] **REQ-SETUP-032** claudetto shall keep `/claudetto:setup` as a description-only command file plus an inline `UserPromptSubmit` hook in `hooks.json` that blocks it with "Setup did not run: claudetto plugin code is not running in this session. Restart Claude Code; if it still fails, reinstall claudetto."; a manifest test pins this. `$.command.register({name})` lists `/name` with no plugin prefix (name `^[a-zA-Z0-9_-]{1,64}$`; an unmatched `session.start` needs a matcher such as `{ isInteractive: [true, false] }`).
   Acceptance: With the module not serving, `/claudetto:setup` is blocked with the stated text. Verification: test.
   Basis: measured. Status: partial at 088a227c.
-  Source: plugins/claudetto/hooks/hooks.json@088a227c (`UserPromptSubmit`); chunk-qg227pzf.js@3083 (claude 2.1.326: `command.register` present). Not located: the old-plan lines.
+  Source: plugins/claudetto/hooks/hooks.json@088a227c (`UserPromptSubmit`); chunk-dafpvz32.js@3130 (claude 2.1.327: `command.register` present). Not located: the old-plan lines.
 
 ## Deny A Tool Name As A Size Lever
 
 - [ ] **REQ-SETUP-033** claudetto shall deny eight tools by name in `permissions.deny`, which removes each definition from the request: Workflow, ScheduleWakeup, ReportFindings, CronCreate, CronDelete, CronList, EnterPlanMode, ExitPlanMode (on 2.1.311 denying the first three took the first request from 42,676 to 30,510 chars, 12,166 = three definitions; on 2.1.312 from 42,879 to 30,713). A deny of an absent tool is dropped unless the real login shows it; no mod answer removes a built-in tool and `settings.read` does not reach permission rules. The surface-trim purpose is CLI and TUI only: turn off claude.ai, web, mobile, cloud, and onboarding surfaces by setting, env, or deny by name. Built-in agents go off with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`; the old `permissions.deny Agent(<name>)` is dropped by the 2.1.323 change.
   Acceptance: The first request lacks the eight tool definitions. Verification: probe.
-  Basis: measured. Status: have at 088a227c. Claude 2.1.326: `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` is present (chunk-07n5vvax.js@10871); the eight tool names are unverified in 2.1.326.
+  Basis: measured. Status: have at 088a227c. Claude 2.1.327: `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` is present (chunk-2ew0jg68.js@10909); on 2.1.327 the eight-tool deny removes 12,857 bytes from a `-p` request (fake-API probe); EnterPlanMode and ExitPlanMode are already absent in `-p` mode, so six of the eight were confirmed removed.
   Source: openspec/specs/surface-trim/spec.md:48; openspec/specs/surface-trim/spec.md:147; plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c.
 
 ## Temp Folder Rule
@@ -263,35 +264,35 @@
 
 - [ ] **REQ-SETUP-040** claudetto shall drop unused tools at `tool.list` (Workflow, ScheduleWakeup, ReportFindings, NotebookEdit, DesignSync, RemoteTrigger, EnterPlanMode, ExitPlanMode, cron, TodoWrite) and set `disableWorkflows`, `disableBundledSkills`, `disableClaudeAiConnectors` and `skillListingMaxDescChars` 60 at `settings.read` (a user-set value wins); the `keptTools` userConfig returns any tool. A `settings.read` deny does NOT remove a tool, and no mod answer removes a built-in tool, so setup also denies Workflow, ScheduleWakeup, ReportFindings, CronCreate/Delete/List, EnterPlanMode, ExitPlanMode through `permissions.deny`.
   Acceptance: Measured: tools array 28,455 -> 8,123 chars (12 -> 8 tools), messages 8,595 -> 3,027; denying Workflow+ScheduleWakeup+ReportFindings cut the first request 42,676 -> 30,510 chars on 2.1.311 (42,879 -> 30,713 on 2.1.312); connectors off verified live; `enableWorkflows:false` and `disableWorkflows:true` give byte-identical requests (37,066 chars). Verification: test.
-  Basis: measured. Status: have at 088a227c (surface.ts keptTools, trim.ts:19-24). Claude 2.1.326: the settings `disableClaudeAiConnectors` (chunk-m33vdkhs.js@160614) and `skillListingMaxDescChars` (chunk-m33vdkhs.js@229830) and the hooks `tool.list` and `settings.read` (chunk-qg227pzf.js@3040, @3643) are present; `disableWorkflows`, `enableWorkflows`, `disableBundledSkills`, and the tool names are unverified in 2.1.326.
+  Basis: measured. Status: have at 088a227c (surface.ts keptTools, trim.ts:19-24). Claude 2.1.327: the settings `disableClaudeAiConnectors` (chunk-ja5z738t.js@161646) and `skillListingMaxDescChars` (chunk-ja5z738t.js@230906) and the hooks `tool.list` and `settings.read` (chunk-dafpvz32.js@3087, @3643) are present; on 2.1.327 `disableWorkflows` (chunk-ja5z738t.js@247628), `enableWorkflows` (@248694), and `disableBundledSkills` (@242447) are present, and the tool names are in the tool list (chunk-1vttvse2.js).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:15; openspec/specs/surface-trim/spec.md:48; openspec/specs/surface-trim/spec.md:253; openspec/specs/surface-trim/spec.md:60; plugins/claudetto/hooks/features/surface/trim.ts:24@088a227c.
 
 ## Tool Text Shortening
 
 - [ ] **REQ-SETUP-041** claudetto shall shorten `tool.describe` texts to at most 200 chars for Monitor, ToolSearch, EnterPlanMode and ExitPlanMode (stock 953-6,354) and TaskCreate/Get/List/Update from 6,119 to 1,597 chars, keeping the listed semantics; the schema stays untouched. The Monitor text says a notice is not the user's reply; the command prints only lines to act on, failures included; one notice = `Bash` with `run_in_background`; run the writer in the command since `tail -F` never ends after its writer exits. claudetto defers none of these (the engine defers Monitor and the plan-mode tools; ToolSearch stays loaded). The `Agent` description tells the model to set `isolation: "worktree"` for an agent that commits; no agent definition sets `isolation`.
   Acceptance: Each shortened text keeps status values, blocks/blockedBy, null-delete of a metadata key, deleted-as-removal, read-before-update and complete-only-when-done. Verification: test.
-  Basis: measured. Status: have at 088a227c (surface/texts.ts, `TOOL_TEXTS`, holds a Monitor text). Claude 2.1.326: the hook `tool.describe` is present (chunk-fqacg37c.js@2397) and Monitor ships as `MonitorTool` (chunk-fkkma3m4.js@200127: the name differs); the other tools are unverified in 2.1.326.
+  Basis: measured. Status: have at 088a227c (surface/texts.ts, `TOOL_TEXTS`, holds a Monitor text). Claude 2.1.327: the hook `tool.describe` is present (chunk-ecn8g7cy.js@2524) and Monitor ships as `MonitorTool` (chunk-1vttvse2.js@204447: the name differs); on 2.1.327 `tool.describe` is present (claude-code.d.ts@228286), the model-facing name in a live request is `Monitor` (internal `MonitorTool`), and the other tools are in the tool list (chunk-1vttvse2.js).
   Source: openspec/specs/surface-trim/spec.md:353; openspec/specs/surface-trim/spec.md:369; openspec/specs/surface-trim/spec.md:379; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:856; plugins/claudetto/hooks/features/surface/texts.ts:20@088a227c.
 
 ## Plan-Mode Reminder
 
 - [ ] **REQ-SETUP-042** claudetto shall replace the full plan-mode reminder with `planModeText` when it is shorter than the engine's; it names the plan file; `hasPlan` true -> read then edit step by step, else build with Write and Edit.
   Acceptance: A sparse reminder, a row without facts, or a shorter engine text passes unchanged. Verification: test.
-  Basis: measured. Status: missing at 088a227c (git grep planModeText finds no hit; no features/plan dir). The Claude Code side is unverified in 2.1.326 (`planModeText` is claudetto's own name: a search of 2.1.326 for it finds no hit).
+  Basis: measured. Status: missing at 088a227c (git grep planModeText finds no hit; no features/plan dir). There is no Claude Code side: a search of 2.1.327 for `planModeText` finds no hit, so it is claudetto's own name (the EnterPlanMode and ExitPlanMode tools are in the tool list, chunk-1vttvse2.js).
   Source: openspec/specs/surface-trim/spec.md:307.
 
 ## Setup Env Flags
 
 - [ ] **REQ-SETUP-043** claudetto shall have setup write 16 approved env flags plus `CLAUDE_CODE_THRIFTY_SONIC=0` (flagged unofficial, with its source in code) and `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` in Features off, so the advisor stays disabled.
-  Acceptance: An empty settings file ends with all 17 env names. Claude 2.1.326: `CLAUDE_CODE_THRIFTY_SONIC` (chunk-07n5vvax.js@19159) and `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` (chunk-07n5vvax.js@9772) are present. `OFF_SKILLS` duplicates `disableBundledSkills`. Verification: test.
+  Acceptance: An empty settings file ends with all 17 env names. Claude 2.1.327: `CLAUDE_CODE_THRIFTY_SONIC` (chunk-2ew0jg68.js@19283) and `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` (chunk-2ew0jg68.js@9810) are present. `OFF_SKILLS` duplicates `disableBundledSkills`. Verification: test.
   Basis: measured. Status: have at 088a227c (settings.ts:178,197).
   Source: openspec/specs/surface-trim/spec.md:280; openspec/specs/decide/spec.md:227; plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:197@088a227c; user decision, 2026-11-14 02:35 UTC, the Advisor tool goes if it cannot be cache-aligned (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:30659).
 
 ## Version Floor
 
 - [ ] **REQ-SETUP-044** claudetto shall carry one version constant: each `plugin.json` `engines["claude-code"]` = `">=2.1.323"` and setup writes `minimumVersion: "2.1.323"` in Features off, equal to the engines bound (`MINIMUM_VERSION` in hooks/command.run/useSetup/settings.ts); no hook or mod checks the running version; claudetto runs `claude plugin validate` for the type check of a TypeScript hooks module.
-  Acceptance: Fill mode keeps a user value (even higher); replace mode overwrites. Claude Code refuses git/remote install below the floor with `claude update` advice; local or `--plugin-dir` installs load with a note (`>=9.0.0` still loaded under `--plugin-dir`, prediction failed). The refusal is unprobed; the 2.1.325 check is unverified in 2.1.326. Verification: test; probe.
-  Basis: reported; measured. `minimumVersion` gives no warning and only guards updates (probe 2.2); the setting `requiredMinimumVersion` exits at startup when older, which `minimumVersion` is not (present in 2.1.326: chunk-m33vdkhs.js@282983; `minimumVersion` itself unverified in 2.1.326). Replaces the earlier floor 2.1.316-2.1.318 with a SessionStart `source=startup` `$.ui.log` warning when running below the floor (none on resume; removed as "Warn Once at Start"). A spec Purpose still says 2.1.316 while requirements say 2.1.323: stale prose. Status: have at 088a227c (settings.ts:19 MINIMUM_VERSION, :146; plugins/*/.claude-plugin/plugin.json hold engines >=2.1.323 in all 3).
+  Acceptance: Fill mode keeps a user value (even higher); replace mode overwrites. Claude Code refuses git/remote install below the floor with `claude update` advice; local or `--plugin-dir` installs load with a note (`>=9.0.0` still loaded under `--plugin-dir`, prediction failed). On 2.1.327 a probe confirms the local case: `plugin install q@mk` with engines `>=9.0.0` loaded with the note "needs Claude Code >=9.0.0, this is 2.1.327, but loads anyway because it's read from a local folder". The refusal for git or remote sources is verified in code only (message chunk-dfwkett1.js@7698; checks chunk-m14bt1pz.js@949377, @950266) and was not run. Verification: test; probe.
+  Basis: reported; measured. `minimumVersion` gives no warning and only guards updates (probe 2.2); the setting `requiredMinimumVersion` exits at startup when older, which `minimumVersion` is not (present in 2.1.326: chunk-ja5z738t.js@285180 (2.1.327); `minimumVersion` is present on 2.1.327 at chunk-ja5z738t.js@285052, `requiredMinimumVersion` at @285180). Replaces the earlier floor 2.1.316-2.1.318 with a SessionStart `source=startup` `$.ui.log` warning when running below the floor (none on resume; removed as "Warn Once at Start"). A spec Purpose still says 2.1.316 while requirements say 2.1.323: stale prose. Status: have at 088a227c (settings.ts:19 MINIMUM_VERSION, :146; plugins/*/.claude-plugin/plugin.json hold engines >=2.1.323 in all 3).
   Source: openspec/specs/version-floor/spec.md:8; openspec/specs/version-floor/spec.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1454; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:768; plugins/claudetto/hooks/features/setup/settings.ts:19@088a227c; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>); openspec/changes/archive/2026-11-16-2-1-323/design.md:30.
 
 ## Ignore Blocks
@@ -313,18 +314,18 @@
 - [ ] **REQ-SETUP-047** claudetto shall not hard-code tool versions in setup's list (`Tool.version`, `SCANNER_VERSION`); only the Claude Code floor stays pinned.
   Acceptance: git grep SCANNER_VERSION finds no hit. Verification: inspection.
   Basis: cited. Status: have at 088a227c (git grep SCANNER_VERSION finds no hit).
-  Source: unresolved: the old key (tasks 18.39) names a worker input; the task line was not found by grep in this pass.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:382@088a227c9^ (task 18.39, the cleanup tool `mo` pinned at 1.68.0 in the tool list).
 
 ## Rule Files
 
 - [ ] **REQ-SETUP-048** claudetto shall ship one-file rules under plugins/claudetto/rules/, with no frontmatter (they load at session start in message 0), 1-4 non-empty lines each, each with "because"; an eval checks that a function whose type excludes null gets no null check. The 2.1.323 change adds `useHeadlineseNames` (8 offered; each in its own dialog showing the whole text, SHA-256 stored, written only on acceptance; identifiers in headlinese, comments keep articles, Title Case for MD headings and Apple UI). `paths:` frontmatter rules load only after a matching read mid-turn in a tool-result message (measured, 2.1.321 change).
   Acceptance: the shipped set equals the specified set. Verification: inspection.
   Basis: measured. Status: partial at 088a227c (plugins/claudetto/rules/ holds 11).
-  Source: unresolved: the count conflicts. The specs name 7 (openspec/specs/setup/spec.md:161: `useLeastCode`, `noUnrequestedEdits`, ...); the 2.1.323 change says 8 (openspec/changes/archive/2026-11-16-2-1-323/design.md:164); the repo ships 11 (adds `commentOnlyWhy`, `guardOnlyTrustBoundaries`, `scopeEditsToGoal`, `useEdgeCaseReport`, `useTestPatterns`, and names differ from the specs).
+  Source: the count conflict is recorded in openspec/specs/setup/spec.md:161@088a227c9^ (7 rules: `useLeastCode`, `noUnrequestedEdits`, ...) and openspec/changes/archive/2026-11-16-2-1-323/design.md:164@088a227c9^ (8 offered); the repo ships 11 (adds `commentOnlyWhy`, `guardOnlyTrustBoundaries`, `scopeEditsToGoal`, `useEdgeCaseReport`, `useTestPatterns`; names differ from the specs). The shipped set is the one to specify at implementation.
 
 - [ ] **REQ-SETUP-049** claudetto shall offer each shipped rule as a copy at `<config>/rules/claudetto/<name>.md`, one dialog each; skip one the user holds byte for byte; store the SHA-256 of each written copy (also of each file setup copies out of the plugin); a dismissal stops the rest. At startup it logs one line per installed copy whose hash differs from the shipped one, once per hash pair: `updated` (installed hash equals stored) or `modified` otherwise, with file, hashes cut to 8 chars, and dates, recommending `/claudetto:setup`; nothing for an identical, skipped or already-reported pair; no settings key is written.
   Acceptance: the saved hash decides, not dates (plugin install stamps files with install time); the hooks runtime has `crypto.subtle.digest`, no `Buffer`. Verification: test.
-  Basis: measured; cited. Status: have at 088a227c (hooks/features/setup/rules.ts:34-35 hashes with SHA-256). The Claude Code side of the install-time stamp is unverified in 2.1.326.
+  Basis: measured; cited. Status: have at 088a227c (hooks/features/setup/rules.ts:34-35 hashes with SHA-256). Verified on 2.1.327 by probe: a plugin source file with mtime 2001-01-01 installed to cache/mk/p/1.0.0/rules/a.md with the install-time mtime (Nov 18 2026).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:153; openspec/specs/setup/spec.md:161; openspec/specs/setup/spec.md:178; openspec/specs/setup/spec.md:159; openspec/specs/mod-architecture/spec.md:47; plugins/claudetto/hooks/features/setup/rules.ts:34@088a227c.
 
 ## Hygiene
@@ -355,13 +356,13 @@
 
 - [ ] **REQ-SETUP-054** claudetto shall ship the built-in classifier with trimmed `autoMode` lists, set no `CLAUDE_CODE_AUTO_MODE_MODEL`, and fail closed when the classifier is down; a plugin `tool.check` only tightens a verdict or turns a bare ask on a read-only command into allow, and never asks a model to judge permission. Deny rules and `hard_deny` stay in every tier.
   Acceptance: settings hold `autoMode` and no `CLAUDE_CODE_AUTO_MODE_MODEL`. Measured 2026-11-06: a plugin route (Jev first, fallback claude-haiku-5-5) scored 29/30 against the built-in 30/30 on 30 cases, with a stable miss on `push-unnamed-branch`. Verification: inspection.
-  Basis: measured (the env is present in 2.1.325 but ineffective: the server-configured model wins; unverified in 2.1.326). Status: have at 088a227c.
+  Basis: measured (the env is present in 2.1.325 but ineffective: the server-configured model wins; verified on 2.1.327: chunk-m14bt1pz.js@3534099 and @3534272 warn "ignoring CLAUDE_CODE_AUTO_MODE_MODEL ... because a server-configured classifier model takes priority"; the env is read at @3534449). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/low-hitl/spec.md:37; plugins/claudetto/hooks/features/setup/settings.ts:102@088a227c.
 
 ## Output Limits
 
 - [ ] **REQ-SETUP-055** claudetto shall write `bashOutputMaxChars: 8000` and `env.MAX_MCP_OUTPUT_TOKENS: "10000"`, so Claude Code truncates and the plugin cuts nothing. A tool result bound of 12,000 chars keeps whole lines to the limit and ends with a count of lines not shown.
-  Acceptance: both keys are written; `MAX_MCP_OUTPUT_TOKENS` sits in `env` because it is read from process env. Measured: a 20,000-char Bash print gives a 2,258-char preview plus a path to saved output; `MAX_MCP_OUTPUT_TOKENS=2000` cut a 40,000-char MCP result. Verification: test.
+  Acceptance: both keys are written; `MAX_MCP_OUTPUT_TOKENS` sits in `env` because it is read from process env. Measured: a 20,000-char Bash print gives a 2,258-char preview plus a path to saved output; `MAX_MCP_OUTPUT_TOKENS=2000` cut a 40,000-char MCP result. At a 10,000 cap on 2.1.327 (fake API, reports/2026-11-18-research/handover-probes/mcp-spill/): 20,000 chars entered whole, 60,000 chars sent a token-count request first, and 200,000 chars became a file notice that asks the model to read the whole file. Verification: test.
   Basis: measured (2.1.323 research probes); cited (Claude Code warns on an MCP result past 10,000 tokens). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:57; plugins/claudetto/hooks/features/setup/settings.ts:137@088a227c.
 
@@ -388,7 +389,7 @@
 
 - [ ] **REQ-SETUP-059** claudetto shall write `autoMode` with one line each, replacing the built-in lists: allow "Local Work" (reading, editing, building, testing, and formatting in the working tree and its temp output), soft_deny "Destroy Work" (deleting or overwriting what the repo cannot restore: force-push, history rewrite, remote branches, tags, uncommitted work, or an unresolved target), hard_deny "Data Exfiltration" (secrets landing outside the trusted repo, its remotes, and Environment hosts), and environment "Trusted repo".
   Acceptance: the written `autoMode` holds these four entries and no `"$defaults"`. Verification: test.
-  Basis: inferred (a draft). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/auto-mode.ts` writes "Everything Else", "Destroy Work", "Wipe a Disk" plus `$defaults`, and "Trusted repo" with "Source control").
+  Basis: cited (a design draft, never run). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/auto-mode.ts` writes "Everything Else", "Destroy Work", "Wipe a Disk" plus `$defaults`, and "Trusted repo" with "Source control").
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/scripts/planned-settings.json:109-121.
   Conflict: Setup Groups (first item, `$defaults`-preserving lists).
   Conflict: Setup Rules To Keep.
@@ -408,7 +409,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:405.
   Conflicts with: all 14 builtins disabled, `privacy` included, enforced by rewriting user settings at session start (user decision, 2026-11-16).
 
-- [ ] **REQ-SETUP-062** claudetto shall write in the "Smaller prompt" group `disableBundledSkills: true`; `outputStyle: claudetto:Concise`; `enabledPlugins` false for ten `cc-plugin-<name>@builtin` (agents-md, plugin-authoring, mods-guide, tips, mermaid, responsive-mode, diff, you-should-know, easel, claude-test); `permissions.deny` of eight tools; and `permissions.allow` of four read-only git rules. It shall not write `cc-plugin-claude-platform@builtin`, which claude 2.1.325 no longer ships (unverified in 2.1.326). Each `@builtin` gets a disable enforced at runtime, because a `settings.read` `enabledPlugins` false did not stop the built-ins and only `--settings` did.
+- [ ] **REQ-SETUP-062** claudetto shall write in the "Smaller prompt" group `disableBundledSkills: true`; `outputStyle: claudetto:Concise`; `enabledPlugins` false for ten `cc-plugin-<name>@builtin` (agents-md, plugin-authoring, mods-guide, tips, mermaid, responsive-mode, diff, you-should-know, easel, claude-test); `permissions.deny` of eight tools; and `permissions.allow` of four read-only git rules. It shall not write `cc-plugin-claude-platform@builtin`, but claude 2.1.327 does ship that plugin: it is registered as `claude-platform` without the `cc-plugin-` prefix, gated by a condition, a feature flag, and login (chunk-syz79m2z.js@800-1844; chunk-5hejrm7d.js@22716; chunk-g8aab327.js@582); a search finds no `cc-plugin-claude-platform`. The "no longer ships" claim is false; the requirement to not write it stays, under the id `claude-platform`. Each `@builtin` gets a disable enforced at runtime, because a `settings.read` `enabledPlugins` false did not stop the built-ins and only `--settings` did.
   Acceptance: an empty settings file after the group holds the ten ids, eight denies, four allows; a session with `claude plugin list` shows no built-in loaded. Verification: test.
   Basis: reported and measured. Status: have at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`).
   Source: openspec/specs/setup/spec.md:205; openspec/specs/setup/spec.md:207; openspec/changes/archive/2026-11-16-2-1-323/tasks.md:102; openspec/changes/2-1-325-rearchitecture/design.md:81.
@@ -427,3 +428,8 @@
   Acceptance: see the guards item. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (groups.test.ts:158 sandbox group writes `sandbox: { enabled: true }`; `git grep -n withCacheDirs 088a227c -- plugins` finds none)
   Source: user decision, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); user decision, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
+
+- [ ] **REQ-SETUP-065** claudetto shall ask the user once whether to turn auto memory off, state the measured saving of 755 tokens per first request, and write `autoMemoryEnabled: false` only on a yes.
+  Acceptance: a setup run with a no answer or no reply leaves `autoMemoryEnabled` unset; a yes writes the key; the question text holds the 755-token figure from CTX-671. Verification: test.
+  Basis: reported (one user says memory files duplicate docs and can contradict the project; five comments describe agents hoarding self-written memories, one repo with 89, misattributed to the user and followed rigidly; three comments call memory files an anti-pattern for code; no measurement of harm). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xywg7f/memories_and_rules/>); reports/2026-11-18-research/dossier.md:173,174,185. Consent rule: REQ-GUARDS-048.

@@ -40,7 +40,7 @@
   Actions: delegation hook with a context threshold (inline under about 50k) and a SubagentStop check for the return receipt.
   Trigger: a subagent call for work under about 50k context.
   Owner: cost. Status: open.
-  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>) (the read-only subagent cut tokens per call from about 116k to 30k); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>). The 50k threshold: Source: unresolved, not located.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>) (the read-only subagent cut tokens per call from about 116k to 30k); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>). The 50k threshold: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 ## Guards
 
@@ -98,7 +98,7 @@
   - Consequence: a secret handled in chat; a run billed to the API instead of the login; an extra turn.
   - Likelihood: 1
   - Impact: 3
-  - Existing controls: at 088a227c the paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` and the claim-check launcher drops the API key (`CHANGELOG.md:286`); a kernel secrets guard exists at 088a227c (unchecked for this case).
+  - Existing controls: at 088a227c the paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` and the claim-check launcher drops the API key (`CHANGELOG.md:286`); a kernel secrets guard exists at 088a227c but redacts secret values in tool results (`hooks/features/secrets/scan.ts`, `hooks/kernel/secrets.ts`); no baseline rule stops a request for an API key or names the OAuth token (grep for `ANTHROPIC_API_KEY|OAUTH` finds only `setup/changes.ts:92` and `kernel/secrets.ts:13`).
   - Response: mitigate.
   - Actions: claudetto shall make the agent use the OAuth login and write each tool that calls a model to use the Claude Code OAuth token; claudetto shall make the agent use the OAuth login and never ask the user for an API key.
   - Trigger: the text `ANTHROPIC_API_KEY is not set` in a tool result; a script that calls the Messages API.
@@ -131,7 +131,7 @@
   Event: one user reports the session stayed on 4.8; other commenters report that swapping back to 5.5 after work started "picks it up most of the time".
   Consequence: weaker model answers until the user swaps back by hand.
   Likelihood: 1. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. The safeguard drop is server-side, not in the binary; field report kept as reported, Likelihood from report count.
   Response: mitigate.
   Actions: swap back to Opus 5.5 once the safeguard has tripped (reported by commenters, no probe).
   Trigger: a notice that the model switched to Opus 4.8.
@@ -166,7 +166,7 @@
   Likelihood: 1. Impact: 3.
   Existing controls: None known at 088a227c.
   Response: mitigate.
-  Actions: Flip the setting to 1h. Counter (untested): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
+  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
   Trigger: A subagent turn that waits more than 5 minutes.
   Owner: cost. Status: open.
   Basis: reported, one user.
@@ -181,7 +181,7 @@
   Consequence: Three 5-hour limits and 50 percent of the weekly tokens went to 11 percent of the task.
   Likelihood: 2 (two users).
   Impact: 3 (a wasted session or spend).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c: only the agent files fix effort (Artemis high on Haiku; Metis, Athena, Heracles medium on Sonnet, `plugins/claudetto/agents/*.md:4-5`@088a227c); no rule names an audit skill.
   Response: mitigate.
   Actions: Build a lightweight architecture map (signatures, exports, data flow) kept as one summary, then audit one file at a time against it; use a cheaper model for the bulk file-by-file passes and the top model for the final cross-file review; run /context and turn off unused MCP servers.
   Trigger: A skill that fans out into subagents, or an orchestrator that picks the top effort without asking.
@@ -200,7 +200,7 @@
   - Impact: 3
   - Existing controls: 59-minute age rule in `handoff.ts` at 088a227c (partial); blocking idle guard and cold-return cost display missing.
   - Response: mitigate.
-  - Actions: UserPromptSubmit hook that blocks or warns on a stale session and shows the cold cost; a warm-cache compact/handoff step before idle; notice candidate; do not resume a session idle over about 30-60 min; start fresh from a handoff file; `/export [filename]` writes plain text with no model call; ask for the handoff before walking away; do not change model or effort mid-session; front-load the first prompt; a hook that blocks a stale session until the user approves; spawn a fresh subagent instead of resuming one idle over 5 minutes when the resume would need over about 200k tokens (the 200k is a reported estimate from the agent's own cost log). Unverified: terminating a session may not expire the cache.
+  - Actions: UserPromptSubmit hook that blocks or warns on a stale session and shows the cold cost; a warm-cache compact/handoff step before idle; notice candidate; do not resume a session idle over about 30-60 min; start fresh from a handoff file; `/export [filename]` writes plain text with no model call; ask for the handoff before walking away; do not change model or effort mid-session; front-load the first prompt; a hook that blocks a stale session until the user approves; spawn a fresh subagent instead of resuming one idle over 5 minutes when the resume would need over about 200k tokens (the 200k is a reported estimate from the agent's own cost log). Not probed: whether terminating a session expires the cache; the cache lives server-side, so a local fake API cannot show it and a probe needs a paid live run.
   - Trigger: a prompt after the cache TTL has passed; first prompt after an idle gap over the TTL.
   - Owner: cost
   - Status: open.
@@ -225,7 +225,7 @@
 
 - [ ] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
   - Category: product defect.
-  - Cause: `statusline/color.ts:82-85` `colorOff` reads `NO_COLOR`; nothing handles `FORCE_COLOR`. Whether Claude Code sets `NO_COLOR` or strips SGR is unchecked; a second report found no cause.
+  - Cause: `statusline/color.ts:82-85` `colorOff` reads `NO_COLOR`; nothing handles `FORCE_COLOR`. Checked on 2.1.327 (2026-11-18, cc-inspect `code search`): Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command, and https://clawdipedia.cc/configure/status-line (retrieved 2026-11-18) says ANSI colors work there. A second report found no cause; the first-render cause needs an interactive TTY capture.
   - Event: a screenshot report; a second screenshot report says the statusline renders without colour at first, then colour appears once a few more elements come up.
   - Consequence: no colour; an extra turn to read a plain statusline (cosmetic).
   - Likelihood: 1
@@ -235,7 +235,7 @@
   - Actions: check the cause first; handle `FORCE_COLOR`; reproduce with the statusline binary on the first render; render colour on every element from the first frame.
   - Trigger: an interactive session; any session start with a statusline.
   - Owner: cost
-  - Status: open (`colorOff` reads only `NO_COLOR` at `plugins/claudetto/statusline/color.ts:82-85@088a227c`, checked with `git show`; the first-render cause is unchecked).
+  - Status: open (`colorOff` reads only `NO_COLOR` at `plugins/claudetto/statusline/color.ts:82-85@088a227c`, checked with `git show`; the first-render cause needs an interactive TTY capture, which a local probe cannot make. Checked on 2.1.327: Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command; the docs page https://clawdipedia.cc/configure/status-line (retrieved 2026-11-18) says ANSI colors work in the statusLine process).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:37 (observed); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13).
 
 - [ ] **RISK-388** The statusline reports a 1M window when the system uses 300k.
@@ -272,7 +272,7 @@
 
 - [ ] **RISK-390** Statusline colours are missing until more elements appear.
   Category: product defect.
-  Cause: not found; the user saw it with a screenshot.
+  Cause: not found; see RISK-387 for what 2.1.327 rules out (no `NO_COLOR` for the statusLine command); the user saw it with a screenshot.
   Event: the statusline renders without colour at first, then colour appears once a few more elements come up.
   Consequence: an extra turn to read a plain statusline; cosmetic.
   Likelihood: 1
@@ -282,7 +282,7 @@
   Actions: reproduce with the statusline binary on the first render; render colour on every element from the first frame.
   Trigger: any session start with a statusline.
   Owner: cost
-  Status: open at 088a227c (unchecked).
+  Status: open at 088a227c; same report and same limit as RISK-387: the first-render cause needs an interactive TTY capture; on 2.1.327 `NO_COLOR` is not set for the statusLine command (`chunk-m14bt1pz.js@1114484`).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 ## Conduct

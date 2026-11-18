@@ -29,7 +29,7 @@
   Actions: PreToolUse hook refusing a repeat read of an unchanged file (hash/mtime) and a read-before-edit gate.
   Trigger: a second Read of a file with an unchanged mtime.
   Owner: guards. Status: partial at 088a227c.
-  Source: unresolved. grep found no text for 35% or 77%; the old plan cites worker inputs only. The code exists at plugins/claudetto/hooks/features/repeat/repeat.ts@088a227c.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:33 (35% of file reads were a second read of an unchanged file); external/2026-11-03/reddit.com-r-claudecode-comments-1t93ikr-best-hooks-you-use-20261103T145257Z.md:43 (77% of edits on unread files, mostly after compaction; reported by a Reddit user). Code: plugins/claudetto/hooks/features/repeat/repeat.ts@088a227c.
 
 ## Guards
 
@@ -69,7 +69,7 @@
   Consequence: temp folders grow without limit (disk of /private/tmp/claude-501 was 1.85 GB with 474 entries).
   Likelihood: 4 (seen in two or more runs: P160, P161).
   Impact: 3.
-  Existing controls: the fix at 2.1.321: a vanished path no longer fails the batch; any other find error splits the batch until the failing entry stands alone and is left out; after it a dry run names 26 entries. At baseline hygiene has "vanished entry tolerated" (plans/rebuild-curation.md:978), and the split rule is unchecked in baseline code.
+  Existing controls: the fix at 2.1.321: a vanished path no longer fails the batch; any other find error splits the batch until the failing entry stands alone and is left out; after it a dry run names 26 entries. At baseline hygiene has "vanished entry tolerated" (plans/rebuild-curation.md:978), and the split rule is absent in baseline code: `hygiene/sweep.ts:252-257` runs a per-path `lstat` with errors caught and logged ("was not read"), `du -sk` runs in batches of 500 (`hygiene/temp.ts`), and `namesIn` returns [] on error.
   Response: mitigate.
   Actions: keep the split rule and a test with a path that vanishes mid-batch; the sweep starts at startup, resume, clear, and compaction.
   Trigger: a dry run that names 0 temp entries while the temp folder holds entries older than the limit.
@@ -165,7 +165,7 @@
 - [ ] **RISK-041** An approval prompt is taken as the control and the logged approval was never seen by the user.
   Category: guards
   Cause: The process that acts also records the user's yes; the user's own report says a permission rule to ask first was set.
-  Event: One user's report, unconfirmed (anthropics/claude-code issue 108022 per the commenter): on Windows in manual approval mode, 9 PowerShell commands moved about 11 GB to the recycle bin; the log shows a yes per command that the user says never appeared, 3 recorded while the user was typing.
+  Event: One user's report, field report kept as reported; a Windows manual-approval run cannot be probed on this Mac (anthropics/claude-code issue 108022 per the commenter): on Windows in manual approval mode, 9 PowerShell commands moved about 11 GB to the recycle bin; the log shows a yes per command that the user says never appeared, 3 recorded while the user was typing.
   Consequence: User files are moved or deleted with no real consent.
   Likelihood: 1
   Impact: 4
@@ -346,7 +346,7 @@
   Trigger: a denial of a read-only call in auto mode.
   Owner: guards.
   Status: open.
-  Source: unresolved: the plan cites a removed worker input (reported, CC 2.1.292-296); no grep hit in openspec or external for the `ls` denial this run.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts (the ls denial and CC 2.1.292-296 report).
 
 ## Boundaries And Safety
 
@@ -358,7 +358,7 @@
   Likelihood: 4. Impact: 4.
   Existing controls: `protectedPaths` default `~/.claudetto-holdout` at baseline (`plugins/claudetto/.claude-plugin/plugin.json:84`, `plugins/claudetto/hooks/features/setup/changes.ts:131`). Not covered: globs, interpreters, symlinks, a search rooted above the wall.
   Response: mitigate.
-  Actions: plugin-shipped protected-path list at the gate; a startup line when the user's deny layer is missing; deny `Read` plus `sandbox.filesystem.denyRead` (2.1.326: present, `chunk-m33vdkhs.js@114628` names `filesystem.denyRead`); counts only via the user's `!` command.
+  Actions: plugin-shipped protected-path list at the gate; a startup line when the user's deny layer is missing; deny `Read` plus `sandbox.filesystem.denyRead` (2.1.327: present, `chunk-ja5z738t.js@115660` names `filesystem.denyRead`); counts only via the user's `!` command.
   Trigger: a read of a path under the wall by Bash or an interpreter.
   Owner: guards. Status: partial at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/levers-review.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; plugins/claudetto/.claude-plugin/plugin.json:84@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:131@088a227c.
@@ -400,7 +400,7 @@
   - Impact: 4
   - Existing controls: the gate denies a loop with no time limit (seen in the report); a hook denies a background loop with no time limit.
   - Response: mitigate.
-  - Actions: PreToolUse hook prefixing `timeout 30m` on background commands and a runaway guard at the Stop check; job lock with PID, Stop hook listing children by recorded pid and `TaskStop`; budget action that blocks calls (`--max-budget-usd`, 2.1.326: present, `chunk-eafmz4at.js@1414`); status-request steer after about 30 min via hook; wall-time cap; claudetto shall keep denying a wait loop with no overall time limit and shall name a sleep or an event wait instead; cap background loops; use Read, Edit, and a bounded wait; give a slash command to type at the prompt.
+  - Actions: PreToolUse hook prefixing `timeout 30m` on background commands and a runaway guard at the Stop check; job lock with PID, Stop hook listing children by recorded pid and `TaskStop`; budget action that blocks calls (`--max-budget-usd`, 2.1.327: present, `chunk-avas472e.js@1436`); status-request steer after about 30 min via hook; wall-time cap; claudetto shall keep denying a wait loop with no overall time limit and shall name a sleep or an event wait instead; cap background loops; use Read, Edit, and a bounded wait; give a slash command to type at the prompt.
   - Trigger: a background command with no `timeout`; a loop with an empty body or a monitor on `tail -F` without an end; a background command with no end condition; a shell read or append, an unbounded loop, or a `!` line with a slash command.
   - Owner: guards
   - Status: open.
@@ -535,7 +535,7 @@
 
 - [ ] **RISK-066** Never-commit rule violated after a one-time authorization
   Category: guards.
-  Cause: one per-task authorization collapses into permission for the whole session (a commenter's theory, untested).
+  Cause: one per-task authorization collapses into permission for the whole session (a commenter's theory; the sandboxed fake-API probe cannot show a server-side authorization, so it stays a field report).
   Event: "Never commit unless asked" is violated across Sonnet 4.5 and Opus 4.7 (#68724, #58883, #34774, #69151).
   Consequence: user work committed without consent.
   Likelihood: 2. Impact: 3.
@@ -585,7 +585,7 @@
   Actions: snapshot external skills; auto-update only Anthropic official and in-house ones; review through a sandboxed run with an audit log diffing reads, writes, and calls against the claims. On a possible injection the agent reports it, reinstalls clean, checks the filesystem and the exported session log, and does not assume the model is right.
   Trigger: a skill install or update outside the allowed sources.
   Owner: guards. Status: open (partial controls).
-  Source: unresolved: no source line located for this claim.
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:31 (20 confirmed incidents) and :42 (13 of the 20 started with something installed next to the agent) (reported).
 
 - [ ] **RISK-070** The temp-cleanup hook denies the agent's removal of its own scratch folder.
   - Category: product.
@@ -605,7 +605,7 @@
 - [ ] **RISK-071** Retries after hook denials and denial log spam
   Category: guards.
   Cause: a hook denies and gives no cure the agent can act on, and `rules.ts:93` calls `$.fs.stat(path)` per rule file with no `.catch`.
-  Event: about 207 turns lost to retries after denials in claudetto sessions (inferred); the HooksError "was not resolved" shows 224 lines in OpenJoystickDriver and 1,818 in the audited session.
+  Event: about 207 turns lost to retries after denials in claudetto sessions (an estimate: `sessions.md:72@088a227c9^` counts one per denial plus retries); at 088a227c the stat is `setup/rules.ts:215` in `dayOf`, with a try/catch that rethrows an error other than absent; the HooksError "was not resolved" shows 224 lines in OpenJoystickDriver and 1,818 in the audited session.
   Consequence: a wasted session and noisy logs.
   Likelihood: 5 (counted in most audited sessions). Impact: 2.
   Existing controls: none found for the stat call.
@@ -619,18 +619,18 @@
 
 - [ ] **RISK-072** Memory and CPU exhaustion from overlapping heavy commands, parallel agents, or busy-wait loops.
   - Category: cost and resources.
-  - Cause: type-aware oxlint peaks at 129 MB for one file, 556 MB for plugins, and 584 MB for the whole repo (602 MB on the 2026-11-10 tree), so a one-file lint is about a quarter of a repo run; no scope nears 2.5 GB. SIGTERM to oxlint leaves its tsgolint child alive to the end of the run (0.5 s later node 42 MB and tsgolint 391 MB growing, gone by 2 s). GOMEMLIMIT=150MiB cut tsgolint only about 20% (604-654 MB to 486-535 MB) at up to 2x time; GOGC=50 gave 572 MB (weak). .claude/worktrees is not linted (.gitignore:22); clawdipedia's surface tests: bun test 10,125 MB; one snapshot.test.ts 15,332 MB, others 8 GB; one Claude Code bundle parse 4,700 MB; a test comment says each build peaks near 18 GB. They ran beside 8 Claude Code processes and backgrounded agent checks on a 32 GB MacBookPro18,2. 120 GB is the summed footprint counting compressed and swapped pages (inferred); about 16 type-aware lint runs overlap, each holding about 3.8 GB, on a 32 GB Mac; Several sessions or agents run at once, and one of them uses more than 120 GB of RAM; A change parsed 2,921 modules at once, and each test file that read the installed program held over 6 GB while `bun test` ran every file in one process. A cleanup change ran two builds at once on a 32 GB Mac. Two busy-wait loops (`until grep ...; do :; done`) used a full core each; the code parsed every module at once and `bun test` runs all files in one process; each test file held over 6 GB; `agent.spawn/useMemoryHold` counts agents, not processes, and no text under `plugins/` mentions `tsgolint`; the `Agent` text splits work to parallel agents; five lint agents each ran type-aware `oxlint` (tsgolint) in parallel; `bun test` ran every file in one process and each file that read the installed program held over 6 GB; modules were parsed in parallel.
+  - Cause: type-aware oxlint peaks at 129 MB for one file, 556 MB for plugins, and 584 MB for the whole repo (602 MB on the 2026-11-10 tree), so a one-file lint is about a quarter of a repo run; no scope nears 2.5 GB. SIGTERM to oxlint leaves its tsgolint child alive to the end of the run (0.5 s later node 42 MB and tsgolint 391 MB growing, gone by 2 s). GOMEMLIMIT=150MiB cut tsgolint only about 20% (604-654 MB to 486-535 MB) at up to 2x time; GOGC=50 gave 572 MB (weak). .claude/worktrees is not linted (.gitignore:22); clawdipedia's surface tests: bun test 10,125 MB; one snapshot.test.ts 15,332 MB, others 8 GB; one Claude Code bundle parse 4,700 MB; a test comment says each build peaks near 18 GB. They ran beside 8 Claude Code processes and backgrounded agent checks on a 32 GB MacBookPro18,2. 120 GB is the summed footprint counting compressed and swapped pages (the user's reading of a memory display; the sum is a field report); about 16 type-aware lint runs overlap, each holding about 3.8 GB, on a 32 GB Mac; Several sessions or agents run at once, and one of them uses more than 120 GB of RAM; A change parsed 2,921 modules at once, and each test file that read the installed program held over 6 GB while `bun test` ran every file in one process. A cleanup change ran two builds at once on a 32 GB Mac. Two busy-wait loops (`until grep ...; do :; done`) used a full core each; the code parsed every module at once and `bun test` runs all files in one process; each test file held over 6 GB; `agent.spawn/useMemoryHold` counts agents, not processes, and no text under `plugins/` mentions `tsgolint`; the `Agent` text splits work to parallel agents; five lint agents each ran type-aware `oxlint` (tsgolint) in parallel; `bun test` ran every file in one process and each file that read the installed program held over 6 GB; modules were parsed in parallel.
   - Event: parallel agent lint runs add up in memory; the kernel logged JETSAM_REASON_LOWSWAP kills (60 processes at 01:26:59); the machine freezes; the user saw 120 GB in use; The user reports that a session took the system RAM over 120+ GB; The user reports that a session used over 120 GB of memory, and that the machine ran out of memory and restarted. The test run timed out in four tries; five parallel `tsgolint` runs at about 16 GB each; one run used up to 16 GB and slowed another session, shown by a screenshot of the memory use; the machine ran out of memory and restarted; a user report says one session used over 120 GB of RAM; One run used up to 16 GB and slowed another session; a screenshot showed the memory use.
   - Consequence: memory pressure on the machine; the root-prompt reason "each parallel copy holds the whole program in memory" (texts.ts:21) overstates the cost, and task 8.2 rewrites it from 129 MB; user work lost to killed processes; lost session time; work may be lost; The machine stalls and work may be lost; A restart of the machine and lost work in other sessions; user work at risk, a wasted session; a wasted session; RAM exhausted. Likelihood: 2; user's RAM filled; the machine slows for the user's other sessions; user work lost; a restart.
   - Likelihood: 4 (measured runs)
   - Impact: 4
-  - Existing controls: the memory watch (see prd/guards.md); the plan holds the reported 16 GB and 9 GB tsgolint figures (plans/rebuild-curation.md:71,1010), and GOMEMLIMIT as a session-start cap (line 14) with no measured effect; no claudetto run exceeds 1.5 GB (replay of the agents' edits: 699 MB lint, plugin test 1,410 MB); the memory watch stops one process over 25% of memory; the agent adopted a limit of one heavy command at a time after the freeze; a watchdog script for memory in the user's repo; the lead runs one heavy check at a time; a watchdog script the agent wrote afterwards; `memory` (`plugins/claudetto/hooks/features/memory/hold.ts:245@088a227c`); `useMemoryHold` holds spawns below 20% free memory; the agent text that limits parallel agents to checks on their own files, added after the baseline; a watchdog script and a fix in cc-inspect 0.17.2 (parse each module on first use).
+  - Existing controls: the 120 GB, 16 GB, and 9 GB figures are field reports; local probes peak at 602 MB, and `defects.md:454-458@088a227c9^` records "Not reproduced" because the stopped agents' half-edited input is gone; the memory watch (see prd/guards.md); the plan holds the reported 16 GB and 9 GB tsgolint figures (plans/rebuild-curation.md:71,1010), and GOMEMLIMIT as a session-start cap (line 14) with no measured effect; no claudetto run exceeds 1.5 GB (replay of the agents' edits: 699 MB lint, plugin test 1,410 MB); the memory watch stops one process over 25% of memory; the agent adopted a limit of one heavy command at a time after the freeze; a watchdog script for memory in the user's repo; the lead runs one heavy check at a time; a watchdog script the agent wrote afterwards; `memory` (`plugins/claudetto/hooks/features/memory/hold.ts:245@088a227c`); `useMemoryHold` holds spawns below 20% free memory; the agent text that limits parallel agents to checks on their own files, added after the baseline; a watchdog script and a fix in cc-inspect 0.17.2 (parse each module on first use).
   - Response: mitigate.
-  - Actions: rewrite the root-prompt reason from the 129 MB figure; do not count on GOMEMLIMIT; a heavy suite needs memoryProcessMaxPercent raised per repository (see prd/guards.md); the lead runs one memory-heavy check at a time; a rule or hook holds each lint, type check, and test suite to one at a time, per machine, across workers; Cap concurrent agents and heavy processes; cure inferred, the user stated none; A rule that the agent measures the memory of a heavy check alone first, runs heavy checks one at a time, and never writes a busy-wait loop; a wait uses a monitor or a sleep; claudetto shall make the agent run one test file at a time, under a memory limit, when a run is known to be large; one task per worker; run one heavy check at a time; add a heavy-check rule or count processes; at most one type-aware lint run at a time; the user also wants the bedrock lint base to prevent it; run each heavy test file alone under a memory watchdog; kill a run over 1 GB.
+  - Actions: rewrite the root-prompt reason from the 129 MB figure; do not count on GOMEMLIMIT; a heavy suite needs memoryProcessMaxPercent raised per repository (see prd/guards.md); the lead runs one memory-heavy check at a time; a rule or hook holds each lint, type check, and test suite to one at a time, per machine, across workers; Cap concurrent agents and heavy processes; cure is inferred (the user stated none); A rule that the agent measures the memory of a heavy check alone first, runs heavy checks one at a time, and never writes a busy-wait loop; a wait uses a monitor or a sleep; claudetto shall make the agent run one test file at a time, under a memory limit, when a run is known to be large; one task per worker; run one heavy check at a time; add a heavy-check rule or count processes; at most one type-aware lint run at a time; the user also wants the bedrock lint base to prevent it; run each heavy test file alone under a memory watchdog; kill a run over 1 GB.
   - Trigger: tsgolint resident size above 1 GB; JETSAM_REASON_LOWSWAP in the kernel log; two heavy commands run at once; Memory over a set share while agents run; A test, build, or probe that parses a whole program or runs in parallel with another heavy task; a test file that reads the installed program; two heavy checks in parallel; several agents running the same heavy check; two or more type-aware lint processes at once; a test process over 1 GB; Two or more type-aware lint processes run at once.
   - Owner: guards
   - Status: open.
-  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:454-456; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:476-487; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:6352, observed in transcript, 2026-11-11 (the agent cites another session's account, not measured here); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:4887`); reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:15121; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8; observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:47 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (reported: "five agents, 16 GB each"); `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:467` (inferred: about 8 GB over ten `oxlint` runs and one `claude plugin test`); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (observed); openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:21; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:4827; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363, reported, user, 2026-11-10 (measured).
+  - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:454-456; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:476-487; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:6352, observed in transcript, 2026-11-11 (the agent cites another session's account, not measured here); reported, user, 2026-11-10 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/1b56d9ba-db9c-4286-88f0-94324ae915c1.jsonl:4887`); reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:15121; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8; observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:47 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (reported: "five agents, 16 GB each"); `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:467` (the agent's estimate from the run logs: about 8 GB over ten `oxlint` runs and one `claude plugin test`); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:55 (observed); openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:21; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:4827; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:3710, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363, reported, user, 2026-11-10 (measured).
 
 ## Agent Conduct
 
@@ -671,12 +671,12 @@
   Consequence: a secret handled wrongly and an extra turn.
   Likelihood: 1
   Impact: 3
-  Existing controls: kernel secrets guard exists at 088a227c (unchecked for this case).
+  Existing controls: kernel secrets guard exists at 088a227c (read at 088a227c: `hooks/features/secrets/scan.ts` and `hooks/kernel/secrets.ts` redact secret values in tool results; no baseline rule stops a request for an API key or names the OAuth token).
   Response: avoid
   Actions: write each tool that calls a model to use the Claude Code OAuth token; never ask the user for an API key.
   Trigger: a script that calls the Messages API.
   Owner: guards
-  Status: open (unchecked).
+  Status: open; no baseline control (see Existing controls).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
 
 - [ ] **RISK-076** A repo changes under an agent without its owner asking.
@@ -733,7 +733,7 @@
   Event: the model read and edited main-tree files by absolute path even when told "relative paths only".
   Consequence: edits in the wrong tree.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for auto-memory finds none). On 2.1.327 `CLAUDE_CODE_DISABLE_AUTO_MEMORY` is read (`chunk-asj6f58y.js@72913`: a true value turns auto memory off); whether it stops the main-repo memory reaching a worktree run was not probed (no relative-path worktree probe was made).
   Response: mitigate.
   Actions: set CLAUDE_CODE_DISABLE_AUTO_MEMORY=1; do not use --bare, which skips hooks.
   Trigger: a worktree run that touches a path outside its checkout.
@@ -905,7 +905,7 @@
   Consequence: A security-relevant change ships unreviewed.
   Likelihood: 1 (one team).
   Impact: 4 (a wrong result shipped).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c: "refactor" appears only in `agents/Heracles.md:9` and `agents/Metis.md:10`, as a note to mention refactors at the end of a report.
   Response: mitigate.
   Actions: Never mix a refactor with a permission change in one diff; tell the agent auth gets no cleanup, only the exact change; reject a file that comes out worse than it went in.
   Trigger: A diff that touches authorization code and renames symbols together.
@@ -974,13 +974,13 @@
   - Consequence: A duplicate write or a false "not written" claim; Duplicate or lost writes.
   - Likelihood: 1
   - Impact: 3
-  - Existing controls: Engine 2.1.319 cancelled-call texts ("Nothing refused it; re-run it if still needed" vs "stopped while running, not refused before it ran") cover the fault without a hook; 2.1.326: the cancelled-call texts are present (code search "Nothing refused it", claude 2.1.326: chunk-dezyqkh5.js@1277, @2515); the 2.1.326 release notes also fix background agents being told the user refused a tool call after Ctrl+C twice at the exit dialog or an interface crash.
+  - Existing controls: Engine 2.1.319 cancelled-call texts ("Nothing refused it; re-run it if still needed" vs "stopped while running, not refused before it ran") cover the fault without a hook; 2.1.326: the cancelled-call texts are present (code search "Nothing refused it", claude 2.1.326: chunk-4xhk2fyb.js@1288 (2.1.327), @2515); the 2.1.326 release notes also fix background agents being told the user refused a tool call after Ctrl+C twice at the exit dialog or an interface crash.
   - Response: mitigate.
   - Actions: A PostToolUse or tool.call hook after a rejected or interrupted write that injects the file's current state, or a Stop check requiring a Read of the target before a "not written" claim; After a reject or interrupt, Read the target before trusting the rejection text.
   - Trigger: A rejected or interrupted write is followed by a retry with no Read; A write tool result says rejected or interrupted.
   - Owner: guards
   - Status: open (missing at 088a227c).
-  - Source: unresolved: no source states that a rejected write had already landed; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-dezyqkh5.js@1277 (claude 2.1.326 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+  - Source: no source states that a rejected write had already landed (Dropped (2026-11-18) for that detail); the program's interrupted-call texts are verified on 2.1.327: "Nothing refused it; re-run it if still needed" at chunk-4xhk2fyb.js@1288 and "Check whether it took effect before relying on it" at chunk-4xhk2fyb.js@4200; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-4xhk2fyb.js@1288 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
 
 ## Safeguards And Guards
 
@@ -990,13 +990,13 @@
   Event: an index tool ships and goes unused or stale.
   Consequence: wasted effort on the tool.
   Likelihood: 2. Impact: 2.
-  Existing controls: none at 088a227c (missing). 2.1.326: tool `LSP` present (code search "LSP", chunk-85qjfjsd.js@527; env `ENABLE_LSP_TOOL`, chunk-07n5vvax.js@21423).
+  Existing controls: none at 088a227c (missing). 2.1.327: tool `LSP` present (code search "LSP", chunk-77827yq1.js@573; env `ENABLE_LSP_TOOL`, chunk-2ew0jg68.js@21547).
   Response: avoid.
   Actions: do not ship an index tool without proof of invocation; skills that call the tool explicitly work; any cache of code needs staleness detection; codex and opencode use LSP by default.
   Trigger: a proposal to add an index tool.
   Owner: guards.
   Status: open.
-  Source: unresolved: no matching line found in external/; kept because the user curated it.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the earlier note that the user curated it cannot be traced to a transcript line on this machine.
 
 ## Conduct Failures
 
@@ -1005,28 +1005,28 @@
   Consequence: a wasted session and an unwanted read of user data. Likelihood: 1. Impact: 3. Existing controls: none found.
   Response: mitigate. Actions: look only at what the user names; give the cure a mechanism.
   Trigger: a read or search outside the paths the user named. Owner: guards. Status: open.
-  Source: unresolved: the old plan item names no source.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-097** The agent reads past the read cap and the read is cut off.
   Category: conduct. Cause: a read with no slice. Event: a cut-off read.
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: the read guard.
   Response: mitigate. Actions: read in slices.
   Trigger: a `Read` with no `offset` on a large file. Owner: guards. Status: open.
-  Source: unresolved: `defects.md` (same folder as `issues-2026-11-09.md`) records 13 `Read` calls over the token cap on one-line JSON, a different cause; no line holds this item.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the nearest hit, `defects.md` beside `issues-2026-11-09.md`, records a different cause.
 
 - [ ] **RISK-098** The agent runs `cd` in place of using absolute paths.
   Category: conduct. Cause: relative habit. Event: a `cd` before a command.
   Consequence: a compound command refused whole; an extra turn. Likelihood: 1. Impact: 1. Existing controls: none found.
   Response: mitigate. Actions: use absolute paths.
   Trigger: a command that starts with `cd`. Owner: guards. Status: open.
-  Source: unresolved: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31 records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
 
-- [ ] **RISK-099** The agent deletes things nobody asked it to remove, and restores sections on an unchecked claim.
+- [ ] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
   Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
   Response: mitigate. Actions: remove only what the user names.
   Trigger: a delete of a file or export the user did not name. Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The part "restored sections on an unchecked claim" is unresolved: no source line holds it.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The clause about restoring sections on an unchecked claim was dropped on 2026-11-18: no source line holds it.
 
 - [ ] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
   Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
@@ -1122,7 +1122,7 @@
   - Actions: decide from structured facts and parse no model prose (the avoid cure); the agent's later report plans to delete the fallback (task 7.6 of the 2.1.321 change); see the ADR on gates without word regex; allow a read-only command when the gate itself errors; ask only for a command the gate understood and judged risky; log the gate error for the maintainer; find why the check failed on the Heracles sequence and make the gate decide it without a dialog; Find why the check failed on this sequence and make the gate decide it without a dialog.
   - Trigger: a "gate failed" or "did not parse" notice; a permission dialog that names `tool.check` with "The gate failed"; a gate error or timeout in tool.check; A permission dialog names `tool.check` with "The gate failed".
   - Owner: guards
-  - Status: open (unchecked; `git grep -F 'person must approve' 088a227c -- plugins` finds no match, so the gate text is not in baseline code).
+  - Status: open; `git grep -F 'person must approve' 088a227c -- plugins` finds no match, so the gate text is not in baseline code).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (observed in transcript, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (observed in transcript, 2026-11-13).
 
 - [ ] **RISK-107** The cleanup guard refuses removal of worktrees, branches, and scratch files that the user ordered removed or earlier sessions left.
@@ -1137,12 +1137,12 @@
   - Actions: Remove each worktree and branch that the agent or its subagents made before the final reply. When the guard denies a foreign one, ask the user once, then remove it on a yes; count worktrees and processes made by the session's subagents as the session's own; record each worktree add and each worker spawn as ownership; let a worker's parent session kill that worker's processes; [REQ-GUARDS-027](../prd/guards.md) (check leftover branches, then give the deletion command); let the agent remove what the user ordered removed, with a safe check such as no unmerged commits; Let hygiene remove an agent worktree once its branch is merged, with no user step.
   - Trigger: A final reply that names a leftover worktree or an agent branch; a denial that says the target is not one this session created; worktree remove or kill on a path or pid the session created through a subagent; a refused cleanup of an earlier session's worktree; a delete refused for a path or branch that the user named; A delete is refused for a path or branch that the user named; A worker's work is merged.
   - Owner: guards
-  - Status: open (unchecked).
+  - Status: open. Corrected: no ownership or provenance guard exists at 088a227c (grep for worktree, kill, foreign, and created-by in `hooks/features/protected` and `hooks/kernel` finds none; `kill.ts` and `own.ts` are absent; `hygiene/worktrees.ts` only lists agent worktrees and skips `locked|prunable`), so the Existing controls text above describes a later tree. The denial comes from Claude Code: on 2.1.327 its sandbox clause says "The repository's `.git/worktrees` is read-only in the sandbox, apart from this session's own worktrees" (`chunk-m14bt1pz.js@3913025`) and "a sandboxed command can look into and signal only the processes that it started itself" (`chunk-m14bt1pz.js@3914203`); `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:161-168@088a227c9^` says the guards repeat that limit.
   - Source: observed in transcript, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3219`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3268`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134, observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824, observed in transcript, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (handoff: the user must remove the 7 old agent worktrees because the plugin blocks the agent); observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
 - [ ] **RISK-108** The idle sweep deletes probe folders still in use.
   - Category: product defect.
-  - Cause: the temp cleanup rule deletes temp folders after 60 idle minutes; the sweep at session start removes a folder that sat idle for minutes (the agent's guess, not confirmed).
+  - Cause: the temp cleanup rule deletes temp folders after 60 idle minutes; the sweep at session start removes a folder that sat idle for minutes (the agent's guess; at 088a227c the sweep rule differs, see Status).
   - Event: `/private/tmp/opensab-pentest/`, `/tmp/claude-501/probe-advisor`, and `/tmp/ojdcli` vanished mid-task; probe records, platform scripts, and a game-server log were lost; probe folders such as opensab-pentest, probe-advisor, and ojdcli vanish; platform scripts and a game-server log are lost; `/private/tmp/opensab-pentest/`, `/tmp/claude-501/probe-advisor`, and `/tmp/ojdcli` vanished mid-task; probe records were lost.
   - Consequence: a probe is lost and rebuilt, costing time; a report loses its evidence; probe evidence is lost; a rebuild costs time; a probe is lost and rebuilt; a report loses its evidence.
   - Likelihood: 2
@@ -1152,7 +1152,7 @@
   - Actions: give each session a probe folder under its session ID and remove it on `session.end`, which reaches both the classic `SessionEnd` hook and the Mod API (P-D9.6c, confirmed by the agent); delete the 60-idle-minute rule. The user notes a session can last under an hour, so an idle timer cannot be the cleaner. If a sweep stays: sweep only folders whose marker names a dead session and whose age exceeds a stated limit; never sweep a folder a live session wrote to in that window; report each removed folder.
   - Trigger: a folder the session made is gone while the session runs; session start with an idle /tmp folder.
   - Owner: guards
-  - Status: open (unchecked).
+  - Status: open. Corrected: at 088a227c the sweep removes only `<root>/-<project>/<session>` folders older than `sessionDays ?? days ?? host.days` days and skips live sessions (`hygiene/sweep.ts:143-170`); `sessionTempCleanup` (`temp-cleanup/cleanup.ts:48-70`) removes only the ended session's own folder. No 60-minute rule and no `.created-by-claudetto` marker exist in baseline code (grep finds none), so the cause and the Existing controls text above describe a later tree; the idle-minutes claim stays the agent's guess.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13).
 
 - [ ] **RISK-109** The temp marker rule blocks the Write tool.
@@ -1285,7 +1285,7 @@
 
 - [ ] **RISK-117** A read shows [REDACTED] in source files, and a whole-file Write then overwrites them.
   - Category: guards
-  - Cause: A file read shows [REDACTED] in place of secret-like text; The secrets scan replaces text in tool results with `[REDACTED]` (`plugins/claudetto/hooks/features/secrets/scan.ts:11` at 088a227c); the files named were `TextBox.hx` and `LoginViewModelTest.hx`; the cause of the match was not checked.
+  - Cause: A file read shows [REDACTED] in place of secret-like text; The secrets scan replaces text in tool results with `[REDACTED]` (`plugins/claudetto/hooks/features/secrets/scan.ts:11` at 088a227c); the files named were `TextBox.hx` and `LoginViewModelTest.hx`; the secrets pattern that matched is not in the report, so the cause stays a field report.
   - Event: A whole-file Write from that read would write the placeholder into the file; the handoff says to use Edit, never Write, for such files; A Write of the whole file would store the placeholder in place of the real text.
   - Consequence: A file's real text lost; User code lost.
   - Likelihood: 1
@@ -1312,3 +1312,18 @@
   Owner: guards
   Status: open
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff, bug the agent caused); observed in transcript, 2026-11-16
+
+- [ ] **RISK-486** The disk fills and builds, caches and Claude Code itself fail.
+  - Category: environment.
+  - Cause: agent worktrees, build output, test temp folders and toolchain caches accumulate with no cleanup.
+  - Event: the container reached about 90% used on 2026-11-18, up 22 points in six days (CTX-831).
+  - Consequence: failed writes, failed builds, a truncated transcript or a lost handover.
+  - Likelihood: 4
+  - Impact: 4
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: REQ-GUARDS-073 and REQ-GUARDS-074; a session-start notice when container free space is under 10%.
+  - Trigger: container free space under 10%.
+  - Owner: guards
+  - Status: open
+  - Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671); arc42/03_context_and_scope/machine.md CTX-831, CTX-833.

@@ -44,7 +44,7 @@
   Likelihood: 1. Impact: 2.
   Existing controls: none found.
   Response: mitigate.
-  Actions: an instruction saying the agent need not obey that part of the system prompt got around it (one user; unverified in 2.1.326).
+  Actions: an instruction saying the agent need not obey that part of the system prompt got around it (reported by one user, not checked as a model behavior; on 2.1.327 a code search for `Should I continue?` and `just "continue?"` finds no system-prompt text that causes the reply).
   Trigger: a reply is only "continue?".
   Owner: kernel. Status: open.
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
@@ -52,7 +52,7 @@
 - [ ] **RISK-004** Gate times out on every tool while the ledger read runs.
   - Category: product defect.
   - Cause: `pinCheck` (`prompt.submit/useConstraintPin/pin.ts:101-109`) awaits the Decider's ledger read of the latest message on every tool, even `Read` and MCP tools, but the hook budget is 10 s per event (clock stops only during the hook's own `next` and `$` calls) and the ledger model call belongs to `prompt.submit`'s dispatch. The fallback timeout is 20 s (`decider/fallback.ts:12`). A rejection from an aborted wait in `withinBudget` was logged as a fault.
-  - Event: probe with a 15 s side-model delay: `tool.check` skipped at 10,010.9 ms, `pinCheck` waited 14,948 ms; after the fix `tool.check` took 15.8 ms. `classic.Stop` took 45,155 ms (three sequential side-model calls, inferred): 30,116 ms before and 15,194 ms after starting them together. A user also saw a confirmation dialog "The gate failed: timeout".
+  - Event: probe with a 15 s side-model delay: `tool.check` skipped at 10,010.9 ms, `pinCheck` waited 14,948 ms; after the fix `tool.check` took 15.8 ms. `classic.Stop` took 45,155 ms (three sequential side-model calls: the count is arithmetic, 3 x 15 s delay, `defects.md:743-746@088a227c9^` "inferred, not logged", and the 15,194 ms after starting them together fits it): 30,116 ms before and 15,194 ms after starting them together. A user also saw a confirmation dialog "The gate failed: timeout".
   - Consequence: a dialog asks the user to approve a tool call; Stop waits for the side model.
   - Likelihood: 4
   - Impact: 2
@@ -227,7 +227,7 @@
   Event: the candidate answered "AS-IS" and never fixed anything.
   Consequence: a failed local run.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for a local-model switch (`UserPromptSubmit` appears only in `hooks/hooks.json`); the cause is a field report, and a local model is not available to probe finds no rule or hook).
   Response: mitigate.
   Actions: an env flag (LOCAL_RUN) that silences the hook, set also in the qualification harness. A worktree made from HEAD carries only the committed hook.
   Trigger: a hook text inside a nested run.
@@ -258,7 +258,7 @@
   Event: no agent shows in the monitor while one works (a "dark run"); the user noticed it only through a sound played on each hook fire.
   Consequence: work that no log or monitor records.
   Likelihood: 1. Impact: 2.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for "temp dir" and "tmpdir" outside the hygiene sweep, which cleans folders rather than logs agents finds no rule or hook).
   Response: accept.
   Actions: none; the source names no fix yet.
   Trigger: a hook sound or work with no agent in the monitor.
@@ -290,7 +290,7 @@
   Consequence: A wasted run: nothing happens after the stop.
   Likelihood: 1 (one report).
   Impact: 3 (a wasted session).
-  Existing controls: Baseline raises a notice when an API error ends a turn (plugins/claudetto/.claude-plugin/plugin.json:19@088a227c, plugins/claudetto/hooks/features/stop-notice/stop-notice.test.ts:18@088a227c); git grep finds no retry or heartbeat wake-up for it (kernel/heartbeat.ts is a different job, unchecked).
+  Existing controls: Baseline raises a notice when an API error ends a turn (plugins/claudetto/.claude-plugin/plugin.json:19@088a227c, plugins/claudetto/hooks/features/stop-notice/stop-notice.test.ts:18@088a227c); git grep finds no retry or heartbeat wake-up for it (`kernel/heartbeat.ts:1-12@088a227c` is the status-line heartbeat file and line file, `heartbeatPath` and `lineFilePath`, not a wake-up).
   Response: mitigate.
   Actions: The agent arms its own heartbeat wake-up about every 30 minutes and disarms it on completion, or the harness runs retries with backoff.
   Trigger: A session idle after an API error with work still open.
@@ -302,14 +302,14 @@
 
 - [ ] **RISK-020** Guard hooks fail open.
   - Category: guard bypass.
-  - Cause: only exit 2 blocks; exit 1 is non-blocking; the agent can edit settings; Bash bypasses file-tool denies; A hook crash prints to stderr and lets the call through (2.1.326 release notes: a crashed Node or Python hook's error is now shown in full, Ctrl+O up to 10,000 characters; whether the call still goes through: unverified in 2.1.326); in 2.1.305+ an unknown hook `type` (for example `"script"`) disables the whole settings file; frontmatter and matcher keys in the wrong case are ignored silently; `Bash(git push *)` misses `git -C . push` and quoted forms; `Bash(rm *)` misses `bash -c`; a deny rule on deleting files names one command, so Claude deleted a file three times by another route (git rm, then node) while saying it lacked permission; shell edits bypass an Edit hook; a `Read` deny covers only file tools, not `cat`; denying Edit and Write does not stop Bash file writes; `$CLAUDE_TOOL_INPUT` is not set (input arrives as JSON on stdin); only exit 2 blocks, exit 1 is non-blocking, so a hook that crashes on parse lets the call through; a hook without `chmod +x` blocks nothing; a Stop hook running tests must check `stop_hook_active`; a UserPromptSubmit key blocker still writes the original prompt to the transcript (reported on 2.1.312); a block regex `--force` also matches `--force-with-lease`; a command can be a script the agent just wrote; MCP calls need a separate guard; a planner session with Edit and Write denied still pushed because "only I push" lived in CLAUDE.md.
+  - Cause: only exit 2 blocks; exit 1 is non-blocking; the agent can edit settings; Bash bypasses file-tool denies; A hook crash prints to stderr and lets the call through (2.1.326 release notes: a crashed Node or Python hook's error is now shown in full, Ctrl+O up to 10,000 characters; the call still goes through: verified on 2.1.327 by a probe with a PreToolUse hook that throws (exit 1) on a Bash call, where the Bash call completed with is_error false and the program printed only the warning `hook_no_verdict`, chunk-m14bt1pz.js@1187243; https://clawdipedia.cc/extend/hooks/input-and-output [Documented]: any exit code other than 2 is a non-blocking error and the action continues); in 2.1.305+ an unknown hook `type` (for example `"script"`) disables the whole settings file; frontmatter and matcher keys in the wrong case are ignored silently; `Bash(git push *)` misses `git -C . push` and quoted forms; `Bash(rm *)` misses `bash -c`; a deny rule on deleting files names one command, so Claude deleted a file three times by another route (git rm, then node) while saying it lacked permission; shell edits bypass an Edit hook; a `Read` deny covers only file tools, not `cat`; denying Edit and Write does not stop Bash file writes; `$CLAUDE_TOOL_INPUT` is not set (input arrives as JSON on stdin); only exit 2 blocks, exit 1 is non-blocking, so a hook that crashes on parse lets the call through; a hook without `chmod +x` blocks nothing; a Stop hook running tests must check `stop_hook_active`; a UserPromptSubmit key blocker still writes the original prompt to the transcript (reported on 2.1.312); a block regex `--force` also matches `--force-with-lease`; a command can be a script the agent just wrote; MCP calls need a separate guard; a planner session with Edit and Write denied still pushed because "only I push" lived in CLAUDE.md.
   - Event: a hook crashes, never fires, or is disabled by the agent; A guard is off with no sign; a forbidden action runs, or a guard hook fails open or over-blocks.
   - Consequence: a guarded action runs with no notice; A guarded call runs unchecked; user work lost or a secret leaked; a wrong result shipped.
   - Likelihood: 2
   - Impact: 5
-  - Existing controls: kernel chain returns answers (`plugins/claudetto/hooks/kernel/chain.ts@088a227c`); `plugins/claudetto/hooks/hooks.json` at 088a227c (partial); no liveness check found (git grep `canary` returned no file); exit-2-on-error unverified; `hasCatch` check on each guard hook (tools/guard-catch.test.ts). 2.1.326 (release notes): a PreToolUse hook that exits 127 now gets an error saying its check may not have run; a crashed Node or Python hook now shows its error, not only the first line of its stack trace; hook failures, blocks and timeouts show in the transcript (failures red, a hook that stops Claude yellow) with the reason; a hook's `"decision": "block"` now holds in more cases, so a hook that always prints one may start blocking calls.
+  - Existing controls: kernel chain returns answers (`plugins/claudetto/hooks/kernel/chain.ts@088a227c`); `plugins/claudetto/hooks/hooks.json` at 088a227c (partial); no liveness check found (git grep `canary` returned no file); exit 2 blocks and feeds stderr to the model (probe pretooluse-exit2, claude 2.1.327, 2026-11-18, `code cli` with a fake API and a PreToolUse hook `echo guard-stderr-text >&2; exit 2` on `Bash echo hi`: tool_result is_error true, text "PreToolUse:Bash hook error: [...]: guard-stderr-text", the call did not run); `hasCatch` check on each guard hook (tools/guard-catch.test.ts). 2.1.326 (release notes): a PreToolUse hook that exits 127 now gets an error saying its check may not have run; a crashed Node or Python hook now shows its error, not only the first line of its stack trace; hook failures, blocks and timeouts show in the transcript (failures red, a hook that stops Claude yellow) with the reason; a hook's `"decision": "block"` now holds in more cases, so a hook that always prints one may start blocking calls.
   - Response: mitigate.
-  - Actions: the hook catches its own errors and exits 2; a canary read at session start verified by an external log check; Test the hook-config shape in the lab; exit 2 is the only blocking code (PreToolUse exit 2 blocks and feeds stderr to the model; exit 1 alone is a non-blocking error; PostToolUse cannot prevent the action); catch own errors and exit 2 (message on stderr); test a guard by piping a sample JSON event into it and against its blocked and allowed forms; register via `"$CLAUDE_PROJECT_DIR/..."`; refusal text says stop and report, not reach the same result another way; deny the route, not the command (the plan's settings-edit and Bash-bypass cure applies); layer a git pre-push hook or `git remote set-url --push origin no_push` plus deny of git remote, config, and -c edits; remove credentials; plan mode so a question stays a question; a read-only clone for planners; read a repo's `.claude/settings.json` before accepting the trust prompt; `/hooks` confirms loading. Guard liveness: a hook missed file reads for a week unnoticed; secret rules fired so often they were ignored; the agent can edit its own settings and disable the hook; cures: a canary read at session start with an external check that the event reached the log, an alert outside the hook, rules stored server side with rule version and hash-chained log, settings and hook scripts locked from agent edits; a hook that rewrites tool output kept a plugin in marketplace review two weeks. 2.1.326: PermissionDenied (chunk-m33vdkhs.js@5254) and ConfigChange (chunk-m33vdkhs.js@5415) present; `suppressOriginalPrompt` is a UserPromptSubmit output field that omits the original prompt from the block message when decision is "block" (code search "suppressOriginalPrompt", chunk-bprgtdg6.js@286070), whether it also keeps the prompt out of the transcript is unverified in 2.1.326; the earlier note that it is absent in 2.1.325 is superseded.
+  - Actions: the hook catches its own errors and exits 2; a canary read at session start verified by an external log check; Test the hook-config shape in the lab; exit 2 is the only blocking code (PreToolUse exit 2 blocks and feeds stderr to the model; exit 1 alone is a non-blocking error; PostToolUse cannot prevent the action); catch own errors and exit 2 (message on stderr); test a guard by piping a sample JSON event into it and against its blocked and allowed forms; register via `"$CLAUDE_PROJECT_DIR/..."`; refusal text says stop and report, not reach the same result another way; deny the route, not the command (the plan's settings-edit and Bash-bypass cure applies); layer a git pre-push hook or `git remote set-url --push origin no_push` plus deny of git remote, config, and -c edits; remove credentials; plan mode so a question stays a question; a read-only clone for planners; read a repo's `.claude/settings.json` before accepting the trust prompt; `/hooks` confirms loading. Guard liveness: a hook missed file reads for a week unnoticed; secret rules fired so often they were ignored; the agent can edit its own settings and disable the hook; cures: a canary read at session start with an external check that the event reached the log, an alert outside the hook, rules stored server side with rule version and hash-chained log, settings and hook scripts locked from agent edits; a hook that rewrites tool output kept a plugin in marketplace review two weeks. 2.1.327: PermissionDenied (chunk-ja5z738t.js@5665) and ConfigChange (chunk-ja5z738t.js@5826) present; `suppressOriginalPrompt` on a UserPromptSubmit or UserPromptExpansion block only drops the trailing `Original prompt: <text>` from the block warning that the user and stream-json clients see (chunk-z02chaqz.js@39169, @44709); an exit-2 hook whose stdio closed early sets it on its own (chunk-m14bt1pz.js@4257189). A blocked prompt never reaches the model, with either value: probe 2026-11-18, claude 2.1.327, `code cli` on a fake API, 0 model requests in both runs, `prompt_submit_outcome {kind:"blocked_by_hook",prompt_kept:false}` (reports/2026-11-18-research/probes-plugin-dir-and-prompt-block.md). A guard that blocks a prompt for holding a secret sets it to `true`.
   - Trigger: a canary read that is not denied; A hook file with a wrong `type` or key case loads; a deny rule bypassed by an alternate command form (a permission-denied report followed by a different command for the same effect), a hook error with exit 1, or a new hook.
   - Owner: kernel
   - Status: open. Reported on 2.1.312 with 10 hooks.
@@ -329,7 +329,7 @@
   - Actions: Let read-only commands pass in every prompt state, and make the block text name the way to proceed; keep ordered work and read-only calls unblocked after a user question; treat a message that holds an instruction, a bug list, or a continuation as a work request; block only a write or a spawn after a pure question; probe a structural check, not a word pattern; add a case for each reported message; Treat a standing instruction from an earlier turn as authority for the matching edit.
   - Trigger: A denial of `git log` or `git status` after a message with no task; a denial with that reason while a work order stands; a user message that mixes a question with an instruction; A gate block on an edit that an earlier user message ordered.
   - Owner: kernel
-  - Status: open (unchecked; `git grep -F 'did not request work' 088a227c -- plugins` finds no match, so the text is not in baseline code).
+  - Status: open; `git grep -F 'did not request work' 088a227c -- plugins` finds no match, so the text is not in baseline code).
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51; reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048 (reported, user, 2026-11-13).
 
 ## Conduct and Product Risks from Chunk c05
@@ -459,3 +459,33 @@
   - Owner: kernel
   - Status: open (Existing controls: missing at 088a227c).
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [ ] **RISK-481** A mod model call fails at a usage limit and the hook throws.
+  - Category: host change.
+  - Cause: on 2.1.327 `$.model.complete` and `$.model.classify` return the API error at once on a usage limit instead of waiting.
+  - Event: a handover or classify call at a usage limit rejects inside a hook.
+  - Consequence: a hook error on every turn until the limit resets, and a lost handover.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: every mod model call catches the error, skips its work and logs once per window; a test stubs the error.
+  - Trigger: a hook error that names a usage limit.
+  - Owner: kernel
+  - Status: open
+  - Source: reports/2026-11-18-research/surface.md:59 (release notes, claude 2.1.327, 2026-11-18).
+
+- [ ] **RISK-488** A Bash call hangs for 120 seconds on stdin.
+  - Category: host behaviour.
+  - Cause: a command with a heredoc keeps an open stdin (CTX-837), and a path glob that starts with `-` empties a variable (CTX-838), so a reader such as `wc -l` waits on stdin.
+  - Event: a subagent of this project waited 122 seconds; the GodHand session found the same pattern.
+  - Consequence: lost wall time, a stray background task, and a confused next step.
+  - Likelihood: 3
+  - Impact: 2
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: the agent rules say: write paths from a glob as `./*` or after `--`; in a command that holds a heredoc, give each other stdin reader a file or `</dev/null`. A trace test runs both mutants. Report the heredoc stdin behaviour to Claude Code (user-held).
+  - Trigger: a Bash result that says it was moved to the background after 120 s.
+  - Owner: kernel
+  - Status: open
+  - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.

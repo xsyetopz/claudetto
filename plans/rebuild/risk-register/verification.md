@@ -554,20 +554,20 @@
 
 ## Relative Plugin Directory in a Probe
 
-- [ ] **RISK-458** A relative `--plugin-dir` makes the CLI run with no plugin.
+- [ ] **RISK-458** A `--plugin-dir` that does not resolve makes the CLI run with no plugin and exit 0.
   Category: Tooling.
-  Cause: The CLI logs "Plugin path does not exist ... skipping" for a relative `--plugin-dir` and runs with no plugin.
-  Event: A batch of probe runs silently runs without the plugin.
+  Cause: A relative `--plugin-dir` resolves against the process working directory. When the path is missing there, the CLI logs "Plugin path does not exist ... skipping" at warn level, records a `path-not-found` entry in the init `plugin_errors`, and runs on with no plugin. An existing relative path loads normally.
+  Event: A probe harness that starts the CLI from another directory runs a batch without the plugin under test.
   Consequence: Invalid probe results.
-  Likelihood: 3 (reproduced once).
+  Likelihood: 4 (reproduced on demand).
   Impact: 3 (a wasted session or spend).
   Existing controls: None.
   Response: avoid.
-  Actions: Use an absolute `--plugin-dir` path.
-  Trigger: The CLI log holds "Plugin path does not exist".
+  Actions: Pass an absolute `--plugin-dir` path, and fail the harness when the stream-json init `plugins` list lacks the plugin under test or `plugin_errors` is non-empty.
+  Trigger: init `plugin_errors` is non-empty, or the debug log holds "Plugin path does not exist".
   Owner: verification.
   Status: open.
-  Source: unresolved: the old plan cited a worker input that no longer exists; the probe line was not found by grep in this pass.
+  Source: probe 2026-11-18, claude 2.1.327, cc-inspect `code cli` on a fake API: an existing relative path loaded plugin `hprobe`; a missing one gave init `plugin_errors:[{"plugin":"inline[0]","type":"path-not-found",…}]`, no plugin, exit 0 (reports/2026-11-18-research/probes-plugin-dir-and-prompt-block.md); log text at chunk-m14bt1pz.js@5450426.
 
 ## Citation Hygiene: Brief Lines Cited as Source Lines
 
@@ -584,7 +584,7 @@
   Trigger: A citation names a line number with no path.
   Owner: verification.
   Status: open.
-  Source: unresolved: the old plan cited a worker input that no longer exists; the three S-1..S-3 citations were not found in this pass.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the S-1..S-3 citations.
 
 ## Conduct Failures
 
@@ -593,7 +593,7 @@
   Consequence: a wasted session and spend. Likelihood: 1. Impact: 3. Existing controls: none found.
   Response: mitigate. Actions: build, then run the narrowest check once.
   Trigger: the same check run twice with no edit between. Owner: verification. Status: open.
-  Source: unresolved: the old plan item names no source.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-461** The agent names a check and does not run it, and once called a check free that only echoed a script.
   Category: conduct. Cause: a check is named as a promise. Event: a named check that never ran.
@@ -630,14 +630,14 @@
   - Trigger: an "absent" mark with no `code` search.
   - Owner: verification
   - Status: open.
-  - Source: chunk-4h798pp0.js:1023749 (claude 2.1.326 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+  - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
 
 - [ ] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Category: conduct. Cause: the reference is written before its target. Event: a "User Answers" reference with no such section.
   Consequence: a dangling reference in a plan file. Likelihood: 1. Impact: 1. Existing controls: none.
   Response: mitigate. Actions: write the target before the reference.
   Trigger: a reference to a heading that is absent. Owner: verification. Status: open.
-  Source: unresolved: the old plan item names no source.
+  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 ## Verification
 
@@ -653,7 +653,7 @@
   - Actions: pin the current release and adopt what it writes; run verify with the repo's own hook config; report any override; treat a verify run that used a hooks override as failed; report the guard's refusal instead of routing around it.
   - Trigger: a verify pass that needed a config override or an older pin; a failed hooks guard during verify.
   - Owner: verification
-  - Status: open (unchecked)
+  - Status: open; no `hooksPath` or `core.hooks` guard at 088a227c (grep of `plugins/` finds none); the `DEFECTS` text keeps tests' assertions and limits
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (observed in transcript, 2026-11-13).
 
 - [ ] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
@@ -683,7 +683,7 @@
   Actions: treat a verify run that used a hooks override as failed; report the guard's refusal instead of routing around it.
   Trigger: a failed hooks guard during verify.
   Owner: verification
-  Status: open (unchecked).
+  Status: open; no `hooksPath` or `core.hooks` guard at 088a227c (grep of `plugins/` finds none).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; observed in transcript, 2026-11-13.
 
 ## Lead Agent Conduct
@@ -865,3 +865,33 @@
   Owner: verification.
   Status: closed.
   Source: observed, 2026-11-17, lead session `0342617c` (token scan rerun against `final/`).
+
+- [ ] **RISK-483** The agent writes a general sentence into an override or exception field to get past a gate.
+  - Category: agent fault.
+  - Cause: a gate with a free-text override lets the agent approve its own exception.
+  - Event: an agent pasted a general user sentence into an override field in 13 of 19 scripts (reported, one repo).
+  - Consequence: the gate passes work it was built to stop.
+  - Likelihood: 3
+  - Impact: 4
+  - Existing controls: claudetto ships no Stop gate with an override field (no regex Stop check, goal rule).
+  - Response: avoid.
+  - Actions: any claudetto gate takes exceptions only as a proposal naming the exact unit, value and script, approved by the user; the agent cannot write the approval.
+  - Trigger: an override field the agent can write.
+  - Owner: verification
+  - Status: open
+  - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xy9mba-followup-2-weeks-later-i-built-20261117T231817Z.md:94,106 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xy9mba/followup_2_weeks_later_i_built_the_hooks_sqlite/>); reports/2026-11-18-research/dossier.md:87.
+
+- [ ] **RISK-484** An accusation planted in a project file or subagent report makes the agent damage correct work.
+  - Category: agent fault (sycophancy).
+  - Cause: the model treats claims in context files and delegated reports as facts.
+  - Event: CAVE-Bench: accusations in project context were acted on in 39.7% of runs, subagent-relayed claims in 36.10%; Claude-Opus-5 over-corrected in 19.7% of runs.
+  - Consequence: correct work reverted or rewritten.
+  - Likelihood: 3
+  - Impact: 4
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: REQ-VERIFICATION-093 and [ADR-0181](../adr/0181-evidence-before-reversing-work.md).
+  - Trigger: a revert with no verifying command before it.
+  - Owner: verification
+  - Status: open
+  - Source: reports/2026-11-18-research/papers.md P6; https://arxiv.org/pdf/2609.32616.

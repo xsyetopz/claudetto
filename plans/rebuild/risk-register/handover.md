@@ -40,7 +40,7 @@
   - Impact: 3
   - Existing controls: none found for rule count; memory-as-index in the old plan (plan line 1101).
   - Response: mitigate.
-  - Actions: remove the rules from the memory file (reported to restore quality); rework the process (usage down 40% with better output, one user); keep sessions under 200k with a clear prompt at 350k (one user, majority of sessions under 150k). All reported, unmeasured.
+  - Actions: remove the rules from the memory file (reported to restore quality); rework the process (usage down 40% with better output, one user); keep sessions under 200k with a clear prompt at 350k (one user, majority of sessions under 150k). All field reports from Reddit commenters; the figures need the commenters' own sessions, so Likelihood comes from report count.
   - Trigger: quality falls after the memory file or skill set grows.
   - Owner: handover
   - Status: open.
@@ -176,7 +176,7 @@
 
 - [ ] **RISK-130** Reference doc loses weight in a full window.
   Category: agent
-  Cause: The more files and context the window holds, the less a reference document is weighed, even when the prompt says to reread it (reported, inferred).
+  Cause: The more files and context the window holds, the less a reference document is weighed, even when the prompt says to reread it (field report from a Reddit thread; the mechanism is the commenter's guess and needs a paid live run to measure).
   Event: The model performs reading ("Ok I read it again") without engaging with the document.
   Consequence: The agent ignores facts in the document while claiming to use them.
   Likelihood: 1
@@ -186,7 +186,7 @@
   Actions: Keep the reference small; split work so the document sits in a fresh context (see split generation across threads).
   Trigger: The agent claims a reread and the output contradicts the document.
   Owner: handover
-  Status: open. Basis: reported, inferred.
+  Status: open. Basis: field report kept as reported; Likelihood from report count.
   Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:451 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
 
 ## Context Loss And Handover
@@ -228,11 +228,11 @@
   - Impact: 3
   - Existing controls: None; the age rule is the control at 088a227c.
   - Response: mitigate.
-  - Actions: Trigger on context size over a threshold at main-loop turn.complete (e.agentId === undefined) and on a cold prefix at prompt.submit (time since the last request start is the TTL or more). Never trigger on session age; Trigger on an idle gap of at least the TTL or on context size.
-  - Trigger: A handover starts when the session is under 59 minutes old and warm, or does not start while the prefix is cold; A session runs long with no idle gap.
+  - Actions: Renew only at a task boundary with the context above the break-even size (RT-027, ADR-0178). Never trigger on session age or an idle gap.
+  - Trigger: A handover starts away from a task boundary or below the break-even size, or a task boundary above it passes with no renewal.
   - Owner: handover
   - Status: open.
-  - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: unverified in 2.1.326).
+  - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: verified against the API docs read 2026-11-18, "The cache is refreshed for no additional cost each time the cached content is used", https://platform.claude.com/docs/en/build-with-claude/prompt-caching, section "How prompt caching works"; the docs state the API behavior, not a Claude Code build offset).
 
 - [ ] **RISK-134** Auto compaction lands mid-task and compacts late
   Category: handover.
@@ -429,7 +429,7 @@
   Consequence: Later sessions refuse a valid choice.
   Likelihood: 1 (one anecdote).
   Impact: 2 (an extra turn).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c: `hooks/features/memory/` is the machine-RAM hold (`hold.ts`, `texts.ts`), not saved notes; no rule says to save feedback as memory (`surface/texts.ts:29` holds only the interview text for memory files).
   Response: mitigate.
   Actions: A self-editing rules file capped at 5k words, audited at each session end with a question on what would make it protective; relative feedback such as "40% less green".
   Trigger: A memory entry with "never" or "always" from a single correction.
@@ -446,7 +446,7 @@
   - Consequence: the next session follows a false state and a standing order the user never gave; the implementer works on false premises; a wrong result shipped; a wasted session.
   - Likelihood: 1
   - Impact: 4
-  - Existing controls: Unchecked at 088a227c; a `git status -sb` read-back is absent at 088a227c (grep found no hit).
+  - Existing controls: Corrected: at 088a227c the forked handoff appends the real state: `compaction/handoff.ts:55-56` runs `git rev-parse --short HEAD` and `git status --short`, and `HANDOFF_OPENING` (`compaction/texts.ts:19-24`) adds "Git now: HEAD, status". The body is model-written with no tool (`HANDOFF_PROMPT`, `texts.ts:5`), so nothing compares it with the real state, and hand-cut architect handoffs have no control; a `git status -sb` read-back is absent at 088a227c (grep found no hit).
   - Response: mitigate.
   - Actions: claudetto shall write a handover from checked state (HEAD and a git status read at write time), as facts and open items without an order for the next session, and without verbatim user quotes; commit each session's tree to a branch and push it at session end, so the next handoff is cut against the real tree (two handoffs since had zero slips, reported); before the first edit a cheap subagent checks the handoff's premises against the tree (planned, not yet run by the poster); the handoff reads git state on resume.
   - Trigger: a handover file written; a handoff cut from a clone of HEAD while the working tree is dirty, or a handoff that names git state with no git call in the turn.
@@ -463,7 +463,7 @@
   Consequence: The agent acts on missing context.
   Likelihood: 1 (one commenter).
   Impact: 2 (an extra turn).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (no notes-index code).
   Response: mitigate.
   Actions: Turn "check the notes" from a pointer into a command the agent runs, one tool call that prints a module note plus everything it links; a path-scoped rule for that folder can carry the line. This makes the agent skip less, though not never.
   Trigger: A pointer in the rules file to notes with no command behind it.
@@ -480,7 +480,7 @@
   Consequence: The second session acts on stale knowledge.
   Likelihood: 1 (one commenter).
   Impact: 3 (a wasted session).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (no shared-notes code).
   Response: mitigate.
   Actions: Not stated in the source; the commenter names the fault as a possible fourth scope of forgetting.
   Trigger: Two sessions open on one project.
@@ -512,13 +512,13 @@
   - Consequence: unwanted edits; a wait-for-approval or no-change instruction is lost; a wrong result shipped; an agent acts without the approval a rule demands.
   - Likelihood: 2
   - Impact: 4
-  - Existing controls: none at 088a227c (missing); 2.1.326: the wording is a prompt string ("without asking the user any further questions. Resume directly", chunk-4h798pp0.js@2550714), appended when `suppressFollowUpQuestions` is set (code search "any further questions", claude 2.1.326).
+  - Existing controls: none at 088a227c (missing); 2.1.327: the wording is a prompt string ("without asking the user any further questions. Resume directly", chunk-m14bt1pz.js@2596525), appended when `suppressFollowUpQuestions` is set (code search "any further questions", claude 2.1.327).
   - Response: mitigate.
   - Actions: a PreCompact hook writes `awaiting approval, do not implement` state; PreCompact/SessionStart hooks write and reload a handoff file including pending pauses; SessionStart on compact re-injects it; a PreCompact hook flushing state; record "awaiting approval, do not implement" as current state in the handoff; the handover writes the open approval into the carried text.
   - Trigger: a compaction while a plan awaits approval.
   - Owner: handover
   - Status: open.
-  - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/>) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/>; weak match, the quoted continuation wording was not located in the export); chunk-4h798pp0.js@2550714 (claude 2.1.326 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
+  - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/>) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/>; weak match, the quoted continuation wording was not located in the export); chunk-m14bt1pz.js@2596525 (claude 2.1.327 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
 
 - [ ] **RISK-152** An oversized memory file burns the weekly limit.
   - Category: cost.
@@ -529,7 +529,7 @@
   - Impact: 3
   - Existing controls: none at 088a227c (no memory size warning); `plugins/claudetto/hooks/features/memory/` partial.
   - Response: mitigate.
-  - Actions: Ask the model to list memory files with sizes and trim to short notes; keep notes short; warn on big memory files; load big files lazily; auto-memory loads the first 200 lines of `MEMORY.md`; memory as index only, so the model confirms a function or path still exists before editing; reword memory from "reference data" to "follow each one that applies" (cut violations 26 to 11 of 101); keep changing facts in repo files whose edits show in a git diff; keep project state vendor-neutral in repo markdown. 2.1.326: tools `memory_list`/`memory_read`/`memory_write` present (code search "memory_list", chunk-2e8vamz8.js@114226); `/memory` named in the 2.1.326 release notes.
+  - Actions: Ask the model to list memory files with sizes and trim to short notes; keep notes short; warn on big memory files; load big files lazily; auto-memory loads the first 200 lines of `MEMORY.md`; memory as index only, so the model confirms a function or path still exists before editing; reword memory from "reference data" to "follow each one that applies" (cut violations 26 to 11 of 101); keep changing facts in repo files whose edits show in a git diff; keep project state vendor-neutral in repo markdown. 2.1.327: tools `memory_list`/`memory_read`/`memory_write` present (code search "memory_list", chunk-jvme5rqc.js@114306); `/memory` named in the 2.1.327 release notes.
   - Trigger: A memory file over a size limit; a memory file over 200 lines or about 100 KB.
   - Owner: handover
   - Status: open.
@@ -615,3 +615,33 @@
   Owner: handover.
   Status: mitigated.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
+
+- [ ] **RISK-482** A headless session never renews because the mod's clear is discarded.
+  - Category: host limit.
+  - Cause: under `-p`, a plugin `/clear` is dropped from the command queue and `$.session.compact` rejects.
+  - Event: probes A and F on 2.1.327: "the command was removed from the queue before it ran", "the host has ended its input", "not available in a headless (-p / SDK) session yet".
+  - Consequence: an unattended run grows to auto compaction with no handover.
+  - Likelihood: 5
+  - Impact: 3
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: [ADR-0184](../adr/0184-headless-renewal-by-driver.md): the mod catches both rejections; the driver sends `/clear` or `/compact <instructions>`.
+  - Trigger: a caught rejection in the mod log.
+  - Owner: handover
+  - Status: mitigated
+  - Source: reports/2026-11-18-research/handover-probes/probe-f/probe.log (cc-inspect `code cli`, claude 2.1.327, 2026-11-18); reports/2026-11-18-research/handover.md Q2.
+
+- [ ] **RISK-489** A `session.compact` hook that returns its message in the wrong shape is skipped with one log line, and core runs its default summary, so the handover silently never lands.
+  - Category: integration fault.
+  - Cause: core accepts only `{role:"user", text, toolUses:[]}`; `{role, content}` and `{role, text}` are rejected (CTX-843).
+  - Event: probe H runs 1 and 2 logged "session.compact hook skipped: returned the wrong shape" and fell back to the default summary.
+  - Consequence: the handover is lost and the summarizer request is paid.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: none at 088a227c.
+  - Response: mitigate.
+  - Actions: a unit test runs the hook's return value through the same shape check; REQ-HANDOVER-023 acceptance checks the first message after a dogfood compaction.
+  - Trigger: the log line "session.compact hook skipped" in a debug log.
+  - Owner: handover
+  - Status: open
+  - Source: reports/2026-11-18-research/handover-probes/probe-h/run1/hook.log, run2/hook.log, probe.log.

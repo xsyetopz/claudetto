@@ -126,10 +126,10 @@
   Likelihood: 4. Impact: 4.
   Existing controls: none at 088a227c (no SubagentStart or SubagentStop hook); orchestrator re-verification caught most cases of a false delegate result.
   Response: mitigate.
-  Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (unverified in 2.1.326); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
+  Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (verified on 2.1.327: the `tools` key is an allowlist, https://clawdipedia.cc/extend/subagents/frontmatter [Documented]; the `--agents` schema describes it as an array of allowed tool names, chunk-rj3e7agr.js@296443); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
   Trigger: a subagent report that names a path the lead has not checked.
   Owner: delegation. Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39. The `tools:` restriction stays unverified in 2.1.326.
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
 
 - [ ] **RISK-167** Silent delegation skip: the agent skips a required subagent or reviewer without saying so.
   Category: delegation.
@@ -142,7 +142,7 @@
   Actions: Stop check confirming an Agent/Task call occurred before the reply; SubagentStart contract injection.
   Trigger: a reply to a turn whose instruction names a reviewer, with no Agent call.
   Owner: delegation. Status: open.
-  Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 is a different check; the delegation-skip finding itself: Source: unresolved, the old plan cites worker inputs and grep found no text for it.
+  Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 is a different check; the delegation-skip finding itself: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [ ] **RISK-168** Confident wrong subagent: a low-effort retrieval subagent answers wrong and the parent builds on it.
   Category: delegation.
@@ -168,12 +168,12 @@
   Actions: SubagentStop/Stop hook that blocks a hand-back while a recorded background pid lives unless pid, log and lock are in the report; a turn-counting hook warning 2 turns before the limit (worked: ended at 15 of 16).
   Trigger: a hand-back while a recorded pid is alive.
   Owner: delegation. Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32. Session e473653f as the source of the eval case: Source: unresolved for that detail; the dossier cites the session only for other facts (06-autonomy-and-consent.md:36).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32. Session e473653f as the source of the eval case: Dropped (2026-11-18) for that detail: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the dossier cites the session only for other facts (06-autonomy-and-consent.md:36).
 
 - [ ] **RISK-170** Parallel collision: agents in one tree overwrite or block each other.
   Category: delegation.
   Cause: parallel agents in one tree.
-  Event: agents committing in one tree block each other at pre-commit; another worker's edit to `hooks/limits/stop.ts` broke module load for minutes; parallel clones each pass while the merged result fails (5 of 5, measured by author); overlapping task slices; worktrees from an old main with merge conflicts; the orchestrator forgot its own constraint against modifying tests; a subagent halted at a 200-tool-call limit on 2.1.280; fork subagents have a turn limit others lack (reported, unverified); a lead with seven workers wrote duplicate contradictory replies; delegates ran `git stash`/pop, restoring 81 staged deletions; `git add -A` staged symlinks and a merge replaced a real 10 GB folder.
+  Event: agents committing in one tree block each other at pre-commit; another worker's edit to `hooks/limits/stop.ts` broke module load for minutes; parallel clones each pass while the merged result fails (5 of 5, measured by author); overlapping task slices; worktrees from an old main with merge conflicts; the orchestrator forgot its own constraint against modifying tests; a subagent halted at a 200-tool-call limit on 2.1.280; fork subagents have a turn limit others lack (reported by the dossier on 2.1.280; a search of 2.1.327 for the fork-subagent code, `chunk-m14bt1pz.js@2760807`, finds only the enable switch, not a turn limit); a lead with seven workers wrote duplicate contradictory replies; delegates ran `git stash`/pop, restoring 81 staged deletions; `git add -A` staged symlinks and a merge replaced a real 10 GB folder.
   Consequence: user work lost or a wrong result shipped.
   Likelihood: 4. Impact: 4.
   Existing controls: `isolation: "worktree"` named in the Agent description (`plugins/claudetto/hooks/features/delegation/texts.ts:2@088a227c`).
@@ -181,7 +181,7 @@
   Actions: `isolation:"worktree"`; one deploy/test worker owning the environment; decompose by hand; SubagentStop check; fresh worktrees from current main; PreToolUse deny of tree-changing git and `git add -A` for subagents; acceptance run on the merged result at Stop.
   Trigger: two agents with write access in one tree.
   Owner: delegation. Status: partial at 088a227c.
-  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit stays unverified.
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit is kept as reported; no limit text was found in 2.1.327.
 
 - [ ] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
   Category: agent conduct.
@@ -524,7 +524,7 @@
   Likelihood: 2. Impact: 3.
   Existing controls: the flag fallback stays; subagents run in the background by default; SubagentStop `background_tasks` lists the parent's jobs; since 2.1.311 a subagent Bash call can move to background at a timeout cap (`subagentCapApplied`).
   Response: mitigate.
-  Actions: write `CLAUDE_CODE_NO_MODEL_FALLBACK`, `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` (read on 2.1.326 at `chunk-vawgpkfg.js:276881`, where it gates the flag fallback with `switchModelsOnFlag`) and `switchModelsOnFlag:false`, add a `PreModelSwitch` hook, and record `resolvedModel` and `modelsUsed` from the Agent result.
+  Actions: write `CLAUDE_CODE_NO_MODEL_FALLBACK`, `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` (read on 2.1.327 at `chunk-18d5r2hb.js:277228`, where it gates the flag fallback with `switchModelsOnFlag`) and `switchModelsOnFlag:false`, add a `PreModelSwitch` hook, and record `resolvedModel` and `modelsUsed` from the Agent result.
   Trigger: a `modelsUsed` entry that differs from the agent file `model`.
   Owner: delegation. Status: open; `git grep PreModelSwitch` finds nothing under `plugins/` at 088a227c, so missing.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
@@ -629,7 +629,7 @@
   - Actions: claudetto holds one delegation rule in the root prompt; a check lists each delegation line that claudetto adds.
   - Trigger: claudetto beside another harness that injects delegation text.
   - Owner: delegation
-  - Status: open (unchecked).
+  - Status: open. Field report relayed from Discord; the baseline text says "Do a few calls yourself" (`delegation/texts.ts` `AGENT_TEXT`) and a grep for "dispatch" at 088a227c finds no conflicting line, so no local probe can reproduce it.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, one Discord user relayed by the user, 2026-11-13.
 
 - [ ] **RISK-201** A delegation message with the word "reasoning" is blocked and the orchestrator re-sends the task.
@@ -638,9 +638,9 @@
   Event: the subagent still ran the task, but the orchestrator got no tool result and re-sent the task with different instructions.
   Consequence: duplicate work and chaos.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. The filter is server-side: the client only reads the stop category (`chunk-m14bt1pz.js@3089862`, set `cyber, bio, frontier_llm, reasoning_extraction`), so the intermittency cannot be probed locally.
   Response: avoid.
-  Actions: write "explain", "justification", "walk me through your thinking", or "what do you think?" in place of "provide reasoning"; the classifier is cheap and takes the safe read of the word. Refusal is intermittent on judge and eval prompts that ask for a decision plus reasoning in structured output. Reported by several users, unmeasured.
+  Actions: write "explain", "justification", "walk me through your thinking", or "what do you think?" in place of "provide reasoning"; the classifier is cheap and takes the safe read of the word. Refusal is intermittent on judge and eval prompts that ask for a decision plus reasoning in structured output. Reported by several users; classifier behaviour is server-side, not in the binary, so Likelihood comes from report count.
   Trigger: the word "reasoning" in a delegation or judge prompt.
   Owner: delegation.
   Status: Open.
@@ -652,7 +652,7 @@
   Event: 9 of 10 delegated runs in a week were very slow and burned many tokens, even on Sonnet, while the same prompt run by hand in a new session finished faster.
   Consequence: wasted spend and time.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. Field report from one user. Measured in part on 2.1.327 (paid run, Sonnet 5.5, 12 lookup tasks, 3 runs each, reports/2026-11-18-research/paid-labs/README.md): delegating to a Haiku finder took 2.1x as long and cost 1.8x the median of the lead searching by itself, and a Sonnet finder cost 3.3x, at equal accuracy. The direction of the report holds for small lookups. With an Opus 5.5 lead the Haiku finder cost 0.86x the median and took 2x the time, with equal total spend.
   Response: accept.
   Actions: none in the source beyond running the prompt by hand.
   Trigger: a delegated run far slower than the same prompt run directly.
@@ -662,11 +662,11 @@
 
 - [ ] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
   Category: agent behaviour.
-  Cause: guessed by commenters: the pruned Claude Code system prompt dropped the harness fact (inferred); the poster says the first claim came in the past few weeks, a commenter says never before October.
+  Cause: the belief is false on 2.1.327: the SDK result schema says "a background subagent that outlives the /clear still records its outcome" (`chunk-rj3e7agr.js@388091`). Why the model holds it is the commenters' guess (the pruned system prompt dropped the harness fact); the poster says the first claim came in the past few weeks, a commenter says never before October.
   Event: the agent says "After the /clear, that report may never reach me" and restarts subagents that finished.
   Consequence: wasted restarts.
   Likelihood: 2. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c (grep of `plugins/` for /clear and subagent survival finds no line).
   Response: mitigate.
   Actions: one blunt CLAUDE.md line, for example "Subagents keep running through /clear and /compact. Don't restart them, wait for their results."
   Trigger: the agent claims a subagent will not survive a context reset.
@@ -680,7 +680,7 @@
   Event: 700k+ tokens into double-digit agents for simple changes, at a 5-minute cache.
   Consequence: usage of 30%+ over a few days.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. Field report from one user from `/usage`. Refuted for typed subagents on 2.1.327 (fake-API probe, cc-inspect `cli`): a marker word in the parent prompt appeared in the main-loop requests and in none of the general-purpose subagent's requests. A typed subagent gets its brief, not the conversation. The 700k figure fits fork subagents, which do inherit the whole transcript ([CTX-059](../arc42/03_context_and_scope/subagents.md), measured), or many helpers each re-sending a large prefix of their own (inferred).
   Response: mitigate.
   Actions: agents that are stuck terminate (stuck means an hour or more with no real change, or the same action looping); usage fell from 30%+ over days to under 10% in one day. One user, reported.
   Trigger: a subagent run past an hour with no real change.
@@ -803,7 +803,7 @@
   Event: it adds a forbidden dependency, and changes a hard limit plus prompts, fixtures, and tests.
   Consequence: edits that break a project rule.
   Likelihood: 1. Impact: 3.
-  Existing controls: none checked.
+  Existing controls: none at 088a227c. Field report on a local model behind Claude Code; no local model is available to probe it.
   Response: mitigate.
   Actions: place the rules after the task with "make no edits and report the conflict"; one run per rung is weak evidence.
   Trigger: a local model edits across a rule boundary.
@@ -868,7 +868,7 @@
   Consequence: A wasted session or spend.
   Likelihood: 1 (one report).
   Impact: 3 (wasted spend).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c: no cap on inter-agent chat; `surface/texts.ts:13` is only the SendMessage text.
   Response: mitigate.
   Actions: Replace agent-to-agent chat with a deterministic task queue; cap the back-and-forth.
   Trigger: Two agents exchange more than a few turns without a file change.
@@ -883,7 +883,7 @@
   - Consequence: Leftover subagents hold the session; Compounding token spend; extra spend. Likelihood: 1; each spawn costs 5k to 11k tokens at start.
   - Likelihood: 2
   - Impact: 3 (wasted spend)
-  - Existing controls: Plan covers runaway background work only; Unchecked at 088a227c; `SEND_MESSAGE` text.
+  - Existing controls: Plan covers runaway background work only; None at 088a227c: no idle handling; `surface/texts.ts:13` is only the SendMessage text; `SEND_MESSAGE` text.
   - Response: mitigate.
   - Actions: Press esc, kill the leftovers from /tasks, and allowlist the tools they keep asking for; Rules telling main to pause and restart idle subagents; plan with Sonnet and code with Haiku (the commenter's cure). Opus does not code; resume a finished agent in place of a new spawn; stop an idle agent; route same-area work to `SendMessage` resume.
   - Trigger: A subagent is pending with no progress; A subagent that polls or waits with repeated reads; a spawn in an area where a finished agent exists; new work in an area where a finished agent exists.
@@ -900,7 +900,7 @@
   Consequence: A mistake in a plan or a review that misses a defect, so a wrong result can ship.
   Likelihood: 2 (two reports in one thread).
   Impact: 4 (a wrong result shipped).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: At 088a227c Metis, Athena (the reviewer), and Heracles run at medium effort (`agents/*.md:5`); no other control.
   Response: mitigate.
   Actions: Keep reviewer effort high or medium per agent file as the plan decides; do not read these reports as a measurement.
   Trigger: A review that misses a seeded defect at medium effort.
@@ -917,7 +917,7 @@
   Consequence: Tasks are dropped.
   Likelihood: 1 (one user).
   Impact: 3 (a wasted session).
-  Existing controls: Unchecked at 088a227c.
+  Existing controls: None at 088a227c (grep of `plugins/` found no rule).
   Response: mitigate.
   Actions: Split the lead from a manager that dispatches and merges; the user also considers a thin orchestrator with sub-project leads (more sessions, more cost). The report puts git merges in the manager session, so it conflicts with a rule that agents never touch git; the lead decides.
   Trigger: A lead that has to track several parts of a large project.
@@ -956,8 +956,8 @@
   Actions: Put authority in the typed opening line and type nothing after before launch.
   Trigger: A Workflow launch follows an AskUserQuestion answer.
   Owner: delegation.
-  Status: open (missing at 088a227c; 2.1.326: the harness frame text is present, code search "computed task text", chunk-cpycaw0p.js@1036 and @1272).
-  Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-cpycaw0p.js@1036 (claude 2.1.326 binary).
+  Status: open (missing at 088a227c; 2.1.327: the harness frame text is present, code search "computed task text", chunk-6rveqv0x.js@1036 and @1272).
+  Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-6rveqv0x.js@1036 (claude 2.1.327 binary).
 
 ## Safeguards And Guards
 
@@ -970,7 +970,7 @@
   - Impact: 3
   - Existing controls: plugins/claudetto/hooks/features/setup/settings.ts:120 sets CLAUDE_CODE_SUBAGENT_MODEL at 088a227c; plugins/claudetto/hooks/features/setup/settings.ts:120 pins the subagent model env var at 088a227c; `plugins/claudetto/agents/*.md` (model and effort fields) and `plugins/claudetto/hooks/features/agent-model/model.ts` at 088a227c (partial); fan-out cap missing; agent files pin a model (overridden by the argument).
   - Response: mitigate.
-  - Actions: Keep CLAUDE_CODE_SUBAGENT_MODEL set and check the model of a resumed subagent; Pin model and effort in agent files and by env var, not by plan text; agent file with explicit `model:` and `effort:` frontmatter plus a hook; routing matrix tied to cost data; effort per model in settings. Example roster (reported): ten Sonnet agents plus one Haiku, none inheriting Opus; measured 11 runs, about 540k tokens, one Opus run 247k, rest 20-60k. 2.1.326: `modelSettings.*` (chunk-m33vdkhs.js@30503, @276570) and PreModelSwitch/PostModelSwitch (chunk-m33vdkhs.js@5254) present; the 2.1.326 release notes fix the subagent model set in managed settings not applying in Claude Desktop's Code tab (it now overrides the user's own, unless those settings also pick a provider or gateway); an `agent.spawn` mod drops or rewrites `model` (the event carries `model`, `parentModel`, `subagentType`, `provider`; opus rewritten to sonnet-5-5 works; dropping lets the agent file's haiku decide); a mod runs in a hooks worker with no Bun global; remove the invitation from the root prompt.
+  - Actions: Keep CLAUDE_CODE_SUBAGENT_MODEL set and check the model of a resumed subagent; Pin model and effort in agent files and by env var, not by plan text; agent file with explicit `model:` and `effort:` frontmatter plus a hook; routing matrix tied to cost data; effort per model in settings. Example roster (reported): ten Sonnet agents plus one Haiku, none inheriting Opus; measured 11 runs, about 540k tokens, one Opus run 247k, rest 20-60k. 2.1.327: `modelSettings.*` (chunk-ja5z738t.js@31099, @276570) and PreModelSwitch/PostModelSwitch (chunk-ja5z738t.js@5665) present; the 2.1.327 release notes fix the subagent model set in managed settings not applying in Claude Desktop's Code tab (it now overrides the user's own, unless those settings also pick a provider or gateway); an `agent.spawn` mod drops or rewrites `model` (the event carries `model`, `parentModel`, `subagentType`, `provider`; opus rewritten to sonnet-5-5 works; dropping lets the agent file's haiku decide); a mod runs in a hooks worker with no Bun global; remove the invitation from the root prompt.
   - Trigger: A subagent resumed with the env var unset; Usage by model that differs from the plan; a subagent spawn with no `model`; an `Agent` call that carries `model`.
   - Owner: delegation
   - Status: open.
@@ -1022,3 +1022,18 @@
   - Owner: delegation
   - Status: open (Existing controls: missing at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+
+- [ ] **RISK-487** A worker runs for hours over many slices, compacting again and again.
+  - Category: agent fault (scope creep).
+  - Cause: the lead hands a worker an open-ended region of work and sends follow-ups to the same worker instead of starting a fresh one.
+  - Event: GodHand workers ran up to 2,052 requests and 592 minutes with up to 22 compactions (CTX-836).
+  - Consequence: each request reads a large context; about $506 of list-price subagent usage in 24 hours, and the weekly limit at 75% five days before reset.
+  - Likelihood: 4
+  - Impact: 4
+  - Existing controls: REQ-DELEGATION-027 (guidance only) at 088a227c.
+  - Response: mitigate.
+  - Actions: REQ-DELEGATION-065; the lead's prompt gives one slice and its check per worker.
+  - Trigger: a worker transcript with a compaction.
+  - Owner: delegation
+  - Status: open
+  - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.
