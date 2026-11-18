@@ -2512,7 +2512,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured; cited. Status: have at 088a227c (hooks/features/setup/rules.ts:34-35 hashes with SHA-256). Verified on 2.1.327 by probe: a plugin source file with mtime 2001-01-01 installed to cache/mk/p/1.0.0/rules/a.md with the install-time mtime (Nov 18 2026).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:153; openspec/specs/setup/spec.md:161; openspec/specs/setup/spec.md:178; openspec/specs/setup/spec.md:159; openspec/specs/mod-architecture/spec.md:47; plugins/claudetto/hooks/features/setup/rules.ts:34@088a227c.
 
-- [x] **OUT-477** Out (REQ-SETUP-050, REQ-KERNEL-014): REQ-KERNEL-014 owns the SessionStart `renice` line. claudetto shall append the SessionStart env lines only if the `renice` line is absent.
+- [x] **OUT-477** Out (REQ-SETUP-050, REQ-KERNEL-014): REQ-KERNEL-014 owns the SessionStart `renice` line. claudetto shall append the SessionStart env lines only if the zsh `setopt` line is absent.
   Acceptance: one copy, not 12; 11.8 ms against 58.6 ms. Verification: test.
   Basis: measured. Status: have at 088a227c (plugins/claudetto/hooks/hooks.json:10 tests for the line with `grep -qsF 'renice 10 -p $$'`).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:15; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:16.

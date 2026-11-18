@@ -1,4 +1,16 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-hooks.json",
-	"modules": ["./register.ts"]
+	"modules": ["./register.ts"],
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "[ -n \"$CLAUDE_ENV_FILE\" ] || exit 0; grep -qs 'setopt no_nomatch no_equals' \"$CLAUDE_ENV_FILE\" || echo '[ -n \"$ZSH_VERSION\" ] && setopt no_nomatch no_equals' >> \"$CLAUDE_ENV_FILE\""
+					}
+				]
+			}
+		]
+	}
 }
