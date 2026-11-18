@@ -433,24 +433,28 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: cited.
   Source: chunk-nvx1z6pc.js@32676, chunk-nvx1z6pc.js@33472, chunk-nvx1z6pc.js@34012, chunk-nvx1z6pc.js@86757, chunk-nvx1z6pc.js@7847, chunk-nvx1z6pc.js@8184, chunk-nvx1z6pc.js@20047, chunk-nvx1z6pc.js@22313 (claude 2.1.327 binary); the old plan notes the page flow was skimmed, not transcribed.
 
-- [ ] **OUT-073** The `you_should_know_proposed` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_proposed` with `outcome` (`shown|none|parse_failed|deduped|stale|aborted|api_error|error`), `opener` (`you_should_know|heads_up|none`), `step`, `latency_ms`, `cache_read`, `cache_create`, `output_tokens`, `offers_shown`, and mark feature `you_should_know`: shown, none, deduped, stale `ok`; parse_failed `sad`; api_error, error `bad`; aborted no mark; none with null usage no mark.
+- [x] **OUT-073** The `you_should_know_proposed` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_proposed` with `outcome` (`shown|none|parse_failed|deduped|stale|aborted|api_error|error`), `opener` (`you_should_know|heads_up|none`), `step`, `latency_ms`, `cache_read`, `cache_create`, `output_tokens`, `offers_shown`, and mark feature `you_should_know`: shown, none, deduped, stale `ok`; parse_failed `sad`; api_error, error `bad`; aborted no mark; none with null usage no mark.
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22430 (claude 2.1.327 binary); chunk-nvx1z6pc.js@20292 (claude 2.1.327 binary).
+  Verified: git grep -nEi -e 'you_should_know_(proposed|answered|explained)|learn_explain|offers_shown|telemetry|\$\.event' -- plugins/claudetto-you-should-know -> 0 hits (no answer or outcome event is logged: the only $.ui.log calls are a debug fault line and one user notice), 2026-11-19.
 
-- [ ] **OUT-074** The `you_should_know_answered` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_answered` with `answer` one of the 29 `ANSWERS` (`helpful, yes_explain, yes_page, not_relevant, not_understood, hard_to_read, know_it, not_now, ignored_submit, ignored_timeout, got_it, chat, respond, auto_sent, simpler_words, less_detail, more_detail, not_helpful, dismiss, explained_helpful, explained_not_understood, page_helpful, page_not_helpful, page_unread, left_open, turn_off, off_failed, off_confirmed, off_abandoned`), `ms_to_answer` (omitted when no `shownAt`), `turn_in_progress`, `offers_shown`, optional `iteration`, `prompt_origin`, `prompts_survived`, `left_by` (`session_end|pushed_out`), `version_major/minor/patch/is_dev/built_at_s` (parsed from `session.version()` `{base,builtAt}` with `/^(\d+)\.(\d+)\.(\d+)(-dev)?$/`), `cleared_by` (`prompt|session_end`), `off_via` (`row|offer|typed`), `verb` (first word of the line when one of `understand,review,learn,see`, else `other`), `asks` (last word among `why,how,what`, else `none`), and `opener`.
+- [x] **OUT-074** The `you_should_know_answered` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_answered` with `answer` one of the 29 `ANSWERS` (`helpful, yes_explain, yes_page, not_relevant, not_understood, hard_to_read, know_it, not_now, ignored_submit, ignored_timeout, got_it, chat, respond, auto_sent, simpler_words, less_detail, more_detail, not_helpful, dismiss, explained_helpful, explained_not_understood, page_helpful, page_not_helpful, page_unread, left_open, turn_off, off_failed, off_confirmed, off_abandoned`), `ms_to_answer` (omitted when no `shownAt`), `turn_in_progress`, `offers_shown`, optional `iteration`, `prompt_origin`, `prompts_survived`, `left_by` (`session_end|pushed_out`), `version_major/minor/patch/is_dev/built_at_s` (parsed from `session.version()` `{base,builtAt}` with `/^(\d+)\.(\d+)\.(\d+)(-dev)?$/`), `cleared_by` (`prompt|session_end`), `off_via` (`row|offer|typed`), `verb` (first word of the line when one of `understand,review,learn,see`, else `other`), `asks` (last word among `why,how,what`, else `none`), and `opener`.
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@21545 (claude 2.1.327 binary).
+  Verified: git grep -nEi -e 'you_should_know_(proposed|answered|explained)|learn_explain|offers_shown|telemetry|\$\.event' -- plugins/claudetto-you-should-know -> 0 hits (no answer or outcome event is logged: the only $.ui.log calls are a debug fault line and one user notice), 2026-11-19.
 
-- [ ] **OUT-075** The `you_should_know_explained` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_explained` with `outcome` (`shown|fork|empty`), `direction` (`first|simpler_words|less_detail|more_detail`), `latency_ms`, and usage props, and mark `learn_explain` ok only when shown. Enumerated values go as `{value, of:[allowed...]}`; errors in sending are swallowed. `learn_page` (`ready|reset|fork|empty|publish|blocked|timeout`) is unreachable residue.
+- [x] **OUT-075** The `you_should_know_explained` event goes, by [ADR-0115](../adr/0115-you-should-know-telemetry.md). claudetto shall not log `you_should_know_explained` with `outcome` (`shown|fork|empty`), `direction` (`first|simpler_words|less_detail|more_detail`), `latency_ms`, and usage props, and mark `learn_explain` ok only when shown. Enumerated values go as `{value, of:[allowed...]}`; errors in sending are swallowed. `learn_page` (`ready|reset|fork|empty|publish|blocked|timeout`) is unreachable residue.
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22091 (claude 2.1.327 binary).
+  Verified: git grep -nEi -e 'you_should_know_(proposed|answered|explained)|learn_explain|offers_shown|telemetry|\$\.event' -- plugins/claudetto-you-should-know -> 0 hits (no answer or outcome event is logged: the only $.ui.log calls are a debug fault line and one user notice), 2026-11-19.
 
 #### Prompts, Skills and Rules
 
-- [ ] **OUT-076** The current bloated suite of rules: redone, not kept.
+- [x] **OUT-076** The current bloated suite of rules: redone, not kept.
   Acceptance: the rules reduce to what the surface choice in [REQ-KERNEL-006](kernel.md) needs. Verification: inspection.
   Basis: reported. Status: have at 088a227c (to be removed).
   Source: reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1757).
+  Verified: git ls-files plugins | grep -Ei "(^|/)rules/|CLAUDE\.md|AGENTS\.md" -> no output (the guard rules are one 94-line list, guards/rules.ts), 2026-11-19.
 
 - [ ] **OUT-077** claudetto shall carry no verbatim user quotation in any plan file; the three fault names from the user dossier appear only as paraphrase: deferring work it is able to do, raising a limit without consent, and repeating a defect already fixed in 0.28.0.
   Acceptance: a search of the plan files finds none of the three source phrases in quotation marks. Verification: inspection.
@@ -467,9 +471,10 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: external/2026-10-21/reddit.com-r-claudeai-comments-1s5wp0g-ive-been-gaslighting-my-ai-model-20261020T044555Z.md:65 (imaginary money), :633 (false memory), :787 (IQ prompt).
   Verified: git grep -nEi -e 'false-memory|fake IQ|imaginary' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-081** claudetto shall not keep cautionary cases in the source: Replit July 2025 deleted a live DB despite a code freeze; reward-hacking benchmarks; DORA 2025; METR 19% slower; GitClear refactoring collapse.
+- [x] **OUT-081** claudetto shall not keep cautionary cases in the source: Replit July 2025 deleted a live DB despite a code freeze; reward-hacking benchmarks; DORA 2025; METR 19% slower; GitClear refactoring collapse.
   Basis: cited. Status: not applicable.
   Source: external/please-use-me-often/swe-best-practices.md:37 (DORA 2025), :38 (METR), :39 (GitClear), :42 (Replit); external/please-use-me-often/swe-worst-practices.md:40 (Replit), :42, :43, :44.
+  Verified: git grep -nE -e 'Replit|DORA|GitClear|[^A-Za-z]METR[^A-Za-z]|reward-hacking' -- plugins -> 0 hits, 2026-11-19.
 
 - [x] **OUT-082** claudetto shall not ship setup text that tells the agent what "Operation not permitted" already says (extra tokens every session).
   Acceptance: no claudetto text explains a sandbox refusal beyond the engine's own message. Verification: inspection.
@@ -566,15 +571,17 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 #### Third-Party Tools and Noise
 
-- [ ] **OUT-098** claudetto shall not ship a Supabase row-level-security or database-privilege checklist.
+- [x] **OUT-098** claudetto shall not ship a Supabase row-level-security or database-privilege checklist.
   Acceptance: No block holds a REVOKE EXECUTE, has_function_privilege, or SET ROLE test. Verification: inspection.
   Basis: reported (one poster, no comments captured): RLS on tables, REVOKE EXECUTE from PUBLIC with has_function_privilege checks, a SET ROLE authenticated test of about 77 checks. Status: missing at 088a227c (git grep for REVOKE, RLS, Supabase found none); the poster's practice is a product-specific database recipe, not a claudetto behaviour.
   Source: external/2026-11-14/reddit.com-r-claudecoding-comments-1xq6xjr-after-200-hours-of-vibecodin-20261113T192916Z.md:139-149 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xq6xjr/after_200_hours_of_vibecoding_this_is_how_to_not>).
+  Verified: git grep -nEi -e 'Supabase|row-level|Linux freeze|desktop freeze' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-099** claudetto shall not carry a workaround for the Claude Desktop Linux freeze.
+- [x] **OUT-099** claudetto shall not carry a workaround for the Claude Desktop Linux freeze.
   Acceptance: No block names Claude Desktop. Verification: inspection.
   Basis: reported (poster): two months and a 1.5 TiB core dump to trace; the app never reads a 27-byte telemetry reply. Status: missing at 088a227c (git grep for 27-byte and core dump found none); it is a Claude Desktop fault outside the Claude Code plugin.
   Source: external/2026-11-14/reddit.com-r-claudeai-comments-1xv8fns-a-27byte-telemetry-response-nobo-20261113T181154Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xv8fns/a_27byte_telemetry_response_nobody_reads_freezes>).
+  Verified: git grep -nEi -e 'Supabase|row-level|Linux freeze|desktop freeze' -- plugins -> 0 hits, 2026-11-19.
 
 - [x] **OUT-100** claudetto shall not offer token-compression proxies (rtk, lean-ctx, Headroom, Lynkr, DeepSeek routing) as the first answer: they help read and edit loops, little for sysadmin loops; a base URL disables `/remote-control`; promo comments are affiliated. Filtering at source is preferred. Also: not adopt third-party compaction, memory, and token tools (supercompact, Squeez, ClawMetry, md2, tokendoctor, shared-memory services, a cache-audit skill, plugin promos). Also: not ship context-management plugins that prune tool output or messages, nor compression or economizer plugins.
   Acceptance: no setup text names a proxy; no dependency on them; cache-audit reduces to "optimise startup context"; none installed by setup. Net loss on a prefix cache; preserve-thinking invalidates thinking blocks, giving amnesia about reasoning. Verification: inspection.
