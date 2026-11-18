@@ -11,5 +11,10 @@
 	"engines": {
 		"claude-code": ">=2.1.327"
 	},
-	"keywords": ["learning", "tips"]
+	"keywords": [
+		"learning",
+		"tips"
+	],
+	"types": "./types/state.d.ts",
+	"version": "0.1.0"
 }
