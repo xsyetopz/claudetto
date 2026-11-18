@@ -32,7 +32,7 @@
   Status: closed. Cause (the amod mapping and `amod:` names) left with the baseline; ADR-0099 hides built-ins through `agent.offer`, and grep for `agent.offer` finds none yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2706.
 
-- [ ] **RISK-160** Fable at low effort spawns Fable subagents unasked.
+- [x] **RISK-160** Fable at low effort spawns Fable subagents unasked.
   Category: delegation
   Cause: Fable at low effort fans out to many Fable subagents with no ultracode, where Opus at low effort does not.
   Event: Two reports: one commenter names the unasked fan-out and a CLAUDE.md rule or an explicit model and effort as the cure; another reports a hook that denies Fable from dispatching Fable subagents as the biggest cost saver.
@@ -46,6 +46,7 @@
   Owner: delegation
   Status: open. BUILD: covered by REQ-DELEGATION-026 (`agent.spawn` refusal); the cure ships with that change.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
+  Verified: Same probe as REQ-DELEGATION-026 (opus spawn refused by hooks/delegation/spawn.ts, claude 2.1.327, 2026-11-18, cc-inspect cli).
 
 - [x] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
