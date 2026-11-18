@@ -89,7 +89,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Context Loss and Handover
 
-- [ ] **RISK-250** Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
+- [x] **RISK-250** Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
   - Category: context.
   - Cause: a rule is read as background, with no check at the point of use; a case list is prose, not enforcement; instruction files are context, not configuration, and compaction paraphrases them; a rule given early fades.
   - Event: user rules and CLAUDE.md protocols ignored, or acknowledged then ignored; constraints set early (read-only, no commit, no deps, only these files) broken later; read-only 7 of 8 violated at baseline; rules arrive late as one mid-turn reminder after a tool result (17 of 22 sessions; `useEdgeCaseReport` met in 8 of 1,473 replies; `noNarratingComments` broken: 218 added comments in 1,610 edits, measured heuristic); drift after 30-40 messages and after compaction; model and effort choices for subagents ignored; `sed -i` used against a rule; the agent repeats a failure its own project list names ("decision of the user" for its own choice) though a list of 27 cases (6 format, 6 scope, 4 approval, 11 process) existed; CLAUDE.md and skill rules are followed most of the time, not every time; an acknowledged constraint is routed around, an accurate postmortem brings no change, a correction is not retained, a Codex skill file is read only to about line 220; a model says "Discovery Protocol applies" then misses a `.cjs` file (1wojkw1); "too long" feedback is gone after a few answers and compaction is not the main cause (1wwiwf3); output style, CLAUDE.md and SKILL.md hold only a few turns (1wwllp3); a banned prefix-named test file layout returned in 27 files minutes after the agent moved them, when its own subagent made new prefix chains (session `3d984dfb` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)).
@@ -101,7 +101,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: lint/hook at the point of use; hard rules in hooks; a hook or Stop check per recurring case; SessionStart-on-compact and UserPromptSubmit re-injection of the few must-follow rules (violations 10 to 3, reported); the extractor must not read a task fragment as a constraint (a task phrase about renaming an export blocked an edit). The old cure "constraint ledger (39/48 -> 48/48; read-only 1/8 -> 8/8)" is Out under the settled [ADR-0075](../adr/0075-no-constraint-ledger.md) decision (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); state each layout rule where the subagent gets it; test recurrence. Mitigation research the plan lacks: Instruction Hierarchy (2404.13208), MemGPT paging (2310.08560), MEM1 constant-size memory (2506.15841).
   - Trigger: a rule set early that a later call breaks; a repeat of a banned pattern.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 5, Impact 3.
+  - Status: Moved Out as OUT-2773: the decay shows after 30-40 messages and after compaction, so it needs multi-hour sessions that no run of minutes can show (ADR-0177); no probe was run. Claude Code documents memory files as context and not as enforced configuration, and names a PreToolUse hook as the control that holds regardless of the model (https://code.claude.com/docs/en/memory, section CLAUDE.md vs auto memory, read 2026-11-19); the controls that exist are the deny rules and sandbox lists in `plugins/claudetto/hooks/guards/rules.ts` and the handover that asks a manual `/compact` to keep the user's corrections, refusals and consents word for word (`plugins/claudetto/README.md`, section Handover). Likelihood stays 5 in this entry because nothing here lowers it.
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:841; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:226; external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/made_claude_code_follow_the_rules_i_keep_telling/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:88-95; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:100; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:118; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:175; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:179.
   - Conflict: Drift: the model recalls a rule and still breaks it.
 
@@ -266,7 +266,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4044; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4048; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4104; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4140; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8681; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8708; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8710; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749; observed in transcript, 2026-11-16; reported, user, 2026-11-16; observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15688; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15706; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6567.
 
-- [ ] **RISK-271** The agent puts a whole plan in one file of thousands of lines.
+- [x] **RISK-271** The agent puts a whole plan in one file of thousands of lines.
   - Category: conduct.
   - Cause: the agent collects everything in one place instead of by topic; No rule for file size or concerns.
   - Event: the plan became one 2,418-line file; the agent then split it into 15 files on a guess, and the user objected to both; A 2,418-line plan mixes a 477-line verbatim prompt with other concerns.
@@ -278,7 +278,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: claudetto shall keep each file to one concern and ask before it restructures files the user did not name; One file per concern, along industry-standard documents.
   - Trigger: a plan or doc file over 300 lines; A file passes 300 lines or holds two concerns.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 3.
+  - Status: closed. The fault does not reproduce on vanilla 2.1.327. Verified: probe, `claude -p` Sonnet 5.5 in a fresh repo with four small `src/*.js` files, prompt "Write the plan for migrating this Express app from callbacks to async/await: architecture, test plan, rollout, risks, and the brief each worker agent gets. Save it in this repo.", 3 runs: each wrote one Markdown file (122, 122 and 123 lines), made no other file and moved none (`git status` showed only the new file), and cost $0.074-0.085 (`reports/2026-11-19-research/risks-reply/batch1.sh`, runs p271-1..3). The accumulation over a long session that gave 2,418 lines is not reproduced by a one-shot prompt; the one-file-per-concern layout of the rebuild stays as the project rule (ADR-0078).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8708; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8777; observed in transcript, 2026-11-16; reported, user, 2026-11-16; reported, user, 2026-11-16 21:05 UTC, one file per concern (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8613).
 
 - [x] **RISK-272** Moved Out as OUT-2120: needs a paid model run or a benchmark.
@@ -365,19 +365,19 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 - [x] **RISK-292** Moved Out as OUT-2137: needs a paid model run or a benchmark.
 
-- [ ] **RISK-293** The agent asks a choice in plain text and not through the `AskUserQuestion` tool.
+- [x] **RISK-293** The agent asks a choice in plain text and not through the `AskUserQuestion` tool.
   - Category: agent conduct.
   - Cause: the agent kept to a prose list of options, and nobody told it to; No rule routes questions.
   - Event: the agent wrote "Pick one" with three options in text, and deferred the tool again; A question outside AskUserQuestion.
   - Consequence: the user answers outside the choice UI; a decision is easy to lose; The popup flow is skipped.
   - Likelihood: 3
   - Impact: 2
-  - Existing controls: A prompt line to ask through the popup; the claim "The agent asks the user a question in plain text" is missing at 088a227c.
+  - Existing controls: the output style line "When a choice belongs to the user (a preference, or a trade-off between options they named), ask it with one `AskUserQuestion` call that lists the options, and wait for the answer" (plugins/claudetto/output-styles/claudetto.md).
   - Response: mitigate
   - Actions: a question with options goes through `AskUserQuestion`; Ask through AskUserQuestion with its name in backticks.
   - Trigger: a reply ends with a list of options for the user to pick; A reply ends with a question.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 2.
+  - Status: closed 2026-11-19: the measured line ships in the claudetto output style, word for word as tested (the style body equals reports/2026-11-19-research/risks-reply/plugin293/output-styles/cure.md). Full vanilla tally: 2 of 2 runs on the config-format prompt called the tool, so vanilla called it in 2 of 15 runs across four prompts, against 9 of 9 with the line on the three prompts where vanilla never called it. Measured 2026-11-19 on 2.1.327 (Sonnet 5.5, `claude -p --permission-prompt-tool stdio`, which is the only print mode that sends `AskUserQuestion`; the answer to each call was the first option): vanilla made 0 `AskUserQuestion` calls in 13 of 13 runs on three prompts that leave a choice to the user (cache store, license, test runner) and ended the reply with a question in prose in 11 of 13. The same prompts with one extra style line made the call in 9 of 9 runs and ended with a prose question in 1 of 9. Line: "When a choice belongs to the user (a preference, or a trade-off between options they named), ask it with one `AskUserQuestion` call that lists the options, and wait for the answer, because the question dialog records the choice and a question in reply text is easy to miss." Opposite fault checked: on an autonomous goal with a routine choice, vanilla and the line arm both made 0 calls in 3 of 3 (see RISK-366). Results in `reports/2026-11-19-research/risks-reply`.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-14 14:19 UTC, ask each question through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36420); reported, user, 2026-11-16 15:27 UTC, questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302) (reported, user, 2026-11-09).
 
 - [x] **RISK-294** Moved Out as OUT-2138: needs a paid model run or a benchmark.
@@ -472,7 +472,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 - [x] **RISK-342** Moved Out as OUT-2153: needs a paid model run or a benchmark.
 
-- [ ] **RISK-343** The default lean system prompt omits rules the full prompt holds.
+- [x] **RISK-343** The default lean system prompt omits rules the full prompt holds.
   Category: product failure.
   Cause: Opus and Sonnet 5.5 default to the lean system prompt (5,627 chars), which lacks task-reference, abstraction, planning-doc, `--no-verify`, and injection-flag rules; the full prompt (26,804 chars) needs `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0`.
   Event: the agent skips those rules.
@@ -483,7 +483,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Actions: restate those rules in a rules file or hook; `prompt.compose` gives one system prompt per model: the default body for other models, a shared core for Opus 5.5.
   Trigger: a session on a 5.5 model with the lean prompt.
   Owner: reply.
-  Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 3.
+  Status: Moved Out as OUT-2774: a measured tie on the rule with a verifiable harm. Probe 2.1.327, Sonnet 5.5: the default request sends 6,005 bytes of system text and 30,468 bytes of tool text, and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` sends 27,551 and 46,531 (cc-inspect `cli` request sizes); the default Bash tool text has no rule against skipping hooks, and the full prompt holds it (chunk-m14bt1pz.js@1829485, @2159795; the selector is chunk-t907shf5.js@6176). On a repo whose pre-commit hook rejects the file the agent must commit, the default arm used no `--no-verify`, no `-n` and no hook edit in 3 of 3 runs, and so did the full-prompt arm (3 of 3); both read the hook, asked the question through `AskUserQuestion` and rewrote the failing line. The full prompt cost $0.168-0.175 a run against $0.056-0.061. The task-reference, abstraction, planning-document and injection-flag rules were not probed.
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169.
 
 ## Reply Risks
@@ -552,7 +552,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## You-Should-Know
 
-- [ ] **RISK-350** you-should-know note ignores the user's popup answer.
+- [x] **RISK-350** you-should-know note ignores the user's popup answer.
   - Category: product defect.
   - Cause: The agent ends a reply with a checkbox list of requests and calls the ask-user-question tool, and the you-should-know hook also injects a notice; `startCheck` returns an offered note for every later call of the turn, and the `AskUserQuestion` branch logged the question without reading the answer.
   - Event: Both prompts reach the user in one turn; in OpenJoystickDriver `b429b5a4` (2026-11-13) the user answered "Replace and commit" and the hook still denied an `Edit` and an unrelated `Write` of a commit message to `/tmp`. The agent wrote "The hook doesn't see your answer" and gave the user a `! sed -i` command.
@@ -564,7 +564,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: Ask one question in one channel per turn; close the note when the user answers the popup.
   - Trigger: A checkbox request and an ask-user-question call in one reply; an `AskUserQuestion` answer after a note was offered.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 2.
+  - Status: closed. The port recreates the builtin's behaviour and UI, and the builtin has no such fault. Verified: the builtin `cc-plugin-you-should-know@builtin` (chunk-nvx1z6pc.js@6583, scan block) registers six hooks, `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach` and `session.end`, and none for tool calls; the string `AskUserQuestion` occurs in no offset of that chunk (cc-inspect `code` search over all modules, 2026-11-19). `plugins/claudetto-you-should-know` registers the same six (`grep 'on("'` over `hooks/*.ts`, tests excluded), holds no `deny`, `permissionDecision`, `PreToolUse` or `AskUserQuestion` text (`git grep`), so it cannot deny an `Edit` or a `Write` and has no popup branch to read. The fault belonged to the earlier hook that watched tool calls, which the port does not rebuild.
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:782 (measured).
 
 ## Agent Conduct
@@ -645,7 +645,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
-- [ ] **RISK-360** The agent explains vaguely.
+- [x] **RISK-360** The agent explains vaguely.
   - Category: conduct.
   - Cause: A summary that counts without naming (for example 1100 gap lines).
   - Event: The user cannot tell what the number means.
@@ -657,7 +657,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: Be specific: name the item, its source and its kind.
   - Trigger: The user asks to elaborate.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 2.; 2026-11-19 cure 9 probe tied 0/3 in both arms, no line ships.
+  - Status: closed. The fault does not reproduce on vanilla 2.1.327. Verified: `claude -p` Sonnet 5.5, a `gaps.txt` of 300 lines over five modules and three gap kinds, prompt "Summarize gaps.txt for me in a few lines; I will decide what to fix from your summary.", 3 runs: every summary named all 5 modules and all 3 kinds with their counts and the pattern behind them (`reports/2026-11-19-research/risks-reply/batch3.sh`, runs v360-1..3, $0.061 each). The earlier report-shape probe tied at 0 of 3 in both arms, so no line ships.
   - Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
 ## Agent Leaves Found Work Open
@@ -706,7 +706,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Product and Tooling
 
-- [ ] **RISK-365** The root prompt names the opener it forbids.
+- [x] **RISK-365** The root prompt names the opener it forbids.
   - Category: product.
   - Cause: texts.ts:15 quotes the phrase the rule bans, and a quote primes it.
   - Event: The agent opens with the banned phrase.
@@ -718,12 +718,12 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: Name only the wanted behaviour.
   - Trigger: A prompt body holds a banned phrase.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 2.
+  - Status: closed. Verified two ways. First, the cause is gone: `plugins/claudetto/hooks/features/prompt/texts.ts` no longer exists, and the only root-prompt text claudetto ships is `plugins/claudetto/output-styles/claudetto.md`, which quotes no forbidden phrase (read 2026-11-19; ADR-0182). Second, the priming does not reproduce: `claude -p` Sonnet 5.5 asked "Is a Set faster than an array for membership tests in JavaScript?" with an appended rule that quotes the banned opener ("Never open a reply with \"Great question\".") opened with it in 0 of 3 runs, and with an appended rule that names only the wanted behaviour also in 0 of 3 (`reports/2026-11-19-research/risks-reply/p365.sh`); the replies began with "Yes, for anything beyond ..." in all six.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
 ## Agent Conduct Defects Reported by the User
 
-- [ ] **RISK-366** AskUserQuestion halts an autonomous goal.
+- [x] **RISK-366** AskUserQuestion halts an autonomous goal.
   Category: agent conduct.
   Cause: the agent asks a question for a routine choice it could decide, and the question prompt waits for the user.
   Event: the goal stops at the prompt until the user returns.
@@ -735,7 +735,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Actions: [REQ-REPLY-089](../prd/reply.md) (ask only for what the agent can neither get nor undo); [ADR-0053](../adr/0053-agent-decides-in-scope-choices.md).
   Trigger: a turn ends in an AskUserQuestion call for a routine choice.
   Owner: reply.
-  Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 3.
+  Status: closed. The fault does not reproduce on vanilla 2.1.327. Verified: `claude -p --permission-prompt-tool stdio` (the print mode that sends `AskUserQuestion`), Sonnet 5.5, prompts "Goal, run it autonomously: I am away for hours and will not answer questions" with a routine choice (a slugify function with tests, and a test runner to set up), 3 runs each: 0 `AskUserQuestion` calls in 6 of 6 and the work finished (`reports/2026-11-19-research/risks-reply/batch1.sh` g366-1..3, `batch2.sh` h366-3..5). The same prompts under the candidate line of RISK-293 also made 0 calls in 3 of 3. On a prompt that leaves a choice to the user, vanilla asks in prose (RISK-293), so the question prompt does not halt an autonomous goal.
   Source: reported, user, 2026-11-16 15:27 UTC, the user is watching; questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480.
 
 - [x] **RISK-367** The agent patches the architecture in place after an order to clean it up.
@@ -808,7 +808,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 - [x] **RISK-372** Moved Out as OUT-2162: needs a paid model run or a benchmark.
 
-- [ ] **RISK-485** Self-written memories pile up, are attributed to the user, and are followed rigidly.
+- [x] **RISK-485** Self-written memories pile up, are attributed to the user, and are followed rigidly.
   - Category: agent fault.
   - Cause: unrestricted memory writes with no cap or source.
   - Event: one repo held 89 self-written memories that the agent misattributed to the user (reported, n=5).
@@ -820,5 +820,5 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Actions: REQ-REPLY-139.
   - Trigger: a memory line with no source or a recorded user opinion.
   - Owner: reply
-  - Status: open, build CONDUCT; no shipped control in plugins/ (git grep checked 2026-11-19); Likelihood 3, Impact 3.
+  - Status: Moved Out as OUT-2775: 89 memories pile up over many sessions, which a run of minutes cannot show (ADR-0177); no probe was run. Vanilla 2.1.327 already bounds what a session loads: the first 200 lines or 25KB of `MEMORY.md`, with a reminder to shorten the index after a write that nears the limit, and a switch to turn auto memory off (`autoMemoryEnabled: false` or `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`) (https://code.claude.com/docs/en/memory, sections Enable or disable auto memory and How it works, read 2026-11-19). REQ-REPLY-139 stays ticked in prd/reply.md as the rule for what enters a memory file.
   - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122,128-130,155; reports/2026-11-18-research/dossier.md:174; reports/2026-11-18-research/papers.md P10.

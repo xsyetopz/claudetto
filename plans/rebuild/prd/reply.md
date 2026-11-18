@@ -187,7 +187,7 @@
 
 - [ ] **REQ-REPLY-108** claudetto shall route each question to the user, a choice with options included, through the AskUserQuestion tool, not in plain text.
   Acceptance: a user question in a run appears as an AskUserQuestion call; a turn that offers options calls AskUserQuestion and its reply holds no prose option list. A product choice, a decision the user should know, and a step git cannot undo go to the user through `AskUserQuestion` too. Verification: test.
-  Basis: reported, user; user decision, 2026-11-16. Status: missing at 088a227c (`git grep AskUserQuestion 088a227c -- plugins` finds only the decide and you-should-know code, delegation and prompt composition tests; no root-prompt rule routes questions there).
+  Basis: reported, user; user decision, 2026-11-16. Status: partial 2026-11-19: the output style routes a user-owned choice through `AskUserQuestion` (9 of 9 runs with the line against 2 of 15 on vanilla 2.1.327, RISK-293); 1 of 9 still ended with a prose question, and a step git cannot undo is unmeasured.
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules).
 
 ## Conduct
