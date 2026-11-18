@@ -55,7 +55,8 @@ You should know:
 
 Prompt text:
 - Every model-facing text claudetto writes (prompts, tool and skill descriptions, hook reasons, notes the model reads) states what to do, with the reason, because Anthropic's prompting guide (platform.claude.com, "Prompting best practices", "Tell Claude what to do instead of what not to do" and "Add context to improve performance", read 2026-11-19) reports that positive instructions with a reason steer better than prohibitions. A named failure to avoid stays only when the guide for that model calls for naming it.
-- Texts ported from a 2.1.327 builtin follow the same rule. The user ruled on 2026-11-19 that a port recreates the builtin's behaviour and interface only; its prompts, notes and descriptions are rewritten to claudetto's needs, because owning the full source is what lets claudetto optimise and fix them. Byte parity with the builtin text is not a goal.
+- Texts ported from a 2.1.327 builtin follow the same rule. The user ruled on 2026-11-19 that a port recreates the builtin's behaviour and UI/UX only: what the user sees keeps its form and wording, while its prompts, notes the model reads and descriptions are rewritten to claudetto's needs, because owning the full source is what lets claudetto optimise and fix them. Byte parity with the builtin text is not a goal.
+- XML tags in texts claudetto writes use snake_case, because Anthropic's prompting guide uses that case for every tag (`<default_to_action>`, `<investigate_before_answering>`). The kebab-case wrappers such as `system-reminder` belong to Claude Code's harness and stay as Claude Code writes them.
 
 ## Consequences
 
