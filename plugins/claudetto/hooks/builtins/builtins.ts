@@ -1,6 +1,4 @@
-import type { On } from "claude-code";
-
-import { indentOf, isRecord, parseSettings, userSettingsPath } from "../settings/settings";
+import { indentOf, isRecord, parseSettings } from "../settings/settings";
 
 /**
  * The bundled plugins that Claude Code 2.1.327 registers (chunk-syz79m2z.js@450-1844).
@@ -36,24 +34,3 @@ export const repairSettings = (text: string | undefined): Repair | undefined => 
 	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, drifted };
 };
 
-const notice = (drifted: readonly string[], interactive: boolean): string =>
-	`claudetto turned off ${drifted.length} builtin plugin(s) in user settings: ${drifted.join(", ")}. ` +
-	(interactive ? "Run /reload-plugins to unload them now." : "They stay loaded until the next start.");
-
-/** Repairs builtin drift at session start (REQ-SETUP-011, RT-040). */
-export function disableBuiltins(on: On): void {
-	on("session.start", async ($, e, next) => {
-		const result = await next(e);
-		const path = await userSettingsPath($);
-		const text = (await $.fs.exists(path)) ? await $.fs.read(path) : undefined;
-		const repair = repairSettings(text);
-		if (repair === undefined) {
-			$.ui.log(`claudetto left ${path} alone: it does not hold a JSON object, so the builtin plugins stay as they are.`);
-			return result;
-		}
-		if (repair.drifted.length === 0) return result;
-		await $.fs.write(path, repair.text);
-		$.ui.log(notice(repair.drifted, e.isInteractive));
-		return result;
-	});
-}
