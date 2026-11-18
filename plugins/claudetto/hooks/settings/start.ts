@@ -2,7 +2,7 @@ import type { On, PluginOptions } from "claude-code";
 import { fault } from "../fault";
 
 import { repairSettings } from "../builtins/builtins";
-import { FILL_VERSION, fillSettings } from "./defaults";
+import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
 import { userSettingsPath } from "./settings";
 
 /** Store key holding the defaults set last filled, so a user's later edit is never undone. */
@@ -35,7 +35,7 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 					(e.isInteractive ? "Run /reload-plugins to unload them now." : "They stay loaded until the next start."),
 			);
 		}
-		if (added.length > 0) $.ui.log(`claudetto set ${added.length} unset default(s) in ${path}: ${added.join(", ")}.`);
+		if (added.length > 0) $.ui.log(fillNotice(path, added));
 		return result;
 	}).catch(($, e, next) => (fault($, "settings fill", next.error), next(e))); // A failed settings write must not block the session.
 }

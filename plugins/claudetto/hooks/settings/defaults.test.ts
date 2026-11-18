@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { DEFAULTS, RETIRED_REMINDER_TEXTS, fillSettings } from "./defaults";
+import { DEFAULTS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings } from "./defaults";
 
 describe("defaults fill", () => {
 	test("fills every default into empty settings", () => {
@@ -89,5 +89,21 @@ describe("defaults fill", () => {
 	test("refuses to rewrite a file that is not a JSON object", () => {
 		// Act and Assert
 		expect(fillSettings("{ broken")).toBeUndefined();
+	});
+});
+
+describe("fill notice", () => {
+	test("counts list entries per key so a first fill fits the 2000 characters the terminal draws", () => {
+		// Arrange
+		const added = fillSettings(undefined)?.added ?? [];
+
+		// Act
+		const notice = fillNotice("/home/u/.claude/settings.json", added);
+
+		// Assert
+		expect(added.join(", ").length).toBeGreaterThan(2000);
+		expect(notice.length).toBeLessThan(2000);
+		expect(notice).toContain("outputStyle");
+		expect(notice).toMatch(/permissions\.deny \(\d+ entries\)/);
 	});
 });

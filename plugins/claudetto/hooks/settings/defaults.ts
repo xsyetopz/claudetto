@@ -121,3 +121,23 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
 	if (added.length === 0) return { text: text ?? "", added };
 	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, added };
 };
+
+/**
+ * The fill notice, with list entries counted per key, because the terminal
+ * draws a `$.ui.log` line up to 2000 characters and a first fill names over 3000.
+ *
+ * @param path User settings file the fill wrote.
+ * @param added Entries `fillSettings` reported, each a key or a key and a list entry.
+ * @returns One line naming each set key and the count of entries added per list.
+ */
+export const fillNotice = (path: string, added: readonly string[]): string => {
+	const groups = new Map<string, string[]>();
+	for (const entry of added) {
+		const key = entry.split(" ", 1)[0] ?? entry;
+		groups.set(key, [...(groups.get(key) ?? []), entry]);
+	}
+	const named = [...groups.values()].map((entries) =>
+		entries.length === 1 ? entries[0] : `${entries[0]?.split(" ", 1)[0]} (${entries.length} entries)`,
+	);
+	return `claudetto set ${added.length} unset default(s) in ${path}: ${named.join(", ")}.`;
+};

@@ -360,3 +360,18 @@
   Owner: setup.
   Status: closed or mitigated, verified 2026-11-18 (see Verified).
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
+
+- [x] **RISK-493** The first-run settings notice is cut off on the terminal.
+  Verified: dogfood, claude 2.1.327, 2026-11-19: a fresh config dir drew core's warning `$.ui.log: a text (3163 characters) is drawn up to its first 2000 on the terminal`; after the fix, the test "counts list entries per key so a first fill fits the 2000 characters the terminal draws" passes (72 of 72 in `claude plugin test`).
+  Category: Defect.
+  Cause: `hooks/settings/start.ts` joined every added list entry into one `$.ui.log` line, and the terminal draws 2000 characters of it.
+  Event: the person sees a truncated list of what claudetto changed in their settings.
+  Consequence: the notice hides part of the change it reports.
+  Likelihood: 3 before the control, 1 after it.
+  Impact: 2.
+  Existing controls: `fillNotice` in `hooks/settings/defaults.ts` names each set key and counts list entries per key.
+  Response: mitigate.
+  Actions: none open.
+  Trigger: core's 2000-character warning on a claudetto notice.
+  Owner: setup.
+  Status: closed, verified 2026-11-19 (see Verified).
