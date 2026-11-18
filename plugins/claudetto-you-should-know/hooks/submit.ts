@@ -10,6 +10,7 @@ import { clearOffLine, isOffCommand, ranOffCommand } from "./off";
 import { tagOf } from "./parse";
 import { isNoteRead, isOpenView, rowOf, type Watched, withViewCleared } from "./session-rows";
 import { markKnown } from "./store";
+import { fault, swallow } from "./fault";
 
 export function registerSubmit(on: On, ctx: Ctx): void {
 	// Fail open: a throwing hook must not block the prompt or the command; pass the event on unchanged.
@@ -63,8 +64,9 @@ export function registerSubmit(on: On, ctx: Ctx): void {
 						}
 					}
 				}
-			} catch {
+			} catch (err) {
 				// a failed look sends the prompt as it was
+				fault($, "prompt submit", err);
 			}
 		}
 		if (pending === undefined) {
@@ -74,12 +76,16 @@ export function registerSubmit(on: On, ctx: Ctx): void {
 		if (result.drop === undefined) {
 			try {
 				$.ui.log("Sent a note to Claude with your prompt");
-			} catch {
+			} catch (err) {
 				// the note went either way
+				fault($, "sent-note log", err);
 			}
 		}
 		return result;
-	}).catch((_$, e, next) => next(e));
+	}).catch(($, e, next) => {
+		fault($, "prompt.submit", next.error);
+		return next(e);
+	});
 }
 
 export function registerCommand(on: On, ctx: Ctx): void {
@@ -89,6 +95,9 @@ export function registerCommand(on: On, ctx: Ctx): void {
 			await ranOffCommand($, ctx.off);
 		}
 		return next(e);
-	}).catch((_$, e, next) => next(e));
+	}).catch(($, e, next) => {
+		fault($, "command.run", next.error);
+		return next(e);
+	});
 }
 

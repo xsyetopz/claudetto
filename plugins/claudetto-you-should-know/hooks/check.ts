@@ -10,6 +10,7 @@ import { lineKey, parseProposedLine } from "./parse";
 import { proposePrompt } from "./prompt";
 import { isOfferDue, type Row, rowOf, withRow } from "./session-rows";
 import { stringLines } from "./store";
+import { fault, swallow } from "./fault";
 
 export type CheckAt = { readonly id: string; readonly turnId: string; readonly index: number };
 
@@ -62,7 +63,8 @@ export async function runCheck($: EngineInterface, at: CheckAt, ctx: Ctx): Promi
 		outcome = reply.isAnswered
 			? await accept($, at, ctx, reply.text, seen, known)
 			: (UNANSWERED_OUTCOMES[reply.reason] ?? "error");
-	} catch {
+	} catch (err) {
+		fault($, "check", err);
 		outcome = "error";
 	}
 	const latencyMs = Date.now() - started;
@@ -75,7 +77,8 @@ export async function runCheck($: EngineInterface, at: CheckAt, ctx: Ctx): Promi
 		const check: Check = { number, step: at.index, outcome, latencyMs, at: Date.now() };
 		await writeRow($, at.id, { checked: number, checks: checksWith(checksOf(row?.checks), check) });
 		$.ui.invalidate("ui.render");
-	} catch {
+	} catch (err) {
 		// the debug line is best effort
+		fault($, "check debug row", err);
 	}
 }

@@ -24,6 +24,7 @@ import {
 	respondDraft,
 } from "./draft";
 import type { Card } from "./cards";
+import { fault, swallow } from "./fault";
 
 export type Fields = { readonly line: string; readonly shownAt?: number | undefined; readonly iteration?: number | undefined };
 
@@ -55,8 +56,9 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 				await $.store.set("typedPastInARow", 0);
 				await $.store.set("looksToSkip", 0);
 			}
-		} catch {
+		} catch (err) {
 			// the streak stays as it was
+			fault($, "answer reset", err);
 		}
 	};
 	const timeout = async (): Promise<void> => {
@@ -74,7 +76,7 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 		ctx.askedTimers.set(
 			sid,
 			$.clock.after(ASKED_MS, () => {
-				void timeout().catch(() => {});
+				void timeout().catch(swallow($, "asked timeout"));
 			}),
 		);
 	};
@@ -84,7 +86,7 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 	};
 	const takeOff = async (line: string, via: string): Promise<void> => {
 		void via;
-		if (keepsDraft($, await $.prompt.read().catch(() => undefined), OFF_BOX_BUSY)) {
+		if (keepsDraft($, await $.prompt.read().catch(swallow($, "off read")), OFF_BOX_BUSY)) {
 			return;
 		}
 		await setView({ kind: "off", line, shownAt: Date.now() });
@@ -93,7 +95,7 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 		const filled = (await $.prompt.fill({ text: OFF_COMMAND, mode: "replace" })).isFilled;
 		if (!filled) {
 			await answered("off_failed");
-			await fail("turn_off").catch(() => {});
+			await fail("turn_off").catch(swallow($, "off failed view"));
 		}
 	};
 	const armOff = async (view: OpenView): Promise<void> => {
@@ -112,8 +114,9 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 				withRow(rows, { ...(rowOf(rows, sid) ?? { id: sid }), view: { ...cur, isOffArmed: true } }),
 			);
 			$.ui.invalidate("ui.render");
-		} catch {
+		} catch (err) {
 			// the second press arms again
+			fault($, "arm off", err);
 		}
 	};
 	const showExplained = async (line: string, text: string, iteration: number): Promise<void> => {
@@ -126,7 +129,7 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 		try {
 			await setView({ kind: "explaining", line, iteration });
 			$.ui.invalidate("ui.render");
-			const r = await $.model.fork({ prompt: explainPrompt(line, redo) }).catch(() => undefined);
+			const r = await $.model.fork({ prompt: explainPrompt(line, redo) }).catch(swallow($, "explain fork"));
 			const text = r?.isAnswered === true ? r.text.trim() : "";
 			const isShown = r?.isAnswered === true && parseExplanation(text).length > 0;
 			const previous =
@@ -144,10 +147,10 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 		ctx.responding.add(sid);
 		try {
 			const draft = respondDraft(line, cards, tag);
-			if (keepsDraft($, await $.prompt.read().catch(() => undefined), RESPOND_BOX_BUSY)) {
+			if (keepsDraft($, await $.prompt.read().catch(swallow($, "respond read")), RESPOND_BOX_BUSY)) {
 				return;
 			}
-			const filled = await $.prompt.fill({ text: `${draft}\n\n`, mode: "replace" }).catch(() => undefined);
+			const filled = await $.prompt.fill({ text: `${draft}\n\n`, mode: "replace" }).catch(swallow($, "respond fill"));
 			if (filled?.isFilled === true) {
 				await answered("respond");
 				await know(line);
@@ -159,8 +162,8 @@ export function actionsFor($: EngineInterface, sid: string, ctx: Ctx) {
 				return;
 			}
 			await answered("respond");
-			await know(line).catch(() => {});
-			await $.prompt.submit({ text: draft }).catch(() => {});
+			await know(line).catch(swallow($, "respond know"));
+			await $.prompt.submit({ text: draft }).catch(swallow($, "respond submit"));
 		} finally {
 			ctx.responding.delete(sid);
 		}

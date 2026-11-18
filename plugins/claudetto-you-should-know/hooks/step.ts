@@ -6,6 +6,7 @@ import { CHECK_EVERY, CLEAR_AFTER_PROMPTS, LOOKS_TO_SKIP_MAX } from "./constants
 import { looksToSkipAfter } from "./backoff";
 import { runCheck } from "./check";
 import type { Ctx } from "./context";
+import { swallow } from "./fault";
 import {
 	drawsBand,
 	isBandWatched,
@@ -103,7 +104,7 @@ async function onStep($: EngineInterface, e: StepAt, id: string, surfaces: reado
 	ctx.checking.set(
 		id,
 		runCheck($, { id, turnId: e.turnId, index: e.index }, ctx)
-			.catch(() => {})
+			.catch(swallow($, "check"))
 			.finally(() => {
 				ctx.checking.delete(id);
 			}),
@@ -123,7 +124,7 @@ export function registerStep(on: On, ctx: Ctx): void {
 				}
 				await onStep($, e, await $.session.id(), surfaces, ctx);
 			})
-			.catch(() => {});
+			.catch(swallow($, "turn.step"));
 		return yield* next(e);
 	});
 }

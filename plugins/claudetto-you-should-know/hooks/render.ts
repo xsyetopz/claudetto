@@ -14,6 +14,7 @@ import { aboutShown, toggleAbout } from "./store";
 import { rowsTable } from "./table";
 import { actionsFor } from "./view-actions";
 import { rowFor } from "./view-row";
+import { fault, swallow } from "./fault";
 
 export function registerRender(on: On, ctx: Ctx): void {
 	on("ui.render", { component: "AbovePrompt" }, async ($, e, next) => {
@@ -31,7 +32,7 @@ export function registerRender(on: On, ctx: Ctx): void {
 		const view = row?.view ?? null;
 		const tag = tagOf(row?.tag ?? "");
 		const debug = await switchOf($.env.get("CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG"));
-		const optIn = isOptIn(await $.env.get("USER_TYPE").catch(() => undefined));
+		const optIn = isOptIn(await $.env.get("USER_TYPE").catch(swallow($, "user type")));
 		const checks = debug ? checksOf(row?.checks) : [];
 		if (isUnattendedInFlight(view, sid, ctx.explaining)) {
 			const fresh = rowOf(await $.store.get("sessions"), sid)?.view;
@@ -93,7 +94,8 @@ export function registerRender(on: On, ctx: Ctx): void {
 			return debugRows(table, checks, picked) as RenderElement;
 		}
 		return (picked as RenderElement | null) ?? next(e);
-	}).catch(() => {
+	}).catch(($, _e, next) => {
+		fault($, "ui.render", next.error);
 		ctx.idle.clear();
 	});
 }
