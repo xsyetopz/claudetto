@@ -55,7 +55,7 @@ You should know:
 
 Prompt text:
 - Every model-facing text claudetto writes (prompts, tool and skill descriptions, hook reasons, notes the model reads) states what to do, with the reason, because Anthropic's prompting guide (platform.claude.com, "Prompting best practices", "Tell Claude what to do instead of what not to do" and "Add context to improve performance", read 2026-11-19) reports that positive instructions with a reason steer better than prohibitions. A named failure to avoid stays only when the guide for that model calls for naming it.
-- Texts ported from a 2.1.327 builtin follow the same rule. The user ruled on 2026-11-19 that the you-should-know prompt and note texts may be rewritten, because owning the full source is what lets claudetto optimise and fix them; byte parity with the builtin is not a goal.
+- Texts ported from a 2.1.327 builtin follow the same rule. The user ruled on 2026-11-19 that a port recreates the builtin's behaviour and interface only; its prompts, notes and descriptions are rewritten to claudetto's needs, because owning the full source is what lets claudetto optimise and fix them. Byte parity with the builtin text is not a goal.
 
 ## Consequences
 

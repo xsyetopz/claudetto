@@ -2,7 +2,7 @@
 
 ## Guards
 
-- [ ] **RISK-001** A catch site that binds no error drops a fault, so a bad answer reads as a clean reply.
+- [x] **RISK-001** A catch site that binds no error drops a fault, so a bad answer reads as a clean reply.
   Category: kernel, error handling.
   Cause: 64 catch sites in plugins/*/hooks bind no error and drop it (parseFaults in verify.ts turned a bad answer into a clean reply).
   Event: a failure passes unseen.
@@ -16,7 +16,7 @@
   Owner: kernel.
   Status: open.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
-  Status: partial at the next commit: every claudetto catch site writes the error to the debug log through hooks/fault.ts (compact.test.ts pins it; a mutant without the log fails). The 22 catch sites of claudetto-you-should-know remain.
+  Verified 2026-11-19: every catch site in claudetto and claudetto-you-should-know writes its error to the debug log through a fault() helper; claudetto compact.test.ts and you-should-know fault.test.ts each fail on a mutant without the log (claude plugin test: 42 and 63 pass, 0 fail).
 
 ## Verification And Honesty
 
