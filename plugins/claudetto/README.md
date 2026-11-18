@@ -30,4 +30,4 @@ Under `claude -p` a plugin cannot start a compaction, so the task-end renewal do
 
 ## Shell Commands
 
-claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin reader ends at once instead of waiting for the 120-second timeout. Each command also runs under a wall-time limit, set by the `bashTimeLimitMinutes` option (30 by default, 0 turns it off). When the limit is reached, claudetto stops the command and its child processes, also when the command runs in the background, and tells the model why.
+claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin reader ends at once instead of waiting for the 120-second timeout. Each command also runs under a wall-time limit, set by the `bashTimeLimitMinutes` option (30 by default, 0 turns it off). When the limit is reached, claudetto stops the command and its child processes, also when the command runs in the background, and tells the model why. A command that commits or pushes runs with `pipefail`, so `bun test | tail -3 && git commit` stops when the tests fail.
