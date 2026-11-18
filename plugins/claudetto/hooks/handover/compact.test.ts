@@ -8,6 +8,7 @@ function world(
 	env: Record<string, string> = {},
 	fork: ModelForkResult | Error = { isAnswered: true, text: "HANDOVER", usage: USAGE },
 	settings: Record<string, unknown> = {},
+	messages: () => readonly { role: "user" | "assistant"; text: string; toolUses: [] }[] = () => [{ role: "user", text: "fix the parser", toolUses: [] }],
 ) {
 	const seen: unknown[] = [];
 	const status: (string | undefined)[] = [];
@@ -21,7 +22,7 @@ function world(
 		if (fork instanceof Error) throw fork;
 		return { value: fork };
 	});
-	on("session.messages", () => ({ value: [{ role: "user", text: "fix the parser", toolUses: [] }] }));
+	on("session.messages", () => ({ value: messages() }));
 	on("session.usage", () => ({ value: { startedAt: 0, context: { tokens: 90000, window: 200000 }, rateLimits: [] } }));
 	on("process.run", (_$, e) => ({ value: { exitCode: 0, stdout: e.argv[1] === "rev-parse" ? "abc1234\n" : "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
 	on("session.compact", (_$, e) => {
@@ -83,6 +84,24 @@ describe("session.compact", () => {
 		const seen = world(on);
 		await $.session.compact({ trigger: "auto", agentId: "a1", messages: [] });
 		expect(seen.length).toBe(1);
+	});
+	test("three compactions in a row carry a stated requirement and inject no growing text", async ($, on) => {
+		// Arrange: the free extract writes each handover, so the fixture runs no model.
+		let rows = [{ role: "user" as const, text: "Requirement: keep the public API unchanged.", toolUses: [] }];
+		world(on, {}, { isAnswered: false, reason: "nothing-to-fork" }, {}, () => rows);
+		const sizes: number[] = [];
+
+		// Act
+		for (let i = 0; i < 3; i++) {
+			const r = await $.session.compact({ trigger: "auto", messages: [] });
+			const text = r.messages?.[0]?.text ?? "";
+			sizes.push(text.length);
+			rows = [{ role: "user", text, toolUses: [] }];
+		}
+
+		// Assert
+		expect(rows[0]?.text).toContain("keep the public API unchanged");
+		expect(sizes[2]).toBe(sizes[0]);
 	});
 	test("a status line shows while the fork writes and clears after", async ($, on) => {
 		// Arrange

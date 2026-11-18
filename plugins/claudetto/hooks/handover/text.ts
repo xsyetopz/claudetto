@@ -22,21 +22,41 @@ export type Row = { role: "user" | "assistant"; text: string };
 const ROW_LIMIT = 500;
 const EXTRACT_LIMIT = 12_000;
 
-/** The user's prompts and the last answer, cut short: the zero-cost fallback. */
+const TITLE = "# Handover from Previous Session";
+const GIT_TAIL = "\ngit HEAD: ";
+
+/** A prior handover's body, without its title and its git state, which go stale. */
+const unwrap = (text: string): string => {
+	const end = text.lastIndexOf(GIT_TAIL);
+	return text.slice(TITLE.length, end === -1 ? undefined : end).trim();
+};
+
+/**
+ * The user's prompts and the last answer, cut short: the zero-cost fallback.
+ * A prior handover in the rows is carried whole and first, because it holds
+ * the requirements of every earlier compaction; nesting it as one more prompt
+ * row cut it to ROW_LIMIT and pushed those requirements out within a few
+ * compactions.
+ */
 export function extract(rows: readonly Row[]): string {
-	const prompts = rows
-		.filter((r) => r.role === "user" && r.text.trim() !== "")
-		.map((r) => `- ${r.text.trim().slice(0, ROW_LIMIT)}`);
+	const said = rows.filter((r) => r.role === "user" && r.text.trim() !== "");
+	const carried = said
+		.filter((r) => r.text.trimStart().startsWith(TITLE))
+		.map((r) => unwrap(r.text.trimStart()))
+		.join("\n\n")
+		.slice(0, EXTRACT_LIMIT / 2);
+	const prompts = said.filter((r) => !r.text.trimStart().startsWith(TITLE)).map((r) => `- ${r.text.trim().slice(0, ROW_LIMIT)}`);
 	const answer = rows.findLast((r) => r.role === "assistant" && r.text.trim() !== "");
-	const parts = ["User prompts so far:", ...prompts];
+	const parts = prompts.length > 0 ? ["User prompts so far:", ...prompts] : [];
 	if (answer) parts.push("", "Last answer:", answer.text.trim().slice(0, ROW_LIMIT * 2));
-	return parts.join("\n").slice(-EXTRACT_LIMIT);
+	const recent = parts.join("\n").slice(-(EXTRACT_LIMIT - carried.length));
+	return [carried, recent].filter((s) => s.trim() !== "").join("\n\n");
 }
 
 /** The handover body followed by the git state read at that moment. */
 export function compose(body: string, head: string, status: string): string {
 	const git = [`git HEAD: ${head || "unknown"}`, "git status --short:", status || "(clean)"];
-	return [`# Handover from Previous Session`, "", body.trim(), "", ...git].join("\n");
+	return [TITLE, "", body.trim(), "", ...git].join("\n");
 }
 
 /** Reads "70000", "70k" or "1.5M"; undefined for anything else. */
