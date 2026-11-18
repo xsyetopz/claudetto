@@ -3851,6 +3851,10 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: cited. Status: have at 088a227c (plugins/claudetto-you-should-know/hooks/texts.ts:11 holds "A password or secret inside a command, such as an osascript..."; the cached-block placement is asserted by `register-check.test.ts:59`: the fixed instructions are the cached block and the body follows unmarked).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/you-should-know/spec.md:50; plugins/claudetto-you-should-know/hooks/texts.ts:11@088a227c.
   Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
+- [x] **OUT-800** Out (REQ-YOU-SHOULD-KNOW-028, ADR-0190 agent decision, not the user's): the scan manifest field is read only for builtin plugins, and `claude plugin validate --strict` warns "Unknown field 'scan'. Claude Code ignores it at load time", so a normal plugin gains nothing from it. The hooks, calls and env reads it listed stay in code and are pinned by the behaviour tests.
+  Acceptance: none; the hooks `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach`, `session.end` stay registered. Verification: inspection.
+  Verified: claude plugin validate plugins/claudetto-you-should-know --strict, claude 2.1.327, 2026-11-18: a scan field is warned as ignored at load time.
+  Conflicts with: claudetto-you-should-know fully recreates cc-plugin-you-should-know@builtin (user decision, 2026-11-16).
 
 #### Claude Code Behaviour With No Plugin Fix
 
