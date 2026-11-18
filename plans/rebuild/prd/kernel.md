@@ -54,11 +54,7 @@
 
 - [x] **REQ-KERNEL-023** Moved Out as OUT-2734: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-KERNEL-024** claudetto shall make the agent ask through `AskUserQuestion` and wait when it holds only a guess about what the user wants. The agent shall not act on the guess.
-  Decision: ADR-0190, a conduct line ships only with a measured gain, in the one plugin output style (keep-coding-instructions: true).
-  Acceptance: a request with two readings produces one `AskUserQuestion` call and no edit. Verification: demonstration.
-  Basis: user decision. Status: partial at 088a227c (hooks/features/prompt/texts.ts:10 says to settle an ambiguity from context, state the reading, and ask through `AskUserQuestion` for what the user alone holds; no line says to wait and not act on a guess).
-  Source: user decision, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
+- [x] **REQ-KERNEL-024** Moved Out as OUT-2771: ADR-0177 and ADR-0190: on its fault prompts vanilla 2.1.327 passed in 6 of 6 Sonnet 5.5 runs, so no line ships (reports/2026-11-19-research/risks-kernel).
 
 ## Doing the Work
 

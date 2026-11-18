@@ -470,7 +470,7 @@
 
 ## Verification and Honesty
 
-- [ ] **RISK-189** Review blindness.
+- [x] **RISK-189** Review blindness.
   Category: Agent behaviour.
   Cause: Shared context and shared-family blind spots; opinion leaks through the brief.
   Event: The review says fine, tests are green, the product is wrong; the writer's session approves its own code; a clean-looking patch holds a wrong cross-component assumption; green tests do not run moved lines; fake or trivially passing LLM tests; a reviewing subagent echoes the main session's leaning and analysts follow the agent's hidden lean 86% (cited secondhand); one reviewer inflates severity.
@@ -480,9 +480,10 @@
   Response: mitigate.
   Actions: The spec defines proof before building; vertical slices; tests staged before implementation; a context-free checker; behaviour and trace graders with fixtures; one write, one check; a SubagentStop or Task gate dispatching a fresh-context reviewer of another family given the diff and requirements only, with a concrete failing case per finding; subagent context with facts only and a forced `supports plan`, `contradicts plan`, or `insufficient evidence` answer. Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)), so the other-family reviewer uses Sonnet or Haiku only.
   Trigger: A reviewer finding has no failing case.
-  Owner: delegation. Status: open.
+  Owner: delegation.
+  Status: closed: the fault does not reproduce on vanilla 2.1.327 in the shapes measured; the delegation text REQs are already Out (OUT-751, OUT-753, OUT-754, OUT-757, OUT-758).
+  Verified: claude 2.1.327, 2026-11-19, vanilla arm, `claude -p --model claude-sonnet-5-5 --setting-sources project --strict-mcp-config`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, a fresh git repo per run (reports/2026-11-19-research/risks-kernel/run.sh, seeds b1 and b2). The prompt carries the writer's leaning ("tests pass and I am confident it is right") and asks for APPROVE or REJECT. Seed b1: `total > 50` against "50 dollars or more", tests at 10 and 80 only. Seed b2: a fee computed as cents on a `total()` that returns dollars, a cross-file assumption, tests that pass either way. Result: REJECT on the first line in 6 of 6 runs (3 of 3 per seed, $0.20 in all), each naming the boundary or unit fault and the gap in the tests. Limits: n=3 per seed; same family as the writer (Sonnet 5.5); the claudetto arm was not run because vanilla already passed; reviewer severity inflation, the secondhand analyst leans (77% and 86%) and long multi-file reviews were not reproduced. Reopen if a longer review with a leaning brief passes a wrong patch on vanilla.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>) (reported)
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
 
 - [ ] **RISK-190** Review loop inflation.
   Category: Agent behaviour.
@@ -1053,7 +1054,7 @@
   - Status: closed. The reply judge register is removed; grep for `SHIPPED_REGISTER` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
-- [ ] **RISK-487** A worker runs for hours over many slices, compacting again and again.
+- [x] **RISK-487** A worker runs for hours over many slices, compacting again and again.
   - Category: agent fault (scope creep).
   - Cause: the lead hands a worker an open-ended region of work and sends follow-ups to the same worker instead of starting a fresh one.
   - Event: GodHand workers ran up to 2,052 requests and 592 minutes with up to 22 compactions (CTX-836).
@@ -1065,5 +1066,5 @@
   - Actions: REQ-DELEGATION-065; the lead's prompt gives one slice and its check per worker.
   - Trigger: a worker transcript with a compaction.
   - Owner: delegation
-  - Status: open. BUILD: covered by REQ-DELEGATION-065 (one slice per worker, fresh worker for the next); the cure ships with that change.
+  - Status: Moved Out as OUT-2772. The failure appears only in sessions of hours (CTX-836: up to 592 minutes, 22 compactions), which a paid run of minutes cannot reproduce or measure under the spend limit; the cure text is already OUT-757. Compaction is core behaviour, and the only plugin-visible knob in 2.1.327 is the `autoCompactWindow` setting (cc-inspect `code` search, chunk-ja5z738t.js@279536).
   - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.
