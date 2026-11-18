@@ -33,14 +33,28 @@ export type Offer = {
 	readonly env?: Record<string, string>;
 	/** Fork replies in order; the last one repeats. The first answers the check. */
 	readonly replies?: readonly string[];
+	/** When given, the plugin's store lives in this map so a test can read what the plugin kept. */
+	readonly kept?: Map<string, unknown>;
 };
 
 export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => {
-	const { surface = "terminal", props = PROPS, env = {}, replies = [REPLY] } = opts;
+	const { surface = "terminal", props = PROPS, env = {}, replies = [REPLY], kept } = opts;
 	let call = 0;
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	mock.clock(on, { now: 1000 });
-	mock.store(on);
+	if (kept === undefined) {
+		mock.store(on);
+	} else {
+		on("store.get", (_$, e) => ({ value: kept.get(e.key) }));
+		on("store.set", (_$, e) => {
+			kept.set(e.key, e.value);
+			return { value: undefined };
+		});
+		on("store.delete", (_$, e) => {
+			kept.delete(e.key);
+			return { value: undefined };
+		});
+	}
 	on("session.id", () => ({ value: "s1" }));
 	on("session.surfaces", () => ({ value: [surface] as never }));
 	on("prompt.read", () => ({ value: { text: box.text, cursor: box.text.length } }));
