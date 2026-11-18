@@ -4218,6 +4218,189 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured (2026-11-07).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-11/README.md:5-15.
 
+- [ ] **OUT-932** claudetto shall not carry CTX-445 (from `compaction.md`) as a checked context fact: Audit of one user's transcripts: 72% of input was Claude re-reading context past 400k tokens (method unstated).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, method unstated.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:266 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-933** claudetto shall not carry CTX-446 (from `compaction.md`) as a checked context fact: Four outside sources that claim built-in compaction is expensive were read on 2026-10-28. None changed a value, because the only one with a real sample fits its band on a window near 1M against the project's 300,000, and the often-quoted figure of about $3.00 per compaction appears in no source read
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/compaction-path/spec.md:27.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-934** claudetto shall not carry CTX-449 (from `compaction.md`) as a checked context fact: Paid four-arm handover probe, run 2 (18 runs, cost by total_cost_usd, last value per session): A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47. No B arm cost less than C in all 3 pairs. Run 1's $13.52 summed every running total, so it overstates cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160.
+
+- [ ] **OUT-935** claudetto shall not carry CTX-450 (from `compaction.md`) as a checked context fact: Paid probe run 1 (18 runs) was invalid, and its numbers show the span: peak main context per run 35,591-59,957, growth about 1,000 tokens a turn, about 65,000 by turn 40. Thresholds must sit inside 25,000-65,000 for any arm to fire, so B70 and C could not fire at 140,000. The 17-of-18 firing came after thresholds were set inside that span.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:159.
+
+- [ ] **OUT-936** claudetto shall not carry CTX-451 (from `compaction.md`) as a checked context fact: The within-1% band for the 140,000 threshold, the 213,846-token Haiku window, and the vendor "70% less" claim (read 2026-10-28) are the basis of the tier numbers.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured and cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/tier-profiles/spec.md:73,85.
+
+- [ ] **OUT-937** claudetto shall not carry CTX-452 (from `compaction.md`) as a checked context fact: Read-window study 2.12: accuracy and cost tables over 1,985,569 tokens, $3.2949.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Past study over 1,985,569 tokens (3.29 USD); cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:41.
+
+- [ ] **OUT-938** claudetto shall not carry CTX-453 (from `compaction.md`) as a checked context fact: Cache-prefix study 2.9: 7,716 requests and 111 prefix breaks, 108 of them after compact.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:36.
+
+- [ ] **OUT-939** claudetto shall not carry CTX-454 (from `compaction.md`) as a checked context fact: Swift 6.4 with the Xcode macOS SDK has no YAML decoder (YAMLDecoder does not compile; JSON and plist decode through Codable), so a Swift reader cannot parse YAML files directly.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: A Swift decoder fact about the build machine, not about Claude Code 2.1.327; no shipped part in plugins/ reads YAML from Swift.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27.
+
+- [ ] **OUT-940** claudetto shall not carry CTX-456 (from `compaction.md`) as a checked context fact: Community reports on what survives compaction: root CLAUDE.md and unscoped rules are re-read after compaction; scoped rules, mid-session instructions, and hook output become summary paraphrase. A post found 2 of 8 compactions dropped a skill body (v2.1.285, `-p --resume` only) and compact-hook output attached in 4 of 4 tests. Bug #15174 (compact matcher output not injected) was closed (reported, anecdote).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdote.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:26.
+
+- [ ] **OUT-941** claudetto shall not carry CTX-457 (from `compaction.md`) as a checked context fact: Other community reports, from search snippets only: issue #4017 claims a rule is violated "100% of the time after compaction"; Cursor staff say many loaded rules cost context, so keep each rule file under 500 lines and scope rules to files; a Cline Memory Bank re-read has token and staleness costs (reported, snippet).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, snippet.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:12-14; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:28.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-942** claudetto shall not carry CTX-459 (from `compaction.md`) as a checked context fact: One user's own monitoring found 130k tokens the most cost-effective point to clear; the app injects a save-progress-to-disk request, then clears and continues, with auto-compact off.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, no figures. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:516 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
+
+- [ ] **OUT-943** claudetto shall not carry CTX-460 (from `compaction.md`) as a checked context fact: Settings rationale given for 300k and 75: below 300k summaries lose detail, above it context cost creeps; 75 leaves the agent room to write the compact, while 80-100 fumbles and below 75 compacts too often.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, 20 USD plan, no measures. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-944** claudetto shall not carry CTX-462 (from `compaction.md`) as a checked context fact: Commenters report that hitting the 5-hour limit mid-task, or switching accounts mid-task, causes a cache miss that wastes weekly limit. On Max 5x each redo costs about 3 to 5 percent of the 5-hour window and 1 to 2 percent of the week, over 10 percent of the week when repeated; with many agents it also pays 200k to 999k of fresh input, a cache write and agent re-orientation. One user reports that 4 percent of the 5-hour window was usually about 1 percent of the weekly limit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-945** claudetto shall not carry CTX-463 (from `compaction.md`) as a checked context fact: /export writes what was reported on the terminal during the session, not the loaded context or thinking tokens. One commenter never compacts: a tool clones and truncates messages or starts a new session with parent-session back pointers, plus a fast full-text search over past session files so agents or humans can search prior work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: <https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-946** claudetto shall not carry CTX-464 (from `compaction.md`) as a checked context fact: One author reports that in the last 30 days 78 of 82 auto-compactions landed mid-task, and that Claude re-reads files afterwards to work out where it was. In a replay of long sessions Claude re-read about 30 percent less context once it picked its own moment to compact; the author says the replay side flatters this tool a bit, since it includes the handoff steps, which is why the figure is about 30 percent and not 33.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-947** claudetto shall not carry CTX-468 (from `compaction.md`) as a checked context fact: Vendor sources and machine facts: the Anthropic page `about-claude/models/optimizing-for-cost-and-intelligence` is the first vendor source for the 90,000 Haiku trigger and for $0.50 against $0.10 per MTok at 100,000 (cited). Mole 1.68.0 `mo purge` defaults miss `~/CodeProjects`; a purge-paths file replaces discovery; `mo clean --dry-run` previewed about 9 GB. Dossier defects D1-D10.38 (headings only read) include path spam, a hygiene sweep deleting live probe folders, worktree creation rewriting a shared hooks path, and rule reminders moving the cache breakpoint (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor page and a machine-cleaner default; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited / reported.
+  Source: openspec/specs/compaction-path/spec.md:70; openspec/specs/setup/spec.md:115; the "about 9 GB" and D1-D10.38 wording: unresolved.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-948** claudetto shall not carry CTX-469 (from `compaction.md`) as a checked context fact: 524 `thinking_drop` `prefix_mismatch` rows: 515 fall within 10 minutes after a `compact_boundary` and 510 report `firstChangedMessageIndex` 0, so compaction causes them, not a plugin hook.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:644.
+
+- [ ] **OUT-949** claudetto shall not carry CTX-470 (from `compaction.md`) as a checked context fact: Cache rebuilds (82 in 5 days, 5.73M cache-write tokens) follow a `nested_memory` row in 73 of 82 (89%, against 0.8% of non-rebuild requests). One rule load alone did not rebuild (billed Haiku probe, 0.0065 USD). The cause is lookback: the API checks at most 20 positions back from the single moving message breakpoint; each system-reminder text block counts one position and a run of `tool_use` or `tool_result` counts one. By positions: 21 steps or fewer 46,612 with 22 rebuilds (0.05%); 22-25 88 with 56 (63.6%); over 25 44 with 43 (97.7%). One first read loading 22 path-scoped rules (5 user, 17 project) wrote 41,147 tokens.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured, with the lookback rule cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:693; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:707; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:713.
+
+- [ ] **OUT-950** claudetto shall not carry CTX-471 (from `compaction.md`) as a checked context fact: Archive-wide cache rebuild rates by step size: 1-4 calls rebuilt 0.2% within a minute, 5.9% at 1-5 min, 95% past an hour (TTL); 5-8 calls 1.6% and 28.2%; 9+ calls 2.2% and 18.2%. Rebuilds wrote 17.2M of 151.5M cache-write tokens. Compaction (keep 0) preceded 172 rebuilds in 1,410 steps (12.2%). No-change steps rebuilt 119 of 46,936 (0.25%). A model change rebuilt 9 of 9. The main loop ran 4,634 requests on Mythos (425M tokens). Base: 841 transcripts, 2026-11-08 to 11-13.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:774; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:777.
+
+- [ ] **OUT-951** claudetto shall not carry CTX-472 (from `compaction.md`) as a checked context fact: `autoCompactWindow` 100000 on a plugin agent: stub usage 150,000 gave "fixed prefix ~147466 > threshold 40000 -- compaction cannot help" and a reactive compact that bailed once. With usage 1,000 nothing compacted and the request body grew to 169 KB. Compaction follows reported usage, not request size.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Fake-API run on an earlier build with a plugin agent; the stub harness is not rerun and no shipped agent in plugins/ sets autoCompactWindow.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:140; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:141.
+
+- [ ] **OUT-952** claudetto shall not carry CTX-473 (from `compaction.md`) as a checked context fact: One user's weekly limit ran out in 5 days at 3.20B tokens, 96.8% cache reads, main sessions 57%.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:77.
+
+- [ ] **OUT-953** claudetto shall not carry CTX-474 (from `compaction.md`) as a checked context fact: Compaction took 62-80 s, 7 times in 2 h. The cause was large tool outputs; the claudetto part took under 1 s.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported; the 2.1.327 rerun needs a paid Sonnet run, so it cannot be rechecked without a paid model run.
+  Basis: reported (one issue row with no quote); not reproduced on 2.1.327 (paid run, Sonnet 5.5, `/compact` in a stream-json session, `compact_metadata.duration_ms`, reports/2026-11-18-research/paid-labs/README.md). With three 80 KB file reads in context (about 122k tokens before compaction, 3.2k after), compaction took 9.3-10.5 s in 3 runs. With one 2 KB read (about 17k tokens) it took 7.5-8.1 s in 3 runs. Large tool outputs add about 2 s here, not 60 s. The reported 62-80 s came from another model, version or server load, and the row does not say which.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:24.
+
+- [ ] **OUT-954** claudetto shall not carry CTX-475 (from `compaction.md`) as a checked context fact: API compaction on Haiku: one session cost $0.272 at a 150k trigger, $0.082 at 90k, $0.075 at 50k, $0.729 with none.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:38.
+
+- [ ] **OUT-955** claudetto shall not carry CTX-476 (from `compaction.md`) as a checked context fact: Subagent start costs 5k-11k tokens. Cache TTL expiry makes weak-model subagents cost the root more. No `subagentPromptCacheTtl` hit exists under hooks.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (observed in the source log).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:70.
+
+- [ ] **OUT-956** claudetto shall not carry CTX-477 (from `compaction.md`) as a checked context fact: `subagentPromptCacheTtl` "1h" raised total cost for subagents and lowered it for the orchestrator (one user). A second user reports the opposite: subagents that worked one lane for 30-60 minutes used about 500k tokens each at the 5-minute TTL and about 100k after the switch to 1 hour; a third notes that a subagent running a test suite outlasts 5 minutes. The two reports agree with CTX-294: the 1-hour write pays only when a subagent re-reads its prefix after more than 5 minutes idle, so the choice follows subagent lifetime and idle gaps, not a fixed rule.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user each, opposite results; resolved by the CTX-294 break-even, not by either report.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>.); external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:84; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:88; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:92.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-957** claudetto shall not carry CTX-857 (from `compaction.md`) as a checked context fact: Reports of degradation after repeated compaction: one user's logs show thinking tokens falling after each compaction and not without it; another finds Opus loses orchestration state and forgets its skills after two or three compactions. This supports renewal at a task boundary before compaction stacks up (ADR-0178) over chained compactions.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, two users, no numbers shown.
+  Source: external/2026-11-14/reddit.com-r-claudecode-comments-1xul65u-opus-55-is-still-the-better-da-20261114T021719Z.md:230; external/2026-11-16/reddit.com-r-claudecode-comments-1xwgcbm-i-worry-that-anthropic-does-no-20261115T134431Z.md:322.
+
+- [ ] **OUT-958** claudetto shall not carry CTX-858 (from `compaction.md`) as a checked context fact: Keeping every user message that sets or changes something word for word through compaction raised one author's "what changed" test from 9 or 10 of 12 to 12 of 12 on the same model. The handover file and the PreCompact instructions (ADR-0075) carry user-set decisions verbatim, not paraphrased.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:64.
+
+- [ ] **OUT-959** claudetto shall not carry CTX-859 (from `compaction.md`) as a checked context fact: One commenter's context-publisher mod hands work off when a subagent runs longer than 20 minutes or fills 30% of its context, and the main agent hands off when its own context grows; the commenter says the status-line context percentage was miscounted and measured context from a PostToolUse hook instead. claudetto's renewal threshold (ADR-0069, ADR-0178) reads a context figure, so the figure is checked once against request `usage` before a threshold is tuned on it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party); the miscount is unverified.
+  Source: external/2026-10-12/export-Now that mods are here, what are your favorites-.jsonl:15.
+
+- [ ] **OUT-960** claudetto shall not carry CTX-886 (from `compaction.md`) as a checked context fact: One author measuring long unattended sessions found half of all tokens came from turns where the context was already past 200k; autocompact at 200k gave little control over what was handed over. Supports renewal at a task boundary above 70k (ADR-0178) over waiting for autocompact. A third-party post quotes Anthropic help text for the Claude apps: longer conversations that trigger automatic context management use more of the usage limit, and a new conversation is advised near the limit; the help-center page is not among the doc sources read this session, so the quote stays reported.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured (third-party, one author, no raw data); quote reported.
+  Source: external/2026-10-03/export-handoff-compact, a mod that does the handoff + -clear routine for you every time autocompact fires.jsonl:2; external/2026-11-18_p2/reddit.com-r-anthropic-comments-1xzigir-that-organizing-its-thoughts-pa-20261118T182414Z.md:31.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
