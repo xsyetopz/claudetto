@@ -4,7 +4,8 @@ import { registerClear } from "./handover/clear";
 import { registerCompact } from "./handover/compact";
 import { registerRenewal } from "./handover/renewal";
 import { registerStart } from "./settings/start";
-import { registerStatusline } from "./statusline/statusline";
+import { registerStatuslineCommand } from "./statusline/command";
+import { registerStatusline }from "./statusline/statusline";
 
 export const register = (on: On, _options: PluginOptions): void => {
 	registerStart(on);
@@ -12,4 +13,5 @@ export const register = (on: On, _options: PluginOptions): void => {
 	registerRenewal(on);
 	registerClear(on);
 	registerStatusline(on);
+	registerStatuslineCommand(on);
 };
