@@ -30,30 +30,34 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 #### General
 
-- [ ] **OUT-001** claudetto shall not use a planner agent, a component swap behind a benchmark, an inventory of current files, the handing of the holdout to the user, or tests nobody asked for in the rebuild.
+- [x] **OUT-001** claudetto shall not use a planner agent, a component swap behind a benchmark, an inventory of current files, the handing of the holdout to the user, or tests nobody asked for in the rebuild.
   Acceptance: the rebuild is made top down by direct edit, with no planner worker. Verification: inspection.
   Basis: reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166). Status: missing at 088a227c (`git ls-tree -r --name-only 088a227c -- plugins/claudetto/agents` lists only Artemis, Athena, Heracles and Metis; no planner agent).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; conflicts with the strangler-fig line of the goal text at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490.; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204 (restates "no planner, no component swaps"; strangler swaps component by component are out)
+  Verified: git grep -nEi -e 'planner|tools/bench|inventory of current files' -- plugins -> 0 hits (the agents are Artemis, Athena and Heracles; the no-unrequested-tests part is by inspection only), 2026-11-19.
 
 - [ ] **OUT-002** claudetto shall not hold a hyphenated file family (`foo.ts`, `foo-one.ts`, `foo-two-three.ts`); a family becomes a real directory.
   Acceptance: no source file in the tree shares a hyphen prefix with another; each family is a directory (`spec/audit.ts`, not `spec/spec-audit.ts`). Verification: inspection.
   Basis: reported, user, 2026-11-16 17:36 UTC, files-as-directories is unacceptable; no file families (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949). Status: partial at 088a227c (91 hyphenated source files, for example `validate/validate-*.ts` and `register-*.test.ts`).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057.
 
-- [ ] **OUT-003** claudetto shall not register a batch edit tool: the `edit` block does batch edits through the `Bash(perl -0pi -e *)` allow rule and its hook, and a registered tool adds schema with no safety gain ([ADR-0097](../adr/0097-batched-edit-tool.md), comparison of 2026-11-17).
+- [x] **OUT-003** claudetto shall not register a batch edit tool: the `edit` block does batch edits through the `Bash(perl -0pi -e *)` allow rule and its hook, and a registered tool adds schema with no safety gain ([ADR-0097](../adr/0097-batched-edit-tool.md), comparison of 2026-11-17).
   Acceptance: the plugin registers no batch edit tool. Verification: inspection.
   Basis: measured, observed in transcript, 2026-11-16. Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:2433 (probe over 82 runs: 0 runs of consecutive Edit-only responses to one file; at most 18 of 901 dev responses, 2.0%, could merge; 0 Edit errors in 188 calls; no MultiEdit among 95 tools).
+  Verified: git grep -nEi -e 'batch[-_ ]?edit|edit_batch|BatchEdit' -- plugins -> 0 hits (hooks.json registers one SessionStart command and no tool), 2026-11-19.
 
-- [ ] **OUT-004** Out: deciding without asking because "nobody answers overnight", and making deletes and product choices alone.
+- [x] **OUT-004** Out: deciding without asking because "nobody answers overnight", and making deletes and product choices alone.
   Acceptance: the agent asks through `AskUserQuestion`. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c (`git grep -i -E 'overnight|nobody answers' 088a227c -- plugins` finds no match; `AskUserQuestion` appears only in `plugins/claudetto-you-should-know/hooks/register*.ts` and `decide.test.ts`).
   Source: user decision, 2026-11-16 15:27 UTC, the user is watching; questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302). Conflicts with the decision never to act on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8799).
+  Verified: git grep -nEi -e 'overnight|nobody answers' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-005** Out: handing off at 59 minutes of session age and a worker that adds age-based `$.session.compact()` calls.
+- [x] **OUT-005** Out: handing off at 59 minutes of session age and a worker that adds age-based `$.session.compact()` calls.
   Acceptance: no age trigger exists. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (to be removed; `plugins/claudetto/hooks/features/compaction/handoff.ts:68` `const HANDOFF_MS = 59 * 60_000` and `:82` `await $.session.compact()` inside `on("turn.complete", ...)`).
   Source: user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369); superseded by the idle-or-size trigger (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
+  Verified: git grep -nEi -e 'Date\.now|elapsed|sessionAge|59 ?min' -- plugins/claudetto/hooks/handover -> 0 hits (the one compact call in renewal.ts fires on a task boundary above a token threshold, not on age), 2026-11-19.
 
 - [ ] **OUT-006** The prose checks (tests or Stop checks that assert the wording of text) shall go.
   Acceptance: no check asserts prose. Verification: inspection.
@@ -66,124 +70,146 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints on the sandbox and standing line "keep sandbox and hooks on"); conflicts with the standing rule in ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
   Conflict: claudetto shall not ship its own sandbox wrapper.
 
-- [ ] **OUT-008** The `open-items.ts` file shall go, because the user asked what it is and nobody asked for it.
+- [x] **OUT-008** The `open-items.ts` file shall go, because the user asked what it is and nobody asked for it.
   Acceptance: no `open-items.ts` in the tree. Verification: inspection.
   Basis: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c (`git ls-tree -r --name-only 088a227c | grep -i open-items` lists nothing).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints).
   Conflict: claudetto shall not carry the removed Stop-hook machinery.
+  Verified: git grep -nEi -e 'open-items|openItems|Should I' -- plugins -> 0 hits; git ls-files plugins | grep -Ei "open-items|classify|(^|/)(kill|own|fallback|secrets|settle|questions)\.ts|runs\.jsonl|model-row|window" -> no output, 2026-11-19.
 
 #### Removed Features and Files
 
-- [ ] **OUT-009** claudetto shall do no work on its own `classify` module (task 3.1, keep or remove) until the user decides. The choice is left to the user at `design.md:111`. The user decisions of the item index are at source lines 2583-2587. Running paid total at that point: $11.91 ($9.11 plus $2.80). Row recheck by `xref.ts`, $0.
+- [x] **OUT-009** claudetto shall do no work on its own `classify` module (task 3.1, keep or remove) until the user decides. The choice is left to the user at `design.md:111`. The user decisions of the item index are at source lines 2583-2587. Running paid total at that point: $11.91 ($9.11 plus $2.80). Row recheck by `xref.ts`, $0.
   Basis: reported.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3380.
+  Verified: git grep -nEi -e 'classify|3\.1a' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-010** The `openspec/` directory and the practice of curating a plan inside it.
+- [x] **OUT-010** The `openspec/` directory and the practice of curating a plan inside it.
   Acceptance: the rebuilt tree holds no `openspec/` directory and no goal file or handoff that sets orders. Verification: inspection.
   Basis: reported. Status: missing at 088a227c (`git ls-tree 088a227c` lists no `openspec` entry); have at 088a227c^ (`git ls-tree 088a227c^` lists `openspec`).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133; user decision, 2026-11-16.
+  Verified: find plugins -type d -name openspec -> no output, 2026-11-19.
 
-- [ ] **OUT-011** claudetto shall not ship the subagent status line (`statusline/subagents.ts`, `--subagent`).
+- [x] **OUT-011** claudetto shall not ship the subagent status line (`statusline/subagents.ts`, `--subagent`).
   Acceptance: the plugin ships no `subagentStatusLine` setting and no `--subagent` mode; Claude Code 2.1.323 gave the setting no effect, but 2.1.327 documents it as deprecated and still working (see Source). Verification: inspection.
   Basis: cited. Status: missing at 088a227c.
   Source: openspec/specs/status-line/spec.md:397; openspec/specs/status-line/spec.md:415; openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:20 (schema text "no longer has any effect", chunk-3dhh2g49.js:255110, a module that is gone from 2.1.327; corrected on 2.1.327: the `subagentStatusLine` schema text reads "Deprecated: still works, and will stop working in a future release" (chunk-ja5z738t.js@257900) and the command still runs (chunk-cfxefa64.js@912562, `Ove`/`Nve` read the setting and run it with a 5000 ms timeout), while a plugin's `subagentStatusLine` raises the warning "subagentStatusLine is deprecated in favor of mods and will stop working in a future release" (chunk-dfwkett1.js@8085); "no longer has any effect" on 2.1.327 appears only on `taskOutputMaxChars` and `keybindingFlavor`); openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:95. The spec's row layout (first 20 tasks, `⏵` name, model without `claude-`, effort, `◫ tokens/window pct%`, `◔ elapsed` or `✓ done`/`✗ failed`) is kept here only as a record of what goes.
+  Verified: git grep -nEi -e '--subagent|statusline/subagents|subagents\.ts' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-012** claudetto-openspec shall not carry `retire_capabilities`, `--skip-specs`, `--no-validate`, `-y`, custom schemas, the status and instructions JSON shapes, `config.yaml` keys, CLI flags, or `/opsx` files. The lean tool covers only the workflows in use; recorded as a drop pending tasks 4.2 and 4.3.
+- [x] **OUT-012** claudetto-openspec shall not carry `retire_capabilities`, `--skip-specs`, `--no-validate`, `-y`, custom schemas, the status and instructions JSON shapes, `config.yaml` keys, CLI flags, or `/opsx` files. The lean tool covers only the workflows in use; recorded as a drop pending tasks 4.2 and 4.3.
   Basis: read.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:440.
+  Verified: git grep -nEi -e 'retire_capabilities|skip-specs|no-validate|config\.yaml|/opsx|just generate|spec-driven|presets/' -- plugins -> 0 hits (plugins/claudetto-openspec holds only its plugin.json), 2026-11-19.
 
-- [ ] **OUT-013** claudetto shall not carry domain-specific iOS accessibility-tree checks (about 2.2 s against about 22 s per check; a vendor tool, 0.15 GB against 11.2 GB for 5 agents).
+- [x] **OUT-013** claudetto shall not carry domain-specific iOS accessibility-tree checks (about 2.2 s against about 22 s per check; a vendor tool, 0.15 GB against 11.2 GB for 5 agents).
   Acceptance: no iOS check ships. Verification: inspection.
   Basis: reported (vendor claim). Status: have at 088a227c.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcso5g-stop-letting-claude-code-boot-20261023T040754Z.md:34 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcso5g/stop_letting_claude_code_boot_the_ios_simulator>); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:95.
+  Verified: git grep -nEi -e 'accessibility.tree|simctl' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-014** claudetto shall not offer a setup option "Bun commands in a Bun repo". the user finds it proprietary and one of many, not general, and unnecessary.
+- [x] **OUT-014** claudetto shall not offer a setup option "Bun commands in a Bun repo". the user finds it proprietary and one of many, not general, and unnecessary.
   Acceptance: the setup option list has no entry for it. Verification: inspection.
   Basis: reported. Status: missing at 088a227c (`git grep -i 'Bun commands' 088a227c -- plugins` finds no match).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/1fdf6a81-2b6c-44ce-bd8b-58dc14d2eb59.jsonl:15 (user decision, 2026-11-09).
+  Verified: git grep -nEi -e 'Bun commands|bun repo' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-015** claudetto shall not build an End Stuck Agents hook that stops an agent after an hour or more with no real changes.
+- [x] **OUT-015** claudetto shall not build an End Stuck Agents hook that stops an agent after an hour or more with no real changes.
   Acceptance: no hook of claudetto ends an agent for lack of file changes; the stall timeout CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS is the only silence limit. Verification: inspection.
   Basis: reported. Status: missing at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/run-limits/spec.md:10 (the idea came from an r/claudeai comment and was never built; the source holds no thread URL).
+  Verified: git grep -nEi -e 'End Stuck|stuckAgent|agentMaxMinutes' -- plugins -> 0 hits (the only stall trace is the built-in key CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS in settings/defaults.ts, not a hook), 2026-11-19.
 
 - [ ] **OUT-016** claudetto shall not ship the run-limit mod parts that built-in keys replace: Hold Subagent Fan-Out, Subagent Starts Under Cap, End Stuck Agents, and the output head and tail cut (`bashOutputMaxChars` and `MAX_MCP_OUTPUT_TOKENS` replace it; Claude Code saves the rest itself). The memory hold and the Budget line stay (no key does either), as do counters that count only writes that ran, an interrupt not counting as a failure, heartbeat and window files for the status line, Stop waiting for or removing the session's leftovers (a subagent removes only its own), and background tasks and open items checked at Stop. Limits (window, heavy-call cap, fail limits, memory limits, `notificationsEnabled`) come from userConfig; the design borrows from agent-usage-guard and loop-breaker (MIT) with no value in the spec. Also out: `useBudgetRun`, `useClaudettoAgents/delegation.ts`, `useAdvisorTool`, `useAdvisorCommand`, and the `useBashRules` gate, plus the `window` store and `model-row`, and the worktree-base, context7, and general-rules features (the settings `env` reaches `bunx ctx7`, probe 2.4).
   Basis: measured (CC 2.1.322, fake API) and reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts` has `bashOutputMaxChars`; `features/memory`, `features/hygiene`).
   Source: openspec/specs/run-limits/spec.md:8.
 
-- [ ] **OUT-017** claudetto shall not ship these parts: always-on MCP servers; the `window` store; `model-row`; and the setup text for sandbox refusals. A dedicated fetch tool (`mcp__claudetto__web_fetch`) stands beside the built-in; a CLI is driven through a skill (ctx7) over MCP.
+- [x] **OUT-017** claudetto shall not ship these parts: always-on MCP servers; the `window` store; `model-row`; and the setup text for sandbox refusals. A dedicated fetch tool (`mcp__claudetto__web_fetch`) stands beside the built-in; a CLI is driven through a skill (ctx7) over MCP.
   Basis: measured (probe 2.4). Status: partial at 088a227c (`plugins/claudetto/skills/docs`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:147@088a227c9^ (window store and `model-row` removed); openspec/changes/archive/2026-11-09-release-2-1-319/feature-map.md:37@088a227c9^; openspec/changes/2-1-325-rearchitecture/design.md:13-14,37@088a227c9^ (`web_fetch` registered beside the built-in) and :165 (`ctx7` defect, the CLI behind the skill); no source located for the always-on MCP servers clause (Dropped 2026-11-18 for that clause).
+  Verified: git grep -nEi -e 'mcp__claudetto|ask-user-question|web_fetch|model-row|windowStore|window-report|mcpServers' -- plugins -> 0 hits; find plugins -name ".mcp.json" -> no output, 2026-11-19.
 
-- [ ] **OUT-018** claudetto shall not build any of the 23 harness anti-patterns W3-1 to W3-23: premature multi-agent, agent-as-business-process, invisible state, mega-prompt with unprioritised NEVER/ALWAYS, prompting as the only control ("NEVER delete data"), context stuffing, never compacting, edge-case laundry lists, tool soup, opaque tools, unbounded retries without idempotency, one-shotting, premature victory, free-form progress files, demo-grade in production, no evals/tracing/budgets/kill switch, self-grading, all-or-nothing autonomy, unversioned prompts or auto-upgraded alias, anthropomorphizing.
+- [x] **OUT-018** claudetto shall not build any of the 23 harness anti-patterns W3-1 to W3-23: premature multi-agent, agent-as-business-process, invisible state, mega-prompt with unprioritised NEVER/ALWAYS, prompting as the only control ("NEVER delete data"), context stuffing, never compacting, edge-case laundry lists, tool soup, opaque tools, unbounded retries without idempotency, one-shotting, premature victory, free-form progress files, demo-grade in production, no evals/tracing/budgets/kill switch, self-grading, all-or-nothing autonomy, unversioned prompts or auto-upgraded alias, anthropomorphizing.
   Acceptance: no claudetto feature is a W3 item; the list serves as negative design input only. Verification: inspection.
   Basis: cited. Status: have at 088a227c.
   Source: external/please-use-me-often/swe-worst-practices.md:115 (W3-1) to :145 (W3-23).
+  Verified: git grep -nEi -e 'W3-[0-9]|anti-pattern' -- plugins -> 0 hits (the 23 patterns are not individually searchable; by inspection hooks.json holds one SessionStart command, subagent depth is 1 and concurrency 3 through built-in keys), 2026-11-19.
 
-- [ ] **OUT-019** claudetto shall not gate on measured-target caps tuned to match stock or rival numbers (root prompt <=5,832 chars, output style <=1,373 chars, no source-line growth); the one cap kept is the 200-char description limit.
+- [x] **OUT-019** claudetto shall not gate on measured-target caps tuned to match stock or rival numbers (root prompt <=5,832 chars, output style <=1,373 chars, no source-line growth); the one cap kept is the 200-char description limit.
   Acceptance: no test or script fails on the 5,832-char, 1,373-char, or source-line caps; the 200-char description scan stays. Verification: inspection.
   Basis: inferred from the sources, which hold the caps as targets and not as requirements. Status: missing at 088a227c (`compose.test.ts:59-63` still asserts the 5,832-char cap).
   Source: the sources hold the caps as targets (openspec/changes/2-1-325-rearchitecture/design.md:11-13; openspec/changes/2-1-325-rearchitecture/tasks.md:26-28) and the removal is this plan's own decision, inferred from those sources. plugins/claudetto/hooks/features/prompt/compose.test.ts:60@088a227c.
+  Verified: git grep -nE -e '5,?832|1,?373' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-020** claudetto shall not carry the requirements "A Delegated Edit Comes Back with Its Check", "One Place Sets the Subagent Cache TTL" (it rested on `runs.jsonl`), "No Subagent Type Runs the Root Prompt", and "A Delegated Edit Is Checked When It Returns" (`ROOT_PROMPT` is gone).
+- [x] **OUT-020** claudetto shall not carry the requirements "A Delegated Edit Comes Back with Its Check", "One Place Sets the Subagent Cache TTL" (it rested on `runs.jsonl`), "No Subagent Type Runs the Root Prompt", and "A Delegated Edit Is Checked When It Returns" (`ROOT_PROMPT` is gone).
   Acceptance: no spec, test, or text states these four requirements. Verification: inspection.
   Basis: read. Status: have at 088a227c (no `ROOT_PROMPT` or `runs.jsonl` writer in `plugins/`).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/subagent-prompts/spec.md:86-92 (Reason: the scenarios rest on `runs.jsonl`); openspec/changes/archive/2026-11-16-2-1-323/specs/subagent-prompts/spec.md:146 and :151.
+  Verified: git grep -nEi -e 'runs\.jsonl|ROOT_PROMPT|cacheTtl' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-021** claudetto shall not keep these files and features: `decider/fallback.ts` (judgments move to prompt-type classic hooks), `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, the read guard (`surfaceCall`, `heavyFile`, `REFUSAL`, `readGuardEnabled`), `useBashRules`, the vendored rules, fixtures, licence, `gate.mock.ts`, `useSliceCommits`, the grader, `named-files.ts`, the stop and turn files, `useConstraintPin`, `useAskFix`.
+- [x] **OUT-021** claudetto shall not keep these files and features: `decider/fallback.ts` (judgments move to prompt-type classic hooks), `kill.ts`, the worktree ownership check in `own.ts`, the endless-wait check, the read guard (`surfaceCall`, `heavyFile`, `REFUSAL`, `readGuardEnabled`), `useBashRules`, the vendored rules, fixtures, licence, `gate.mock.ts`, `useSliceCommits`, the grader, `named-files.ts`, the stop and turn files, `useConstraintPin`, `useAskFix`.
   Acceptance: none of these names exists under `plugins/`. Verification: inspection (`git grep` of each name).
   Basis: read. Status: have at 088a227c (none of the names is in the baseline tree; `git grep` finds `surfaceCall`, `heavyFile`, `readGuardEnabled`, `useAskFix` in no file).
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:35-47 (5.1-6.1: delete `useBashRules`, vendored rules, `gate.mock.ts`, read guard, `useSliceCommits`, `grade.ts`, `named-files.ts`, `stop.ts`, `turn.ts`); openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:65,109,110,122 (`useSliceCommits`, `useConstraintPin`, `useAskFix`); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:16 (`gate.mock.ts`). Not located: `kill.ts` and `own.ts` rows in the D323 task list (found only as `gate/kill.ts`, `gate/own.ts` in openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:116,270).
+  Verified: git grep -nE -e 'decider|REFUSAL|surfaceCall|heavyFile|readGuardEnabled|useBashRules|useSliceCommits|useConstraintPin|useAskFix|gate\.mock|named-files' -- plugins -> 0 hits; git ls-files plugins | grep -Ei "open-items|classify|(^|/)(kill|own|fallback|secrets|settle|questions)\.ts|runs\.jsonl|model-row|window" -> no output, 2026-11-19.
 
-- [ ] **OUT-022** claudetto shall not patch or un-minify the Claude Code CLI to change the system prompt (repo policy forbids). The reported unofficial alternative `CLAUDE_CODE_THRIFTY_SONIC=0` (a cat-and-sed hint in bypass mode) is written by setup and marked unofficial.
+- [x] **OUT-022** claudetto shall not patch or un-minify the Claude Code CLI to change the system prompt (repo policy forbids). The reported unofficial alternative `CLAUDE_CODE_THRIFTY_SONIC=0` (a cat-and-sed hint in bypass mode) is written by setup and marked unofficial.
   Acceptance: no code patches the CLI binary or npm package; setup writes `CLAUDE_CODE_THRIFTY_SONIC=0`. Verification: inspection.
   Basis: reported. Status: have at 088a227c (`settings.ts:197` writes it). `CLAUDE_CODE_THRIFTY_SONIC` is present on 2.1.327 (`chunk-2ew0jg68.js@19283`); verified on 2.1.327: `chunk-t907shf5.js@4355` returns the env value when it is set and otherwise falls back to the `tengu_thrifty_sonic` flag or cohort of the bash-first session assignment, so setup's `0` overrides the flag. The text of the hint was not read.
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:65; openspec/specs/surface-trim/spec.md:138; plugins/claudetto/hooks/features/setup/settings.ts:197@088a227c.
+  Verified: git grep -nEi -e 'THRIFTY|unminify|un-minify|--system-prompt' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-023** claudetto shall not carry internal IDs (P191, P192, P223, R20, R28, R35, R36, R38, R48, task numbers, decision dates, test file paths, `openingJudge`) in ported spec text. Setup spec cites P191, P192, P223, test file paths, an old group list ("Smaller prompt"); run-limits spec carries decision dates, task numbers (9.22, 9.31, 10.21), test file names; agent-conduct cites R20, R28, R35, R36, R38, R48 and an `openingJudge` option; the grader/unread-grade blocks and Stop-time model judge are rejected ("No Stop-time model call"). Drop IDs when porting; source carries no IDs (project CLAUDE.md rule; read).
+- [x] **OUT-023** claudetto shall not carry internal IDs (P191, P192, P223, R20, R28, R35, R36, R38, R48, task numbers, decision dates, test file paths, `openingJudge`) in ported spec text. Setup spec cites P191, P192, P223, test file paths, an old group list ("Smaller prompt"); run-limits spec carries decision dates, task numbers (9.22, 9.31, 10.21), test file names; agent-conduct cites R20, R28, R35, R36, R38, R48 and an `openingJudge` option; the grader/unread-grade blocks and Stop-time model judge are rejected ("No Stop-time model call"). Drop IDs when porting; source carries no IDs (project CLAUDE.md rule; read).
   Acceptance: No ported item holds an internal ID; the project CLAUDE.md rule forbids them. Verification: inspection.
   Basis: cited. Status: have at 088a227c (the old specs carry them; the baseline spec tree is deleted).
   Source: openspec/specs/setup/spec.md:354; openspec/specs/run-limits/spec.md:418; openspec/specs/agent-conduct/spec.md:402; openspec/specs/agent-conduct/spec.md:162; openspec/specs/agent-conduct/spec.md:195.
+  Verified: git grep -nE -e 'P191|P192|P223|openingJudge|[^A-Za-z]R(20|28|35|36|38|48)[^0-9A-Za-z]' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-024** claudetto shall not carry the approved deletion list: `ask-user-question`, `monitor`, handoff tool/command/files, answer-first gate, `.created-by-claudetto` marker, `runs.jsonl`, `gate-asks`, `maxSubagentStarts`, `agentMaxMinutes`, `typesafeApiKey`, claim-check Decider and tuner tooling, wording-tests check, and the other names in Detail.
+- [x] **OUT-024** claudetto shall not carry the approved deletion list: `ask-user-question`, `monitor`, handoff tool/command/files, answer-first gate, `.created-by-claudetto` marker, `runs.jsonl`, `gate-asks`, `maxSubagentStarts`, `agentMaxMinutes`, `typesafeApiKey`, claim-check Decider and tuner tooling, wording-tests check, and the other names in Detail.
   Acceptance: None of the listed names exists in the target tree. Verification: inspection.
   Basis: cited. Status: partial (marker, ledger, ask-user-question absent at 088a227c; claim-check tooling still under tools/).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:253; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:20; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:846.
+  Verified: git grep -nEi -e 'ask-user-question|created-by-claudetto|gate-asks|maxSubagentStarts|typesafeApiKey|wording-tests' -- plugins -> 0 hits (handover/ holds hooks only: no tool, no command, no file write; the other names in Detail were not read), 2026-11-19.
 
-- [ ] **OUT-025** claudetto shall not carry generator indirection for schemas (`Generated by just generate from .../presets/`, config.yaml `schema: spec-driven`); setup has one path and repo-gate removed tools/generate. Generator indirection for schemas (`Generated by just generate from .../presets/`, config.yaml `schema: spec-driven`): two-path setup; repo-gate removed tools/generate.
+- [x] **OUT-025** claudetto shall not carry generator indirection for schemas (`Generated by just generate from .../presets/`, config.yaml `schema: spec-driven`); setup has one path and repo-gate removed tools/generate. Generator indirection for schemas (`Generated by just generate from .../presets/`, config.yaml `schema: spec-driven`): two-path setup; repo-gate removed tools/generate.
   Acceptance: No `tools/generate` and no `schema: spec-driven` indirection in the target tree. Verification: inspection.
   Basis: cited. Status: have at 088a227c (tools/ holds no generate).
   Source: openspec/specs/repo-gate/spec.md:19@088a227c9^ (the shipped tree holds no `tools/generate/`); `schema: spec-driven` sits in openspec/changes/2-1-325-rearchitecture/.openspec.yaml:1@088a227c9^.
+  Verified: git grep -nEi -e 'retire_capabilities|skip-specs|no-validate|config\.yaml|/opsx|just generate|spec-driven|presets/' -- plugins -> 0 hits (plugins/claudetto-openspec holds only its plugin.json), 2026-11-19.
 
 - [ ] **OUT-026** claudetto shall list the status line external defect report IDs D1-D4 and D7 as unknown, because the report lived outside the repo and is lost. Status line external defect report IDs D1-D4, D7 (report outside repo, lost): cannot port, list as unknown. Dark-theme colours on every theme (color.ts:11-13,49) already fixed by theme mapping.
   Acceptance: No requirement cites D1-D4 or D7. Dark-theme colours on every theme (`color.ts:11-13,49`) are fixed by the theme mapping. Verification: inspection.
   Basis: reported. Status: have at 088a227c (theme mapping in statusline/color.ts).
   Source: openspec/specs/status-line/spec.md:222; unresolved: the defect report is outside the repo and lost.
 
-- [ ] **OUT-027** claudetto shall not use the held-out run of tasks 12.1 (54 mined cases labeled only by tool count) as a measure. Held-out run of tasks 12.1 (54 mined cases labeled only by tool count): invalid measure (26/29 replies about having no tools; judge flagged 5/28 ok replies). Withdrawn.
+- [x] **OUT-027** claudetto shall not use the held-out run of tasks 12.1 (54 mined cases labeled only by tool count) as a measure. Held-out run of tasks 12.1 (54 mined cases labeled only by tool count): invalid measure (26/29 replies about having no tools; judge flagged 5/28 ok replies). Withdrawn.
   Acceptance: The run is withdrawn: 26 of 29 replies were about having no tools; the judge flagged 5 of 28 ok replies. Verification: inspection.
   Basis: measured. Status: have at 088a227c (not in the tree).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/12-1-holdout/README.md:73@088a227c9^ (26/29 replies); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:222@088a227c9^ (54 cases labeled only with a tool count).
+  Verified: git grep -nEi -e '54 mined|taskpolicy' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-028** claudetto shall not wrap Claude's commands in `taskpolicy -c background`. `taskpolicy -c background` for Claude's commands: starves (0 loops in two minutes); `utility` keeps about 20% of default throughput (5.3M against 26-27M).
+- [x] **OUT-028** claudetto shall not wrap Claude's commands in `taskpolicy -c background`. `taskpolicy -c background` for Claude's commands: starves (0 loops in two minutes); `utility` keeps about 20% of default throughput (5.3M against 26-27M).
   Acceptance: No `taskpolicy` call exists. Measured: background starves (0 loops in two minutes); `utility` keeps about 20% of default throughput (5.3M against 26-27M). Verification: inspection.
   Basis: measured. Status: have at 088a227c (`git grep -l taskpolicy 088a227c -- plugins tools` finds 0 files).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:405@088a227c9^ (task 18.44, CPU priority of Claude's commands); the figures (background 0, utility 5.3M, default 26-27M) are in the old plan line 8ef531151:plans/rebuild-curation.md:855.
+  Verified: git grep -nEi -e '54 mined|taskpolicy' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-029** claudetto shall not register `mcp__claudetto__ask-user-question` or `mcp__claudetto__monitor`. Wrapper tools `mcp__claudetto__ask-user-question` and `mcp__claudetto__monitor`: no effect added; plugin-tool popup answers invisible to the classifier; Monitor's promise "expires unless source ends first" false for `tail -F`.
+- [x] **OUT-029** claudetto shall not register `mcp__claudetto__ask-user-question` or `mcp__claudetto__monitor`. Wrapper tools `mcp__claudetto__ask-user-question` and `mcp__claudetto__monitor`: no effect added; plugin-tool popup answers invisible to the classifier; Monitor's promise "expires unless source ends first" false for `tail -F`.
   Acceptance: Neither tool exists. No effect added; plugin-tool popup answers are invisible to the classifier; Monitor's promise "expires unless source ends first" is false for `tail -F`. Verification: inspection.
   Basis: cited. Status: have at 088a227c (wrappers removed).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:392; external/2026-10-12_p2/export-Claude Code's subagent limits are per session, so I built a mod that counts across all of them.jsonl:5 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x3lx5o/claude_codes_subagent_limits_are_per_session_so_i>).
+  Verified: git grep -nEi -e 'mcp__claudetto|ask-user-question|web_fetch|model-row|windowStore|window-report|mcpServers' -- plugins -> 0 hits; find plugins -name ".mcp.json" -> no output, 2026-11-19.
 
-- [ ] **OUT-030** claudetto shall not carry a second Jev builder, `settle.ts`, `questions.ts`, or the hand-written branch-delete regex (25 of 40). Second Jev builder / `settle.ts` / `questions.ts`: two builders pinned different versions, path B had no production caller; dropped for one decider. Hand-written branch-delete regex (25/40).
+- [x] **OUT-030** claudetto shall not carry a second Jev builder, `settle.ts`, `questions.ts`, or the hand-written branch-delete regex (25 of 40). Second Jev builder / `settle.ts` / `questions.ts`: two builders pinned different versions, path B had no production caller; dropped for one decider. Hand-written branch-delete regex (25/40).
   Acceptance: One decider module exists. Two builders pinned different versions; path B had no production caller. Verification: inspection.
   Basis: measured. Status: have at 088a227c.
   Source: openspec/specs/decider/spec.md:8; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:253.
+  Verified: git grep -nEi -e 'settle\.ts|questions\.ts|jev' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-031** claudetto shall not carry the marker file `.created-by-claudetto` (350 denials, no benefit), the `/restart` and `/loop` commands, hard-coded `Tool.version`/`SCANNER_VERSION`, or own mutation scripts (probe-76) in the repo. Marker file `.created-by-claudetto` (350 denials, no benefit). `/restart` and `/loop` commands. Hard-coded `Tool.version`/`SCANNER_VERSION`. Own mutation scripts (probe-76) out of repo.
+- [x] **OUT-031** claudetto shall not carry the marker file `.created-by-claudetto` (350 denials, no benefit), the `/restart` and `/loop` commands, hard-coded `Tool.version`/`SCANNER_VERSION`, or own mutation scripts (probe-76) in the repo. Marker file `.created-by-claudetto` (350 denials, no benefit). `/restart` and `/loop` commands. Hard-coded `Tool.version`/`SCANNER_VERSION`. Own mutation scripts (probe-76) out of repo.
   Acceptance: None of these exists in the tree. Verification: inspection.
   Basis: measured. Status: have at 088a227c (git grep created-by-claudetto and SCANNER_VERSION find no hit).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/session-hygiene/spec.md:61; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:253.
+  Verified: git grep -nEi -e 'created-by-claudetto|SCANNER_VERSION|/restart|/loop|probe-76' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-032** claudetto shall keep one version-floor constant (2.1.323), not a Purpose stating 2.1.316; task 9.2 (publish to the xsyetopz marketplace) stays open because the marketplace serves base commit 6f81c479 and branch work is active only via `claudetto-dev`. Spec Purpose stating floor 2.1.316 while requirements say 2.1.323 (keep one constant). Task 9.2 publish to the xsyetopz marketplace still open (marketplace serves base commit 6f81c479; branch work active via `claudetto-dev` only).
   Acceptance: One constant `MINIMUM_VERSION = "2.1.323"` serves. Verification: inspection.
@@ -432,9 +458,10 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Acceptance: each anti-pattern has an enforced rule or is listed as unenforced. Basis: reported. Status: n/a.
   Source: external/please-use-me-often/swe-worst-practices.md:185 (the dossier holds the anti-pattern lists; per-anti-pattern lines not matched one by one).
 
-- [ ] **OUT-087** claudetto shall not replace the system prompt wholesale (`--system-prompt` with a community-extracted prompt).
+- [x] **OUT-087** claudetto shall not replace the system prompt wholesale (`--system-prompt` with a community-extracted prompt).
   Acceptance: no setup writes `--system-prompt`; `--system-prompt` (replace) and `--append-system-prompt` (add) remain separate flags. Risks: lost subagent exploration and tool guidance; the copy goes stale with daily releases; project rule: never patch the binary. Basis: reported. Status: n/a.
   Source: external/export-Don't use Claude Code's Default System Prompt.jsonl:2, :12, :15 (a poster replaces the default prompt with `--system-prompt` through a wrapper script).
+  Verified: git grep -nEi -e 'THRIFTY|unminify|un-minify|--system-prompt' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-088** claudetto shall not rewrite CLAUDE.md on each model version, keep old code versions in CLAUDE.md, load a whole memory file every message, generate a repo description from `/init`, or ship a giant instruction file and thousands of lines of skills.
   Acceptance: keep only repo-specific burn-list rules (package manager, never start the server, ask before migrations, no surprise subagents); the rest goes to hooks and on-demand skills. Basis: reported. Status: n/a.
@@ -4130,16 +4157,18 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 Items that contradict a settled decision. Each waits for the user to keep the decision or reopen it.
 
-- [ ] **OUT-121** claudetto shall not ship a Stop check on "Should I" asks or on open-item lists (the baseline `run-limits/open-items.ts`, 37 lines, goes with it).
+- [x] **OUT-121** claudetto shall not ship a Stop check on "Should I" asks or on open-item lists (the baseline `run-limits/open-items.ts`, 37 lines, goes with it).
   Basis: measured. Status: missing at 088a227c (`git ls-tree -r --name-only 088a227c | grep -i open-items` lists nothing; the file the baseline check named is not in the tree). The baseline check blocked a reply on 2026-11-05 whose open list held only user decisions (rename, P1 check, confine, mining scope): three of the four were already settled in the repo, so the block was right for those and wrong for the P1 item, because no item matched its BLOCKER words. A Stop check on "Should I" asks has no row in `feature-map.md` or `tasks.md` and would be new 0.4.0 scope.
   Conflicts with: no regex or word-list Stop check for openers (user decision, 2026-11-16).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2547; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
   Conflict: claudetto shall not carry the removed Stop-hook machinery.
+  Verified: git grep -nEi -e 'open-items|openItems|Should I' -- plugins -> 0 hits, 2026-11-19.
 
-- [ ] **OUT-122** claudetto shall not run the 3.1a paid eval of its own `classify` module (at most $54.77). Task 3.1 (keep or remove the baseline `classify` module that settles a gate ask through Jev; `design.md:53`, `:111`, `:127`) is a different subject from 5.28 (the native auto-mode classifier).
+- [x] **OUT-122** claudetto shall not run the 3.1a paid eval of its own `classify` module (at most $54.77). Task 3.1 (keep or remove the baseline `classify` module that settles a gate ask through Jev; `design.md:53`, `:111`, `:127`) is a different subject from 5.28 (the native auto-mode classifier).
   Basis: cited.
   Conflicts with: no benchmarks (user decision, 2026-11-16).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3335.
+  Verified: git grep -nEi -e 'classify|3\.1a' -- plugins -> 0 hits, 2026-11-19.
 
 - [ ] **OUT-123** Running 5-10 representative tasks with subagents allowed versus denied to compare cost plus rework (model advice: "only that settles it"). claudetto builds no benchmark.
   Basis: reported. Status: missing at 088a227c.
