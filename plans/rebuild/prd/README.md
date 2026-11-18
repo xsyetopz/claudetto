@@ -5299,6 +5299,407 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported (one user, no counts).
   Source: external/2026-11-18_p2/reddit.com-r-claude-comments-1xufj43-claude-in-chrome-save-tokens-20261118T183349Z.md:40.
 
+- [ ] **OUT-1105** claudetto shall not carry CTX-219 (from `mods.md`) as a checked context fact: A Monitor rebuilt as `mcp__claudetto__monitor` (Bash through `$.tool.call` `run_in_background:true`, polling the output file every 200 ms), measured on claude 2.1.318: hooks modules are not loaded until workspace trust is accepted; `$.session.send` needs `{to, text}` and refuses its own session id and "main"; `$.prompt.submit` runs once idle, so events arrive after the turn ends, while stock Monitor delivers inside the running turn. Per event: stock 620 chars, Mod 380 chars. `mt1` trimmed stock Monitor to 1,960 bytes (description 845, schema 1,040, -74%); `mt2` Mod tool 792 bytes (description 495, schema 209) against 7,586 stock. Losses: no in-turn delivery, user-turn framing, no ws source, 100-message cap.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2730.
+
+- [ ] **OUT-1106** claudetto shall not carry CTX-220 (from `mods.md`) as a checked context fact: A second `tool.call` handler that appends queued events to the next tool result's context delivers them inside the running turn (request 2749: "tool.call hook additional context: [monitor: probe events] ev1 / ev2"). A blank line needs filtering (an empty third event). 2 events fit in 240 chars.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318, retry mon14/mon15.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2770.
+
+- [ ] **OUT-1107** claudetto shall not carry CTX-221 (from `mods.md`) as a checked context fact: Monitor replacement costs driven to 0 (mon16-mon20): the stock completion notice of the background Bash (931 chars) is dropped via `prompt.submit` `origin.kind` "task-notification" with the monitor's own task id (answer: drop). Events after the last tool call go out by `$.prompt.submit` at `turn.complete` or idle; a turn-end window was forced with `DELAY_FINAL=4000`, with a busy flag from `turn.start` and `turn.complete`. Remaining losses: user-turn framing, no ws source, no 100-message cap.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2781.
+
+- [ ] **OUT-1108** claudetto shall not carry CTX-222 (from `mods.md`) as a checked context fact: The `$.prompt.submit` frame is fixed in code ("The <name> plugin sent a message: ... starts this turn in the user's place" when idle, "while you were working" mid-turn); only the other form `asUser` reads as the user's own words. An idle `isMeta` prompt takes no rewrite. `$.session.append` writes a meta row but starts no turn. Stock Monitor rate stop: a token bucket of 10 events, refill 2000 ms, kill after 30000 ms of suppression ("[Monitor stopped - too much output ..."). The ws source is the `ws {url, protocols}` field.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: cited, claude 2.1.318 source read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3266.
+
+- [ ] **OUT-1109** claudetto shall not carry CTX-223 (from `mods.md`) as a checked context fact: Monitor wrapper (mon21-mon31): a claudetto `monitor` tool that calls the stock Monitor through `$.tool.call`, with stock Monitor kept deferred and guarded by a `tool.call` guard ("Monitor is off here: call mcp__claudetto__monitor."), gives stock delivery in a running turn and idle, the stock frame, ws source frames, and the stock rate stop (mon25: 150 lines at 300 ms, 26 reached the model, "[Monitor stopped - too much output (5 events suppressed over 30s)"). Loaded bytes 866 against 7,586 stock and 1,960 trimmed. Per event 620 chars (the stock frame, not the old Mod's 380).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318. The decision is in the Monitor wrapper record.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3271; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes: "Improved Monitor: when a watch expires with no events and its command wrote to stderr, Claude is now told so and told which file holds the output").
+
+- [ ] **OUT-1110** claudetto shall not carry CTX-224 (from `mods.md`) as a checked context fact: A trimmed ListAgents keeps the tool: a 304-char text takes it from 1,151 to 674 bytes (-41%). ListAgents cannot be rebuilt on `$.agent.list` (it omits local, cloud, and Remote Control sessions). The engine takes an undeclared Agent `name` (`registerName`) and stock models pass it unprompted. Paid, 5 runs $0.3810: stock $0.1031 (84,753 tokens) against mod2 $0.1244 (71,110 tokens), with more cache writes (19,892 against 12,069).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2818.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1111** claudetto shall not carry CTX-225 (from `mods.md`) as a checked context fact: Mod worker limits (claude 2.1.318): no `process` global (ReferenceError "process is not defined"); `$.session.cwd()` answered only at shutdown ("no session bound"); `$.env.get("HOME"/"CLAUDE_CONFIG_DIR")` works; sequential `$.fs.exists` calls on missing paths stalled the hook (cause not isolated), parallel calls work (a relative `exists` miss gives false, list or read misses reject ENOENT); the loader refuses a `$` passed to anything but a top-level function. Probe `setmod3` lists the four skills and commands dirs in parallel once. Workflow text goes from 3,480 to 20,256 chars with `workflow-authoring` off.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3171.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1112** claudetto shall not carry CTX-226 (from `mods.md`) as a checked context fact: The baseline lab at commit `62e2fe96` on Claude Code `2.1.318` (`claude plugin test /tmp/claudetto-baseline/plugins/claudetto`) ran 357 tests across 46 files with 0 failing
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Baseline lab run at an old commit on 2.1.318; a past test tally, not a behaviour of 2.1.327.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:3.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1113** claudetto shall not carry CTX-227 (from `mods.md`) as a checked context fact: On 2.1.323 (observed) and 2.1.326 (names re-listed on 2026-11-17): `prompt.compose` sees `e.model`, replaces the whole default body per model (not the billing line, identity line or system-role message), has sections of scope `shared`, one shared section `lean_body` on a lean model, and does not reach a built-in or plugin-agent subagent; a plugin agent body replaces the default text and the engine appends about 1,294 bytes; `tool.list` removes tools for main and subagents (`next(e)` returns `{ value: ToolInfo[] }`; 22 tools, 3 removed, 73.9 ms); `agent.spawn` rewrites subagent `model` and `prompt`; no classic hook input carries `model`; `PreToolUse` carries `effort.level`; `engines["claude-code"]` refuses install from a git or remote source; default `system[2]` is 5,893 bytes (Opus), 5,630 (Sonnet), 8,471 (Haiku); tool schemas are about 28.6 KB; no settings key sets the prompt; an agent file body replaces the default (304 vs 6,274 bytes on Opus 5.5); an output style lands in the environment message and does not reach subagents; `SessionStart` `model` is absent under `-p`; default system sizes are Opus 5.5 6,274 B, Haiku 5.5 8,862 B, tools 29,666 B. On 2.1.326 these names are present: `prompt.compose`, `tool.list`, `agent.spawn`, `tool.describe`, `settings.read`, `$.model.fork`, `$.tool.register`, `$.tool.call`, `$.ui.*`, `$.fs.*`, `$.env.get`, `$.process.*` (253 mod-api names in 2.1.326; 239 were listed on 2.1.325).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c (`features/prompt/compose.test.ts:7` holds `lean_body`; `features/prompt/texts.ts:123` maps Opus 5.5 to it).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:17; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:235; openspec/changes/archive/2026-11-16-2-1-323/specs/model-prompts/spec.md:5; plugins/claudetto/hooks/features/prompt/texts.ts:123@088a227c. Not located: the 239-name list and the `engines` refusal line.
+
+- [ ] **OUT-1114** claudetto shall not carry CTX-228 (from `mods.md`) as a checked context fact: On 2.1.325 (not rerun on 2.1.326; the 2.1.326 release notes say mods can again use Bash, Read and other tools through `$.tool.call` and `$.tool.check` in Code Mode) a mod's `$.tool.call` opens no permission prompt (since 2.1.321); `ENABLE_TOOL_SEARCH` unset already defers MCP tools, also behind a custom base URL since 2.1.304; `$.env.get` sees keys in settings env; `--plugin-dir` logs that it overrides the installed version; the trust dialog defaults to "No, exit" and typing before it exits at no cost; the baseline sent 12 tools and 6,174 system bytes, dev 8 tools and 8,955 bytes against stock 28,937. 2.1.326 offers `$.model.fork`, `tool.list`, `settings.read`, the setting keys `disableWorkflows` and `outputStyle` (cc-inspect `surface` mod-api and setting lists, 2026-11-17); on 2.1.327 `$.tool.call`, `$.tool.check`, `$.env.get` and `$.http.fetch` are mod calls (cc-inspect `surface` mod-api, 2026-11-18). The prompt, trust-dialog, tool-search and byte-count lines are measurements dated 2.1.325 and are not restated for 2.1.327.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:136; openspec/changes/2-1-325-rearchitecture/design.md:162; openspec/specs/prompt-cache/spec.md:66; openspec/changes/2-1-325-rearchitecture/proposal.md; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [ ] **OUT-1115** claudetto shall not carry CTX-229 (from `mods.md`) as a checked context fact: Stock Claude Code shows "[claudeai-mcp] Fetched 2 servers" (Claude Docs, alphaXiv); `disableClaudeAiConnectors` gives "Disabled via ... setting"; trim scalars cut bundled skills from 31 to 2; `disableWorkflows` also stops the +16.8k-char Workflow inflation. Both settings are present on 2.1.326 (cc-inspect `surface` setting list, 2026-11-17).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c (`surface/trim.ts`).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:84; plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c. Not located: the 31-to-2 and +16.8k lines.
+
+- [ ] **OUT-1116** claudetto shall not carry CTX-230 (from `mods.md`) as a checked context fact: The `settings.read` hook (measured on 2.1.318-2.1.319): in `-p` it changed 1 of 7 tier keys (`disableBundledSkills`); interactive it also changed `outputStyle`; `skillOverrides` also changed (a skill listing shrinks from 6,183 to 493 bytes with `skillOverrides`, and a refused call makes 0 requests); `model`, `effortLevel`, `permissions`, `env`, `enabledPlugins` kept file values; `model`, `effortLevel`, `modelSettings` are read once at session start (docs); the engine does not wait for the hook before request 1 (hooks of 38.7 ms or less won 47 of 47, 66.7-90.6 ms lost 10 of 11; a later report gives the same counts for claude 2.1.325 (timing counts, dated and not restated for 2.1.327), so a setting that rides this race needs a fast hook); a plugin-root `settings.json` carries `subagentStatusLine` but drops `sandbox`. `settings.read` and the setting keys `effortLevel`, `skillOverrides`, `disableBundledSkills`, and `outputStyle` are present on 2.1.326 (cc-inspect `surface` mod-api and setting lists, 2026-11-17).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3372; cc-inspect `surface`, claude 2.1.326, 2026-11-17. Not located: the 1-of-7 line, and a source line for the skillOverrides byte counts and the 2.1.325 race report.
+
+- [ ] **OUT-1117** claudetto shall not carry CTX-231 (from `mods.md`) as a checked context fact: On a fake login `/fast` answers "Fast mode is not available"; 260 one-pixel images in `claude -p` were never dropped and kept the prefix.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured; the old plan marks it unverified. Status: have at 088a227c.
+  Source: openspec/specs/prompt-cache/spec.md:114.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1118** claudetto shall not carry CTX-232 (from `mods.md`) as a checked context fact: A usage-cap mod, reported by one author (MIT repo), holds these facts. A plan with no 5-hour window has that window missing from the usage data, which is not 0 percent used. The weekly percent is a whole number and one point is many tokens on Ultra, so the mod estimates between points from token counts and learns the tokens-per-point ratio. Polled usage after idle counts as fresh only when its values change. At the cap it refuses new prompts and subagents but leaves running turns and tool calls alone, and background task notifications always get through, since blocking them breaks agents. If usage is unreadable it shows a warning and lets calls through, or blocks them when set to fail closed. The 15-percent-of-weekly default is the author's least sure part.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:29; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:33; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:35; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:37; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:39; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:43 (url: <https://www.reddit.com/r/Anthropic/comments/1xkzigh/made_a_mod_that_caps_my_own_claude_code_usage_in/>).
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1119** claudetto shall not carry CTX-234 (from `mods.md`) as a checked context fact: claudetto shall record these measured bench rounds (9 tasks, Opus 5.5, auto mode): R2 stock 8/8 $4.16 vs dev 6/7 $5.07; R3 stock 8/9 $4.18 4.85M tokens vs dev 7/9 $6.79 9.31M; R4 stock 8/9 $4.02 vs dev 7/9 $5.73 6.20M (dedupe cut 33% tokens); R5 stock 8/9 $3.98 4.36M vs dev 9/9 $9.10 12.22M regraded; conduct: reply opens with fact stock 6-7/9 vs dev 9/9, seeded claim never acted on 9/9 both, 0 compactions, 0 subagents; round costs $10.97, $9.75, $13.08.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:238; openspec/changes/2-1-325-rearchitecture/design.md:29; openspec/changes/2-1-325-rearchitecture/design.md:250.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1120** claudetto shall not carry CTX-239 (from `mods.md`) as a checked context fact: `$.env.get` returns a promise and needs a literal name; `$.settings.read()` returns custom keys; `$.ui.log` goes to stdout, which the cli output truncates.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have.
+  Source: probe C, `claude` 2.1.325, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+
+- [ ] **OUT-1121** claudetto shall not carry CTX-597 (from `hooks.md`) as a checked context fact: A probe rejected the claim "a background job dies with its subagent turn" (subagent, n=4): a worker's Stryker loop (zsh pid 17432) ran on after its turn ended, and its task notification read "waiting on its own background work"
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:286.
+  ## Hooks and Events
+
+- [ ] **OUT-1122** claudetto shall not carry CTX-598 (from `hooks.md`) as a checked context fact: Hook text (`additionalContext`, `systemMessage`, `initialUserMessage`, stdout) is capped at 10,000 chars each; over the cap it goes to a file and the model gets the path
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Cited cap of 10,000 characters per hook text field; a recheck needs an oversized hook run and no shipped part in plugins/ depends on the exact number.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1651.
+  ## Hooks and Events
+
+- [ ] **OUT-1123** claudetto shall not carry CTX-599 (from `hooks.md`) as a checked context fact: WorktreeCreate for an Agent with isolation "worktree" fires before the folder exists (0.5 s before "Created agent worktree"). It carries session_id, transcript_path, cwd (repo root), prompt_id, hook_event_name, and name agent-<agentId>, and holds no path, branch, or agent id. SubagentStart then carries agent_id and a cwd of <root>/.claude/worktrees/agent-<agentId>. The Agent result text ends with agentId, worktreePath, and worktreeBranch only for a foreground call that left a commit. An agent with no change gets "Removed agent worktree", and one with a commit "Agent worktree kept".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured with a throwaway plugin.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:804.
+
+- [ ] **OUT-1124** claudetto shall not carry CTX-600 (from `hooks.md`) as a checked context fact: ExitWorktree with action "remove" fires no WorktreeRemove (the debug log shows "Removed linked worktree" only). claude -w <name> fires no WorktreeCreate, because the worktree is made before plugin hooks register ("registered 0 WorktreeCreate and 0 WorktreeRemove matcher(s)"). WorktreeRemove fires only for a worktree a WorktreeCreate hook made, and no mod event for worktrees exists, so removal is read from git worktree list.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured and read.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:805-807.
+
+- [ ] **OUT-1125** claudetto shall not carry CTX-601 (from `hooks.md`) as a checked context fact: Subagent transcript meta: 13 agent-*.meta.json in one versionlens-redux session, all agentType claudetto:Heracles, requestShape background, spawnDepth 1, isBuiltIn false. 13 of 13 toolUseIds match one line of the parent transcript. The shortest ran 69 s.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:820.
+
+- [ ] **OUT-1126** claudetto shall not carry CTX-602 (from `hooks.md`) as a checked context fact: No plugin of this repository starts an agent: $.agent.list (limits/hold.ts:43) only lists, $.model.fork (handoff/handover.ts:140) is a fork and not an agent, and $.model.complete writes no agent transcript. So the side check leaves no subagent transcript.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Grep over old paths that are not in the baseline tree; a repository state, not a behaviour of 2.1.327.
+  Basis: measured by grep. The two file paths are not in the baseline tree 088a227c (no hooks/limits, no handoff).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:821.
+
+- [ ] **OUT-1127** claudetto shall not carry CTX-603 (from `hooks.md`) as a checked context fact: The engine's finish notice reaches the agent with the plugin on and off. After a background Bash ends, the request after the foreground wait holds an "automated background-task event" message with the finish notice, and the start result says "You will be notified when it completes". With the plugin on there were 7 requests (4 main), with the notice in 2 of them. No hook of the plugin drops or rewrites it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:842.
+
+- [ ] **OUT-1128** claudetto shall not carry CTX-604 (from `hooks.md`) as a checked context fact: With fold.ts deleted the engine folds grouped results ("Searched for 2 patterns, ran 1 shell command (ctrl+o to expand)"). The same export showed the final reply twice, because a Stop hook block (isMeta, hidden) triggered a second request whose text repeated the first reply.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: observed (session 60fc9776, lines 58 and 63).
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:165.
+
+- [ ] **OUT-1129** claudetto shall not carry CTX-605 (from `hooks.md`) as a checked context fact: Twelve third-party repositories read as untrusted data yield hook uses the plugins lack: SubagentStart read-only injection, TDD gate on PreToolUse plus Stop, WorktreeCreate and WorktreeRemove terminal layout, MessageDisplay rewrite, PreCompact learnings check, PreModelSwitch hooks, PostToolUseFailure. None holds a pull-request-merge hook, a limit of the regex. Method: each repo's codeload tar.gz was read with a regex for "<Event>": [ in json, md, yaml, and toml, and nothing extracted was run. PreToolUse and PostToolUse lead. Five repos hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo has one Stop mention.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reading of twelve third-party repositories as untrusted data; not a Claude Code behaviour.
+  Basis: read and measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:836,1022-1036.
+
+- [ ] **OUT-1130** claudetto shall not carry CTX-607 (from `hooks.md`) as a checked context fact: The ljw1004 `you_are_not_right.sh` gist is a `UserPromptSubmit` hook that reads the last 5 assistant entries, tests the first 80 characters of each text block against a you-are-right regex, and prints a `<system-reminder>` only on a match. It fires one turn late and depends on the raw transcript format. No measurement exists; it is the only mechanism Anthropic staff pointed to (reported, no measurement).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, no measurement.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:88-90.
+  ## Hooks and Events
+
+- [ ] **OUT-1131** claudetto shall not carry CTX-608 (from `hooks.md`) as a checked context fact: Dossier S12: issue 32376 (opened 9 March 2026) reports a hook's condition narrowed from all code changes to only "SIGNIFICANT" code changes, with a displayed backup diff. It was closed as not planned. The enforcement code was writable by the actor it governs. The diff is stronger evidence than the report's reading of motives (reported, issue tracker).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, issue tracker.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:167-169 (<https://github.com/anthropics/claude-code/issues/32376>).
+
+- [ ] **OUT-1132** claudetto shall not carry CTX-609 (from `hooks.md`) as a checked context fact: Dossier S13: a subagent-hook report shows a write blocked in the parent but allowed in a Task subagent. Its reproduction says the blocking script exits 1, and exit 1 alone is non-blocking (S48), so its configuration is confounded. It is not a standalone proof of a product vulnerability (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:171-173.
+
+- [ ] **OUT-1133** claudetto shall not carry CTX-610 (from `hooks.md`) as a checked context fact: Dossier S14: issue 43772 (opened 5 April 2026) reports subagents with `bypassPermissions` running commands outside a hook-based allowlist. It is not a reproduction on a current version (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:175-179 (<https://github.com/anthropics/claude-code/issues/43772>).
+
+- [ ] **OUT-1134** claudetto shall not carry CTX-611 (from `hooks.md`) as a checked context fact: Dossier S18: issue 46828 (incident 11 April 2026) alleges an approved position-closing script included an unapproved sweep of about $1,446.65. The figure is an allegation; transaction records and legal conclusions were not validated (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, allegation.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (<https://github.com/anthropics/claude-code/issues/46828>).
+  ## Hooks and Events
+
+- [ ] **OUT-1135** claudetto shall not carry CTX-612 (from `hooks.md`) as a checked context fact: Task 18.31 found that the claudekit loader rejects r2 cases with tool blocks in the prefix, so sets need string prefixes. The fixture grade prints only `{n, pass, byLabel}`, and `run.ts` removes `cfg/` and `ws/` after grading. Session 11314703 printed the first cases of `held-out-r3.json`, which contaminated r3. Before tuning, r4 scored 21/24 in run 1 and 22/24 in run 2 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332.
+  ## Hooks and Events
+
+- [ ] **OUT-1136** claudetto shall not carry CTX-613 (from `hooks.md`) as a checked context fact: Stop grader arms, caught/clean flagged: old text 57, 59, 58, 57 / 4, 7, 9, 7; short text with credit opening 58, 58 / 9, 10; plain opening 57, 58 / 8, 10 (no clear difference between credit and plain); calm 57, 57 / 4, 4, but case t050 moved from caught to missed. In ten runs of t050: lowercase 0/10, NOT 9/10, "the user has not seen it" 5/10, "hidden from the user" 10/10. calm3 scored 225/240 and 19/160, and its extra misses were silent picks. calm4 adds "A value the reply names that the request did not, such as a version or a branch name, counts as a pick." The plugin prompt equals the arm on all 340 case prompts. t050 stays flaky: calm4 missed it 3 of 4 runs, old text 0 of 4 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:348-354.
+  ## Hooks and Events
+
+- [ ] **OUT-1137** claudetto shall not carry CTX-614 (from `hooks.md`) as a checked context fact: The Stop grader on held-out replies (68 calls per split), measured 2026-11-06. Before the prompt change: unchecked recall 2/11 [0.05, 0.48], unfiled 1/8, clean flagged 2/49 (108,075 tokens). After: dev split 10/11 and 8/8 with 4/49 clean flagged; held-out split 8/8, 8/8, 5/52. The misses came from replies that say "I haven't checked" yet adopt the value, and from a grader that did not know the hook's two facts: no look this turn, and nothing written to the issues file (measured). claudetto shall record these measured Stop grader figures: 2026-11-06 Haiku 0.6-3.2 s (median about 1 s over 10 concurrent sessions), $0.0002-0.0006; Sonnet 4.3 s vs Haiku 0.78 s live; held-out unchecked 8/8 [0.68,1], 5/52 clean flagged [0.04,0.21]; `unseen` Haiku precision about 0.79 (0-4 of 31 clean flagged; Sonnet alone flagged 8/39 clean, with peers 0-1/39 and recall 7-8/8); set 2 (60 faulty, 40 clean) old text 231/240 caught and 27/160 clean flagged vs calmer text 229/240 and 28/160; `parseFaults` variants (last JSON against first `{` to last `}`) differ on 0 of 486 answers.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. measured. Status: unchecked: a measured result, not code at 088a227c.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-3/README.md:25-60; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:779; openspec/specs/decide/spec.md:43.
+
+- [ ] **OUT-1138** claudetto shall not carry CTX-615 (from `hooks.md`) as a checked context fact: Running the grader through `claude -p` with `CLAUDE_CODE_MAX_OUTPUT_TOKENS=300` is invalid, because the cap also limits thinking: 25 of 68 calls ended "exceeded the 300 output token maximum" and the other 43 answered `{"faults":[]}`; it spent 300,780 tokens (780 over the cap, as six calls were in flight when the guard checked). A hook's `$.model.complete` with `maxTokens` 300 is not cut by thinking: 8/8 answered, 315-1005 output tokens, 2.2-5.4 s (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-3/README.md:33-42.
+
+- [ ] **OUT-1139** claudetto shall not carry CTX-616 (from `hooks.md`) as a checked context fact: With a refused ask (headless `dontAsk`, or default headless), `tool.check` gives decision `ask`, and the `tool.call` error text equals the ask's reason word for word or starts with a CLI refusal text; `PermissionDenied` does not fire. Fix `b80a5f1f` keeps the asked ids in `stopHooks` and counts a `tool.call` error as refused when its text is the ask reason or starts with a refusal text; an asked call that is allowed and then fails is still a look. Lab 1211 pass; mutants caught (no reason match: 1 fail; no refusal texts: 2 fail; all asked counted refused: 1 fail) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-14/README.md:60-80.
+
+- [ ] **OUT-1140** claudetto shall not carry CTX-617 (from `hooks.md`) as a checked context fact: Task 18.19, the credited fault: the first measure (18.9) missed 9 of 19 crediting replies. The held-out set held 60 positives and 30 negatives, written blind by a fresh subagent. The keep-list mutant fails 1 test and the text mutant fails 5. The cause of the miss is not missing tool output: a replay with judge output in the prompt flagged 5 of 7 withheld, against 4 of 7 without; replay is noisy and does not reproduce live 0 of 7; rewording the test text lifted the replay to 7 of 7. Round 1 held-out (30 positives, 30 negatives, 60 sessions, $0.55): recall among crediting replies 11/16 = 0.69 [0.44, 0.86], below the 0.75 target; false flags 0/30; all positives 12/30. Set 2 (60 positives, 30 negatives, $1.17): 12/12 recall [0.76, 1.00], 0/30; only 12 of 60 positives matched the credit regex (predicted 30), and 7 flagged positives the regex does not count. A Haiku replay of 30 negatives flagged 6, yet live flagged 0; Sonnet with tool output flagged 7 of 12 misses with 0 of 30 negatives (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:319; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-19/README.md:11-97.
+
+- [ ] **OUT-1141** claudetto shall not carry CTX-618 (from `hooks.md`) as a checked context fact: Live Stop hook `credited` fault (18.9), 30 positives with script-produced labels against 30 negatives, `claude-sonnet-5-5`, $0.68: all-positive recall 10/30 = 0.33 [0.19, 0.51], so 10/30 is a floor; among the 19 replies that credit the user 10/19 = 0.53 [0.32, 0.73]; the 11 non-crediting replies were never flagged; false flags 0/30; the same blocks held other faults in 17 sessions (unseen 10, unchecked 7). A STYLE system prompt induced the positives (Sonnet followed it in 19/30). A first design that seeded an assistant report in a resumed transcript made Sonnet refuse to credit anyone (6 sessions, discarded) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:309; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-9/README.md:30-79.
+
+- [ ] **OUT-1142** claudetto shall not carry CTX-619 (from `hooks.md`) as a checked context fact: Task 18.22 refuted the hypothesis that quoted text sits past RESULT_CHARS: it held for 10 of 10 blocked sessions and for 20 of 20 clean ones. The cause of the unseen false blocks, measured offline: all 10 blocked plugin sessions of 18.23 run 2 were graded on the short first reply, and every code span it quoted stood in a tool result (10/10 false). The earlier offline grader blocked 1/5 because it graded the long final reply written after the block, not the reply the hook graded; a regrade of 5 blocked replies flagged 1/5 with results cut at 400 characters and 1/5 at 4000, on different sessions. Cutting tool results to 400 characters is not the cause (10/10 flagged at 400, 9/10 at 4000). Rewording on the 10 blocked replies: old rule 10/10 flagged, a no-file:line rule 4/10, second rule 5/10, final rule 0/10; true positives kept 8/8. The residual output ratio was 1.43x, then 1.46x, against the 1.25x target; the 10 blocked sessions of 30 averaged 918.9 output tokens against 368.3 for the 20 clean ones. Rerun, 90 sessions, $3.55: output 376.0 base, 368.2 change, 371.8 nocut; turns 3.13, 3.00, 3.07; 30/30 fixed each (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:323; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-22/README.md:3-12.
+
+- [ ] **OUT-1143** claudetto shall not carry CTX-620 (from `hooks.md`) as a checked context fact: Task 18.38 on unfixed code, 12+12 blind cases: first-text recall 9/12 [0.47, 0.91], false flags 0/12; it misread "Not logged in / Please run /login" as a user-only interactive login and missed 3 of 5 such positives. The revised text, tuned on set 1, gives 12/12, so only set 2 counts: 12/12 [0.76, 1.00], 0/12; 72 Haiku calls cost $0.0418. The same calls raised asks and narrates on several negatives that leave a step to the user in prose. Limits: a failed non-Bash tool does not offer the code; only the turn's last Bash counts; live block frequency and rerun-after-block depend on real model replies and need a paid live run, so they are not claimed; a Bash non-zero exit is stored `is_error: true` (confirmed with a fake API) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-38/README.md:60-82.
+  ## Hooks and Events
+
+- [ ] **OUT-1144** claudetto shall not carry CTX-621 (from `hooks.md`) as a checked context fact: Held-out r4 runs 3-22 (20 runs) scored 474/480; every run was 23/24 or better and 14 runs were 24/24 (runs 13-22 on the shortened texts of commit `a3144659`). The misses were claim flip in runs 8, 11, 15 and 17 (the repeating one), claim drift in run 3, and ledger drift in run 20. Public set c1 scored 24, 23, 24 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-31/goal.md:5-8.
+
+- [ ] **OUT-1145** claudetto shall not carry CTX-622 (from `hooks.md`) as a checked context fact: The gate's ask decisions audited (`rules.generated.ts`, `rules.ts`, `refs.ts`, `recreate.ts`, `gate.ts`): `packages.ts`, `processes.ts` and `upstream.ts` only deny or forward engine verdicts. Across 395 probe log files in `/tmp/probe-1831/logs-r2`, every rule id fired 0 times as a gate ask (the 341 "requires approval" lines are Claude Code's own prompts); the gate keeps denials in memory with no log. Recommended per rule: deny 20 high-risk rules (for example `fs:overwrite_system_file`, `fs:delete_system_file`, `fs:move_credentials`, `fs:chmod_critical_location`, `fs:zfs_destroy`, `git:config_exec_hook`, `shell:eval_transformed_text`, `shell:decode_pipe_to_shell`, `shell:lolbin_download_exec`, `shell:powershell_encoded_command`); keep ask for git reset, clean, force-push, stash clear and curl-pipe-shell; allow when owned for `git:force_delete_branch`, `git:delete_ref` and `GATE_REF_MOVE` (read; fired counts measured, 0).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-34/asks.md:1-12.
+
+- [ ] **OUT-1146** claudetto shall not carry CTX-623 (from `hooks.md`) as a checked context fact: `betterleaks` run on the copied probe folder reports 7 findings, all fake fixtures in old plugin copies (`probe-17-6/none.ts`, `probe-141/arm-reorder/hooks/secrets.spec.ts` line 42, five in `probe-tui/plug/hooks/handoff/secrets.test.ts`). Copied probe files exclude request bodies (they hold the whole system prompt and user instructions), plugin copies, config folders, subfolders over 1 MB and files over 400 KB; `claude` debug logs were redacted of user config lines (read).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/README.md:1-31.
+  ## Hooks and Events
+
+- [ ] **OUT-1147** claudetto shall not carry CTX-624 (from `hooks.md`) as a checked context fact: Hooks never receive cost from Claude Code (issue 11008), so a cost reporter must read the session JSONL files.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
+  ## Hooks and Events
+
+- [ ] **OUT-1148** claudetto shall not carry CTX-626 (from `hooks.md`) as a checked context fact: Status line stdin on 2.1.319: `context_window_size` is the model window and `used_percentage` is against it; there is no theme key; `$.config.list()` returns `theme`; `$.session.usage({breakdown:"summary"})` is local. The Claude Code permission-modes page (read 2026-10-30) says modes set the baseline, rules layer on top, and allow rules have no effect in bypassPermissions; "auto mode drops broad allow rules on entry" is NOT stated.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured; cited (docs page).
+  Source: openspec/specs/status-line/spec.md:200; openspec/specs/low-hitl/spec.md:101.
+
+- [ ] **OUT-1149** claudetto shall not carry CTX-628 (from `hooks.md`) as a checked context fact: Hook uses that claudetto plugins lack, from 12 reference repos: SubagentStart read-only injection, TDD gate PreToolUse plus Stop, WorktreeCreate and WorktreeRemove layout, PreCompact, PostToolUse commit reminder, model switch events (`PreModelSwitch` and `PostModelSwitch` present on 2.1.326: 36 and 15 string hits); five repos yielded no hook config by regex (regex limit).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reading of twelve third-party repositories as untrusted data; not a Claude Code behaviour.
+  Basis: cited; untrusted data.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:163 (PreModelSwitch named); the 12-repo review: unresolved, no matching line found.
+
+- [ ] **OUT-1150** claudetto shall not carry CTX-629 (from `hooks.md`) as a checked context fact: Autonomous scheduled loop, one team (measured): a scheduled session wakes with no memory, reads a status file and task queue from the repo, works up to 4 tasks of roughly equal size, each going planner, builder, reviewer; 181 runs, 2,278 subagents, 463 merged tasks over a month; finished reviewed task cost fell $33 to $6.90 (-79%) at API prices; biggest step: lead and builders from Opus 5 xhigh to Opus 5.5 medium ($23-33 to $7.45, tokens per run halved, reviewer found fewer serious bugs); roles: orchestrator Opus 5.5 high, builder medium, builder-lite Sonnet 5.5 medium, reviewers Opus 5.5; about $6.7k API-equivalent per month on a $200 plan. One session is one branch, one worktree, one PR, archived at merge; the plan is written to a repo file before code. 2.1.326: `/loop` and `/schedule` present (binary string search). Baseline: partial; compare the claudetto-openspec loop design (not read).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured, one team.
+  Source: external/2026-10-14/export-Supercharging your max subscription!.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x4ixl9/supercharging_your_max_subscription/>).
+
+- [ ] **OUT-1151** claudetto shall not carry CTX-630 (from `hooks.md`) as a checked context fact: `claude -p` and Agent SDK credits (reported, citing the October 7 docs update): subscription-authenticated `claude -p` and SDK use subscription limits, not the new API credits; with an API key from the linked Console org they use monthly credits (Max 5x 100 USD, Max 20x 200 USD, Team Standard 20 per seat, Team Premium 100 per seat, pooled cap 500 USD); credits are for API, Agent SDK, and Managed Agents, not Claude Code or chat. Check through clawdipedia-docs before use.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported; the source is external/2026-10-08/export-PSA- Anthropic's October 7 update is actually good news — Claude Agent SDK and claude -p still work.jsonl:2 (a Reddit post, not Anthropic text). Baseline: missing.
+  Source: external/2026-10-08/export-PSA- Anthropic's October 7 update is actually good news — Claude Agent SDK and claude -p still work.jsonl:2 (Max 5x $100, Max 20x $200, Team Standard $20 and Team Premium $100 per seat, Team pool capped at $500 per month).
+
+- [ ] **OUT-1152** claudetto shall not carry CTX-631 (from `hooks.md`) as a checked context fact: `--settings` with all 14 ids `false`: the init `plugins` list is `[]` and no builtin trace appears.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1153** claudetto shall not carry CTX-632 (from `hooks.md`) as a checked context fact: A project `.claude/settings.json` with `agents-md` and `plugin-authoring` `false`: no builtin trace appears; the init `plugins` list was not captured.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1154** claudetto shall not carry CTX-633 (from `hooks.md`) as a checked context fact: A plugin-shipped `settings.json` with the same keys leaves the builtin traces present; the init `plugins` list was not captured.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1155** claudetto shall not carry CTX-634 (from `hooks.md`) as a checked context fact: After a settings write, the watcher reads the file about 1.2 to 1.5 s later (debug log: write 18:55:40.810, "Settings changed from userSettings" 18:55:41.965; interactive 1.5 s). With a 3 s wait, `Skill plugin-authoring` returns "Unknown skill: plugin-authoring"; with no wait, in two lead runs, the skill still launched. `yY()` re-reads settings on each call (`chunk-dafpvz32.js@80491`; the 2.1.327 `LJ()` calls `Hr()` on each call), so from then on builtin skills and commands are gone. The skill listing already sent in request 1 stays in history until the next clear.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states (a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call); chunk-yjs2ay06.js@72522 (claude 2.1.325 binary; the module is gone from 2.1.327, where the same builtin enabled/disabled read is `xhe` in chunk-dafpvz32.js@80491: it takes `enabledPlugins[<name>@builtin]` from the settings, default `defaultEnabled ?? true`).
+
+- [ ] **OUT-1156** claudetto shall not carry CTX-637 (from `hooks.md`) as a checked context fact: Builtin hooks modules seen loaded on 2.1.325 (debug log, vanilla plus the interactive run): `agents-md` (session.start, prompt.context, command.run, session.compact, prompt.submit, turn.*), `plugin-authoring` (skill.prompt, tool.check, tool.call), `privacy` (tool.check), `diff` (session.start, ui.*, command.run, tool.*).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325 (debug log).
+
+- [ ] **OUT-1157** claudetto shall not carry CTX-642 (from `hooks.md`) as a checked context fact: `$.env.get` sees a key in settings `env` (`seen-1`); a project `.env` is not read (P13); no header gives 403, a made-up key gives 401 (P9). 2.1.326: present (`$.env.get`; binary string search).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/2-1-325-rearchitecture/tasks.md:45; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:86.
+
+- [ ] **OUT-1158** claudetto shall not carry CTX-644 (from `hooks.md`) as a checked context fact: 2.1.319 engine: it refuses a hooks module that passes `$` to a function expression outside the hook's own file; one unmatched hook per event per module; the loader refuses `node:path`, a package and a JSON file; a noun that one plugin adds reaches another in a live session, but a consumer with `dependencies` does not load alone. On 2.1.327 the function-expression refusal is present (chunk-dafpvz32.js@60516); the other statements rest on the probes in the Source line (2.1.319 to 2.1.321) and were not rerun. A hook that must see every value uses a matcher that takes every value (`{fork:[true,false]}`); `runs.ts` holds such matchers. A second `turn.step` hook without a matcher is refused: on 2.1.327 `claude plugin validate` of a module with two matcherless `on("turn.step", async function* ...)` calls fails with "on(\"turn.step\") is registered twice without a matcher", and one such call passes (probe `claude plugin validate`, 2026-11-18). Whether the live loader refuses it the same way is not run; validate is the same engine check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:365@088a227c9^ (function-expression refusal); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:259@088a227c9^ (matcherless double registration does not load); openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:9@088a227c9^; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:677@088a227c9^ (P7: `node:path`, a package and JSON refused); observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [ ] **OUT-1159** claudetto shall not carry CTX-645 (from `hooks.md`) as a checked context fact: `fs.list` gives a symlink mtime 0; `$.fs.stat` with `resolve` gives the target; `$.fs` cannot move a folder; `$.fs.write` creates folders and has no append; `$.session.cwd()` answers only once a session is bound; `$.process.run` runs in the session folder; the hooks runtime has `crypto.subtle`, no `Buffer`, no `process`. 2.1.326: present (`$.fs.*`, `$.session.cwd`, `$.process.run`; binary string search); `$.fs` move absent (0 hits for `fs.move`).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: none located in openspec/ at 088a227c9^ (a search for mtime, Buffer, crypto.subtle and fs.move found nothing; the earlier cited design.md:314 is an unrelated passage). On 2.1.327: `fs.move` has 0 hits, and `crypto.subtle.digest` is a host binding (chunk-b0yr0k8v.js@275202). The symlink mtime 0, no `Buffer`, no `process`, no append and the `$.session.cwd` timing statements are Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-1160** claudetto shall not carry CTX-646 (from `hooks.md`) as a checked context fact: `$.command.run` with origin `plugin` is accepted for `/goal`; a plugin-submitted `/goal` starts no turn, a user-typed `/goal` does; `goal_status` is a sentinel row with null text; `$.command.register({name})` lists `/name` without the plugin prefix. 2.1.326: present (`$.command.run`, `$.command.register`; binary string search).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured 2.1.319.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:314.
+  ## Hooks and Events
+
+- [ ] **OUT-1161** claudetto shall not carry CTX-647 (from `hooks.md`) as a checked context fact: A failing pre-push hook stops `git push` (bare remote probe: rc 1, no main; rc 0, main updated). A `gh release create` goes through the API and is not covered. A push once ran before verify, 5 s after the commit. Cure: the bedrock pre-push runs `just verify`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:410.
+
+- [ ] **OUT-1162** claudetto shall not carry CTX-648 (from `hooks.md`) as a checked context fact: 2,311 `queued_command` rows hold 1,325 task notifications, 489 hand-backs, and 41 side notes. Lead-to-subagent corrections cluster on "Stop every swift build" (9), commit failing in worktrees (5), Conventional Commits (7), `oxlint --fix-suggestions` (5). 457 `task_status` rows repeat only after a compaction (96 of 96).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:648.
+
+- [ ] **OUT-1163** claudetto shall not carry CTX-651 (from `hooks.md`) as a checked context fact: `tool.check` guards cost under 1.2 ms (ToolSearch 1.1 own, 2.6 total; mcp echo 0.2/1.0; Read 0.2/6.7; Bash 0.4/2.8). The engine sends no `tool.check` for the plugin's own registered tool `mcp__claudetto__advisor`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:242; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:243.
+
+- [ ] **OUT-1164** claudetto shall not carry CTX-653 (from `hooks.md`) as a checked context fact: The `/init` prompt asks for build, lint, and test commands in prose with no per-language table, so it overlaps nothing in `starter-families.ts` (11 families with bounded flags). A pre-filled starter repo gets the suggest-improvements branch.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured (read).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:113; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:116.
+
+- [ ] **OUT-1165** claudetto shall not carry CTX-655 (from `hooks.md`) as a checked context fact: Request size on a `hi` turn: the plugin tag sends 18,302/18,294/18,351 B (Sonnet/Opus/Haiku, system 6,104); the current build sends 21,067/20,540/20,422 B (system 8,726/8,207/8,032) plus an 11,639 B prompt-type Stop side call. The stop-hook-error notice came from the fake API answering OK, not JSON.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:232; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:233.
+
+- [ ] **OUT-1166** claudetto shall not carry CTX-656 (from `hooks.md`) as a checked context fact: The paid eval gains: changelog-under-named-release +0.67 on Haiku and Opus, +0.44 on Sonnet. no-opener-after-a-dispute passed no Opus run in either arm. test-behaviour-not-wording has no Opus no-plugin arm after the $6 ceiling. A rerun of no-unasked-revert passed 3 of 3 (noise).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:259; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:260; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:261.
+
+- [ ] **OUT-1167** claudetto shall not carry CTX-657 (from `hooks.md`) as a checked context fact: `clawdipedia-docs` `read_page` describes `section_heading` as H2 and answers "No H2 section" for an H3 it lists. Offset reading works. The owner is clawdipedia-docs, outside the repo.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Defect in the clawdipedia-docs tool, which lives outside this repository.
+  Basis: reported (read).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:759.
+  ## Hooks under Safe Mode
+
+- [ ] **OUT-1168** claudetto shall not carry CTX-881 (from `hooks.md`) as a checked context fact: One user went from about twenty per-rule hooks to one logging dispatcher after a hook stopped firing and was noticed only because the agent began breaking its rule. Each hook event claudetto handles writes a log line (REQ-KERNEL-002), so a dead hook shows as a missing line.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-01/export-Progressive disclosure- event bus approach.jsonl:2.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
