@@ -2,11 +2,7 @@
 
 ## Prompt Commands and Local Commands
 
-- [ ] **REQ-SETUP-004** claudetto shall answer a bare `/statusline` from a Mod `skill.prompt` text of 323 chars, so no subagent run starts.
-  Open: built as a `skill.prompt` hook (hooks/statusline/command.ts, 36 tests pass), but a headless run lists no `/statusline`, so the firing and the 0-request answer are unprobed on 2.1.327 and need a TUI run. The built text keeps the main-model edit path, so no subagent starts once the hook fires.
-  Acceptance: bare `/statusline` takes 32 ms and 0 tokens (file route 3.99 s and 55,376 tokens); no `statusline-setup` Agent call is made, since with `amod` withholding `statusline-setup` the baseline pass-through gives "Agent type 'statusline-setup' not found". Verification: probe.
-  Basis: measured, claude 2.1.318. The stock text is 90 chars and its first subagent request alone is 20,234 bytes. Status: partial at 088a227c (`STATUSLINE_DESCRIPTION` and `statuslineEdit` in the setup feature; no `/statusline` override found in the surface feature). The hook name `skill.prompt` exists in 2.1.326 (chunk-dafpvz32.js@4253 (2.1.327)).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2966; plugins/claudetto/hooks/features/setup/setup.ts:38@088a227c.
+- [x] **REQ-SETUP-004** Moved Out as OUT-2349: the item needs a paid model run.
 
 ## Settings Values
 
@@ -24,11 +20,7 @@
 
 ## Builtin Disable
 
-- [ ] **REQ-SETUP-010** claudetto shall keep the builtin ids that the supported Claude Code build registers in one constant (13 on 2.1.327; 14 on 2.1.325 and 2.1.326, which also registered `cc-plugin-claude-test`), and diff it against the registration list on each Claude Code release.
-  Open: BUILTIN_IDS holds the 13 ids and matches the 13 registrations read in chunk-syz79m2z.js on 2.1.327 (2026-11-19); the Claude Code binary has no command that lists them, so the release diff is a manual read and no failing check exists.
-  Acceptance: one constant holds the ids; a release check fails when the registration list differs from it. Verification: test.
-  Basis: cited. Status: partial at 088a227c (one constant of 11 ids, `plugins/claudetto/hooks/features/setup/settings.ts:64`).
-  Source: plugins/claudetto/hooks/features/setup/settings.ts:64@088a227c; chunk-dafpvz32.js@80491 (2.1.327; first read in claude 2.1.326 binary: the builtin registry `builtinPlugins`, ids `<name>@builtin`, enabled from settings `enabledPlugins`; the 2.1.325 citation was chunk-yjs2ay06.js@72522, `yY()` registers 14); chunk-syz79m2z.js@450-1844 (2.1.327: 13 registrations, no `cc-plugin-claude-test`; see CTX-440).
+- [x] **REQ-SETUP-010** Moved Out as OUT-2350: the item describes a part that plugins/ does not ship.
 
 - [x] **REQ-SETUP-011** claudetto shall, at session start, read user settings and write `false` for any id in the REQ-SETUP-010 constant that is not `false`, then tell the user to run `/reload-plugins` (interactive) or restart (headless).
   Acceptance: after a drift, user settings hold `false` for every id in the constant and the user sees the notice; a launch after the write loads no builtin. The ids include `cc-plugin-privacy@builtin`. Verification: probe.
@@ -68,9 +60,9 @@
 
 ## Deny a Tool Name as a Size Lever
 
-- [x] **REQ-SETUP-033** claudetto shall deny eight tools by name in `permissions.deny`, which removes each definition from the request: Workflow, ScheduleWakeup, ReportFindings, CronCreate, CronDelete, CronList, EnterPlanMode, ExitPlanMode (on 2.1.311 denying the first three took the first request from 42,676 to 30,510 chars, 12,166 = three definitions; on 2.1.312 from 42,879 to 30,713). A deny of an absent tool is dropped unless the real login shows it; no mod answer removes a built-in tool and `settings.read` does not reach permission rules. The surface-trim purpose is CLI and TUI only: turn off claude.ai, web, mobile, cloud, and onboarding surfaces by setting, env, or deny by name. Built-in agents go off with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`; the old `permissions.deny Agent(<name>)` is dropped by the 2.1.323 change.
-  Acceptance: The first request lacks the eight tool definitions. Verification: probe.
-  Basis: measured. Status: have at 088a227c. Claude 2.1.327: `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` is present (chunk-2ew0jg68.js@10909); on 2.1.327 the eight-tool deny removes 12,857 bytes from a `-p` request (fake-API probe); EnterPlanMode and ExitPlanMode are already absent in `-p` mode, so six of the eight were confirmed removed.
+- [x] **REQ-SETUP-033** claudetto shall deny seven tools by name in `permissions.deny`, which removes each definition from the request: Workflow, ScheduleWakeup, ReportFindings, CronCreate, CronDelete, CronList, EnterPlanMode (ExitPlanMode stays allowed; on 2.1.311 denying the first three took the first request from 42,676 to 30,510 chars, 12,166 = three definitions; on 2.1.312 from 42,879 to 30,713). A deny of an absent tool is dropped unless the real login shows it; no mod answer removes a built-in tool and `settings.read` does not reach permission rules. The surface-trim purpose is CLI and TUI only: turn off claude.ai, web, mobile, cloud, and onboarding surfaces by setting, env, or deny by name. Built-in agents go off with `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`; the old `permissions.deny Agent(<name>)` is dropped by the 2.1.323 change.
+  Acceptance: The first request lacks the seven tool definitions. Verification: probe.
+  Basis: measured. Status: have at 088a227c. Claude 2.1.327: `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` is present (chunk-2ew0jg68.js@10909); on 2.1.327 the seven-tool deny removes 12,857 bytes from a `-p` request (fake-API probe); EnterPlanMode and ExitPlanMode are already absent in `-p` mode, so five of the seven were confirmed removed.
   Source: openspec/specs/surface-trim/spec.md:48; openspec/specs/surface-trim/spec.md:147; plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c.
   Verified: probe, claude 2.1.327, 2026-11-18, fake API on :18431: after the fill the next `-p` request held 9 tools and 31,781 bytes, the seven denied tools absent (abed830ed). Revised: ExitPlanMode stays allowed, because a plan the user starts with shift-tab is presented through it, so seven tools are denied.
 
@@ -86,21 +78,13 @@
 
 ## Statusline Edit Text
 
-- [ ] **REQ-SETUP-036** claudetto shall name the settings file in the `/statusline` edit text under `CLAUDE_CONFIG_DIR` when it is set, and under HOME otherwise, so the model edits the file that bare `/statusline` writes.
-  Open: the text names the file under CLAUDE_CONFIG_DIR else HOME (statuslineEdit, tested), but its firing needs the same TUI run as REQ-SETUP-004.
-  Acceptance: the lab case "the /statusline edit text names settings.json under CLAUDE_CONFIG_DIR, else under HOME" passes; a paid TUI run on `claude-haiku-5-5` with `CLAUDE_CONFIG_DIR=evidence/tmp/probe-sl/cfg` read `evidence/tmp/probe-sl/cfg/settings.json` (about 21k tokens, $0.0044). Verification: test.
-  Basis: measured. Status: have at 088a227c.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:145; plugins/claudetto/hooks/features/setup/setup.ts:243@088a227c; plugins/claudetto/hooks/features/setup/text.ts:25@088a227c.
+- [x] **REQ-SETUP-036** Moved Out as OUT-2351: the item needs a paid model run.
 
 ## Setup Speed
 
 ## Sandbox Proxy
 
-- [ ] **REQ-SETUP-039** claudetto shall set up the sandbox so that every tool that needs the network proxy reaches it, with one general setting and no per-tool variable such as one for Java.
-  Open: probe on 2.1.327 (2026-11-18): with the sandbox on, Bash env had HTTPS_PROXY and CLOUDSDK_PROXY_ADDRESS, but JAVA_TOOL_OPTIONS held only -Djava.net.preferIPv4Stack=true, with no proxy host flags; no general setting is known to fix that, and Gradle was not run.
-  Acceptance: after setup, Gradle, gh, and a second non-Java tool pass through the sandbox proxy with no tool-specific option. Verification: test.
-  Basis: reported, user. Status: missing at 088a227c (`git grep -n -i "proxy" 088a227c -- plugins` finds no sandbox proxy setting)
-  Source: reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14535.
+- [x] **REQ-SETUP-039** Moved Out as OUT-2352: the item conflicts with a rule.
 
 ## Surface Trim
 
