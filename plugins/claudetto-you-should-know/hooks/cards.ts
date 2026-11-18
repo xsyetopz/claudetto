@@ -71,7 +71,7 @@ export function parseExplanation(text: string): readonly Card[] {
 		if (title) {
 			flush();
 			sawFence = false;
-			card.title = sliceCodePointsHead(
+			card.title = truncateAtWordBoundary(
 				cleanOneLine(title[1] ?? title[2] ?? ""),
 				MAX_TITLE_WIDTH,
 			);
