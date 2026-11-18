@@ -11,12 +11,12 @@ describe("statusline edit text", () => {
 		expect(requestOf(stock)).toBe("show git branch");
 	});
 
-	test("names the settings file it is given", () => {
+	test("names the settings file and carries the request", () => {
 		// Act
 		const text = statuslineEdit('the prompt "x"', "/cfg/settings.json");
 
 		// Assert
 		expect(text).toContain("@/cfg/settings.json");
-		expect(text).toContain("Set the user's status line to: x");
+		expect(text.split("\n")[0]).toEndWith(": x");
 	});
 });

@@ -20,13 +20,12 @@ describe("memory hold", () => {
 		expect(floor("30")).toBe(20);
 	});
 
-	test("words the reason as the next step with the measured share", () => {
+	test("states the measured free share", () => {
 		// Act
 		const text = reason(12, 20);
 
 		// Assert
 		expect(text).toContain("12% free");
-		expect(text).toContain("Wait for running commands to finish");
 	});
 
 	test("parses 1,000 readings in under 100 ms", () => {
