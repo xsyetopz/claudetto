@@ -27,7 +27,7 @@ export const foldAtMentions = (text: string): string =>
 export const foldReferencePlaceholders = (text: string): string =>
 	text.replace(
 		/\[(Pasted text|Image|\.\.\.Truncated text|\u2726 Team setup guide) #(\d+)(?: \+\d+ lines)?(\.)*\]/g,
-		(m) => `\`\uFF3B${m.slice(1)}\``,
+		(m) => `\uFF3B${m.slice(1)}`,
 	);
 
 export const splitDirectiveKeywords = (text: string): string =>

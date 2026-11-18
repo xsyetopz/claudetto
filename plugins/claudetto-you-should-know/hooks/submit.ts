@@ -12,6 +12,7 @@ import { isNoteRead, isOpenView, rowOf, type Watched, withViewCleared } from "./
 import { markKnown } from "./store";
 
 export function registerSubmit(on: On, ctx: Ctx): void {
+	// Fail open: a throwing hook must not block the prompt or the command; pass the event on unchanged.
 	on("prompt.submit", async ($, e, next) => {
 		const now = Date.now();
 		const snapshot = new Map<string, Watched>(ctx.idle);
@@ -78,15 +79,16 @@ export function registerSubmit(on: On, ctx: Ctx): void {
 			}
 		}
 		return result;
-	});
+	}).catch((_$, e, next) => next(e));
 }
 
 export function registerCommand(on: On, ctx: Ctx): void {
+	// Fail open: a throwing hook must not block the prompt or the command; pass the event on unchanged.
 	on("command.run", { command: "plugin" }, async ($, e, next) => {
 		if (isPersonsPrompt(e.origin.kind) && isOffCommand(`/${e.command} ${e.args}`)) {
 			await ranOffCommand($, ctx.off);
 		}
 		return next(e);
-	});
+	}).catch((_$, e, next) => next(e));
 }
 
