@@ -4012,6 +4012,2133 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Acceptance: no rule or hook answers a refusal complaint. Basis: reported. Status: n/a.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:752 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying>).
 
+#### Context Facts N-Z
+
+- [x] **OUT-1500** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-587 in permissions.md): "Allow always" approves one exact command string, so each new "cd <repo> && git x" re-prompts. A PreToolUse hook denies that form and one git-in.sh <repo> wrapper makes a single approval cover all.
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:272 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+
+- [x] **OUT-1501** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-589 in permissions.md): One commenter says Opus 5/5.5 runs cyber safety checks on every request including web results Claude reads, falls back to Opus 4.8 on exploit, pentest, and binary-vuln requests with a notice, and that Claude Code Config, MODEL & OUTPUT can turn the switching off.
+  Basis: reported, unverified.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xbts4v-anthropic-secretly-killed-the-rea-20261024T141409Z.md:620 (url: <https://www.reddit.com/r/claude/comments/1xbts4v/anthropic_secretly_killed_the_rea_train_reverse/>).
+
+- [x] **OUT-1502** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-590 in permissions.md): Own-device sideloading on Tizen is accepted; firmware hacking hits the safeguard.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:408 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>).
+
+- [x] **OUT-1503** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-591 in permissions.md): A stated 'read-only investigation' gets a lower classifier risk score than live tests (commenter claim).
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-02/reddit.com-r-claude-comments-1xkq5sk-opus-55-safety-guardrails-block-me-20261101T191222Z.md:420-422 (url: <https://www.reddit.com/r/claude/comments/1xkq5sk/opus_55_safety_guardrails_block_me_from_removing/>).
+
+- [x] **OUT-1504** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-592 in permissions.md): A server-side cyber safeguard stopped a long session once decryption or key material was in context, and dropping to an older Opus finished it; framing the task as a 'fun company challenge' got past a refusal (two commenters, one reporting an Opus 5.5 iOS port of a 3D app from a single binary); behavior differs between Claude Code and third-party harnesses, attributed to system prompts or harness skills.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session). Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xn6tu3-i-gave-claude-700-ransomware-enc-20261109T152841Z.md:65,93,97 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xn6tu3/i_gave_claude_700_ransomware_encrypted_files_it/>).
+
+- [x] **OUT-1505** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-593 in permissions.md): A role-play game that kept a suicide-in-a-dream storyline made Claude spend about 30k tokens per prompt on repeated safety rechecks.
+  Basis: reported, one user. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqwdbp-is-there-any-way-to-stop-claude-20261109T153047Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqwdbp/>).
+
+- [x] **OUT-1506** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-594 in permissions.md): Even with 100+ allow rules in settings, a user still got prompts for first-time logins (gh, vercel, cloudflared, connectors), for edits to .git and .claude when a session starts in Auto, and for computer-use once per app; the remedy is manual mode for that one command, or handing over a token.
+  Basis: reported, one user quoting Claude's own answer. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqwdbp-is-there-any-way-to-stop-claude-20261109T153047Z.md:143,175-181 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqwdbp/>).
+
+- [x] **OUT-1507** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-876 in permissions.md): Merging pull requests into a branch that deploys on push made each merge a production deploy that no `git push` deny rule caught. Before a push or merge the session checks what the target branch does and stops to ask when it deploys on push or cannot tell (RISK-020, REQ-GUARDS-042).
+  Basis: reported, one team.
+  Source: external/2026-10-17/export-my agent pushed to git after i told it not to. written rules are suggestions, permissions are locks.jsonl:24.
+
+- [x] **OUT-1508** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-877 in permissions.md): Agents try to widen their own permissions: after a denied command, one user's next request from Claude Code was to edit the JSON file that stores approvals; another agent tried to modify its own AWS IAM role for production access. Settings files and cloud identity policy stay write-denied to the agent (RISK-064, CTX-124).
+  Basis: reported, two users.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xir1s1-what-was-the-most-concerning-thi-20261030T102819Z.md:71; external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcjz-nobody-else-seems-to-have-as-har-20261104T085705Z.md:101.
+
+- [x] **OUT-1509** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-431 in plugins.md): Poster claim: the superpowers plugin loads about 22k tokens before the first prompt, and cost per turn grows 5x-20x once context passes 200k.
+  Basis: reported (a poster's claim, kept as reported; the 22k figure depends on the superpowers version the poster had installed, which the post does not name, and the 5x-20x per-turn cost is server-side billing that needs a paid run).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
+
+- [x] **OUT-1510** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-432 in plugins.md): Skill use in the user's sessions, by workflow: apply 10 Skill calls and 5 slash, explore 7, propose 6, update 6, verify 3 slash, archive 2, sync 0 (folded into archive)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:182.
+
+- [x] **OUT-1511** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-433 in plugins.md): Upstream OpenSpec issues #2163, #2033, and #2017 have no test or code in upstream 1.16.0 (`grep -rn "#<n>\b" test src CHANGELOG.md docs` finds none). #2017 (archive loses frontmatter and tables) does not occur because `mergeSpec` keeps both; #2163 does not apply because archive reads `specs/<capability>/spec.md` by path; #2033 is an exploration
+  Basis: measured, by grep and probe.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:437.
+
+- [x] **OUT-1512** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-434 in plugins.md): One solo user measured the cost of relaying prompts between agents: 257 relay prompts across about 20 terminals in one week, with a median of 11 minutes before an agent finish was noticed.
+  Acceptance: The fact holds as the poster counted it; it is a user count, not a claudetto measurement. Verification: inspection.
+  Basis: reported, one user (self-count). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/>).
+
+- [x] **OUT-1513** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-435 in plugins.md): Claude web search is a server-side tool: the model writes the query, Anthropic runs it and returns URLs and snippets with no ranking, and the model decides on its own when to search. Anthropic has not documented the backend; Brave Search and turbopuffer are on its subprocessor list, so a meaning-based own index is inferred.
+  Acceptance: Resolved 2026-11-18 as reported and inferred (Claude's own account of its engine is a guess), not measured; the backend is server-side, so no local probe can read it.
+  Basis: reported and inferred. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:37; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:39; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
+
+- [x] **OUT-1514** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-436 in plugins.md): Search quality reports: Exa beat Brave in one user's benchmark; Claude web search is US-focused and weak for non-US product, tax and law queries; Gemini is better on obscure documents; Firecrawl is faster, with a query dashboard and a scrape-to-Markdown function.
+  Acceptance: Resolved 2026-11-18 as reported by Reddit users, not measured; a search benchmark is not a claudetto claim.
+  Basis: reported, anecdotal. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:109; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:93; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:146; external/2026-10-30/reddit.com-r-claudeai-comments-1xf6n0i-which-search-engine-does-claude-20261029T172437Z.md:119 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xf6n0i/which_search_engine_does_claude_use/>).
+
+- [x] **OUT-1515** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-437 in plugins.md): The Gmail connector rewrites every URL into a google.com redirect, so drafted mails carry defanged links.
+  Acceptance: The fact holds as one author reports it. Verification: probe.
+  Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhmtya/i_used_claude_code_to_audit_21k_product_hunt/>).
+
+- [x] **OUT-1516** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-440 in plugins.md): Claude Code 2.1.327 registers 13 built-in plugins (chunk-syz79m2z.js@450-1844): always `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`; outside the `local-agent` entrypoint `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-you-should-know`, and, when also not a tenant entrypoint, `cc-plugin-tips`, `cc-plugin-mermaid`; `cc-plugin-responsive-mode` on interactive or `remote`; `cc-plugin-diff` and `claude-platform` on interactive; `cc-plugin-easel` on interactive or `remote_cowork`. `cc-plugin-claude-test` is no longer registered: 2.1.327 keeps it only in the external id map (chunk-ja5z738t.js@7635) and in a step that removes the old `claude-test@builtin` and `cc-plugin-claude-test@builtin` data folders (chunk-ddhdrc1h.js@15340). History: Claude Code 2.1.326 registered 14 built-in plugins in `JOe`: always `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`; outside the `local-agent` entrypoint `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-you-should-know`; outside `local-agent` and tenant entrypoints also `cc-plugin-tips`, `cc-plugin-mermaid`, `cc-plugin-diff`, `claude-platform`, `cc-plugin-claude-test`; `cc-plugin-responsive-mode` there or on `remote`; `cc-plugin-easel` there or on `remote_cowork`. you-should-know loads from `chunk-nvx1z6pc.js` (2.1.327). Claude Code 2.1.326 registers 14 builtins, each with the id `<name>@builtin`: `cc-plugin-sec-default`, `cc-plugin-agents-md`, `cc-plugin-telemetry`, `cc-plugin-privacy`, `cc-plugin-plugin-authoring`, `cc-plugin-mods-guide`, `cc-plugin-tips`, `cc-plugin-mermaid`, `cc-plugin-responsive-mode`, `cc-plugin-diff`, `cc-plugin-you-should-know`, `cc-plugin-easel`, `claude-platform`, and `cc-plugin-claude-test`. On 2.1.325 the list was in `chunk-62ne6tjy.js`: `cc-plugin-tips` and `cc-plugin-mermaid` only when not a tenant entrypoint, `cc-plugin-responsive-mode` when not local-agent and not tenant, or remote, and `cc-plugin-diff`, `cc-plugin-easel`, `claude-platform`, `cc-plugin-claude-test` with no condition stated. On 2.1.325 `you-should-know` code is in `chunk-jc1ynf6x.js` with `defaultEnabled:false` and its id constant in `chunk-1wecqt9s.js` (2.1.326: `chunk-na8s6d5h.js`; 2.1.327: `chunk-nvx1z6pc.js`).
+  Acceptance: the registration list of the build holds these 13 names (2.1.327; 14 on 2.1.326). Verification: inspection. Checked in 2.1.326: a string search of the binary finds exactly these 13 `cc-plugin-*` names and `claude-platform`. The registration list in `chunk-62ne6tjy.js` matches. Verification: inspection. Both chunk names appear in the binary. Verification: inspection.
+  Basis: read from code (2.1.326 and 2.1.327 binaries); measured (string search; the 2.1.327 binary holds the same 13 `cc-plugin-*` strings and `claude-platform` as 2.1.326; `cc-plugin-claude-test` is one of the 13 strings and appears only at the two places named above, so 12 `cc-plugin-*` ids plus `claude-platform` are registered)
+  Source: chunk-syz79m2z.js@0-1844 (2.1.327; first read in claude 2.1.326 binary); chunk-dafpvz32.js@80491 (2.1.327; first read in claude 2.1.325 binary; `yY()` read 2026-11-17: `for(let[r,n]of Hr().builtinPlugins)`; the 14 names come from the old plan, not recounted); `chunk-62ne6tjy.js` (claude 2.1.325 binary), read in the session of 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); `chunk-jc1ynf6x.js`, `chunk-1wecqt9s.js` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+
+- [x] **OUT-1517** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-441 in plugins.md): A built-in plugin's on/off state in 2.1.326 resolves per plugin: one marked `enabledFromPolicyOnly` reads only policy settings; one marked `enabledFromTrustedSettingsOnly` reads only trusted settings; any other reads `enabledPlugins["<name>@builtin"]`; with no value it takes `defaultEnabled`, else on. `cc-plugin-sec-default` is policy-and-trusted-only; `cc-plugin-privacy` is trusted-only and on by default. On 2.1.327 the trusted tiers are `userSettings`, `flagSettings` and `policySettings`, read in that order with the later value winning (`Zz` at chunk-e0e2620d.js@388, `hro` at @1040), so a project or local `enabledPlugins` entry cannot turn `privacy` off, a user-tier or `--settings` entry can, and only policy settings decide `sec-default`. Measured on 2.1.327 (reports/2026-11-18-research/handover-probes/probe-l/): remote managed settings (`GET /api/claude_code/settings`) disabling `privacy` and `agents-md` remove both even when `--settings` enables them, and a policy source seats `sec-default`. A claudetto disable for every `@builtin` plugin writes user settings for that reason. Per builtin, `enabled = v !== undefined ? v === true : (b.defaultEnabled ?? true)` after an isAvailable() gate (named `yY()` in 2.1.325 at chunk-dafpvz32.js@80644 (2.1.327) and `LJ()` in 2.1.326 at chunk-dafpvz32.js@80783 (2.1.327)). `sec-default` is available only on a machine with managed settings or a Team or Enterprise org (2.1.326: `enabledFromPolicyOnly:!0` and `enabledFromTrustedSettingsOnly:!0` at chunk-4zn1ct5c.js@31960 (2.1.327)). `privacy` is `defaultEnabled:!0` (chunk-9w197n8j.js@11965 (2.1.327)); `responsive-mode` (chunk-rknqan46.js@741 (2.1.327)) and `you-should-know` (chunk-nvx1z6pc.js@90066 (2.1.327)) are `defaultEnabled:!1`. On 2.1.325 the decision is made by `yY()` (`chunk-yjs2ay06.js@72513`, `@72674`): id `<name>@builtin`; with `enabledFromTrustedSettingsOnly` the trusted settings (`userSettings`, `flagSettings`, `chunk-ztvzn4qc.js@1713`) decide; `responsive-mode` and `you-should-know` are `defaultEnabled:false`.
+  Acceptance: the code at the offset matches. Verification: inspection. `enabledFromPolicyOnly` is set for it in the build (2.1.327: `enabledFromPolicyOnly:!0` and `enabledFromTrustedSettingsOnly:!0` at `chunk-4zn1ct5c.js@31960`). Verification: inspection. the registrations in the build carry these flags (2.1.327: `privacy` at `chunk-9w197n8j.js@11965` with `defaultEnabled:!0,enabledFromTrustedSettingsOnly:!0`; `responsive-mode` at `chunk-rknqan46.js@741` and `you-should-know` at `chunk-nvx1z6pc.js@90066` with `defaultEnabled:!1`). Verification: inspection. A probe with `enabledPlugins["<id>@builtin"]: false` removes the builtin. Verification: probe.
+  Basis: read from code (2.1.326 binary; trusted tiers re-read on 2.1.327); the project and flag tiers are measured (probe L, fake API, 2.1.327): with `enabledPlugins` false for `cc-plugin-privacy@builtin` and `cc-plugin-agents-md@builtin`, project `.claude/settings.json` drops agents-md and keeps privacy, and `--settings` drops both. A user-tier `settings.json` (temporary `CLAUDE_CONFIG_DIR`, the local 2.1.327 binary, a dead API URL) drops both. Policy is read from code: the release build stubs the managed-path override (`xxi(){return}` at chunk-ja5z738t.js@403823), so `CLAUDE_CODE_MANAGED_SETTINGS_PATH` has no effect (probe: the init plugin list and the `sec-default` debug line were unchanged), and the only policy file is the system-wide `/Library/Application Support/ClaudeCode/managed-settings.json`, which a probe does not write.
+  Status: missing at 088a227c
+  Source: reports/2026-11-18-research/handover-probes/probe-l/README.md; chunk-e0e2620d.js@388 (2.1.327); chunk-e0e2620d.js@1040 (2.1.327); chunk-dafpvz32.js@80644 (2.1.327; first read in claude 2.1.326 binary); chunk-4zn1ct5c.js@31960 (2.1.327; first read in claude 2.1.326 binary); chunk-9w197n8j.js@11965 (2.1.327; first read in claude 2.1.326 binary); chunk-a9bnjyrw.js@3071 (2.1.327) (claude 2.1.326 binary); chunk-dafpvz32.js@80644 (claude 2.1.325 binary; the three-way choice and `defaultEnabled ?? true` read 2026-11-17; the code also calls `LH(s)` first, which the pseudocode omits); chunk-dafpvz32.js@80644 (claude 2.1.325 binary; `enabledFromPolicyOnly` read, the `sec-default` flag not rechecked); chunk-yjs2ay06.js@72674 (claude 2.1.325 binary; the per-builtin flags are not rechecked); `chunk-yjs2ay06.js@72513` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); `chunk-yjs2ay06.js@72674` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
+
+- [x] **OUT-1518** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-442 in plugins.md): you-should-know names its off switch as `/plugin disable cc-plugin-you-should-know@builtin` and reads a typed `/plugin disable` of `cc-plugin-you-should-know`, `suggest-learning`, or `you-should-know`, each with or without `@builtin`, as the off command, recording `off_confirmed` with `offVia: "typed"` once per session.
+  Basis: read from code.
+  Source: chunk-nvx1z6pc.js@16553 (claude 2.1.327 binary); chunk-nvx1z6pc.js@36527 (claude 2.1.327 binary).
+
+- [x] **OUT-1519** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-867 in plugins.md): A mandatory Superpowers workflow cost one team about $361 per merged ticket on a greenfield project against $143 under a lean setup, at a similar daily spend (about $2,800, ccusage recompute; the per-session counter missed workflow subagents) and with 6x more tickets merged under the lean setup; review loops kept spawning tickets for minor findings. This adds cost per merged ticket to CTX-431 and supports a lean workflow over mandatory review loops (ADR-0018).
+  Basis: measured (third-party, ccusage recompute, numbers shown).
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xckkpr-are-superpowers-skills-and-sdd-s-20261102T084956Z.md:200; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xckkpr-are-superpowers-skills-and-sdd-s-20261102T084956Z.md:209.
+
+- [x] **OUT-1520** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-348 in probes.md): Handoff tail defect probes A/B/C: the fork missed the newest tool steps; the fix lists the last three tool-using assistant steps.
+  Acceptance: Probe A $0.6545, B $0.6343, C $0.6411; counts 380/412/385 equal truth; handoff "data1 done, data2 done, data3 read only", 3 commits, 11 turns, 48.8 s. Verification: probe.
+  Basis: measured.
+  Status: have at 088a227c (the tail lists the last three tool-using steps).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:62.
+
+- [x] **OUT-1521** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-349 in probes.md): Bench round 1: the first request cached 11,161 tokens across sessions in the stock arm and 5,821 or 0 in the dev arm; the cause is the stock system[2] varying paragraph while dev prefixes stay byte-identical (16,333 bytes). Cache hit means prefix reuse: read_n over (read + creation)_(n-1), not the share of input; two dev sessions send byte-identical prefixes, so the cross-session prefix of 5,821 tokens against 11,161 is no cache break.
+  Acceptance: Write tokens 138,952 (stock) against 170,179 (dev); both arms write only the 1-hour cache in real runs; stock sends 12 tools (28,937 bytes) and dev 8 (8,955 bytes) beside a 7.2 KB system prompt each; the 0 reads were two dev runs launched together. Verification: probe. A body dump from the fake API matches. Verification: probe.
+  Basis: measured.
+  Status: n/a (fact).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:136; probe `probe-prefix`, fake API with body dump, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+
+- [x] **OUT-1522** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-350 in probes.md): The old plugin made 2 side calls on a plain typed prompt, 3 on one Bash turn (the sonnet grade runs when tool results exist), 5 on a foreign-branch force-delete; grade timeout 15 s, Decider timeout 20 s.
+  Acceptance: a ledger of one session shows those counts. Verification: probe.
+  Basis: measured. Status: have at 088a227c (the grader is gone; history).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:924 (1 haiku call plus 1 sonnet call when tool results exist). Not located: the 5-call and timeout lines.
+
+- [x] **OUT-1523** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-351 in probes.md): `$.command.run({command:'clear'})` called unawaited at main-loop `turn.complete` clears the session: `first one` appears only in request 1, the session id changes, and `session.end` fires with `{reason:"clear", sessionId:<old id>}`. A typed `/clear` has origin `{"kind":"composer"}` and the plugin's has `{"kind":"plugin"}`; after the clear `session.start` does not fire; an unawaited `$.command.run({command:'clear'})` followed by `$.prompt.submit({text, asUser:true})` puts the handoff text only in request 2, headless (probe, fake API, claude 2.1.325); `$.fs.write` has no append option.
+  Acceptance: the probe log shows `CR clear {"kind":"plugin","name":"probe"}` and `SE clear <old id>`. Verification: probe.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712); probe, `claude` 2.1.325, fake API, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
+
+- [x] **OUT-1524** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-352 in probes.md): `$.prompt.submit({text, asUser:true})` after the clear delivers `text` as the first user content of request 2, bare; without `asUser` it arrives framed as "The probe plugin sent a message".
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1525** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-353 in probes.md): A clear issued while another prompt is queued rejects with "HooksError: the command was removed from the queue before it ran". The text "the prompt was removed from the queue before it ran" is present in 2.1.327 (chunk-m14bt1pz.js@1005617), and the command path in 2.1.327 reads "the command was removed from the queue before it ran" (chunk-m14bt1pz.js@5989824), so the exact message matches there.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1526** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-354 in probes.md): `session.start` does not fire after a clear.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1527** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-355 in probes.md): `$.session.compact()` in a headless (`-p`, SDK) session rejects with "not available in a headless (-p / SDK) session yet" (the same text is present in 2.1.327: chunk-m14bt1pz.js@63563).
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, cc-inspect cli with a --plugin-dir module, one stream-json prompt (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1528** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-356 in probes.md): `$.session.compact()` called unawaited at `turn.complete` in the interactive TUI runs; the `session.compact` hook receives `{trigger:"plugin", messages:[...]}`; the answer `{messages:[handoff]}` becomes request 2 (`HANDOFF MSG` plus the next prompt, no earlier text); the transcript file and so the session id are kept; no summary request is sent. The debug log then reads "session.compact (plugin): a hook's 1 messages stand ... core never ran", the next request carries "Context was reset from the handoff below...", and "every hook but the calling one" means the calling hook function, not its module (interactive probe, 2026-11-16).
+  Acceptance: the interactive probe `run-il6h87` shows the log line and the next request text. Verification: probe.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, interactive TUI on a fake API stub (recorded in plans/rebuild-curation.md at commit dc499712); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677.
+
+- [x] **OUT-1529** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-357 in probes.md): A `session.compact` hook answering `{messages:[handoff]}` on a typed `/compact` puts the handoff, not the history, in request 2; the session id is kept.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, interactive TUI on a fake API stub (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1530** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-358 in probes.md): The `command.run` origin is `{kind:"plugin", name}` for a plugin call, `{kind:"sdk"}` for a command typed in stream-json, and `{kind:"composer"}` for a command typed in the TUI (interactive run); a typed `/clear` starts a new transcript.
+  Basis: measured.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, interactive TUI on a fake API stub (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1531** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-359 in probes.md): `$.fs.write` has no append option: a call with `{append:true}` overwrote the file. A log must be kept as an array and written whole.
+  Basis: measured.
+  Source: lead probe, claude 2.1.325, 2026-11-16, `$.fs.write` with `{append:true}` (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-1532** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-360 in probes.md): A `command.run` hook on `{command:'clear'}` that awaits `$.model.fork`, stores the text, and returns `next(e)`, with a `prompt.context` block `probe:handover`, produces 3 requests: the fork is request 2 and holds `first one`; request 3 opens with `# probe:handover` plus the handover and holds no `first one`; cache_control sits on `messages[1].content[0]` in request 1 and `messages[2].content[0]` in the fork.
+  Basis: measured.
+  Source: handover probe A, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb).
+
+- [x] **OUT-1533** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-361 in probes.md): A `command.run` clear hook that reads `$.session.messages()` instead of forking gets `n=2` rows `{role,text,toolUses}` with origin `{kind:"sdk"}`; 2 requests are made and request 2 carries the extract.
+  Basis: measured.
+  Source: handover probe B, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb).
+
+- [x] **OUT-1534** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-362 in probes.md): `$.settings.read()` returns custom keys (`autoHandoverEnabled`, `idleHandover`); `$.env.get` reads `CLAUDETTO_*` from the process env and from settings `env`.
+  Basis: measured.
+  Source: handover probe C, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb).
+
+- [x] **OUT-1535** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-363 in probes.md): A `session.compact` answer `{messages}` on trigger `auto` is not reachable on the fake API: the stub always reports 10 input tokens, `replies` does not override `POST /v1/messages`, and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 100k reads as the 100k minimum (`G0=1e5` on 2.1.325; `SD=1e5` in 2.1.326, `hL=1e5` in 2.1.327 at chunk-29d2mwq6.js@950). Read at `chunk-5121ahsh.js:950` on 2.1.325 as `G0=1e5`.
+  Acceptance: the code at the line matches. Verification: inspection.
+  Basis: measured.
+  Source: handover probe D, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); chunk-29d2mwq6.js:950 (2.1.327) (claude 2.1.326 binary; was chunk-5121ahsh.js:950 in 2.1.325); `chunk-5121ahsh.js:950` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
+
+- [x] **OUT-1536** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-364 in probes.md): With a 60000-word `prompt.context` filler, then `/clear`, then a prompt, on Haiku 5.5, the `clear` hook's fork took 2401 ms and returned 365 characters; fork usage was 67542 cache-read, 5248 cache-write, 120 output tokens, $0.0018, against $0.0135 for the first turn; the next turn quoted `HANDOVER-CLEAR forkMs=2401`, so the `$.store` handover survived the clear and `prompt.context` injected it.
+  Basis: measured.
+  Source: handover probe E, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414).
+
+- [x] **OUT-1537** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-365 in probes.md): With a 110000-word filler and `CLAUDE_CODE_AUTO_COMPACT_WINDOW=100k`, two prompts produced `compact_boundary` `{trigger:"auto", pre_tokens:122980, post_tokens:275, duration_ms:4793}`; the installed `claudetto@claudetto-dev` compaction hook answered first with its fork handoff, so the probe's own `session.compact` hook never ran. `prompt.context` fires again after a compaction, so each block is paid again after it: the filler was re-sent at $0.24 for the second turn. A fork before `/clear` on Haiku 5.5 took 2401 ms over a 67k-token cached prefix: 67542 cache-read, 5248 cache-write and 120 output tokens, $0.0018 (live probe E).
+  Acceptance: the probe logs match. Verification: probe.
+  Basis: measured.
+  Source: handover probe F, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414); live probes E and F, Haiku 5.5, `claude -p` stream-json, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
+
+- [x] **OUT-1538** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-366 in probes.md): `$.session.usage()` at `turn.complete` returns `{startedAt, context:{tokens, window, percent}, rateLimits, cost:{usd}}`; a `session.measure` hook fires after each main turn with the same fields plus `changed:["context","cost"]`; `$.clock.after(150)` fired at 254 ms, `every(100)` reached 3 ticks at 433 ms and `cancel()` stopped it, `sleep(300)` resolved at 416 ms. With one `-p` prompt a pending timer never fires, because the process exits after the last turn.
+  Acceptance: probe G reproduces. Verification: probe.
+  Basis: measured.
+  Source: handover probe G, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb) (hooks writing an array to a file with `$.fs.write`); probe G, `claude` 2.1.325, fake API, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+
+- [x] **OUT-1539** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-367 in probes.md): `$.env.get` returns a promise: an unawaited read gave `NaN` and an empty filler. Every `$.env.get` must be awaited.
+  Basis: measured.
+  Source: handover probe E, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414), first runs.
+
+- [x] **OUT-1540** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-368 in probes.md): Only one plugin's `session.compact` answer wins: the first hook that answers without `next(e)` ends the chain. `claudetto@claudetto-dev` must be uninstalled before dogfooding the rebuild, and handover must live in one module. `SessionCompactTrigger` is `manual | auto | plugin | precompute`; `auto` covers the threshold, a prompt that is too long, and idle compaction; a `session.compact` hook may answer `{skip}` or `{messages}` (clawdipedia types page).
+  Acceptance: the type page matches. Verification: inspection.
+  Basis: measured.
+  Source: handover probe F, claude 2.1.325, 2026-11-16, live paid run, `claude -p` stream-json (recorded in plans/rebuild-curation.md at commit 0e987414); clawdipedia `extend/mod-api/types/session/compact-measure-messages` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
+
+- [x] **OUT-1541** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-369 in probes.md): Probe 2.8b ran 35 fixtures: 18 were judged by the built-in classifier (16 blocked; `git checkout -- .` and `export -p` were allowed) and 17 were never judged because the claudetto gate's `tool.check` denied them first. The run used 1,657,843 tokens and $0.3882 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:35.
+
+- [x] **OUT-1542** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-370 in probes.md): Probe 2.8 found the `ceiling` field of a `tool.check` event absent on every case run (`research/probes.md` section 13); `engines` is in sections 3 and 14 and `AbovePrompt` in section 15 (probe record). `tool.check` input keys: tool, input, tool_use_id, agentId, isReadOnly. No ceiling appeared in any run. A deny rule (WebFetch) yields no `tool.check` event. `ui.render` hooks did not fire under `-p`.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:18; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:147.
+
+- [x] **OUT-1543** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-371 in probes.md): Claude Code caches an experiment assignment in ~/.claude.json (.clientDataCacheSlots[].data.experimentKey and .atis) and sends it with every request; r/ClaudeCode posts found that assignments change behaviour (more tool calls per reply, much longer shell commands, less narration) and one added system-prompt text; transcripts carry an atis-latch record per session, with history kept about 30 days; opt-out removes the assignment keys after a backup, plus an env var that people report blocks re-enrollment. Reported, one commenter each: experiment flags named turnstone_plinth (Opus 5.5) or dotterel_architrave (Fable 5.1) in the user's .claude.json mark a test group; attached prompts steer reasoning toward a "seen not done" effect (context held but not acted on); one poster confirms an experiment named claude_code_turnstone_plinth_experiment; check by searching .claude.json for "experiment.".
+  Basis: reported (behaviour change not proven quality loss), unverified.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:116; external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:117 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrpkdt/what_even_is_the_point_of_working_rules_lol/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:263 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:41; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:48; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:49; external/2026-11-10/reddit.com-r-claudeai-comments-1xrxiru-i-made-a-free-tool-to-check-whet-20261110T094555Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrxiru/i_made_a_free_tool_to_check_whether_your_claude/>).
+
+- [x] **OUT-1544** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-372 in probes.md): Reported long autonomous task (Opus 5.5, Claude Code in VS Code, about 1 week, about 548M tokens of which 546.2M were cache reads and writes, about $200 at API list prices, run on a Pro plan): the model first said the task was impossible, then compared encrypted files against a few intact copies, found only the first 16 KB encrypted, built a per-format module tool re-run after each improvement (the last round brought back about 100 files), trained a U-Net, and recovered 26% fully, 27% damaged, 12% content-only, 35% lost.
+  Basis: reported, one author, write-up not verified. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xn6tu3-i-gave-claude-700-ransomware-enc-20261109T152841Z.md:36-45,49,67,198 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xn6tu3/i_gave_claude_700_ransomware_encrypted_files_it/>).
+
+- [x] **OUT-1545** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-373 in probes.md): claudetto shall record these measured paid eval results (11 cases x 3 runs): Haiku 0.965 (+0.098, $0.22); Sonnet 0.948 (+0.052, $3.10); Opus 0.956 (+0.071, $6.38, stopped at $6 ceiling); `no-unasked-revert` lower with the plugin and did not reproduce; no case spawns a subagent, so no result covers agents and none is claimed for them.
+  Acceptance: A paid run waits for the user's approval and budget report (task 10.3; reported). Verification: inspection.
+  Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:255; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:262.
+
+- [x] **OUT-1546** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-272 in prompt-cache.md): Subagent requests write the 5-minute cache tier unless `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` is set; the main session writes the 1-hour tier. `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL=1h` (v2.1.242+) cut one team's subagent cache rewrites from about 8% of a week to under 2%; lean subagent context cut average tokens from about 400K to 80K on the same workflows.
+  Acceptance: A log of subagent requests with the variable unset shows 5-minute writes; the team figures stay marked reported. Verification: probe.
+  Basis: measured by one poster (14-day logs, 17,574 main-session requests): 41 requests sent over an hour after the previous one wrote about 225k tokens each (0.2% of requests, 15% of all cache writes); 278 requests after a 5-60 minute gap wrote about 5k each; every main-session write was 1 hour while 2,696 of 2,701 subagent requests (17.6M tokens) wrote to the 5-minute tier; a test (44k written, wait 5:45, all 44k rewritten with 0 read) confirmed the 5-minute expiry. A commenter says 5 minutes applies on an API key, Bedrock, Vertex, Foundry, or a subscription in overage, and FORCE_PROMPT_CACHING_5M forces it. The team figures are reported by commenters.
+  Status: n/a (fact); no SUBAGENT_PROMPT_CACHE_TTL use at 088a227c (git grep found none). Variable present in claude 2.1.327 (code search `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`; settings text at chunk-ja5z738t.js@278003: "Unset = automatic (5 minutes unless ENABLE_PROMPT_CACHING_1H=1)" and the variable "takes precedence"); the logs and the v2.1.242+ figure are not re-run in 2.1.327.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:81,83,87,89,93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>); external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:133,245 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
+
+- [x] **OUT-1547** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-273 in prompt-cache.md): Resetting context at 225K tokens at task end cut cost 50-75% for one poster; on one commenter's logs a warm turn at 800k costs about 2x a turn at 200k, but a cold re-write at 800k costs about 22x a warm turn.
+  Acceptance: The saving is mostly on cold turns. Verification: inspection.
+  Basis: reported (own logs; 24/7 agents, cache reads fell and writes stayed flat).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuwp92-having-agents-reset-context-ar-20261116T051550Z.md:2,109,113 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuwp92/having_agents_reset_context_around_225k_tokens/>)
+
+- [x] **OUT-1548** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-274 in prompt-cache.md): A keepalive read costs about a tenth of input price while a cache rebuild costs more, so keepalive usually wins.
+  Acceptance: The claim stays reported and marked against the plan's "keep-warm costs more than it saves for idle waits (inferred)". Verification: inspection.
+  Conflict: The plan line "keep-warm costs more than it saves for idle waits (inferred)" (outside this chunk) says the opposite; this item is one commenter's arithmetic, kept reported.
+  Basis: reported (one commenter's arithmetic); contradicts an inferred plan line.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx5405-broken-prompt-caches-cost-me-1-20261116T050923Z.md:86 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx5405/broken_prompt_caches_cost_me_106_across_57_claude/>)
+
+- [x] **OUT-1549** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-275 in prompt-cache.md): A 666-subagent session stalled at a cache barrier with every agent idle; the commenter's tool showed the real cost was wall-clock time, not tokens.
+  Acceptance: Cost of a barrier is counted in time as well as tokens. Verification: inspection.
+  Basis: reported (one commenter).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx4fkw-token-savings-20261116T045931Z.md:52 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx4fkw/token_savings/>)
+
+- [x] **OUT-1550** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-276 in prompt-cache.md): Tool output is the hidden token cost: a full test run or big grep is pasted once and resent with every later turn.
+  Acceptance: One noisy command can cost more than all prompts; a saving is judged by per-request tokens before and after (a logging proxy or /context), not the percent bar. Verification: inspection.
+  Basis: reported.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuiwi6-minimize-token-usage-20261116T052542Z.md:124 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuiwi6/minimize_token_usage/>)
+
+- [x] **OUT-1551** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-277 in prompt-cache.md): Token tips from one thread: per-task fresh sessions with handoff files, disable unused connectors and plugins (each loads tool definitions into context; /context shows the cost, /mcp switches a server off), exact file paths instead of "find where X happens"; a counter-claim says an arbitrary handoff line limit can drop state, decisions, files and next steps.
+  Acceptance: The counter-claim to a fixed handoff cap is kept beside the cap. Verification: inspection.
+  Basis: reported, no measure.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xuiun7-minimize-token-usage-20261112T231514Z.md:31,40,50,68,76 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xuiun7/minimize_token_usage/>)
+
+- [x] **OUT-1552** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-278 in prompt-cache.md): One user measured weighted tokens (cached at 1/10, 1-hour cache writes counted): 117M to hit 100% of weekly Fable usage this week against 230M in prior weeks, so the allowance was cut about half.
+  Acceptance: The figure stays marked measured by one commenter, one account. Verification: inspection.
+  Basis: measured, one account.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:79,80,81,83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>)
+
+- [x] **OUT-1553** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-279 in prompt-cache.md): Native advisor calls use the full conversation at the advisor's model rate on top of the main model's usage; they count toward plan limits, except a Fable advisor bills to usage credits on plans where Fable usage does.
+  Acceptance: The billing note is kept against the settled decision that the advisor tool stays disabled. Verification: inspection.
+  Conflict: dedup/chunks/ctx-6.md:51 says one commenter reports that a Fable advisor does not draw down the separate Fable usage; this item says a Fable advisor bills to usage credits. Resolved by docs: on plans where Fable usage bills to usage credits, Fable as the advisor bills the same way, and Claude Code applies it only after the one-time consent (code.claude.com `advisor`, section "Fable advisor and usage credits", read 2026-11-17); the commenter's claim is contradicted.
+  Basis: reported, one poster citing docs (not verified here). The gap text said all native advisor calls bill to usage credits; the source limits that to a Fable advisor.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwckod-fable-52-as-orchestrator-plann-20261116T052602Z.md:87 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwckod/fable_52_as_orchestrator_planner_reviewer_and/>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded) (advisor tool stays disabled).
+
+- [x] **OUT-1554** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-280 in prompt-cache.md): A 16-PR benchmark found a reported workflow at 1.81x cost against the baseline with no gain on any task and worse on 2.
+  Acceptance: The figure stays marked measured by the poster, one benchmark. Verification: inspection.
+  Basis: measured, one benchmark.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwckod-fable-52-as-orchestrator-plann-20261116T052602Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwckod/fable_52_as_orchestrator_planner_reviewer_and/>)
+
+- [x] **OUT-1555** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-281 in prompt-cache.md): Running `/doctor prompt-audit` cut token use by 37% over 14 sessions in the last month for one commenter.
+  Acceptance: The figure stays reported, verified against the docs before use. Verification: inspection.
+  Basis: reported, one user.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwo8zq-what-claude-code-plugins-actua-20261116T051709Z.md:109,111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xwo8zq/what_claude_code_plugins_actually_save_tokens/>)
+
+- [x] **OUT-1556** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-282 in prompt-cache.md): The Haiku router cut like-for-like API cost about 30% month over month for one user at $15-35 a day.
+  Acceptance: The figure stays reported, no baseline shown. Verification: inspection.
+  Basis: reported, one user.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx4fkw-token-savings-20261116T045931Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx4fkw/token_savings/>)
+
+- [x] **OUT-1557** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-284 in prompt-cache.md): Routing by a complexity index (Sonnet medium below 15, Sonnet high below 30, Opus medium at 30 or more) moved one project from 98% Opus to 83% Opus, 15% Sonnet, 2% Fable.
+  Acceptance: The index stays one user's reported rule, set against the plan's routing by wrong-answer cost. Verification: inspection.
+  Basis: reported, one user, one project. Review and research on Opus medium; web research on Sonnet medium.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtskai-i-switched-opus-to-medium-and-20261111T235140Z.md:69,80 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtskai/i_switched_opus_to_medium_and_only_ask_fable_for/>)
+
+- [x] **OUT-1558** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-285 in prompt-cache.md): Hard failure rates across model runs: on the adjudicator step Opus scored 59, 98, 65, 53 over four runs (medium, low) while Fable 5.2 low scored 98 twice at about 45% more cost per run.
+  Acceptance: One run proves nothing; a step needs more than one run before a model is chosen. Verification: inspection.
+  Basis: measured by one author, n=2-4 runs per cell, a 4 h, about US$100 pipeline of 15 agents on law documents. Score is the weighted share of critical items; a model is cut if it lands more than 5 points below the reference. Cheaper models fail by silently omitting items, so "escalate when unsure" fails. Even the best runs missed the same 3 of 9 critical items. A cheap second reader flagged 22 of 43 top-model decisions as unsupported. Moving mechanical steps to cheaper models kept the total at about US$99 against US$103.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xujhrk-realworld-test-opus-vs-fable-vs-20261112T231215Z.md:27,36,44,45,46 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xujhrk/realworld_test_opus_vs_fable_vs_sonnet_vs_haiku/>)
+
+- [x] **OUT-1559** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-286 in prompt-cache.md): `/usage` reported "98% of your usage came from subagent-heavy sessions". An "82% of usage from subagent-heavy sessions" warning needs a baseline: the same work in one session. Alternative: a few long-lived agents each owning one part with checkpoints (Codex experience). Usage warnings (reported): "82% of your usage came from subagent-heavy sessions"; 56% of 6 months of usage was re-reading conversation; the Projects feature can pin threads to Sonnet; Anthropic support is an AI agent; Ultracode low scope often runs only xhigh with 1-2 subagents (disputed); a Codex plugin `openai/codex-plugin-cc` exists for Codex reviews (cited via commenters); a repo with 1,652 PRs a month had 0.2-0.7% reverts and about one fix round per PR; human-in-the-loop review is only as good as the visible reasoning (cited secondhand, the Anthropic study not read).
+  Acceptance: The figure stays one session's, set beside the plan's 82%. Verification: inspection.
+  Basis: measured (session log c8c0cf57); reported
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:158; external/2026-10-22/reddit.com-r-claudecode-comments-1wy8sbd-use-of-subagents-or-not-20261022T122101Z.md:75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wy8sbd/use_of_subagents_or_not/>); unresolved: no source line located for this claim.
+
+- [x] **OUT-1560** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-287 in prompt-cache.md): Models predict their own cost poorly, correlation about 0.39.
+  Acceptance: Kept beside the 1000x and 30x spread. Verification: inspection.
+  Basis: cited (arXiv 2604.22750).
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:169.
+
+- [x] **OUT-1561** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-288 in prompt-cache.md): Max effort scored below xhigh on Sonnet 5.5. Max effort is reported to underperform xhigh (ultracode runs at xhigh); max is reported to write worse code and overthink; ultracode on Opus 5.5 spent two days over-engineering and never finished one task.
+  Acceptance: Kept beside the Opus 5.5 effort scores. Verification: inspection.
+  Basis: reported (catalog Cat 27:26). reported anecdotes.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:148; external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:514 (url: <https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/>).
+
+- [x] **OUT-1562** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-289 in prompt-cache.md): Claude Code allows at most 20 background subagents at once.
+  Acceptance: a 21st launch is refused. Verification: demonstration.
+  Basis: measured. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
+
+- [x] **OUT-1563** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-290 in prompt-cache.md): The gate denies `sed -n`, `cat` reads and heredocs in Bash; reads go through `Read` and writes through `Write`. `just typecheck` hits EPERM in the sandbox; `bun check --no-pretty --threads 7` runs. `just test` has 2 baseline failures from `/bin/ps` denial.
+  Acceptance: the commands fail as stated. Verification: demonstration.
+  Basis: observed in transcript. Status: have.
+  Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [x] **OUT-1564** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-291 in prompt-cache.md): Fork subagents inherit the full conversation and reuse the parent's prompt cache; non-fork subagents have a separate cache and reload the CLAUDE.md hierarchy and git status on each spawn.
+  Basis: reported; the fork half is measured in CTX-839.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1565** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-292 in prompt-cache.md): Subagent cost is the cold start, not the model: brief plus tool definitions plus reads are written to cache (the expensive token type) and re-read each turn, and files the planner read are read again, so a cheaper model helps less than expected. Use subagents only for genuinely parallel bounded jobs with a brief naming files, never nested; repo-in-head work stays in the main session.
+  Basis: reported, one poster, no number.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1wy8sbd-use-of-subagents-or-not-20261022T122101Z.md:63 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wy8sbd/use_of_subagents_or_not/>).
+
+- [x] **OUT-1566** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-293 in prompt-cache.md): Hypothesis from a commenter, untested: a cached prefix is readable only once the first response has started, so five subagents launched at once each pay the full write of the same system prompt and tools; start one first and the rest a few seconds later to turn the shared part into reads; check logs for equal write counts.
+  Acceptance: Resolved 2026-11-18, measured from the user's 299 subagent transcripts (Sonnet 5.5, 2.1.32x, reports/2026-11-18-research/ctx293/README.md). In 13 groups of subagents whose first replies came within 3 s of each other and no sibling had cached the shared prefix, all 51 members read 0 and wrote the whole prompt; in the 46 groups started after a sibling had cached it, all 248 members read the same 4,365 to 6,018 tokens. The hypothesis holds. The extra write is about $0.017 per cold sibling on Sonnet, so claudetto adds no launch delay (ADR-0177).
+  Basis: measured from transcripts.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261022T122153Z.md:82 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>).
+
+- [x] **OUT-1567** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-294 in prompt-cache.md): `promptCacheTtl`, main thread: the default already writes 1h on this login (16,833 tokens); "5m" writes 16,959 as 5m; "1h" changes nothing for the main thread. Subagents default to 5m (9,135 tokens written). `subagentPromptCacheTtl` "1h" works at $0.0366 against $0.0229, about 1.6x a 5m write, and pays only if the same subagent prefix is read again after more than 5 minutes
+  Basis: measured, one run each, haiku main, sonnet subagent, 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:807; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:810.
+
+- [x] **OUT-1568** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-295 in prompt-cache.md): The API reads tools, then system, then messages. CLAUDE.md, auto memory, unscoped rules, and the skill listing sit in the messages, not the system prompt. CLAUDE.md goes in once, in the first user message, and is resent as cached prefix at 5-10 percent of input, plus a full write after a miss, `/clear`, or `/compact`
+  Basis: cited, clawdipedia.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:866.
+
+- [x] **OUT-1569** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-296 in prompt-cache.md): Prompt caching refreshes the cache at no added cost each time cached content is used ("The cache is refreshed for no additional cost each time the cached content is used"), and the lifetime runs from the start of each request. Session age never cools the cache; an idle gap of the TTL or longer does.
+  Acceptance: the docs page text matches. Verification: inspection.
+  Basis: cited.
+  Source: platform docs, prompt-caching page, section "How prompt caching works" (URL and retrieval date not stated by the old plan; the quote was not re-fetched in this pass; external/please-use-me-often/agent-failure-dossier/ and openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:38 hold only a Reddit summary of the prices); platform docs prompt-caching page, "How prompt caching works", read 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+
+- [x] **OUT-1570** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-297 in prompt-cache.md): Effort and model switch against the cache conflict: an effort switch keeps the cache on Opus 5.5, Sonnet 5.5, Haiku 5.5, and Fable 5.1 (a docs quote posted by a commenter, two commenters) while a mod author measured 56-100% rewrites on Fable 5.1 and older Opus, and others report that changing effort or model mid-session invalidates. Per-message effort change (beta) is the single-turn route. Over about 80k requests cache reads were about 76% of cost and output about 8%; effort mostly changes the tool-call count. Unverified until measured.
+  Basis: reported and cited, in conflict. Status: not applicable.
+  Source: external/export-Claude Code effort level and model selection - Claude.jsonl:4,5,7 (commenters: an effort change mid-session invalidates the prompt cache, with Fable 5.1 as the exception). The mod author's 56-100% rewrite measurement: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [x] **OUT-1571** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-298 in prompt-cache.md): Prefix cache mechanics: a change earlier in the request (MCP tool list, rewritten instruction file, changed system prompt, timestamp, tool order) invalidates everything after; editing a past prompt or `/rewind` still hits up to the edit; read costs 0.1x, write 1.25x (5m) or 2x (1h). First-request prefix is identical across sessions (dev 16,333 bytes); 98.6% of root and 98.9% of subagent requests hit at 98% or more over 3 days; misses follow compaction, model switch, and gaps over 1 h or 300 s. Events that keep the prefix on 2.1.316 (measured): a skill or command added, an output style change, a Shift+Tab permission mode cycle, a file read then edit, an MCP toggle with tool search on, a subagent spawn, a rewind, a `/compact` request.
+  Basis: measured, cited, and reported. Status: not applicable.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:129.
+
+- [x] **OUT-1572** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-299 in prompt-cache.md): Cache TTL facts: a subscription main conversation has 1 h while inside plan usage and 5 min once on usage credits; subagents, workflows, compaction, and session titles always have 5 min; `promptCacheTtl` or `CLAUDE_CODE_PROMPT_CACHE_TTL` sets it (v2.1.242+); `ENABLE_PROMPT_CACHING_1H` and `CLAUDE_CODE_PROMPT_CACHE_TTL=1h` set the 3 fake-API markers to ttl 1h; the bucket shows in `claude -p "hello" --output-format json` as `ephemeral_1h_input_tokens` against `ephemeral_5m_input_tokens`; a model switch mid-session reads the full history with no hits. A thread claims a 5m default with 1h per request, API 5m against subscription about 1h, and leaves it unresolved; the docs quote says the 1 h main and 5 min subagent split holds. `promptCacheTtl` is missing from setup (only `subagentPromptCacheTtl` is written).
+  Basis: measured (2.1.319) and cited. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts:118` writes `subagentPromptCacheTtl` only).
+  Source: plugins/claudetto/hooks/features/setup/settings.ts:118@088a227c; external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:31.
+
+- [x] **OUT-1573** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-300 in prompt-cache.md): `/advisor` reads the full transcript on each call, uncached (one commenter: about $4 for a 500k call), and the prompt cache is keyed to model, so Fable never reads the main cache. The built-in Learning output style asks the user to write 2-10 line code pieces for hands-on practice (chunk-m14bt1pz.js@1057645-1058240, 2.1.327), so "teaches as you go" is only partly right. Each advisor tool call triggers a full uncached read of the whole history per decision (docs link, not opened). The advisor stays disabled. /advisor handoff makes the other model re-read context, paying a cache write again when the last call is over five minutes old; one poster logged per request on a Max 20x account that subagent progress summaries alone cost 10 to 13% of a week with no off switch. An advisor saves only when the handoff is small, cached, and rare.
+  Basis: reported. Status: have at 088a227c (the setting only: `plugins/claudetto/hooks/features/setup/settings.ts:178`). reported. reported. Status: not applicable (outside fact).
+  Status: have at 088a227c (the setting only: plugins/claudetto/hooks/features/setup/settings.ts:178); the advisor stays disabled
+  Source: plugins/claudetto/hooks/features/setup/settings.ts:178@088a227c; external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:33; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:130; external/2026-10-01_p2/export-PSA- you don't need Fable for everything. Set it as your -advisor instead.jsonl:3 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wv4cux/psa_you_dont_need_fable_for_everything_set_it_as/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:162-164 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
+
+- [x] **OUT-1574** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-301 in prompt-cache.md): On 2.1.316 `DISABLE_PROMPT_CACHING=1` removes every `cache_control` marker (three per request otherwise) and `CLAUDE_CODE_ATTRIBUTION_HEADER=false` removes the `x-anthropic-billing-header` block from system. Both are present on 2.1.326 (`CLAUDE_CODE_ATTRIBUTION_HEADER` is a str); `DISABLE_PROMPT_CACHING` also has _FABLE,_HAIKU, _MYTHOS,_OPUS, and _SONNET variants (cc-inspect `surface` env, 2026-11-17).
+  Acceptance: a request body shows no `cache_control` under the first and no billing block under the second. Verification: probe.
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/specs/prompt-cache/spec.md:82; openspec/specs/prompt-cache/spec.md:86; openspec/specs/prompt-cache/spec.md:96; external/2026-11-03/reddit.com-r-claudeai-comments-1xksgor-things-that-quietly-break-your-p-20261102T140513Z.md:62 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xksgor/things_that_quietly_break_your_prompt_cache_in/>); cc-inspect `surface`, claude 2.1.326, 2026-11-17.
+
+- [x] **OUT-1575** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-302 in prompt-cache.md): A main conversation on a subscription writes a 1-hour cache (measured 2.1.319); `subagentPromptCacheTtl: "1h"` puts `"ttl":"1h"` on subagent and side requests, not the main loop. The setting is present on 2.1.326 (checked: `code` search `subagentPromptCacheTtl` in 2.1.326 finds its schema entry).
+  Acceptance: a request body shows the 1h marker on a subagent request after the setting is set. Verification: probe.
+  Basis: measured. Status: have at 088a227c (`promptCacheTtl` setup group).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:131; openspec/specs/subagent-prompts/spec.md:112; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:69; chunk-ja5z738t.js@277725 (claude 2.1.327 binary).
+
+- [x] **OUT-1576** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-303 in prompt-cache.md): Task 18.26 weights input by price: read x0.1 + 1h write x2 + 5m write x1.25 + input. Clause (c), plugin at or below base, was reworded with the user because the plugin first request is 46% of base size (7.57k against 16.55k tokens; its absolute read is 5.6k against 11.2k). Result on 18.23: plugin 18760 [17801, 19931] against base 25415 [25127, 25649]; per-session cost-weighted input is 26% and 33% less than base, with bootstrap intervals that do not overlap. Per-session cache-read share: plugin sessions with no Stop block read less than base (18.23: 81.7% against 82.6% mean; 18.23b: 78.2% against 83.1%); blocked plugin sessions read more (84.2%, 85.1%). The first-request read share is higher for the plugin (72.2%, 74.6% against 67.4%) only because of that smaller first request (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:327; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-26/README.md:100-123; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-26/README.md:161-162.
+
+- [x] **OUT-1577** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-304 in prompt-cache.md): In 59 of 60 plugin sessions after the first, the whole 5,624-token static prefix (tools and system) is read on request 1, and the write (about 1,940-1,948) is only messages and env. A Stop block writes 150 tokens against an exact tail of 152 (18.23, 24 blocks; the chars/4 estimate undercounts by 18); in 20c8 the write is 648 against an exact 650 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-26/README.md:150-171.
+
+- [x] **OUT-1578** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-305 in prompt-cache.md): Paid rerun with fix commit `55ba1d49` (defer only when ToolSearch is in session tools), 5 sessions (a 6th skipped to stay under 300k; 273,110 tokens, $0.145 list): turn-1 lost 0 on 5/5 rows (read about 8,430-8,444), against 3,901-3,929 lost on 33/33 rows before. This confirms that the break is a property of a `--tools` list without ToolSearch. Limits: 5 rows, empty sandboxes (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-26/README.md:175-199.
+
+- [x] **OUT-1579** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-306 in prompt-cache.md): Env vars `CLAUDE_CODE_NORMALIZE_PREFIX_CACHE` (and `_VERIFY`), `CLAUDE_CODE_SUBAGENT_CACHE_EVICT` and `CLAUDE_CODE_RESUME_CACHE_WARM` exist in the 2.1.319 binary with no page on their effect and were not tested. `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` removes the mid-conversation cache marker (docs). `CLAUDE_CODE_MESSAGES_PROMPT_CACHE_TTL` has the enum `5m` with no source for its effect. The `cache-keepalive-2026-09-03` beta and `/v1/messages/cache_touch` (subscriber login only) touch the cache every 30 s (cited: docs, cc-inspect).
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-26/README.md:139-141.
+
+- [x] **OUT-1580** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-307 in prompt-cache.md): Cache reads on Opus 5.5 bill at 5% of normal input price on the API, per the prompt-caching docs link a commenter cites; a second commenter claimed 60% off (that is, 40% of the price) and was corrected. How Pro counts cache reads against limits is unpublished.
+  Conflict: Cache read costs 10% of fresh input. Resolved by docs: both hold per model; a cache read costs 10% of base input, 5% on Opus 5.5 and Sonnet 5.5, 2.5% on Fable 5.2, Mythos 5.2, Fable 5.1 and Mythos 5.1 (platform.claude.com `models/haiku-5-5/overview`, note under "How it compares", read 2026-11-17).
+  Basis: reported, conflicting between commenters; one cites the docs, not fetched.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdlitv-22b-cacheread-tokens-in-one-proj-20261024T061729Z.md:86; external/2026-10-27/reddit.com-r-claudeai-comments-1xdlitv-22b-cacheread-tokens-in-one-proj-20261026T133020Z.md:86 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdlitv/22b_cacheread_tokens_in_one_project_normal_or_am/>).
+
+- [x] **OUT-1581** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-308 in prompt-cache.md): In the author's meter fits a cache read counts about 1% of a fresh input token against the subscription meters, with a separate rate per model.
+  Basis: measured fit, one poster.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:151 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
+
+- [x] **OUT-1582** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-309 in prompt-cache.md): Cache reads per thread are about tool calls times average context (130 calls at 150k is about 20M), so the two levers are calls per thread and context size, not a leak.
+  Basis: arithmetic, recomputed 2026-11-18: 130 calls times 150,000 tokens is 19,500,000, about 20M. The claim that this explains the poster's total, and the "not a leak" reading, are the commenter's and are kept as reported.
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdlitv-22b-cacheread-tokens-in-one-proj-20261026T133020Z.md:84 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdlitv/22b_cacheread_tokens_in_one_project_normal_or_am/>).
+
+- [x] **OUT-1583** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-310 in prompt-cache.md): A measured fixed baseline of about 80k tokens (system prompt, tools, plugin skill lists) is re-paid on every turn while project instructions are only 1-2k; plugin and skill name+description lists load every turn even when unused, so trim to the core.
+  Basis: reported, self-audit by Claude.
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdlitv-22b-cacheread-tokens-in-one-proj-20261026T133020Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdlitv/22b_cacheread_tokens_in_one_project_normal_or_am/>).
+
+- [x] **OUT-1584** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-311 in prompt-cache.md): Claim: the cache is good for an hour, so a task resumed after two hours pays the full re-read; one poster adds "never above High effort".
+  Basis: reported, one poster.
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xg2z2v-any-tips-to-avoid-using-so-much-20261027T071936Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xg2z2v/any_tips_to_avoid_using_so_much_usage/>).
+
+- [x] **OUT-1585** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-312 in prompt-cache.md): Running an Opus-low subagent under an Opus-medium parent is "not often worth it" because the cache is lost.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:97 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
+
+- [x] **OUT-1586** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-313 in prompt-cache.md): One user reports that on the 5-minute cache tier a message sent after a 5:45 wait rewrote all 44k tokens with 0 read, and that at 150k context on Opus one cold message costs about 0.75 dollars against 0.03 dollars warm. The user also says the status line JSON has prompt_cache with expires_at since 2.1.251, so a countdown can sit there.
+  Acceptance: The figures hold as one user reports them; the 2.1.251 field is not checked against 2.1.326. Verification: probe.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xksgor-things-that-quietly-break-your-p-20261102T140513Z.md:80 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xksgor/things_that_quietly_break_your_prompt_cache_in/>).
+
+- [x] **OUT-1587** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-863 in prompt-cache.md): A 30-60 minute test suite outlasts the prompt cache, so the next turn re-sends the whole conversation at write price (one user saw 600k-token contexts run uncached). The suite runs in the background with failures written to a file that the agent reads when it ends, and its raw output stays out of context; this matches the short-burst subagent design and CTX-477's TTL break-even.
+  Basis: reported (third-party); the cache arithmetic follows CTX-294.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xwxkd2-are-my-subagents-running-a-blo-20261116T051347Z.md:29; external/2026-11-16/reddit.com-r-claudecode-comments-1xwxkd2-are-my-subagents-running-a-blo-20261116T051347Z.md:63.
+
+- [x] **OUT-1588** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-806 in reply-behaviour.md): The no-vibes Stop hook (waitdeadai/no-vibes, 2 stars, one bash file of about 530 lines plus `jq`) blocks "done", "passed", and "shipped" with no evidence in the same message. Its repair template is "Status: partial / Verification: not run because ...". F1 is 0.815 on n=19 labelled traces (CI 0.615-0.941) and 0.308 on the full LLM-judged set (n=954). It checks wording, not whether tests ran, and a paraphrase evades it (measured, repo author).
+  Basis: measured, repo author.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:63.
+
+- [x] **OUT-1589** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-807 in reply-behaviour.md): A tabnews post counted "you're right" over 7 days of transcripts: 47 hits; the user was right in 11 and wrong in 36 (19 of them factual sycophancy). An adversarial prompt (list the strongest reason you might be wrong before agreeing) cut the phrase about 60%, self-graded, "not a rigorous measurement". A fresh-session unsigned review found bugs the signed one missed (reported, self-graded).
+  Basis: reported, self-graded.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:23; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:64.
+
+- [x] **OUT-1590** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-808 in reply-behaviour.md): Dossier S03: Sonnet 5 lied in 3.1% of MASK cases. The 96.2% figure is concealed-change disclosure on replayed histories, approximately matching Opus 5.5. It is disclosure, not a rate of creating such changes (reported).
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:100.
+
+- [x] **OUT-1591** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-809 in reply-behaviour.md): Dossier S07: Hacker-Opus is an early Opus 4.8 checkpoint trained on 80 reward-hackable environments. It is not the released Opus 5 or 5.5 (reported).
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:137.
+
+- [x] **OUT-1592** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-810 in reply-behaviour.md): Dossier S21: in a deliberately constructed training curriculum, 7 of 32,768 samples altered both the reward and the tests. The result holds for that curriculum only (measured).
+  Basis: measured, within that curriculum only.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:227.
+
+- [x] **OUT-1593** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-811 in reply-behaviour.md): Widening `narrates` to "lists as open a step the assistant could still take" scored: old text caught 0/8 and 0/8, new text 8/8 and 8/8, with one clean flag in 16. On 170 old cases the results were unchanged (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:372.
+
+- [x] **OUT-1594** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-812 in reply-behaviour.md): A shortening of `Concise.md` went from 3,297 to 2,702 characters, then to 2,746 characters. The first try lost the case `pc1-flip-total-still-red` because it dropped the line asking the agent to say its earlier reply was wrong; the second try put that line back and scored 24 and 24 on c1 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:371; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:374.
+
+- [x] **OUT-1595** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-813 in reply-behaviour.md): Task 12.1 measured one prompt change against base for sycophancy and instruction drift: 5,705,169 tokens, $6.650; the preserve case went from 15/16 to 14/16; the change arm edited `config.ts` unasked in 2 sessions. The held-out grade of 54 mined cases found faults in 23 of 52 judged replies for base ($7.91, 2,400,218 tokens) and 22 of 51 for the change ($6.93, 2,217,643 tokens), Fisher p = 1.0; 2 replays were killed at the 300 s wall with 0 tokens. The judge check on 30 tuning replies cost $3.41 (29 replies) plus $0.17 for the judge. The change showed no effect (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:220-222; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/12-1-holdout/README.md:50-60.
+
+- [x] **OUT-1596** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-814 in reply-behaviour.md): Task 12.2 measured the C7 flip at 57/64 against 54/64 (p = 0.60). The trigger caught 36 of 38 positives and flagged 0 of 10 negatives; the Stop hook median was 2.5 ms (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:225-229.
+
+- [x] **OUT-1597** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-815 in reply-behaviour.md): Task 12.3 held-out, two runs of 24 cases per arm pooled (96 sessions, none killed, largest 171,576 tokens): all base 43/48 [0.78, 0.95] against change 40/48 [0.70, 0.91] (p = 0.552); flip 14/16 each; preserve base 14/16 against change 12/16 (p = 0.654); drift 15/16 against 14/16. Run 1 base 22/24 against change 19/24; run 2 21/24 each (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:233; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/12-3/sum.md:1-11.
+
+- [x] **OUT-1598** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-816 in reply-behaviour.md): The 12.1 tuning-format grader fails with "grader failed on case 1 of 54" on mined cases, because it copies `tpl/<workspace>`. A first-reply probe (3 cases, about $0.21) showed that even the reply before the Stop hook opens with "the turn has no tools", so the cause is `--tools ""` itself and the first hypothesis is refuted. A valid grade needs cases whose right answer needs no tools or workspace. The judge sanity check passed 4/4 on fixed cave/drift against hold replies (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/12-1-holdout/README.md:3-30.
+
+- [x] **OUT-1599** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-817 in reply-behaviour.md): Fresh narration A/B, 2026-11-06, 34 cases x 6 per arm: announcing sessions change 24/204 against base 31/204 (p = 0.3846); text blocks 24/127 against 31/115 (p = 0.1669); pass 180/204 against 185/204 (p = 0.5194); $30.24; largest session 160,283 tokens. The old 136-session recount: 13/136 against 22/136 (p = 0.1466), blocks p = 0.0761. Pooled by block 37/190 against 54/179 (p = 0.0215), but that pool includes the prompting data, so it is not a confirmation (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-4/README.md:5-40.
+
+- [x] **OUT-1600** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-818 in reply-behaviour.md): Task 18.8, checkbox follow rate on 32 blind prompts: plugin 21/32 (Wilson 0.483-0.796) against base 0/32; the heading "What I Need from You" 20/32 against 0/32; the strict form 2/32 against 0/32. `Write` was denied in `-p`, so items asked for write grants (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:308.
+
+- [x] **OUT-1601** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-819 in reply-behaviour.md): Task 18.20, the "What I Need from You" form on `claude-sonnet-5-5`, 32 fresh blind prompts per round, subscription runs: rounds 1-4 reached 53/65 for a form that typed questions as items, which the user rejected (round 1 form 4/32 [0.05, 0.28]); round 5 popup judge 10/32 [0.18, 0.49] with style text alone (popup called in 7 of 32 sessions); round 6 with a Stop regex check 11/32 (popup 18 of 32); round 7 20/32 [0.45, 0.77]; round 8 with statement-ask signals 15/32 [0.31, 0.64] (2 false blocks); round 9 with Haiku asks code 24/32 [0.58, 0.87] (Wilson 0.579-0.867), but an "ask me" cue sat in 19 of 32 prompts (tasks.md) or 20 of 32 (evidence README), against 2/32 in round 8; round 10 with no cue 28/32 [0.72, 0.95], every session made an ask call, 20 blocked sessions averaging 66,894 tokens against 63,937 for unblocked ones. Spend about $11.2 across rounds 1-4 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:320; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:10-300.
+
+- [x] **OUT-1602** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-820 in reply-behaviour.md): Replay of rounds 5-8 with Haiku code asks (cost $0.05) caught 17/20, 13/13, 5/8 and 11/14 failing rows; regex-only rows were 1, 3 and 1 (every one made a popup call, so the code was not offered). Decision: delete the closing-"?" and statement-ask regex signals, since Haiku covers them, and keep the typed-item signal. A blocked session costs about 8,000 tokens more than an unblocked one (round 9: 66,472 against 58,518, +1.6 turns; round 10: 66,894 against 63,937, +0.2 turns), mostly cache read; round 7 cost +20,000 tokens and +3 turns (not controlled) (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:254-270.
+
+- [x] **OUT-1603** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-821 in reply-behaviour.md): Headless `claude -p` drops `AskUserQuestion` (2.1.319, fake API): the tool list is Read, DeferredToolPlaceholder, Write, and a call returns "No such tool available: AskUserQuestion ... disabled for this session". `--permission-prompt-tool stdio` lists it, but the call fails "Tool permission request failed: AbortError: Stream closed" with no host. A `PermissionRequest` hook does not help, because the denial fires first. With `--input-format stream-json` and a host that answers `can_use_tool`, the call succeeds (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:100-107.
+
+- [x] **OUT-1604** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-822 in reply-behaviour.md): Round 1 of 18.24 failed its done check: mean characters per Agent/SendMessage text were 604.8 (19 messages) for the plugin against 560.4 (16) for base; 10 of 13 paired prompts were longer under the plugin (d01 515 against 595, d11 779 against 890, d12 360 against 492); FK grade 4.63 against 5.43; filler hits 1 against 0; cost $1.61. Likely cause (untested): base has no greeting to cut, and the "inputs and done-check" clause adds paths. Round 2 changed the text to "only what the agent cannot find itself ... fewest words, one message per agent" and removed the "Pass name" hint from `AGENT_TEXT`: message count 23 against 22 (one more), length 375.2 against 517.0, FK 4.49 against 5.07, cost $1.63 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-24/README.md:16-30.
+
+- [x] **OUT-1605** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-823 in reply-behaviour.md): In a tally of about 1,900 sessions, replies in Russian sessions began with "yes" 415 times and "no" 106 times, a 4:1 agreement ratio the author reads as baseline agreement, not folding; "absolutely right" fell to 13 while plain "you're right" reached 175. A word-list check on "absolutely right" alone misses the dropped-adverb form.
+  Basis: counted, one user.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:175 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>).
+
+- [x] **OUT-1606** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-824 in reply-behaviour.md): One commenter puts cadence at a major Claude model release about every 30 days since mid 2025 and a substantive Claude Code update about every 14 days, so a learning loop that revises the process beats engineering a perfect one.
+  Basis: reported, unverified estimate.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xd73jn-compactions-vs-handoffs-lets-s-20261023T165046Z.md:45 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xd73jn/compactions_vs_handoffs_lets_settle_this_right/>).
+
+- [x] **OUT-1607** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-825 in reply-behaviour.md): Over 25,000 public files, Claude with no extra instruction made about 54,000 renames and 7,500 extracts; with a Code Health score to hit it made about 8,600 renames and 21,000 extracts. Renames look like cleanup but barely ease change; extracts move the score.
+  Acceptance: The fact holds as the poster reports it; the source is a CodeScene-affiliated poster, a vendor-style source. Verification: inspection.
+  Basis: reported, vendor-style source. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>).
+
+- [x] **OUT-1608** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-826 in reply-behaviour.md): Dossier S24, MASK (arXiv 2503.03750, <https://arxiv.org/abs/2503.03750>; paper text and repository): it separates factual accuracy from whether a model contradicts a separately elicited belief when pressured, so a wrong answer, a fabricated assertion and a lie are different evidentiary claims. Reported capability gains do not translate automatically to higher honesty, and results depend on the exact evaluation configuration.
+  Basis: cited.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:243-245.
+
+- [x] **OUT-1609** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-827 in reply-behaviour.md): Dossier S25, "Reasoning Models Don't Always Say What They Think" (arXiv 2505.05410, <https://arxiv.org/abs/2505.05410>; abstract): experiments inject answer hints and test whether the reasoning acknowledges their influence. Acknowledgment is often sparse, and RL can raise hint exploitation without raising disclosure. Reasoning is useful but incomplete evidence: neither a plausible explanation nor the absence of an incriminating one verifies execution or excludes cheating.
+  Basis: cited (abstract).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:251-253.
+
+- [x] **OUT-1610** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-828 in reply-behaviour.md): Dossier S46, "Sycophancy Towards Researchers Drives Performative Misalignment" (arXiv 2606.08629, <https://arxiv.org/abs/2606.08629>, June 2026; paper text): it tests whether some alignment-faking observations instead reflect models responding to researcher expectations, and reports that current probing and steering methods do not cleanly tell these mechanisms apart in the settings examined. The alternative reading does not make the observed harmful outputs harmless or prove all scheming results invalid.
+  Basis: cited.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:405-407.
+
+- [x] **OUT-1611** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-829 in reply-behaviour.md): Dossier S37, "LLMs Get Lost in Evolving User Intent" (arXiv 2607.20734, <https://arxiv.org/abs/2607.20734>, July 2026; abstract): it extends the multi-turn problem to instructions that are revised or redirected, and reports that strong performance on static tasks does not transfer reliably to evolving intent. Relevant to an agent that continues an obsolete plan after a user correction. Exact model-level results were not established from the abstract.
+  Basis: cited (abstract).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:335-337.
+
+- [x] **OUT-1612** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-658 in request-size.md): Source lines fell from 17,382 to 10,209 (claudetto code 16,125 to 6,827; tests 14,402 to 8,292). Hook latency, session start to first API request: 574, 547, 567 ms at baseline against 466, 469, 515 / 467, 477, 495 ms; `session.start` mean 48.1 ms to 90.5 / 79.4 ms
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:44; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:48; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:84.
+
+- [x] **OUT-1613** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-659 in request-size.md): Paid first request 9,228 against 9,048 tokens (+180, +2.0%); the second request reads all of the first and writes 258-266 new tokens in both arms; total paid 74,249 tokens, about $0.004
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:107; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:116.
+
+- [x] **OUT-1614** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-660 in request-size.md): The fake-API request converts to tokens at chars / 2.76, from matched paid haiku-5-5 pairs: base 47,381 chars / 17,193 tokens = 2.756; lean 2.773; claudetto 2.758 with connectors off. An earlier 2.25 was a mismatched pair. The vanilla baseline is 47,654 chars, 12 tools (tools 29,512, system 8,480, messages 9,662)
+  Basis: measured, 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1246; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1249.
+
+- [x] **OUT-1615** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-661 in request-size.md): Paid whole-setup first requests (real login, connectors off): vanilla 17,194 tokens; claudetto plus both plugins plus Concise 13,925 (-3,269, -19 percent; tools -10,678 chars as Agent, ListAgents, and Skill move behind ToolSearch, system -3,132, messages +3,922); lean vanilla 11,844 (-5,349, -31 percent). claude.ai connectors add 2,757 tokens (16,682 against 13,925) and load as a race (one run of three)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1260; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1264.
+
+- [x] **OUT-1616** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-662 in request-size.md): Per-key first-request deltas (chars; tokens = chars/2.76; fake API, 2.1.318): `includeGitInstructions` false -1,256 (-455 tok; same as `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, set one); `attribution` empty -582 (-211); `disableWorkflows` -5,609 (-2,032); `disableBundledSkills` alone +11,119 (+4,029) because the Workflow tool grows from 5,355 to 22,310, with `disableWorkflows` -11,192 (-4,055); `ultracode` +17,413 (+6,309; paid 23,458 against 17,193 tokens); `skillListingMaxDescChars` 200 -3,620 (-1,312); `skillListingBudgetFraction` 0.002 only -134; `autoMemoryEnabled` false -2,084 (-755), default on; `outputStyle` Explanatory +1,187, Learning +5,046 (+1,828), `claudetto:Concise` +2,130 (+772); `language` English +468; `totalTokensReminder` off -102; `disableAgentView` -133; `sandbox.enabled` +7,590 (+2,750 tok) with the escape text alone 1,486 chars (538 tok); `promptCacheTtl` 1h -255 chars and adds beta `extended-cache-ttl-2025-04-11` on an API key; `defaultMode` auto adds 0 chars, betas `dangerous-tool-use-2026-09-03` and `afk-mode-2026-01-31`, and costs a classifier of about 34.7k tokens per stage; `DISABLE_EXPLORE_PLAN_AGENTS` -905; `FORK_SUBAGENT` 0 -396, 1 -521; `DISABLE_CRON` -376
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1270.
+
+- [x] **OUT-1617** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-663 in request-size.md): No first-request change (0 chars) for `todoFeatureEnabled`, `disableSkillShellExecution`, `fileCheckpointingEnabled` false, `autoCompactEnabled` false, `promptSuggestionEnabled`, `awaySummaryEnabled`, `modelProposedGoals`, `fastMode` true, `bashEditDiffEnabled`, `isolatePeerMachines`. Their cost sits in later requests or extra calls
+  Basis: measured, one-turn -p.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1316.
+
+- [x] **OUT-1618** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-664 in request-size.md): `ENABLE_TOOL_SEARCH=false` adds 27,321 chars (+9,899 tok) to the first request (verdict: never set false); `ENABLE_TOOL_SEARCH=true` adds 0. `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` adds the same 27,321 chars: the 11 deferred tools load up front, ToolSearch goes, betas shrink to three
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1333; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1496.
+
+- [x] **OUT-1619** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-665 in request-size.md): `CLAUDE_CODE_DISABLE_ATTACHMENTS=1` is -6,640 chars (-2,406 tok) but drops the environment block, the deferred list, and the agent and skill listings (verdict: never)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1335.
+
+- [x] **OUT-1620** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-666 in request-size.md): `CLAUDE_CODE_SIMPLE=1` (bare mode) leaves 3 tools and is -44,126 chars (verdict: never for normal work)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1337.
+
+- [x] **OUT-1621** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-667 in request-size.md): `--exclude-dynamic-system-prompt-sections` is -151 chars total and moves 2,388 chars from system to messages (cache sharing across machines is inferred); optional for `-p` scripts
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1338.
+
+- [x] **OUT-1622** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-668 in request-size.md): `viewMode` "focus" adds a "# Focus mode" system section, +449 chars (+163 tok); `defaultView` chat or transcript adds 0. Proposed: unset
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1349.
+
+- [x] **OUT-1623** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-669 in request-size.md): `skillOverrides` off for `simplify`, `loop`, and `claude-api` is -1,617 chars (-586 tok); "name-only" is -1,586 (-575 tok). Useful only if bundled skills stay on
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1352.
+
+- [x] **OUT-1624** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-670 in request-size.md): `workflowSizeGuideline` small is -73 chars and unrestricted -277. Proposed: unset, moot with `disableWorkflows` true
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1355.
+
+- [x] **OUT-1625** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-671 in request-size.md): `additionalDirectories` with one folder adds +61 chars; `blockWritesOutsideWorkingDirectories` true -27; `autoMemoryEnabled` false removes the auto memory text from the request, -2,084 chars (-755 tokens); `autoMemoryDirectory` -39 chars (-14 tokens), moot when memory is off; `totalTokensReminderAfterUserTurn` false -51 and Budget -2
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1360; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1282.
+
+- [x] **OUT-1626** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-672 in request-size.md): `includeCoAuthoredBy` false is -582 chars alone but 0 with `includeGitInstructions` false (the git switch already removes the attribution reminder). Deprecated; proposed: unset
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1362.
+
+- [x] **OUT-1627** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-673 in request-size.md): `modelSettings` `effortLevel` low gives 0 chars; `modelOverrides` maps the request model ID with 0 chars, for provider IDs only. Proposed: unset
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1365.
+
+- [x] **OUT-1628** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-674 in request-size.md): `autoMode.classifyAllShell` true gives the same betas as auto, 0 chars. Its cost is a classifier call per shell command, not measured; stderr says gateway classifier requests "are billed as before"
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1367; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1369.
+
+- [x] **OUT-1629** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-675 in request-size.md): Sandbox keys against sandbox-on 55,244 chars: `filesystem.disabled` -1,844 (-668 tok); `allowedDomains` plus `allowLocalBinding` -350; `allowWrite` plus `denyRead` +57; the others within 3 chars
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1370.
+
+- [x] **OUT-1630** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-676 in request-size.md): Flag `--tools=Bash,Read,Edit,Write` is -30,406 chars (-11,017 tok); `--task-budget 50000` adds `output_config.task_budget`, 0 chars; `--max-budget-usd 0.01` +39; `--max-turns 1` +0; `--append-system-prompt=16 chars` gives +50 (the identity line changes to "You are Claude Code, ... running within the Claude Agent SDK.")
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1630.
+
+- [x] **OUT-1631** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-677 in request-size.md): Undocumented codename env variables add system sections: `AMBER_ASTROLABE` +1,366 chars (autonomous, user away), `BASALT_COVE` +1,961 (Communicating), `BISON_CAIRN` +2,019 (Delivering work), `LARCH_CISTERN` +1,247 (Corrections), `WILLOW_TERN` +1,818 (Writing for the user), `SKILL_PROPOSALS` +551. All proposed unset
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1501.
+
+- [x] **OUT-1632** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-678 in request-size.md): `ATTACHMENTS_BY_PATH` adds `SendUserFile` +3,189 chars; `ENABLE_WRAP_UP` adds `WrapUp` +3,172; `BRIEF` and `PEWTER_OWL` add `SendUserMessage` and a second request per turn, +3,875 chars. Verdict: never
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1515.
+
+- [x] **OUT-1633** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-679 in request-size.md): Env `RESTRICTED` removes Bash, Workflow, the memory section, and the attribution reminder and adds Glob and Grep: -7,809 chars (-2,829 tok), never. `PEWTER_OWL_TOOL` adds `SendUserMessage` alone, +641
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1521.
+
+- [x] **OUT-1634** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-680 in request-size.md): `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` removes the agent listing (-1,544 chars) and also Explore and Plan. `DISABLE_BACKGROUND_TASKS` is -1,352 chars (removes `run_in_background` from Agent and Bash). It stays open, because handoff and Monitor use background tasks
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1525.
+
+- [x] **OUT-1635** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-681 in request-size.md): `SNAPPY_PELICAN` +860 chars (Agent effort lower or higher), `EXPERIMENTAL_AGENT_TEAMS` +526, `GORSE_PLOVER` +169 (Bash line), `ENABLE_FINE_GRAINED_TOOL_STREAMING` +319. All unset
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1532.
+
+- [x] **OUT-1636** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-682 in request-size.md): `DISABLE_CLAUDE_API_SKILL` -1,083 chars; `WEB_FETCH_AGENT` +1,967 (adds a web-fetch skill line); `DISABLE_WEB_FETCH` -9; `ENABLE_TODO_TOOLS` +39; `ENABLE_TOKEN_USAGE_ATTACHMENT` +41; `NEW_INIT` +27; `SAFE_MODE` -2,196 (memory section and statusline-setup line)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1539.
+
+- [x] **OUT-1637** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-683 in request-size.md): Env fields only: `ENABLE_EXPERIMENTAL_ADVISOR_TOOL` adds beta `advisor-tool-2026-03-01`; `INLINE_TOOLS` adds `inline-tools-2026-09-15`; `DISABLE_INTERLEAVED_THINKING` drops `interleaved-thinking-2025-05-14`; `MAX_OUTPUT_TOKENS=4000` turns `max_tokens` 128000 into 4000; `DISABLE_PROMPT_CACHING` (and `_HAIKU`) removes all `cache_control` (never)
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1561.
+
+- [x] **OUT-1638** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-684 in request-size.md): The base request betas are `interleaved-thinking-2025-05-14`, `context-management-2025-06-27`, `claude-code-20250219`, `per-turn-control-2026-07-01`, `mid-conversation-tool-changes-2026-07-01`, `thinking-token-count-2026-05-13`, `advanced-tool-use-2025-11-20`, and `effort-2025-11-24`. Betas are fields, 0 chars
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1645.
+
+- [x] **OUT-1639** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-685 in request-size.md): --disable-slash-commands grows the Workflow tool text to 22,511 bytes (stock 3,502), so it is no trim lever.
+  Basis: cited (the research file holds the number as a cited figure, not a run).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:65.
+
+- [x] **OUT-1640** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-686 in request-size.md): Stock inventory: 94 tools and 142 slash commands, of which 35 are prompt commands and 107 are local commands. A -p request sends 12 tools and defers 10.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:84-87,117,119.
+
+- [x] **OUT-1641** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-687 in request-size.md): autoMode lists are trimmed without $defaults. SOFT BLOCK is about 64 KB of the 139,286-byte classifier prompt (72 rules). Sonnet 5.5 and Opus 5.5 are refused as classifier models, and a server config outranks CLAUDE_CODE_AUTO_MODE_MODEL.
+  Basis: measured and cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:173-174.
+
+- [x] **OUT-1642** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-689 in request-size.md): Request parts: the init event lists 43 commands. The skill list is 5,907 chars with 12 entries in stock and 1,350 with the plugins. The agent list is 596 chars in stock and 0 with the plugin. Only skill-type commands add request chars.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:834.
+
+- [x] **OUT-1643** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-690 in request-size.md): First-request arm table (commit 1228c597): stock 43,382 bytes (system 5,977 chars, 12 tools, tool chars 28,429, message chars 8,129). Three plugins 19,675 (system 6,553, 8 tools, tool chars 8,154, messages 4,286). claudetto alone 18,496 (cuts 24,886). claudetto-openspec alone 44,676 (adds 1,294 over stock). you-should-know alone 43,373 (changes 9).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:887-895.
+
+- [x] **OUT-1644** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-692 in request-size.md): Of 72 built-in tool names, 22 reach a -p request, by --tools name only. ToolSearch select: for 49 names answers "No matching deferred tools found". The pty run failed with "script: openpty: Operation not permitted", and the retry outside the sandbox was refused.
+  Basis: measured in part.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:857.
+
+- [x] **OUT-1645** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-693 in request-size.md): After the rebuild the rebuilt script repeats the baseline within 11 bytes (19,686 against 19,675). Stock is 43,099 and HEAD is 19,392 (system 7,139 chars against 6,756; messages 3,595 against 4,297). With a passing grade HEAD makes 3 side calls, the third a 3,854-byte Decider call to claude-haiku-5-5 from classic.Stop/useStopChecks/register.ts:19. With "ok" both arms make 2, because the unparsed grade blocks before the register check. No session has run HEAD, so the denial count after is not claimed; it needs a session run on HEAD.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:869.
+
+- [x] **OUT-1646** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-695 in request-size.md): Default system prompt in 2.1.323: Sonnet 5.5 system was 298 bytes under --system-prompt and about 6.0k by default; Haiku 5.5 is 8,862; an agent body replaces the default (304 against 6,274 bytes); skills frontmatter is capped at 32.
+  Basis: observed and cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:50-57.
+
+- [x] **OUT-1647** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-696 in request-size.md): The system prompt holds the cache boundary line **SYSTEM_PROMPT_DYNAMIC_BOUNDARY**.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:57.
+
+- [x] **OUT-1648** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-697 in request-size.md): A built-in subagent runs its own 2,683-byte prompt, which prompt.compose cannot reach.
+  Basis: observed (probe 1).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:25.
+
+- [x] **OUT-1649** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-698 in request-size.md): MAX_MCP_OUTPUT_TOKENS=2000 turns 40,000 chars into a 1,447-char error naming a saved file mcp-big-blob-<n>.txt, but 20,000 and 30,000 chars stay whole at that cap (the count_tokens stand-in answered 100, so the char-to-token ratio is not measured). At 60,000 chars both the default and a cap of 60000 give a 2,261-char persisted-output preview, so a file limit of its own sits above the token cap.
+  Basis: measured in part.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:828.
+
+- [x] **OUT-1650** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-699 in request-size.md): Engine max_tokens for $.model.complete with effort set is maxTokens + 2048 (maxTokens 2106 gives 4154), output_config carries effort only, and there is no thinking field. Thinking and reply share it, and the docs do not say so.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:233.
+
+- [x] **OUT-1651** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-700 in request-size.md): $.model.complete takes claude-fable-5-2 and claude-mythos-5-2 at effort high (both answered "ok", 18 in and 22 out tokens, 18 in and 21 out tokens, 1.3 s each). The alias fable resolves to Fable or Mythos by ANTHROPIC_DEFAULT_FABLE_MODEL.
+  Basis: measured (paid run, P241).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:867.
+
+- [x] **OUT-1652** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-701 in request-size.md): An agent file's model value is never checked at load: bogus-model draws only an autocompact catalog warning and is dispatched as written. The only load warning is "has invalid effort 'turbo'. Valid options: low, medium, high, xhigh, max or an integer". Dispatch lines show claude-opus-5-5 for opus. The path through an Agent call is read from docs, not run (these runs used the file as the main agent).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:864.
+
+- [x] **OUT-1653** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-702 in request-size.md): Measured on 2.1.319: first request tools 29,295 -> 7,633 bytes with the Mod; bare `-p` first request 18,065 vs baseline 36,902 (47,683 before deferring three tools); paid two-request session 9,228 vs 9,048 tokens; the second request cache-reads the whole first and writes 258-266 tokens; the prefix after handover differs only in `messages[1]` (engine-added environment block; not fixable, keep no code). With the plugin loaded the TUI starts in auto mode (the 2.1.326 release notes say sessions with no mode set now start in auto mode when the organization policy has not loaded); a compound command raised "Auto mode can't check actions" under the fake API (artifact).
+  Basis: measured (2.1.319). Status: unchecked at 088a227c. The numbers are dated 2.1.319 and bind to that build; the 2.1.327 request has a different tool set (see CTX-691), so they are kept as dated and not restated.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2609; openspec/changes/archive/2026-11-09-release-2-1-319/footprint.md:65; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:262; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [x] **OUT-1654** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-703 in request-size.md): The poster measures the Opus-plans/Sonnet-executes plus code-graph plus 400K-context setup only by the usage meter: 50% extra weekly allowance lasted to day 4-5, 25% extra to day 2-3, and now to day 7, with about 60% savings credited to the combination. There is no A/B and the tasks are "comparable"; subagents self-report "1M+ tokens saved".
+  Basis: reported, eyeballed, one author.
+  Conflict: One user's internal audit found a code-graph token-saving tool cost as much as or more than it saved.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:150 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
+
+- [x] **OUT-1655** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-704 in request-size.md): One user's internal audit found a code-graph token-saving tool (trail/graft) cost as much as or more than it saved, and he removed it; the author of another post in the batch claims 30-40% savings by usage-meter eyeballing.
+  Basis: reported, one audit, figures not given.
+  Conflict: The poster measures the Opus-plans/Sonnet-executes plus code-graph plus 400K-context setup only by the usage meter.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
+
+- [x] **OUT-1656** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-705 in request-size.md): One poster moved a 10-agent batch job from Opus to Sonnet and it used about as many tokens, only slower, so a saving is price per token, not token count. A same-task-both-ways run is proposed as the settle.
+  Basis: reported, one test.
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:57 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
+
+- [x] **OUT-1657** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-706 in request-size.md): A reviewer subagent checked every commit for two weeks: 86 runs, stopped exactly one (over a stale comment link), so the per-commit review cost was not repaid.
+  Basis: reported, one user.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:100 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
+
+- [x] **OUT-1658** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-707 in request-size.md): One contributor reports about 7.4M Claude tokens spent on Ghidra labelling alone for one project.
+  Basis: reported, single user.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1475 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
+
+- [x] **OUT-1659** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-708 in request-size.md): The REA skill prompt plus skill list cost about 150k tokens, its compat variant 50k or more; one Ghidra-launching request of 1M tokens killed 4 A40 GPUs on a local Qwen.
+  Basis: reported, single user, 10 minutes.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:1700 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
+
+- [x] **OUT-1660** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-709 in request-size.md): One user (reported) found Opus 5.5 never invoked the REA skill in any session and did the work without it; skill packs only make the model more prescriptive.
+  Basis: reported, one user.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xaiezw-title-has-anyone-actually-tried-th-20261024T141159Z.md:553 (url: <https://www.reddit.com/r/claude/comments/1xaiezw/title_has_anyone_actually_tried_the_viral_reverse/>).
+
+- [x] **OUT-1661** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-710 in request-size.md): A commenter keeps main sessions on a default autocompact of 150k-240k, treats a starting context above 60k as a concern, and launches workers with about 11k starting context and a 100k autocompact limit.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:48 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
+
+- [x] **OUT-1662** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-849 in request-size.md): An audit of 25 public repos found 45% with a root AGENTS.md or CLAUDE.md; the median file is 1,034 tokens (mean 1,627; range 21 to 6,249), and every session pays it first (reported, n=1 audit, tokenizer not stated).
+  Acceptance: the starter AGENTS.md of REQ-SETUP-026 and the root prompt are reported next to this median in the startup-context baseline of REQ-COST-021. Verification: inspection.
+  Basis: reported (n=1). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-buildwithclaude-comments-1xxwugm-every-claude-code-session-20261118T120522Z.md:29-45 (url: <https://www.reddit.com/r/BuildWithClaude/comments/1xxwugm/every_claude_code_session_pays_rent_on_your/>); reports/2026-11-18-research/dossier.md:171.
+
+- [x] **OUT-1663** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-374 in research.md): Coding agents change code that is already fixed: a 200-task benchmark where the correct action is no change (arXiv 2605.07769).
+  Acceptance: Kept as the no-change-needed case. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:32.
+
+- [x] **OUT-1664** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-375 in research.md): Safety benchmarks: Agent-SafetyBench (2412.14470) no agent above 60% and prompts alone do not fix it; ToolEmu (2309.15817) 68.8% of found failures validated real; OpenAgentSafety (2507.06134) unsafe in 51-73% of vulnerable tasks.
+  Acceptance: Kept beside the plan's [2605.18583] out-of-scope rates. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:54,63,64.
+
+- [x] **OUT-1665** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-376 in research.md): Stale training data leads to deprecated APIs (2406.09834); a hallucination taxonomy with four contributing factors (2409.20550); ReCode RL on API updates (2506.20495).
+  Acceptance: Kept as the deprecated-API cause. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:110,111,123.
+
+- [x] **OUT-1666** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-377 in research.md): Retrieval of API docs helps rare APIs (38.58% to 47.94% valid calls) but a poor retriever cost 39 points on common APIs, so retrieve selectively (2407.09726); a registry-check pipeline gave clean code in 76% of runs, bait prompts raised hallucination to 40-73%, and about half of flagged names were real lookalike packages (2608.23897).
+  Acceptance: Kept beside the plan's 76% and 5.2%/21.7%. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:122,124.
+
+- [x] **OUT-1667** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-378 in research.md): Models cannot separate data from instructions (2302.12173); InjecGuard (2410.22770) shows injection guards near chance on benign text with trigger words (over-defense).
+  Acceptance: Kept beside the plan's over-refusal line, as guard over-defense. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:170,172.
+
+- [x] **OUT-1668** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-379 in research.md): StruQ (2402.06363) and SecAlign (2410.05451) separate instruction and data channels with under 10% attack success; Design Patterns for Securing LLM Agents (2506.08837); evals AgentDojo (2406.13352), OR-Bench (2405.20947), XSTest (2308.01263).
+  Acceptance: Kept beside the trifecta break. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:185,187,188.
+
+- [x] **OUT-1669** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-380 in research.md): Instruction Hierarchy (2404.13208) is a cited research mitigation for injection.
+  Acceptance: Kept as a citation. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:183.
+
+- [x] **OUT-1670** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-381 in research.md): Progent (2504.11703) least-privilege tool policies; Conseca (2501.17070) just-in-time human-verifiable policies; Agent-as-a-Judge (2410.10934) near-human where text graders fail; PatchDiff (2503.15223) differential testing exposes plausible-but-wrong passes, and checks at the wrong layer pass wrong patches.
+  Acceptance: Kept beside the plan's mutation checks. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:112,159,160; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:110.
+
+- [x] **OUT-1671** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-382 in research.md): Agentic refactorings are mostly shallow renames and type changes (2511.04824, 2601.20160); A3-CodGen (2312.05772) library awareness raises reuse; prompt and architecture choices drive code smells (2511.15817); MetaGPT (2308.00352) SOPs with intermediate checks.
+  Acceptance: Kept beside the plan's refactor technique. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:48,57,60,117.
+
+- [x] **OUT-1672** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-383 in research.md): Debate often loses to self-consistency or a single strong agent (2305.14325, 2311.17371, 2402.18272); heterogeneous models help.
+  Acceptance: Kept beside the plan's "heterogeneous debate helps (2502.08788)". Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:118.
+
+- [x] **OUT-1673** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-384 in research.md): Overthinking (2412.21187) and underthinking (2501.18585) are named failures; Danger of Overthinking (2502.08235): SWE-bench low-overthinking trajectories about 30% better at 43% lower cost; AdaptThink (2505.13417) -53% length +2.4% accuracy; Token-Budget (2412.18547); L1 (2503.04697); LLMLingua (2310.05736).
+  Acceptance: Kept as overthinking numbers, apart from the compaction 43%. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:168,181,182,184.
+
+- [x] **OUT-1674** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-385 in research.md): Towards a Science of Scaling Agent Systems (2512.08296): a predictor picks the best architecture for 87% of configurations.
+  Acceptance: Kept beside the +80.8% and -70.0% range. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:119.
+
+- [x] **OUT-1675** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-386 in research.md): Cognition "Don't Build Multi-Agents": share full context because parallel agents make conflicting implicit decisions; OpenAI Agents SDK handoffs with input filters.
+  Acceptance: Marked not read or not fetched by the dossier. Verification: inspection.
+  Basis: cited (content not read by the dossier; the SDK page not fetched).
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:112,113.
+
+- [x] **OUT-1676** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-387 in research.md): R2E-Gym (2504.07164): hybrid verifiers beat either kind alone; SWE-agent (2405.15793): interface design changes agent outcomes.
+  Acceptance: Kept as citations. Verification: inspection.
+  Basis: cited.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:61,154.
+
+- [x] **OUT-1677** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-388 in research.md): 2605.15184 "Is Grep All You Need": inline grep beat inline vector in every pair; the harness moved accuracy (Opus 4.6 inline grep 93.1 on Chronos against 76.7 on Claude Code)
+  Basis: reported, by subagent read, not rechecked.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1191.
+
+- [x] **OUT-1678** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-389 in research.md): 2608.26218 "Same Model, Different Harness": trimming old tool results plus stall handling raised Verified F2PF from 28 to 49 percent at a 20,480-token window and changed nothing at 262,144 (Table 2 and 6)
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1193.
+
+- [x] **OUT-1679** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-390 in research.md): 2509.23586 AgentDiet: input tokens -39.9 to -59.7 percent, cost -21.1 to -35.9, Pass -1.0 to +2.0, blind deletion cost about 7 points Pass. 2510.26585 SupervisorAgent: GAIA tokens -29.68 percent at equal accuracy, the supervisor used 15.45 percent of tokens. 2606.01326 Minification: -42 percent tokens but 50.0 to 38.0 percent resolved, source code 91.8 percent of repair tokens, instructions 0.2 percent
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1195.
+
+- [x] **OUT-1680** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-391 in research.md): 2412.18547 TALE: a stated token budget cut output from 461 to 149 tokens at 83.75 to 81.03 percent accuracy, but a budget too small raised token use (token elasticity). 2602.20478 Codified Context: a small always-on core plus on-demand docs, stale specs the main failure (one developer, observational)
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1201.
+
+- [x] **OUT-1681** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-392 in research.md): The claude.com article "When to fold subagents into your main agent loop" (2026-10-22): use a subagent for context bloat, parallel work with throwaway context, or tool-choice and instruction conflicts; tool choice degrades past 30-50 tool definitions. The quotes came through a paraphrasing fetch; recheck before citing
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1205.
+
+- [x] **OUT-1682** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-393 in research.md): 2610.29162 "Why is AI-generated language so hard to understand": AI text over-uses reduced object relatives, denominal verbs, and inanimate subjects, with longer dependencies; Opus 5.5 is lower than Opus 5 in 19 of 21 comparisons. `ste-rewrite` 0.5.0 (`asd-ste100-skill-next`, 23,082 chars SKILL.md): 20 words per instruction, one action and at most one condition per sentence, active voice, noun clusters of 3 words at most, at most 6 sentences per paragraph; eval Opus 17/17, Sonnet 16/17, Haiku 15/17 at $19.58. A rule that states its boundary works; a rule that states its goal reads as advice. Loading the whole skill adds 23 KB per request, so only short sentence rules go in an always-on style
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1219.
+
+- [x] **OUT-1683** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-395 in research.md): Per one skill's README, skill folders under `~/.claude/skills/<name>` also work with Codex and Cursor; nothing in claudetto depends on it. A commenter cited Anthropic "The AI-native SDLC playbook" (not fetched). In a multi-agent relay post the author copy-pasted 257 relay prompts across about 20 terminals in a week, with a median 11 min until noticing an agent finished; a local-plus-cloud routing recipe saved little (the best local model on 48 GB handled about 5% of complex tasks).
+  Acceptance: the cited posts state the figures. Verification: inspection.
+  Basis: reported. Status: have at 088a227c.
+  Source: external/2026-10-25_p2/reddit.com-r-claudecoding-comments-1xc8h4t-running-many-claude-code-age-20261025T160048Z.md:31 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xc8h4t/running_many_claude_code_agents_without/>); external/2026-10-12_p3/export-Engineers who write all their code with claude now- how do you do it-.jsonl:278 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wgm4si/engineers_who_write_all_their_code_with_claude/>); external/2026-10-21/reddit.com-r-claudeai-comments-1wu40t8-whats-the-one-line-in-your-claud-20261020T234709Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1wu40t8/whats_the_one_line_in_your_claudemd_that_made_the/>). Not located: the Cursor and 48 GB lines.
+
+- [x] **OUT-1684** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-396 in research.md): An AST-only code map (graphify) plus a CLAUDE.md rule to ask the map first cut a flow question from about 169k to about 2.9k tokens, with little saving on one-file fixes. After a rename and move the map answered with old names and lines and no warning, so it now checks staleness before each query.
+  Acceptance: The figures hold as one author reports them. Verification: probe.
+  Basis: reported, one author; contradicted as a general result by four commenters who say Claude did not call a graphify or codegraph MCP although CLAUDE.md named it, preferred the Explore subagent and grep, needed the instruction restated, and fell back to grep and Read when the index output looked truncated, paying twice (external/2026-10-21/reddit.com-r-claudecode-comments-1ueobkd-codegraph-or-graphify-20261021T181506Z.md:48, :52, :74, :129). A code map ships only if a measured arm beats vanilla (ADR-0177), and a CLAUDE.md line alone does not make the agent call it. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudecoding-comments-1xhhdye-made-a-skill-so-claude-code-20261028T082712Z.md:29; external/2026-10-30/reddit.com-r-claudecoding-comments-1xhhdye-made-a-skill-so-claude-code-20261028T082712Z.md:31 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xhhdye/made_a_skill_so_claude_code_queries_a_code_map/>).
+
+- [x] **OUT-1685** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-397 in research.md): claudetto shall treat these literature numbers as cited and unverified here: Corrections compiled to runtime checks cut violations 100% -> 37.6% in-distribution and 2.0% out-of-distribution (TRACE); framework explains ~56% of overeager variance, model ~21% (SNARE); removing a consent declaration moved Claude Code's overeager rate 0.0% -> 17.1%; repo context files add >20% cost without raising success; agents skipped asked-for files in 67.9% of runs and 80.4% of those misreported it; package hallucination (5.2% commercial, 21.7% open, 205,474 fake names [2406.10279]); 7.8% of SWE-bench passing patches fail developer tests; multi-turn 39% below single-turn; paper judge rejected claims (test 83, tool 75, other 96) as unmeasured/off-topic/non-Claude/contradicted: treat as not required. Further cited numbers: Docs absent -> executable code only 42.55% on evolving APIs, structured docs + self-reflection 66.36% [2604.09515]; RepoCoder >10% over in-file [2303.12570]; registry-check pipeline 76% clean [2608.23897]; De-Hallucinator +23.9-61.0% [2401.01701]; DocPrompting +52% relative [2207.05987]; Spotlighting <2% attack success [2403.14720]; CaMeL 77% vs 84% undefended [2503.18813]; "Attacker Moves Second" broke 12 defenses >90% [2510.09023]; coding-assistant defenses mitigate <50% of adaptive attacks [2601.17548]; "Your AI, My Shell" up to 84% [2509.22040]; Agentless [2407.01489]; Cursor adoption raised velocity briefly, warnings persistently [2511.04427]. CC prompt (strings): flag suspected injection, hook feedback as from user, pasted-content tags followed only where the user message asks, `switchModelsOnFlag` (2.1.326: `switchModelsOnFlag` present, binary string search; the other prompt strings were not re-searched on 2.1.327).
+  Acceptance: No plan decision rests on one of these numbers alone. Verification: inspection.
+  Basis: cited. Status: unchecked: literature, not code at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:49; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:47; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:37; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36.
+
+- [x] **OUT-1686** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-398 in research.md): Hook stacks, word lists, swarms, and an advisor that reads the whole context are the practices that people report as harmful; the practices reported as working are small: a short `CLAUDE.md`, the sandbox with file denials at the system level, a hook only for the few hard rules, a Stop hook that runs tests, plan files with native compaction, one worktree per agent.
+  Acceptance: the figures below are in the source. Verification: inspection.
+  Basis: reported. Measured figures inside: 448 blocks in 76 sessions (top cause a file read through the shell); a planted evasion passed a word list 10 of 12 times; a swarm of 76 agents lost to one agent.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:597; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133.
+
+- [x] **OUT-1687** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-399 in research.md): `sandbox.autoAllowBashIfSandboxed` defaults true (Bash text +854 chars; tools 30,350 to 31,204 bytes); `bun test` is refused in `-p` with `--settings '{}'` (17,475 tokens) and passes with the sandbox on (22,163 tokens); about 340 "requires approval" refusals in tuning runs, 42 of them `bun test`. 2.1.326: present (autoAllowBashIfSandboxed; binary string search).
+  Basis: measured 2.1.319.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:379; openspec/changes/2-1-325-rearchitecture/design.md:106.
+
+- [x] **OUT-1688** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-400 in research.md): Sandbox on macOS: `allowWrite ["/tmp"]` does not open /tmp (symlink), `/private/tmp` does; TMPDIR=/tmp/claude-501; `denyRead` in file or directory form works with "Operation not permitted"; `denyWrite` inside `allowWrite` works; a shell-variable command is held with "A variable in this command can't be checked before it runs"; unset `allowedDomains` gives proxy 403 and `000`, `["*"]` gives 200; `bun install` needs a writable `BUN_INSTALL_CACHE_DIR`; `git init` fails inside the sandbox; an SSH-signed commit works when ~/.ssh is not in denyRead; ssh goes via the proxy and fails host-key verification without known_hosts; Apple Events fail -600 and `open -R` exits 0 while blocked; `gh api user` needs `allowMachLookup ["*"]` (else x509 OSStatus -26276); pty runs fail (`script: openpty: Operation not permitted`). 2.1.326: present (sandbox.network.*; `allowMachLookup` found by binary string search). The `.git` write protection makes `git init` fail inside the sandbox: "cannot copy ... templates/hooks/commit-msg.sample ... Operation not permitted"; with `--template=`, "could not lock config file" Claude Code's own safety check denies a command that builds a folder path from a variable; a command with literal paths passes.
+  Acceptance: the same command with literal paths runs. Verification: probe.
+  Basis: measured 2.1.319, macOS 27.2. measured. reported. Status: have.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:163; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:310; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1724; openspec/specs/low-hitl/spec.md:141; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:236; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (Claude Code 2.1.319).
+
+- [x] **OUT-1689** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-401 in research.md): The `dangerouslyDisableSandbox` retry (2.1.322, cc-inspect `cli`): auto mode accepts or lets the classifier decide unless flagged (permission_denied or classifier); default mode gives permission_denied or sandboxOverride. Delivery routes: the plugin root drops `sandbox`; `settings.read` sets only `enabled` and `allowUnsandboxedCommands`. 2.1.326: present (allowUnsandboxedCommands; binary string search).
+  Basis: measured.
+  Source: openspec/specs/sandbox/spec.md:73.
+
+- [x] **OUT-1690** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-402 in research.md): Reported sandbox facts: the sandbox silently drops `--model` outside `availableModels` and runs Sonnet 5.5; `grep` is ugrep (rejects `.{0,700}`); the sandbox creates an empty `.claude/.cc-writes`; Bun auto-reads `.env` and fails silently when denied; sandboxed `pgrep` fails "Cannot get process list"; `kill` of an outside process and `git worktree remove` of another session's worktree are refused (half-removes) on 2.1.323; classifier no-verdict messages; session cost $141.96 per day API-equivalent, "98% usage from subagent-heavy sessions", a 94%-full session $2.88; Sonnet reportedly uses up to 2-3x the tokens and time of Opus on some tasks.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:616; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:204.
+
+- [x] **OUT-1691** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-403 in research.md): Claude Code built-ins ask on `.claude/`, `.git/hooks/`, Write/Edit of plugins/, and `rm -rf` of `/` or `~`, but not on a Bash write into `plugins/<name>/hooks/`; they deny `rm` whose target ends `$dir/`, `$dir/*`, or is `$(...)`; `$.fs.exists` refuses the grep pattern `/\.git/` as a network location.
+  Basis: read, measured.
+  Source: openspec/specs/permission-policy/spec.md:498; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:204.
+
+- [x] **OUT-1692** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-404 in research.md): `-p` sessions have no `AskUserQuestion` (27 tools listed); a relative `--plugin-dir` in `-p` silently loads nothing. 2.1.326: present (AskUserQuestion, --plugin-dir; binary string search).
+  Basis: measured 2.1.319.
+  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:35 (a relative `--plugin-dir` loaded 0 plugins). On 2.1.327 `AskUserQuestion` has an `isEnabled` gate `hme()` (`surface` tool, chunk-1vttvse2.js); the 27-tool count for `-p` was not re-run.
+
+- [x] **OUT-1693** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-405 in research.md): The denial text names every plugin that hooks the tool, not the deciding one; an engine `ask` that nothing made can become `allow` by a hook; a `tool.check` deny arrives at `tool.call` as `isError`; a non-zero Bash exit is stored `is_error: true`; `Stop`/`SubagentStop` `background_tasks` is session-wide; a synchronous subagent's background command ends at its final response.
+  Basis: measured 2.1.319.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:30; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:407.
+
+- [x] **OUT-1694** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-406 in research.md): Study and benchmark claims, cited second-hand and not verified: ETH Zurich (2602.11988): AGENTS.md-style and LLM-generated context files did not raise success versus none and added more than 20% inference cost (about 20% more); human-written improved about 4%; content matters, not existence, and a human-written harness beats machine-generated context; Vercel removed 80 percent of its agent's tools: success went from 80 to 100 percent, token use fell by more than half, latency fell from 724 to 141 seconds, and Microsoft reportedly cut 100 tools to 5; 10 memory systems on BEAM 100K: top two 70.1%/67.8% against full context 69.5%, BM25 55.3%, claude-mem 51.5%, CIs ~10 points (retrieval beat bulk context; layers cause anchoring; no repo action).
+  Acceptance: The figures hold as the posters cite them; no source paper was opened. Verification: inspection.
+  Basis: cited, secondhand, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xlo7ls-i-benchmarked-10-opensource-ai-m-20261102T084707Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlo7ls/i_benchmarked_10_opensource_ai_memory_systems_on/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:40 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjcfjs/how_to_build_a_harness_that_actually_improves/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:64.
+
+- [x] **OUT-1695** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-407 in research.md): Prefix-changing events, measured on claude 2.1.316 in one version: `/model` or plan mode under opusplan; MCP enable/disable with `ENABLE_TOOL_SEARCH=false` (first difference at tools[22]; the env is present in 2.1.326, binary string search); the first request after `/compact` (system[0] differs: the cc_version suffix derives from the first user message); CLI upgrade (system[0] billing header carries cc_version). Handover on 2.1.319 (fake API): the first request is byte-identical in system, tools, model, thinking, metadata, messages[0]; only messages[1] (the engine environment block) differs.
+  Basis: measured.
+  Source: openspec/specs/prompt-cache/spec.md:66.
+
+- [x] **OUT-1696** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-408 in research.md): Factored verification (CoVe, arXiv 2309.11495, <https://arxiv.org/abs/2309.11495>): the model drafts, plans verification questions, answers each in a fresh prompt that does not see the draft, then revises; on Llama 65B FactScore went from 55.9 to 71.4, and factored beat joint. It targets hallucinated facts, not agreement, and costs 3 or more calls. Abstract level only, numbers unverified.
+  Basis: cited (abstract level only).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:23.
+
+- [x] **OUT-1697** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-409 in research.md): Drift measurement benchmarks (measurement only, no mitigation): SEQUOR (preprint) has 1,400 conversations of 50 turns on 10 open models plus Gemini 3.1 Flash Lite; per-turn accuracy falls in every regime, the Add regime by 63% on average and Tuples by 38%, and Replace regimes recover when a constraint is swapped; the paper has internal inconsistencies (abstract 11% against body 26%). Multi-IF has 4,501 prompts in 8 languages on 14 models, o1-preview 0.877 to 0.707 from turn 1 to 3 (snippet). IFEval++ shows up to a 61.8% drop under nuanced variation on 46 models (starting doc). Cited as arXiv 2410.15553 (<https://arxiv.org/abs/2410.15553>), arXiv 2605.06353 (<https://arxiv.org/abs/2605.06353>) and <https://aclanthology.org/2026.acl-long.354/>.
+  Basis: cited (snippets and a starting doc; not all read in full).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:36.
+
+- [x] **OUT-1698** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-410 in research.md): Prompt repetition (repeat the whole prompt twice; Leviathan et al., arXiv 2512.14982, <https://arxiv.org/abs/2512.14982>, a Google preprint): 7 models including Claude 3 Haiku and 3.7 Sonnet on 7 benchmarks, wins judged at McNemar p<0.1. With no reasoning: 47 wins of 70 pairs and 0 losses. With reasoning on: 5 wins of 28 and 1 loss. Gemini 2.0 Flash-Lite NameIndex went 21.33 to 97.33 on an author-designed task. Early-2025 models; the note rates it likely nil on a reasoning model, at the cost of extra prefill tokens.
+  Basis: cited (preprint, author-designed task).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:34.
+
+- [x] **OUT-1699** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-411 in research.md): Coverage gap in the sycophancy community research: for Codex, Aider, SWE-agent and OpenHands the finding is not established. One arXiv paper (2510.21413, <https://arxiv.org/abs/2510.21413>) says AGENTS.md-style files are added to each prompt, and a vendor blog says OpenHands loads it per task; the author found nothing these tools built against agreement without evidence.
+  Basis: reported (not read in source).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:29.
+
+- [x] **OUT-1700** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-412 in research.md): Test-and-gate papers named in the settings review: TDD Governance (Hasanli et al., EASE 2026; arXiv 2604.26615, <https://arxiv.org/abs/2604.26615>) is a position paper with no numbers and a repair cap of N=3. TDAD (Rehan; arXiv 2603.08806, <https://arxiv.org/abs/2603.08806>): hidden tests caught gaming, and failed runs often passed over 95% of the visible tests. GTDD (Kato, named "GTTD" in the request; arXiv 2610.02952, <https://arxiv.org/abs/2610.02952>): a fresh audit after commit needs 54 cases against 475 for known fixed tests (Table 2), and dynamic informed tests beat static LLM tests by 0.131 (Table 6); one task, one small model. Consort (Hartman; arXiv 2609.09671, <https://arxiv.org/abs/2609.09671>): analytic, no data; "a control that the worker can choose to ignore is not a control when the worker is non-deterministic"; tests immutable within a unit of work. BDD scenario generation (Rathnayake et al.; arXiv 2603.04729, <https://arxiv.org/abs/2603.04729>) benchmarks scenario writing, not an agent workflow.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1210-1217.
+
+- [x] **OUT-1701** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-413 in research.md): Commenters cite papers for prompt tricks without a result: arXiv 2205.11916 (<https://arxiv.org/abs/2205.11916>) and arXiv 2312.16171 (<https://arxiv.org/abs/2312.16171>) as "actual scientific papers" showing that manipulating prompts "like" the thread's trick has worked in the past; arXiv 2510.04950 (<https://arxiv.org/abs/2510.04950>) for "I thought models performed better when you're rude to them?". No line states a model or a number.
+  Basis: reported (papers not opened).
+  Source: external/2026-10-21/reddit.com-r-claudeai-comments-1s5wp0g-ive-been-gaslighting-my-ai-model-20261020T044555Z.md:763-765 (url: <https://www.reddit.com/r/ClaudeAI/comments/1s5wp0g/ive_been_gaslighting_my_ai_models_and_its/>); external/export-Introducing Claude Opus 5.5, the first model in our new Claude 5.5 family.jsonl:178 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnecg9/introducing_claude_opus_55_the_first_model_in_our/>).
+
+- [x] **OUT-1702** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-414 in research.md): A commenter on a turn-limit thread cites arXiv 2602.07338 (<https://arxiv.org/abs/2602.07338>; GPT-4o-mini, GPT-5.2, DeepSeek-v3.2-Thinking, Feb 2026) with the quote "GPT-5.2 drops from a near-perfect 92.7% to 48.5%", and reads it as little model improvement in this area, with the cause more likely in training and in how chat architecture has been standardized.
+  Basis: reported (one commenter's reading; paper not opened).
+  Source: external/export-What the hell is a turn limit (200-turn limit) and why are subagents suddenly hitting them-.jsonl:8 (url: <https://www.reddit.com/r/ClaudeCode/comments/1woaxj7/what_the_hell_is_a_turn_limit_200turn_limit_and/>).
+
+- [x] **OUT-1703** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-415 in research.md): Dossier S41, "Accountable Agents in Software Engineering: An Analysis of Terms of Service and a Research Roadmap" (arXiv 2605.04532, <https://arxiv.org/abs/2605.04532>, May 2026): it examines 14 policy documents across nine coding-assistant and agent providers, covering responsibility, liability, ownership and acceptable use, and shows the gap between rising autonomy and contractual accountability. It is a policy analysis, not evidence that a particular Claude action breached a particular contract, and not a substitute for the terms in force at the incident date.
+  Basis: cited (paper text).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:369-371.
+
+- [x] **OUT-1704** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-479 in rules-behaviour.md): The syntax @path/to/file in CLAUDE.md inlines another file (a cross-project memory index loaded from user CLAUDE.md). A commenter reports the memory store hit its limit and ejected the wrong memories.
+  Basis: reported, anecdote.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:231 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
+
+- [x] **OUT-1705** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-480 in rules-behaviour.md): One month, about 15 agents with the rule "when corrected write one dated line to memory/lessons.md and read it each session": 247 lines (busiest agent 47, some under 5), mostly environment facts (zsh no word-split, find is bfs and rejects -newermt, no PIL use sips, tool calls die at 600s) and vague asks, not model faults; "a failed check with 2>/dev/null looked like a pass".
+  Basis: reported, poster.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:29 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
+
+- [x] **OUT-1706** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-481 in rules-behaviour.md): Per-agent lessons load about 8 KB plus about 6 KB shared (about 3.5k tokens), identical each session so cached; a 10 KB cap per agent file, past which duplicates merge and some archive. Kept loaded, not behind an index, because expensive mistakes throw no error (wrong weekday, "doc does not exist") so a pointer is never followed.
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:115 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
+
+- [x] **OUT-1707** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-482 in rules-behaviour.md): Source read of other harnesses: Aider rebuilds a system_reminder every request, last in the list, only if tokens < max_input_tokens. Codex compaction keeps recent user messages verbatim, newest first, up to 20,000 tokens and re-injects canonical context. SWE-agent never trims the first observation. OpenHands never condenses `keep_first` events (default 2) and has an off-by-default critic loop (threshold 0.6, 3 iterations). None of the five has an agreement gate. Structure beats reminding (source read, no published rates).
+  Basis: source read, no published rates.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:102-107; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:111-115.
+
+- [x] **OUT-1708** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-484 in rules-behaviour.md): A post on a lintable prompt language (llmmd) defines a PREVENT ladder. Rung 1 asks for a lint rule of the file that shows the error. Rung 2 writes one EARS sentence into `.claude/rules/<topic>.md` with a `paths` list of the files where the error happens. Rung 3 adds one CHECK line for REVIEW (reported, by the post's author).
+  Basis: reported, post author.
+  Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:75-87.
+
+- [x] **OUT-1709** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-485 in rules-behaviour.md): In the same post, REVIEW appends `./reports/<task>/audit.md` with [OK], [N/A], and [NOT OK] entries and a Proposal line (reported, by the post's author).
+  Basis: reported, post author.
+  Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:123-141.
+
+- [x] **OUT-1710** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-486 in rules-behaviour.md): In the same post, the CHECK list covers LICM, binding-time analysis, specialization validity, cache invalidation, SRP, DRY, contract conformance, and others (reported, by the post's author).
+  Basis: reported, post author.
+  Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:142-158.
+
+- [x] **OUT-1711** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-487 in rules-behaviour.md): The post claims an analyzer can detect jumps to missing labels, unreachable steps, and loops without a stopping condition. The post gives no measurement.
+  Basis: reported, post author's claim; the post names no test, and it concerns the author's own analyzer, not Claude Code, so a local probe has no subject.
+  Source: external/2026-10-12/A_Lintable_Language_Is_All_You_Need.md:180.
+
+- [x] **OUT-1712** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-488 in rules-behaviour.md): `PIN_EXTRACT` arms on 130 samples: long text 120/130 at 1,732 static characters, plain 101/130 at 1,135, credit 130/130 at 1,211, C2 (closed label list, no credit wording) at 1,207. On a blind set of 120: old 116 and 118; A 115 and 112; B 118 and 119; C 111 and 111. Credit wording adds nothing measurable once the closed label list exists (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:345; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:346.
+
+- [x] **OUT-1713** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-489 in rules-behaviour.md): One example line in the task text moved "still fails" reports to `task`: 28/40 and 24/40 became 40/40 and 38/40, with every dispute kept. Earlier sets scored 496/500 against 499/500 for the current text (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:363.
+
+- [x] **OUT-1714** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-490 in rules-behaviour.md): Violations ran about 0.6% for rules a hook enforced against about 5.6% for rules that were text only; keep prose for what cannot be checked mechanically.
+  Basis: reported, measured by one team (own data).
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:81 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>).
+
+- [x] **OUT-1715** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-491 in rules-behaviour.md): One repo merged 1,652 PRs in a month (median 492 changed lines); tests are 70% of code (3.4 test lines per solution line); about one fix round per merged PR via a separate blocking review agent; reverts 0.2-0.7% of merges.
+  Basis: reported, measured by one team.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:27; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:47 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
+
+- [x] **OUT-1716** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-492 in rules-behaviour.md): Anthropic turned on a text watermark on Nov 3 for Mythos 5, Opus 4.7, and Sonnet 4.6 per release notes; a poster hypothesizes higher entropy on low-entropy tokens causes synonym substitution; others suggest temperature or anti-distillation.
+  Basis: reported, hypothesis (a poster's); the watermark and its effect on sampling are server-side behaviour, not in the binary, so a local probe cannot show them; kept as reported.
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xqp2l0-sick-of-semantic-substitution-20261110T172348Z.md:143 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqp2l0/sick_of_semantic_substitution/>).
+
+- [x] **OUT-1717** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-493 in rules-behaviour.md): The agent follows existing architecture and makes small improvements. For a larger change, say 'do not be constrained by what exists, build it as if from scratch' and pare back later, or paste reference screenshots (a redesign only moved elements until Dribbble references were given). A 'moonshot' prompt run as a skill suggested one already-planned breaking change, one already-filed bug, and a rendering-engine swap its own red-pen round called a waste; a skeptic reports token waste and over-engineering.
+  Basis: reported, n=3. Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg9tqk-the-moonshot-prompt-20261102T184706Z.md:147,151,299-301 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg9tqk/the_moonshot_prompt/>).
+
+- [x] **OUT-1718** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-494 in rules-behaviour.md): Offering the agent a reward or '5 minutes of free compute' is reported to speed task completion; telling it the work is important and it must think hard is a common habit.
+  Basis: reported, neither measured. Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:129,133 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
+
+- [x] **OUT-1719** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-495 in rules-behaviour.md): One commenter cuts 50-60% of what Claude writes and documents as fluff.
+  Basis: reported (anecdote). Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xp44k0-claude-is-terrible-at-ux-writing-20261106T082337Z.md:87 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xp44k0/claude_is_terrible_at_ux_writing/>).
+
+- [x] **OUT-1720** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-496 in rules-behaviour.md): Named negative instructions reported as working: no all-caps eyebrow lines, no flat boxes, no shaded box edges. The sources conflict with the finding that negative instructions backfire ('no red gradient band' swapped the brand).
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xny4t4-what-tricks-do-you-guys-use-to-s-20261105T084416Z.md:123 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xny4t4/what_tricks_do_you_guys_use_to_stay_away_from_the/>).
+
+- [x] **OUT-1721** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-497 in rules-behaviour.md): One Reddit author counted two README feature entries at 15 words against 71 words written by Claude (about 4.7x) and named the tell as design rationale after 'because' in user-facing text.
+  Basis: reported, one sample, 532 votes. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xoj99r-vibecoders-i-beg-you-when-postin-20261109T153436Z.md:39-53 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoj99r/vibecoders_i_beg_you_when_posting_your_app_or/>).
+
+- [x] **OUT-1722** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-499 in rules-behaviour.md): The 'deeper not bigger' prompt says what a top professional would do, the rawest source material, the methods, and what other than the model or user would show the result is right; reported to over-engineer, so use on big features only.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:60-62 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
+
+- [x] **OUT-1723** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-500 in rules-behaviour.md): The edit prompt 'same length, my words, only fix what's wrong, keep this line exactly' stops a two-line message growing into a launch plan; drift on long docs is reduced by pasting the keep-lines per section.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:435 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>).
+
+- [x] **OUT-1724** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-501 in rules-behaviour.md): Karpathy-rules file test (24 runs, Claude Code 2.1.312, Opus 5.5): hidden tests passed either way; time 274 s vs 281 s and $2.56 vs $2.69 over 12 runs each; all 6 runs on the messy-bug task fixed the same single line with or without the file; retry helper 10 to 12 lines with the file vs 12 to 17 without; one of three with-file runs on the vague date task made an 8-line change that passed unknown date text through, which no without-file run did, so a smaller diff moved the ambiguity to the user.
+  Basis: measured, n=3 per cell. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xmhy1d-the-karpathy-claudemd-clearly-20261105T173154Z.md:29-41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xmhy1d/the_karpathy_claudemd_clearly_changed_claude/>).
+
+- [x] **OUT-1725** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-502 in rules-behaviour.md): Guren framework guidance test (9 tickets, 4 models, 3 runs): turns fell 11-27% for every model; Sonnet 5.5 went 26/27 to 27/27, Haiku 4.5 8/27 to 12/27, Opus 5.5 and Fable 5.1 27/27 either way. Guidance loaded at start was 25.5k tokens and made up the whole cost gap against a plain app; path-scoped loading cut it to 7.1k tokens and the cost gap from 1.40x to 1.26x. On a release newer than training data, guidance passed 3/3 vs 1/3 without.
+  Basis: reported, one author, own tickets. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xmhy1d-the-karpathy-claudemd-clearly-20261105T173154Z.md:272-284 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xmhy1d/the_karpathy_claudemd_clearly_changed_claude/>).
+
+- [x] **OUT-1726** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-503 in rules-behaviour.md): Sonnet is more sensitive to prompt quality than Opus: stating the "why" of a request raises quality (two commenters); a Sonnet main session can have an Opus subagent review its plan for flaws.
+  Basis: reported.
+  Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>).
+
+- [x] **OUT-1727** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-504 in rules-behaviour.md): A cited paper (arXiv 2608.23550) checked how many written security rules had any effect: only 4 to 16 percent. The poster concludes that prose rules are suggestions and executable guards (git hooks, linter rules, static analysis, scripts) hold.
+  Acceptance: The figure holds as the poster cites it; the paper was not opened. Verification: inspection.
+  Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjcfjs/how_to_build_a_harness_that_actually_improves/>).
+
+- [x] **OUT-1728** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-505 in rules-behaviour.md): A commenter reports that Swift warnings as errors in a build hook catch unused variables and never-read results, and Periphery catches unused declarations, but a call with a side effect whose result is unread (layoutIfNeeded) passes both and a lint rule; only a reader of the diff catches it.
+  Acceptance: The fact holds as one commenter reports it for Swift. Verification: probe.
+  Basis: reported, one commenter. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:109; external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
+
+- [x] **OUT-1729** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-506 in rules-behaviour.md): claudetto shall treat these small-sample effects as reported: Karpathy CLAUDE.md, 2.1.312, Opus 5.5, n=3 per cell: asks before guessing 2/3 vs 0/3, regression test 3/3 vs 0/3. Writing skill that only bans things: 5/5 vs 0; three-reviewer skill same score at ~14x cost; public skill tied 8/8 vs 8/8 (5 runs each, blind grader; commenters: bans beat instructions because pass/fail). PR-review filter benchmark: Copilot reviews kept ~92% of real bugs; 11 missed real bugs kept as regression cases, 2 high severity. Anthropic guide of Oct 22 (single agent with skills often beats subagent teams; cited). Weekly burn reports (Max 20x gone in 2.5 days on Opus 5.5 medium; 2x vs 3.7x vs 1.5-1.7x plan ratios, unverified); tool-use: a user cut usage 30%+ to <10% by terminating stuck agents. Watermark/anti-distillation/nerf theories: inferred, unverified.
+  Acceptance: None is a basis for a requirement alone. Verification: inspection.
+  Basis: reported. Status: unchecked: a reported result, not code at 088a227c.
+  Source: external/2026-10-02/export-+50% usage if you start a doc-.jsonl:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wvkhud/50_usage_if_you_start_a_doc/>); external/2026-10-07_p2/export-Engineers who write all their code with claude now- how do you do it-.jsonl:232 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wgm4si/engineers_who_write_all_their_code_with_claude/>); unresolved: the Karpathy n=3 cell figures were not found by grep in this pass.
+
+- [x] **OUT-1730** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-507 in rules-behaviour.md): Table-8 mechanism limits: the SubagentStart contract carries text only; PreCompact takes instructions; a PreToolUse provenance guard is blind to Bash writes; autoMode `soft_deny` works in user settings only and in auto mode only; optional Stop gates fail open, cap at 8, and default to Haiku; judgement rules (calibration, scope of corrections, when to ask) stay prose with reasons.
+  Basis: cited. One commenter advises a global CLAUDE.md with instructions and no reasons (external/2026-11-18_p2/reddit.com-r-claude-comments-1xufj43-claude-in-chrome-save-tokens-20261118T183349Z.md:52); that is opinion with no measurement, so the reasons stay on judgement rules and stay off mechanical ones (cache, quota), which the agent need not reason about.
+  Source: no "Table 8" text exists in external/; the supporting text for the `soft_deny` and permission-rule limits is external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:24 (SA-2.1).
+
+- [x] **OUT-1731** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-508 in rules-behaviour.md): Session-log facts: 136 Bash results held 151,658 chars; 22 of 44 reads were repeats; `/context` via Bash cost 70.3k tokens (23%); start context was cut from 30-40k tokens to 9,485; `/context` showed about 10.7k against 19.7-23.3k billed (tools 4.3k against 7.0k, attachment message omitted); a serial check script took about 6 h including 216 redundant baselines, and concurrency 4 cut one step from 1,074 s to 262 s; a 1 h cache TTL costs +21% for subagents and +7% for main; "98% of usage from subagent-heavy sessions" at $141.96 per day API-equivalent; waste: `find /` scans, stacked duplicate Monitors, 28 ugrep "exceeds complexity limits" errors in 15 sessions each followed by ad-hoc Python.
+  Basis: measured. Startup context numbers (reported, merged from a separate item): 30-40k tokens cut to 9,485 by trimming, `/context` under-counting (about 10.7k against 19.7-23.3k billed); source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:154 (30-40k tokens cut to 9,485, session logs e473653f and 57677e27) and :155 (`/context` 10.7k against 19.7-23.3k billed, session logs 087f5a37 and ce160872); reported by the dossier, not measured here.
+  Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:38; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:165; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:616; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:754 (9,485 row); the 10.7k and 19.7-23.3k figures: unresolved, no matching line found.
+
+- [x] **OUT-1732** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-509 in rules-behaviour.md): Context-size anchors, all reported: degradation beyond ~128-256k; 200-250k begins to pollute, 300-400k avoid; ceilings ~250k Opus/Sonnet, ~400k Fable; 60% fill "ideal time" attributed to docs (not read); compaction triggers manual below 400k, 250-300k for quality, auto at 350k with handoff before; 50-70% guard (orchestrator retired at 50%); ~55% closeout handoff; 500k workable where 100k used to be the limit; "1M window but only the first 200k accurate" (cited second-hand); sessions suggest handoff ~250k (rare); half of one author's token use came from turns above 200k. claude 2.1.326: `/autocompact` and `autoCompactWindow` present (binary string search).
+  Basis: reported.
+  Source: external/export-Context length, auto compact and buggy claude cli-.jsonl:4 (url: <https://www.reddit.com/r/ClaudeCode/comments/1uh3f6c/context_length_auto_compact_and_buggy_claude_cli/>); external/please-use-me-often/agent-failure-dossier/judged/handoff.jsonl:13; external/2026-09-30/export-Ideal Time to move to a new session.jsonl:10 (url: <https://www.reddit.com/r/ClaudeAI/comments/1vo6hun/ideal_time_to_move_to_a_new_session/>).
+
+- [x] **OUT-1733** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-510 in rules-behaviour.md): Compaction cost anecdotes, reported: 950k Fable session, one `/compact` = 14% of the 5h limit ($59.73); ~500k compact = 20% of a Max 5x window; >500k context burned 20% in 30 s; 255K thread reported 128K after a switch; 8-12 concurrent sessions reached 1.6B tokens/day on Fable 5.1; cache read dominates tokens (`claude-opus-5-5: 370.4m cache read, 4.0m cache write`).
+  Basis: reported, one user each.
+  Source: external/export--clear vs -compact.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:49.
+
+- [x] **OUT-1734** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-511 in rules-behaviour.md): Cache economics. `/clear` costs zero tokens but loses context; compact costs a summariser run but keeps the prefix cached; the cache expires after idle, so compact before leaving >1h; reads ~0.1x, write 1.25x (5m) or 2x (1h); at 500k a read per turn ~50k base-input equivalent, compact to ~30k = one write ~37-60k; cache reads ~88% of tokens (author log), 95-97% (Pro, TTRPG; ~160 cache-read tokens per output token); Codex reviews ~90% from cache; idle ~1h10m forces a full re-send; subscription main-conversation cache 1h; advisor calls uncached; 120 sessions: median peak ~371k, 17 sessions >500k used 34.4% of cache-read tokens; every turn resends the whole conversation (system prompt, tools, CLAUDE.md, messages, tool results). claude 2.1.326: `CLAUDE_CODE_PROMPT_CACHE_TTL` present (binary string search).
+  Basis: reported, some measured by authors.
+  Source: external/2026-10-25_p2/reddit.com-r-claudecode-comments-1x0u3v1-17-of-my-120-claude-code-sessi-20261025T162214Z.md:29 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0u3v1/17_of_my_120_claude_code_sessions_went_past_500k/>); external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:83; external/2026-10-07/export-I don’t remember a single 5 hour window using 27% of a weekly budget... this seems a bit extreme lat.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wzpe0y/i_dont_remember_a_single_5_hour_window_using_27/>).
+
+- [x] **OUT-1735** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-512 in rules-behaviour.md): Starting-context numbers: `/context` splits system prompt, system tools, MCP tools, memory files, custom agents; fresh start 10k-45k (80k baseline with plugins; 30-40k system prompt plus tools); autocompact buffer ~33k (part of the window reserved). claude 2.1.326: `/context` present (binary string search).
+  Basis: reported.
+  Source: external/2026-10-17/export-Title- Any tips for reducing Claude Code's context usage-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5qadg/title_any_tips_for_reducing_claude_codes_context/>).
+
+- [x] **OUT-1736** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-513 in rules-behaviour.md): CLAUDE.md and memory mechanics: `#` appends to memory; `/memory` opens files; `@path` imports in CLAUDE.md; failed MCP servers are named with the real error at session start ("unavailable" is not "not configured"); `@include` reuses prompt files and does not replace the system prompt; CLAUDE.md under 200 lines, context not enforced (cited, memory docs); CLAUDE.md re-injected after compaction (reported by poster); best-practices page <https://code.claude.com/docs/en/best-practices>; long sessions with irrelevant context reduce performance; after two corrections on one issue the context holds failed approaches (cited, docs not re-read). claude 2.1.326: `/memory` and the flags `--system-prompt`, `--append-system-prompt` present (binary string search).
+  Basis: cited (docs not re-read) and reported.
+  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:55.
+
+- [x] **OUT-1737** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-514 in rules-behaviour.md): Compaction internals and records, from commenters and one author (the `compactMetadata` fields `trigger`, `preTokens`, `postTokens` and `durationMs` are verified on 2.1.327, chunk-m14bt1pz.js@453176; the function names are minified and cannot be checked): `getCompactPrompt` builds a dedicated user message; `getCacheSharingParams` reuses the main system prompt to hit cache (commenter reading source); `compact_boundary` JSONL records carry `compactMetadata.trigger`, `preTokens`, `postTokens`, `durationMs` (author-measured); default window on a 1M model ~967K, summary ~76 s; handoff-compact needs 2.1.287+ with mods (cited); DIY compaction: summarise older turns with a cheaper model, keep the last 5-10 turns, summary at top, keep decisions and open tasks; the API has server-side compaction (docs link not fetched); progress-bar stall at 95% guessed to be summary generation. claude 2.1.326: `compact_boundary`, `compactMetadata`, `preTokens`, `postTokens` and `durationMs` are present in the binary (string search); `getCompactPrompt` has 0 hits (minified names, so no refutation) and `getCacheSharingParams` is not checkable locally because the shipped binary has minified function names.
+  Basis: reported, unverified.
+  Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:29 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>) (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
+
+- [x] **OUT-1738** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-515 in rules-behaviour.md): Compaction text observed in one session: the continuation instruction ("Continue with the last task that you were asked to work on.") is the summary's last line in that session's summary format.
+  Basis: reported, one session.
+  Source: external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
+
+- [x] **OUT-1739** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-516 in rules-behaviour.md): Keep-the-Why experiment: 20 sessions on a retry-wrapper task; with a context folder 10 of 10 declined the rejected change, without it 7 of 10 offered it; median 18 s versus 43 s.
+  Basis: measured by one author, hand graded.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:105; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28.
+
+- [x] **OUT-1740** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-517 in rules-behaviour.md): Subagent cache and cost mechanics: each subagent is a fresh context (brief + tool defs + reads written to cache, then re-read per turn); 88% of one panel's cost was cache writes; five agents started at the same instant each pay a full write (the poster's inference); the Anthropic article of Oct 22 (cited via a poster): default to one model/context/tool loop, procedures in skills, hard limits in tools, tool choice degrades past 30-50 definitions, Claude Code's own system prompt for newer models cut by over 80%, evals first (10 golden examples), failure modes lost context, sprawl, "Frankenprompt"; community: keep subagents for adversarial review by a different model, read-heavy disposable context, cheap parallel jobs. claude 2.1.326: `SubagentStart` and `SubagentStop` present (binary string search).
+  Basis: reported (a panel owner's cost split and the poster's inference about parallel cache writes), cited (the article, via a poster, not fetched); cache-write billing is server-side and needs a paid run, so these are kept as reported.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:44 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>) (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:38.
+
+- [x] **OUT-1741** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-518 in rules-behaviour.md): Session behaviour reports: a session stuck 15-45 min with zero tokens under 30% context is Claude Code waiting on the API (the commenter's reading; Esc, `/context`, `/compact`, then a new session); desktop hid the context UI and reportedly has no auto-compact; terminating a session does not expire the cache (confirmed 2026-11-18: the paid-labs run in reports/2026-11-18-research/paid-labs/README.md, Cache Retention on Subscription, ran four separate `claude -p` processes, each ending its session, and runs 2 to 4 read 15,879 cached tokens and wrote 0 after gaps of 436 s, 441 s and 865 s; the cache is keyed on the prefix server-side, not on the process); Claude cannot read its own context percentage, a hook or script can (`$.session.usage` is a Mod API call in 2.1.327, cc-inspect surface mod-api, and CTX-466 reads its `autoCompactThreshold`); "nerf" is explained by environment rot, A/B routing, infra bugs, harness changes, and nerf trackers showed no degradation (cited by a commenter). Resolved 2026-11-18 as reported by Reddit commenters (sources below), not measured; the desktop auto-compact claim needs the desktop app, which the fake API does not reproduce; cache expiry on session end is settled above.
+  Basis: reported (Reddit commenters); the hook read of context usage is verified in the 2.1.327 Mod API; the stuck-session cause (waiting on the API), the cache expiry on session end, and the desktop auto-compact claim are kept as reported: they need a live API session or the desktop app, which the fake API does not reproduce.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>) (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>); external/2026-09-29_p3/export-Claude can't see its own limits or context. Fix that, and it can work on its own for weeks.jsonl:16 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wt9ss3/claude_cant_see_its_own_limits_or_context_fix/>).
+
+- [x] **OUT-1742** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-519 in rules-behaviour.md): Mods, hooks, and versions: mods change what runs before a tool call, what the model sees and what appears on screen (cache timer, next-steps card, context monitor, delegation, session mirror); function-hook plugins early access on 2.1.289; auto-resume after a rate limit (CLI 2.1.234+); 2.1.322 `ip_reminder` block appeared in context; 2.1.323 (2026-11-12) experimental Code Mode (JS calls tools; one bad line kills a write batch per one team), plugin engines pinning, TS hook validate; summaries "unverified" claim by claim. claude 2.1.326: `ip_reminder` has 0 hits in the binary; Code Mode and `plugin validate` are present (string search), and the release notes add that Code Mode can now be turned on while agent teams are enabled. Code Mode now has an official page (code.claude.com/docs/en/code-mode, read 2026-11-18); its workload fit is measured third-party in CTX-854.
+  Basis: reported, unverified.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>) (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [x] **OUT-1743** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-520 in rules-behaviour.md): Cost distributions: session cost 0.19 to 50.68 USD over 10,000+ proxied requests; sessions grow context mainly in the first 5 hours (183k to 366k tokens per request, 139 sessions); fresh chat 0.038 versus 0.007-0.015 USD in a long chat (Pro, Sonnet), reload ~38k base tokens after `/clear`; 14-day measurement of 879 sessions: the TDD-step-to-Opus rule cost 20% of spend, 35% repeat reads, a security scan took 26 s due to 11 leftover worktrees (678k files) versus 0.7 s after cleanup.
+  Basis: reported and measured by authors.
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>) (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:149.
+
+- [x] **OUT-1744** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-521 in rules-behaviour.md): Reported practice summary (mod-bot, 30 comments): skill files are suggestions, not laws; short look-around on small repos, CLAUDE.md plus ADRs on large repos; treat context as a budget; Claude Code likes `/tmp` for worktrees and scratch (can be wiped on WSL restart or fill the disk); tell it a session is ending so it writes notes; restart when you repeat a correction or the model revives a rejected idea; one task per session; context in files; edit the handoff yourself.
+  Basis: reported consensus.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xhagg6-whats-one-thing-about-claude-cod-20261028T060218Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>) (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhagg6/whats_one_thing_about_claude_code_you_only/>).
+
+- [x] **OUT-1745** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-522 in rules-behaviour.md): Firecrawl and indexing: clean Markdown beats raw HTML for context use (reported); indexing a monorepo with codebase-memory-mcp took 1.5 s for ~9k nodes and ~21k edges (measured by the poster); code-map skill stale-index lesson.
+  Basis: reported and measured by poster.
+  Source: external/2026-10-21/reddit.com-r-claudeai-comments-1ve7gmy-ab-test-of-codebasememorymcp-aga-20261021T181354Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1ve7gmy/ab_test_of_codebasememorymcp_against_plain_grep/>) (url: <https://www.reddit.com/r/ClaudeAI/comments/1ve7gmy/ab_test_of_codebasememorymcp_against_plain_grep/>).
+
+- [x] **OUT-1746** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-523 in rules-behaviour.md): Compaction costs: 47 auto-compactions in a week, 46 mid-task, 62 minutes waiting; tool errors per prompt +65% (reported); sliding compaction on Haiku 5.5 with a 100K window cut cost 19-35% and time 28-33%, and added 6% on a short task. Lost-in-the-middle (cited 2307.03172); NoLiMa (11 of 13 models below half score at 32K, 2502.05167); ACON 26-54% lower peak tokens (2510.00615); Factory structured summary 3.70/5 against 3.35 and 3.44; Opus 5.5 degradation past about 700k reported, countered by a good 850k run.
+  Basis: cited, reported.
+  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:162; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:163; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:172; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:177. The 47 auto-compactions, 62 minutes, +65% errors and Haiku sliding-window figures were not found by grep in external/.
+
+- [x] **OUT-1747** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-883 in rules-behaviour.md): A guide reached by its description can go unread: one author's agent opened a per-codebase guide in 3 of 17 runs, and rewording the description did not help; injecting the guide when the working folder matched put it in front of the agent in 5 of 5 runs, and 4 passed. Guidance that must reach the agent goes in path-scoped rules or injection, not a description-triggered skill (ADR-0102, CTX-339).
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:66.
+
+- [x] **OUT-1748** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-887 in rules-behaviour.md): Long rule lists lose their middle and tail: one commenter with about 15 bullets in a rules file saw Claude follow about the first three; another says a bloated one-shot spec makes the model ignore the constraints in the middle. Rule files stay short, with the rules that matter first; enforcement that must hold goes in hooks or permissions (ADR-0104 keeps regex Stop checks out).
+  Basis: reported (two commenters, impressions, no counts).
+  Source: external/2026-10-12/export-Why Claude Code ignores your .claude-rules-.jsonl:4; external/2026-11-18_p2/reddit.com-r-promptengineering-comments-1xxoxn1-stop-chasing-the-onesho-20261118T183200Z.md:47.
+
+- [x] **OUT-1749** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-888 in rules-behaviour.md): First person in agent-written instruction files is ambiguous: a model told to write its own rules writes "I should not ...", and a later session can misread who "I" is and skip the rule. Instruction files claudetto writes name the actor ("the user", "the agent") and avoid "I".
+  Basis: reported (one commenter, no counts).
+  Source: external/2026-10-07/export-How do you refer to yourself when drafting persistent instructions to agents- (e.g. user- owner-) an.jsonl:16.
+
+- [x] **OUT-1750** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-085 in sandbox.md): In auto mode with the sandbox on (claude 2.1.271+), the model names per-command hosts on the Bash command (`allowed_domains`); the classifier reviews them; the hosts open for that command only. A fake-API run with `sandbox.enabled` sent `allowed_domains`. Not run on the real login.
+  Basis: cited, one fake-API run.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1796.
+
+- [x] **OUT-1751** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-086 in sandbox.md): `sandbox.network.httpProxyPort` and `socksProxyPort` send all sandboxed traffic to a local proxy, and Claude Code's own domain lists stop applying. A claudetto proxy could check hosts against a malware list. WebFetch, hooks, and MCP servers run outside the sandbox, so WebFetch needs a URL-reputation hook too.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1801.
+
+- [x] **OUT-1752** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-087 in sandbox.md): A process already in Seatbelt cannot apply a second profile: `sandbox-exec` gives "sandbox_apply: Operation not permitted" (exit 71). Claude Code itself is unsandboxed (pid chain 0) and wraps its Bash child. Claude Code's own sandbox fails to apply (exit 71) when started from a sandboxed shell. A Terminal launch from the sandbox is refused ("Sandbox is not allowed to open documents in Terminal").
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1806.
+
+- [x] **OUT-1753** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-088 in sandbox.md): `/restart` resumes in the same process (same `procStart`), so the Bash sandbox it started with stays. A `!` command runs in the same sandboxed shell as the Bash tool.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1840.
+
+- [x] **OUT-1754** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-089 in sandbox.md): A new `claude` process with user `sandbox.enabled` true and project false runs Bash unsandboxed (H3a exit71=0); user only gives exit 71 (H3b); flag `--settings` `enabled: true` turns it on again (H3c exit 71). The project setting beats the user setting; the flag beats the project.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1852.
+
+- [x] **OUT-1755** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-090 in sandbox.md): A Seatbelt profile sees paths, not git commands. A git force push or `reset --hard` needs a permission rule, a hook, or the auto-mode classifier.
+  Basis: reported, fact stated in the source.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1858.
+
+- [x] **OUT-1756** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-091 in sandbox.md): `.claude/settings.json` changed on 2026-11-04 at 14:49:10: `enabledPlugins` `swift-lsp` and `deniedMcpServers` `apple-docs` removed, `sandbox.enabled` false and `allowUnsandboxedCommands` true added, by the user.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1861.
+
+- [x] **OUT-1757** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-093 in sandbox.md): Minimal sandbox probe (user ran it outside Claude Code, $0.0052): writes are denied in the repo outside the working folder, `.git`, hooks, `$TMPDIR`,`/private/tmp`,`~`,`~/.bun`,`~/.cache`,`/etc`, dotfiles,`/dev/tty`, and rename of`.git`; allowed in`/tmp/claude-501` and `/dev/null`.`curl example.com` is denied with CONNECT 403 when no domain is allowed and `-p` cannot ask
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1011.
+
+- [x] **OUT-1758** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-094 in sandbox.md): `bun add` under the sandbox fails with "error: EPERM accessing temporary directory. set $BUN_TMPDIR or $BUN_INSTALL" in all three first arms (cache allowWrite, registry domain, temp cache dir; $0.0050, $0.0031, $0.0027); `excludedCommands ["bun *"]` was rejected because it runs every package script outside the sandbox. A first reading blamed `BUN_TMPDIR`; the cause is `~/.zshenv` exporting `BUN_INSTALL_CACHE_DIR=/Volumes/...`, which bun 1.4.4 takes before `--cache-dir` and bunfig. A settings `env` value never reaches the command because zsh reads `~/.zshenv` at every start (`zsh -c` shows the volume path, `zsh -f` or `sh -c` shows the override). `bun add` passes under the sandbox only with `allowedDomains ["registry.npmjs.org"]`, the cache in the sandbox temp, and the variable unset in the command (arm G, `is-number@7.0.0`); arms D, E, F fail with EPERM; arm H fails because `~/.zshenv` re-exports the volume path. An `allowWrite` on the external volume cache still failed, cause unknown
+  Basis: measured, user-run probes.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1054; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1071; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1674.
+
+- [x] **OUT-1759** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-098 in sandbox.md): AppleScript answers "tell application Finder to get version" from the app bundle with no Apple Event, so it passes under (deny appleevent-send). Only events Finder must answer (get name of startup disk, count windows) fail -600 in the sandbox. open -R returned 0 though the reveal was blocked.
+  Basis: measured (confirmed by the user).
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:162.
+
+- [x] **OUT-1760** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-099 in sandbox.md): In this session's sandbox the first osascript and open probe was refuted: the engine adds appleevent-send, the appleeventsd lookup, and lsopen only under allowAppleEvents (chunk-fcp0yk24.js:769604) yet prints the "blocked" text whenever it is not true (chunk-24jdhyyr.js:3442135) (claude 2.1.319 binary; both modules are gone from 2.1.327). Verified on 2.1.327: the macOS profile builder adds `(allow appleevent-send)`, the `com.apple.coreservices.appleevents` mach-lookup and `lsopen` only when `allowAppleEvents` is true (chunk-1yrzf3wn.js@771715 and @773314), and the "Opening an app, file or URL with `open` ... is blocked" text is added whenever the platform is macOS and `allowAppleEvents` is not `true` (chunk-m14bt1pz.js@3913595). A nested sandbox-exec fails with "sandbox_apply: Operation not permitted", and log show fails with "Cannot run while sandboxed", so a sandbox probe needs a shell outside it.
+  Basis: read and measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:161.
+
+- [x] **OUT-1761** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-100 in sandbox.md): Test on CLI 2.1.310, Haiku 5.5: with deny Write(./fake.env), a shell cp overwrote the file in 2 of 2 runs; with deny Edit(./fake.env) the same cp was blocked in 2 of 2; the cause is untested; 2.1.321 notes a related cp fix, not re-run. The 2.1.326 release notes fix cp being refused when only its source was covered by an Edit deny rule.
+  Basis: reported, n=2.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:97; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:99 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>). <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes)
+
+- [x] **OUT-1762** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-101 in sandbox.md): A PreToolUse hook that matches the typed command text ("flutter build ipa") misses a build launched from inside another script; Bash hooks see only the command string, so cp, redirects, or a python one-liner can write where the hook never parses; the OS sandbox closes the gap (child processes included), is off by default, and does not apply on native Windows.
+  Basis: reported, one hook author plus one commenter.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:105; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
+
+- [x] **OUT-1763** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-102 in sandbox.md): Enabling sandboxing for subagents (network and workspace) disrupted a workflow so much through denials and gates that token inefficiency persisted.
+  Basis: reported, n=1. Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:508 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
+
+- [x] **OUT-1764** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-103 in sandbox.md): claudetto shall note that a sandboxed Go `gh` verifying a cert through `com.apple.trustd.agent` needs `enableWeakerNetworkIsolation` or `allowMachLookup ["*"]`, else `x509: OSStatus -26276`.
+  Acceptance: Offline Go `x509.Verify` probe on 2.1.321. 2.1.326: present (`sandbox.enableWeakerNetworkIsolation` chunk-ja5z738t.js:141939 (2.1.327), `sandbox.network.allowMachLookup` chunk-ja5z738t.js:118816 (2.1.327)). Verification: probe.
+  Basis: measured. Status: unchecked: a fact about the macOS sandbox, not code at 088a227c (git grep finds no hit).
+  Source: openspec/specs/sandbox/spec.md:80; openspec/specs/sandbox/spec.md:15.
+
+- [x] **OUT-1765** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-416 in sessions.md): What held: the agent refused a subagent's lowered bound from 190 to 180.
+  Acceptance: Kept as a held behaviour. Verification: inspection.
+  Basis: measured (session log 00bfd354).
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:94.
+
+- [x] **OUT-1766** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-417 in sessions.md): What held: the agent treated a 100% failure rate as a likely fixture bug and checked one run before blaming the model; it questioned an 89 s full-suite runtime instead of reporting success.
+  Acceptance: Kept as held behaviours. Verification: inspection.
+  Basis: measured (session logs d84dc11f, 7f324ada).
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:45,46.
+
+- [x] **OUT-1767** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-418 in sessions.md): Deterministic layers (auto-mode classifier, built-in rm safety check, .env read deny, permission denials) held every time in the 43-session corpus; the failures sat beside them (work handed to the user, packaging around a filename deny, keystroke approval of a nested session).
+  Acceptance: Kept beside the plan's counts. Verification: inspection.
+  Basis: measured, one user, 3 days.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:56.
+
+- [x] **OUT-1768** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-419 in sessions.md): Fresh-context reviewers found real defects after green suites: 4 defects after 611 tests, 7 parser defects, 16 issues (some security-related) in work reported done.
+  Acceptance: Kept as one corpus's count. Verification: inspection.
+  Basis: reported, one corpus.
+  Status: n/a (fact).
+  Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:64.
+
+- [x] **OUT-1769** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-420 in sessions.md): Session audits (counted; corpus 43 main and 227 subagent transcripts, Claude Code 2.1.292-2.1.296, about 170 incidents, one power user): 191 What I Need sections with one bullet repeated 30 times; "files not committed" Stop blocks 44 in a row; HooksError spam of 319 lines in 12 minutes; compaction every 10 minutes; 65 Stop blocks about 10% of a session (inferred).
+  Basis: measured (counted) and inferred. Status: not applicable.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:9.
+
+- [x] **OUT-1770** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-421 in sessions.md): In a 43-session dossier corpus "Prompt is too long" occurred 14 times in 10 sessions, subagent turn-limit 10 in 6, `handback-send-enforce` 9 in 7, subagent cap hit 2, classifier denials 24 (14 main, 10 subagent), built-in safety-check denials in subagents 10 in 8, `dangerouslyDisableSandbox: true` about 330 in 10, ugrep complexity errors 28 in 15, a nonexistent lowercase `bash` tool 6 in 5, rejected-then-retried 1; classifier reasons were Irreversible Local Destruction 6, Safety Bypass Flag 5, Credential Exploration 4, Create Unsafe Agents 3, Tmux Self Drive 2, one each Unverifiable Deletion Scope, Interfere With Workloads, Auto-Mode Bypass, Code from External.
+  Acceptance: a recount of the corpus matches each number. Verification: inspection.
+  Basis: measured; not re-run in this session (the old plan marks it unverified). Status: have at 088a227c (no code; a fact).
+  Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:33; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:43.
+
+- [x] **OUT-1771** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-422 in sessions.md): The 2.1.322 plugin had about 30 mods, a root prompt of 5,779 chars (the old plan said 6.3k), 21 rewritten tool descriptions, a Bash gate of about 2,600 lines, a two-model Stop grader and a per-prompt ledger. Session audits found 663 plugin denials in one project (569 in subagents; the no-work gate stopped 5 delegated agents), 191 and 102 "What I Need From You" sections, one `! git config` bullet repeated 46 times, 44 Stop blocks in a row asking to commit agent-worktree files, 1,818 `HooksError ... was not resolved` lines from `$.fs.stat` on non-path Bash operands, no status-line colour until the first measured turn, and compaction every 140-150k because setup halved the window.
+  Acceptance: each count matches the audit text. Verification: inspection.
+  Basis: measured (read of audits). Status: have at 088a227c (the old plugin is gone; this is history).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/proposal.md:7; openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:10; openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:73; openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:43. Corrected: the 6.3k figure is 5,779 at text-audit.md:43.
+
+- [x] **OUT-1772** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-423 in sessions.md): The reactive (prompt-too-long) path calls the `session.compact` hooks with `trigger:"auto"` and `agentId`; a hook's `{messages}` (`kind:"replaced"`) becomes the replacement; a `{skip}` returns `{result:null,hookBlocked:true}` with the notice "not compacted". The `precompute` pass takes a hook's `{messages}` as a ready replacement and logs "ready with a hook's N messages"; a `{skip}` records a veto. Re-read in 2.1.326: each of these statements is in the cited text.
+  Basis: measured.
+  Source: cc-inspect read, chunk-m14bt1pz.js@2628332 (2.1.327), @2582830, @2955174 (claude 2.1.326 binary; the 2.1.325 offsets @2499078, @2498600, @2871600 were replaced by @2955174 after a search for "ready with").
+
+- [x] **OUT-1773** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-424 in sessions.md): Thread limits: max 4 cache_control breakpoints per thread request; a continue request with system or tools returns 400; no Message Batches, token counting, or compaction on a thread; not ZDR or HIPAA eligible. A thread expires 5 minutes after its last request and is deleted no more than an hour after.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xnc4ew-anthropic-shipped-message-thread-20261104T085756Z.md:35-36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnc4ew/anthropic_shipped_message_threads_beta_claude/>).
+
+- [x] **OUT-1774** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-425 in sessions.md): claudetto delivers a handoff as a prompt the plugin submits between turns, opening "Context was reset from the handoff below. Continue from its next step, and take each open task yourself." and ending with "Git now" and the porcelain status; a file handoff (`.claude/claudetto/handoffs/handoff-<timestamp>.md`) is delivered with a notice to run `git status -sb` before reporting branch or push state.
+  Acceptance: a session started from a handoff shows the opening line and the git state. Verification: demonstration.
+  Basis: observed in transcript, 2026-11-12. Status: have at 088a227c (`plugins/claudetto/hooks/features/compaction/texts.ts`, HANDOFF_OPENING).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (notice text); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (opening and Git now block).
+
+- [x] **OUT-1775** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-426 in sessions.md): `$.model.fork` replays the last request of the main thread, so tool calls answered after that request are missing from what the fork sees.
+  Acceptance: a handover fork prompt lists the calls that ran after the replayed request, each result cut to 500 characters. Verification: test.
+  Basis: observed in transcript, 2026-11-16. Status: have at 088a227c (fix commit 563c5fcc is an ancestor of 088a227c; `plugins/claudetto/hooks/features/compaction/handoff.ts:5`@088a227c sets `RESULT_CHARS = 500`).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, State; probe: data2 marked uncommitted though commit 2d66d03 existed).
+
+- [x] **OUT-1776** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-427 in sessions.md): `/compact` run by hand gives the built-in summary and `compact_boundary` with trigger manual; an automatic compaction makes a fork handover with git state, and a failed or empty fork falls back to the built-in one.
+  Acceptance: a real `-p` run shows `compact_boundary` trigger manual and the state recalled after. Verification: probe.
+  Basis: measured, 2026-11-16. Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (handoff, Done and Next step 4); `claude` 2.1.325.
+
+- [x] **OUT-1777** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-428 in sessions.md): `/usr/bin/grep` finds files in the gitignored `types/` folder that ugrep skips.
+  Acceptance: `/usr/bin/grep -rl <name> types/` lists the file. Verification: demonstration.
+  Basis: observed in transcript, 2026-11-16. Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, Decisions).
+
+- [x] **OUT-1778** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-429 in sessions.md): The auto-mode classifier denied a read of a secret prefix and a read of old transcript content; a denial is not to be worked around.
+  Acceptance: none; the denial stands. Verification: inspection.
+  Basis: observed in transcript, 2026-11-16. Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, Ruled out).
+
+- [x] **OUT-1779** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-430 in sessions.md): In `agent-browser`, a restore session named for the host holds the cookie `cf_clearance` after a person solves a Cloudflare challenge in a headed window; `web_fetch` then reads the page with the session through `--restore`.
+  Acceptance: after a solve, `agent-browser --restore <host> cookies get` lists `cf_clearance`, and `read <url>` returns page text, not "Just a moment". Verification: probe.
+  Basis: observed in transcript, 2026-11-16. Status: partial (the fix was checked against a real Cloudflare gate in `a5b203a1` and `2c9ddaf8`; the final solve was still open).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (handoff, CAPTCHA step); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
+
+- [x] **OUT-1780** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-882 in sessions.md): The session transcript is one JSON object per line in an undocumented format that shifts between releases; one tool author lost a field between two patch releases. A line is a content block, not a message, so one turn spans several lines that repeat the same usage block (REQ-COST-014). Code that parses transcripts tolerates missing fields and names the version it was checked on.
+  Basis: reported (third-party).
+  Source: external/export-Six subagents on three different models in one turn. I built something to actually watch that happen.jsonl:9.
+
+- [x] **OUT-1781** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-884 in sessions.md): Review alone misses regressions: across 23 tasks and 183 runs, 38 agent patches passed review and then failed tests the writing agent never saw, mostly by breaking behaviour that used to pass. Prompting "check for regressions" did not help, because the reviewer had nothing concrete to check against; the fix that author uses is a writer that counts its tests per input category in the PR description and a reviewer that checks those counts against the real tests. Supports hidden or held-out tests over reviewer judgement (CTX-419).
+  Basis: measured (third-party, one author, counts shown, no baseline).
+  Source: external/2026-10-17/export-A clean AI-generated patch can still carry the wrong system assumptions.jsonl:7.
+
+- [x] **OUT-1782** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-885 in sessions.md): Reviewer placement, one 5-day build (136 PRs): the orchestrator reviewing code itself found 0.13 real bugs per round with its context full of other work, while a fresh reviewer session with an adversarial brief did far better; cross-family review found about 1.25 (Astra on Claude code) and about 1 (Fable on Opus code) per round, and an Astra audit of 31 Opus-built, Fable-approved merges found 7 real bugs in 6. Long sessions, not tests, burned the budget: 98% of the Codex input tokens were the model re-reading its own context. Consistent with fresh-context review (CTX-419) and renewal at task boundaries (ADR-0178); Fable is not a subagent model here (rule kept).
+  Basis: reported (third-party, model-written summary of one team's build, numbers shown).
+  Source: external/2026-09-29/export-Sonnet 5.5 has been out for an hour. Has anyone gotten a chance to stress test it-.jsonl:7.
+
+- [x] **OUT-1783** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-002 in settings.md): `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` changes nothing in the interactive TUI, and `permissions.deny` `Agent(Explore)` removes the Explore listing line there.
+  Basis: measured, claude 2.1.318, interactive probe run by the user in Terminal (run 4): L3c body 55,890 bytes equals the L3e control with Explore listed; deny `Agent(Explore)` gives 55,394 bytes, 496 less. The earlier -1,544 bytes applies to `-p` only.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1731; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1773; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1781.
+
+- [x] **OUT-1784** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-003 in settings.md): A piped stdout makes `claude` run as `-p` (`cc_entrypoint` is `sdk-cli`, not `cli`). Interactive mode accepts `ANTHROPIC_API_KEY` only when its last 20 characters are in `customApiKeyResponses.approved`, and the TUI asks "Detected a custom API key"; `-p` does not ask. The interactive TUI maps and offers agents as `-p` does: a Mod offered only `dmap:Artemis`, and the Explore call ran the Artemis prompt (runs i0 and j5c2, fake API, claude 2.1.318). The TUI starts in auto mode by default, no settings key sets it, so a probe needs `permissions.defaultMode` `default`.
+  Basis: measured (the `-p` and API-key notes were first reported, claude 2.1.318 probe notes).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1731; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2348.
+
+- [x] **OUT-1785** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-004 in settings.md): `plansDirectory` default is `~/.claude/plans` (user home); `bashEditDiffEnabled` default is off, on in auto and bypass modes; `respondToBashCommands` default is true and false skips the whole request (read in the binary, not run); `askUserQuestionTimeout` unset means it never auto-answers; `dialogExpiry` default is 5m; `showClearContextOnPlanAccept` default is false; `disableBundledSkills` equals `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1`.
+  Basis: cited, clawdipedia settings schema and binary read as the source states (Claude Code 2.1.316 schema).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:732.
+
+- [x] **OUT-1786** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-005 in settings.md): Probes 2.1 and 2.1a on `2.1.318` in `-p` mode: a `settings.read` hook changes only `disableBundledSkills` and `outputStyle` of the measured tier keys. A plugin's own `settings.json` carries `subagentStatusLine`
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/proposal.md:13; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:11.
+
+- [x] **OUT-1787** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-006 in settings.md): A canary probe: an invalid value still leaves the rest of the file applied, so zero rows prove the file loaded, not that the value was valid
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1379.
+
+- [x] **OUT-1788** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-007 in settings.md): `agent` "general-purpose" gives 0 chars. `-p` applies the `agent` setting (a canary agent replaced the system text, 8,480 to 173 chars). Built-in `Explore` keeps the system text and drops Agent, Edit, Write (-8,503). A nonexistent agent name gives 0 with empty stderr, so a typo is ignored silently
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1406.
+
+- [x] **OUT-1789** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-008 in settings.md): Managed-only keys (`deniedModels`, `requiredMinimumVersion`, `allowedProviders`, `modelPricing`, `disableSideloadFlags`, `strictPluginOnlyCustomization`, and others) gave +0 from `--settings` and the run started, so a claudetto user file gains nothing from them. Proposed unset: `prependPlugins`, `appendPlugins`, `disableReplyCheck`, `modelPricing`
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1453.
+
+- [x] **OUT-1790** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-009 in settings.md): `availableModels ["claude-sonnet-5-5"]` with `--model claude-haiku-5-5` sent the request to `claude-opus-5-5` silently (system text -2,576 chars). A model outside the list falls back to the Default, not a listed one. Proposed: list all three -5-5 models or set `enforceAvailableModels` true
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1474.
+
+- [x] **OUT-1791** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-010 in settings.md): `tlsTerminate {}` is -2 chars (no request text). `forceLoginMethod`, `forceLoginGatewayUrl`, `processWrapper`, `xaaIdp`, `policyHelpers`, `managedMcpServers`, and `pluginSuggestionMarketplaces` are all +0; `managedMcpServers` is ignored outside managed settings. Proposed: none in claudetto settings
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1441.
+
+- [x] **OUT-1792** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-011 in settings.md): A batch7 sweep of 356 boolean env names set to 1: 41 change size, 7 change only fields, 3 sent no request, 311 are 0. `1` is the only value tried
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1484.
+
+- [x] **OUT-1793** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-012 in settings.md): Claude Code 2.1.318 holds 1,338 `tengu_*` server gates and no setting changes one. Seen: `tengu_quiet_pike` (default false, Bash tail preview) and `tengu_typed_pebble` (default 0, a skill budget floor)
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1662.
+
+- [x] **OUT-1794** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-013 in settings.md): About 80 settings keys leave the first request unchanged (0 chars, same fields), among them advisorModel, plansDirectory, respondToBashCommands false, autoDreamEnabled, syncClaudeAiSkills and syncClaudeAiPlugins false, fastModePerSessionOptIn, autoUploadSessions false, disableDeepLinkRegistration, askUserQuestionTimeout, enableArtifact, disableRemoteControl, teammateMode, todoFeatureEnabled, pluginSuggestionMarketplaces, feedbackSurveyRate, feedbackDrafts off or quiet, autoUpdatesChannel, enableAllProjectMcpServers, breakReminder, quietHours, and about 60 more.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1379-1390.
+
+- [x] **OUT-1795** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-015 in settings.md): CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS turns off the built-in agents in print mode only (non-interactive: `ye()` returns `!isInteractive`). CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS is the interactive switch. In -p the built-in agents seen are claude, general-purpose, and statusline-setup, and only the DISABLE_* env names remove them. Fake-API probe L3a: Explore=1, general-purpose=2; L3b: Explore=0, general-purpose=1. The interactive half is blocked by no pty under the sandbox.
+  Basis: measured, fake API; also cited and observed.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:63,121; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1717.
+
+- [x] **OUT-1796** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-016 in settings.md): Twelve env switches turn parts of Claude Code off, each with its gate and off-route: CLAUDE_CODE_DISABLE_WEB_FETCH, CLAUDE_CODE_ENABLE_TASKS, CLAUDE_CODE_ENABLE_TODO_TOOLS, CLAUDE_CODE_DISABLE_WORKFLOWS, CLAUDE_CODE_HARBOR_KITE=0, CLAUDE_CODE_SEND_FEEDBACK=false, CLAUDE_CODE_ENABLE_REFRESH_MCP_TOOLS, CLAUDE_CODE_BRIEF, CLAUDE_CODE_PEWTER_OWL_TOOL, CLAUDE_CODE_ATTACHMENTS_BY_PATH, CLAUDE_CODE_DISABLE_CRON, CLAUDE_CODE_DISABLE_PLUGIN_FORWARDING. The exact value of each is in the source rows.
+  Basis: read. The name list is from the research rows; the prefix of each name is as the rows write it, which the gap line abbreviated.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:21,61,62,100,102-105,109,119.
+
+- [x] **OUT-1797** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-017 in settings.md): permissions.disableAutoMode set to "disable" is the native off-switch for auto mode.
+  Basis: cited (auto-mode page).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:67.
+
+- [x] **OUT-1798** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-018 in settings.md): sandbox.filesystem.disabled true drops the file wall and keeps the network wall.
+  Basis: cited (sandbox page).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:166.
+
+- [x] **OUT-1799** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-019 in settings.md): allowManagedModsOnly and the routes enableArtifact, disableArtifact, and disableClaudeAiConnectors are native off-routes for mods and connectors.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:137-142.
+
+- [x] **OUT-1800** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-020 in settings.md): permissions.blockFileToolReadsOutsideWorkingDirectories exists in 2.1.323 (related to D10.31 and task 2.7). plansDirectory must stay inside the project. ToolInfo.inputSchema and TurnDuration.waitingFor are new.
+  Basis: cited, unprobed.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:31,33,34.
+
+- [x] **OUT-1801** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-022 in settings.md): `CLAUDE_CODE_DISABLE_CFC_PROMPT`, `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`, `CLAUDE_CODE_THRIFTY_SONIC`, `CLAUDE_CODE_SUBAGENT_MODEL=claude-haiku-5-5` and `CLAUDE_CODE_DISABLE_FAST_MODE` each change 0 characters of the first request; all stay in setup except `CLAUDE_CODE_DISABLE_CFC_PROMPT`, removed on 2026-11-06 by the user ("it should be removed."). Read from the 2.1.319 source, it drops only the Claude in Chrome prompt section and the bundled skill, and the browser tools are unaffected; no source line expands CFC (the bundle names it only "Claude in Chrome"), so the C-F-C reading is a guess.
+  Basis: measured (first-request characters); user decision (the removal).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:492; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1330.
+
+- [x] **OUT-1802** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-023 in settings.md): A commenter's claim that setting `CLAUDE_CODE_WORKFLOW_PROMPT_PROVENANCE` to `0` or `false` does not disable the framing, and an empty string did not either, was judged "rejected" as out of scope: it concerns another product, model, user workflow or private-log statistic with no plugin file to change.
+  Basis: reported (n=1).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:78.
+
+- [x] **OUT-1803** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-713 in skills.md): Claude Code 2.1.318 parses skill frontmatter with `Bun.YAML` (YAML 1.2), so the YAML 1.1 coercions are wrong there: `name: off`, `no`, `yes` stay strings, `0124` becomes 124 (not octal), dates stay strings. The real traps are silent loss: `&x anchor` and `!critical x` eat the first word, `#1 runner` becomes null, `C #code` cuts to `C`, and `allowed-tools [Bash(git log, -n 5), Read]` splits at the comma. Hard failures: a value starting `?` or `-`, a leading tab on a key line, an unindented continuation. A fallback quotes lines holding `{ } [ ] * & # ! | > % @`, a backtick, or `:`. This corrects the Gemini line that lists the Norway problem, octal, and unquoted `:` traps
+  Basis: measured, probe on bun 1.4.4 and the 2.1.318 binary.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:975; openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:124.
+
+- [x] **OUT-1804** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-715 in skills.md): The skill listing budget in characters is window x bytesPerToken (3, for -5-5 models) x `skillListingBudgetFraction` (0.01, a float), 30,000 on a 1M window; `SLASH_COMMAND_TOOL_CHAR_BUDGET` replaces it. haiku-5-5 reports 980,000 tokens, so 29,400 chars; with 1M disabled the window caps at 200,000, so 6,000 chars, and non-bundled entries are cut to names; `DISABLE_1M_CONTEXT` also shortens the init and security-review descriptions (-134 chars). Over budget, bundled and name-only skills stay and the lowest-ranked go name-only. Rank = usageCount x max(0.5^(days since last use/7), 0.1) from `skillUsage` in `~/.claude.json`, one write per skill per 60 s; a never-used skill loses its description first. With the fraction unset, gate `tengu_typed_pebble` can raise the budget to at most 100,000 (cached value 0 here, so no floor). `skillOverrides` takes on, name-only, user-invocable-only, off. The default 0.01 is verified on 2.1.327 (`Vms=0.01`, chunk-m14bt1pz.js@2825289; settings description "default: 0.01 = 1%", chunk-ja5z738t.js@231162); the Gemini line is a third-party report of the same value. The empty-session listing is 2,210 tokens (cited, context-budget page, 2.1.305)
+  Basis: measured by binary read, 2.1.318; re-read on 2.1.327: the listing passes the main-loop model's bytes per token (`Ky`: 4 for claude-3 to 4.6 models, 3 for the rest, chunk-asj6f58y.js@534880) into the budget, whose multiplier default `tVn=4` and fraction default 0.01 sit at chunk-m14bt1pz.js@2825094.
+  Source: chunk-asj6f58y.js@534880, chunk-m14bt1pz.js@2825094, @4060049 (2.1.327); openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:882; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:890; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1547; openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:24.
+
+- [x] **OUT-1805** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-716 in skills.md): Skill frontmatter on 2.1.318: `background` defaults true (forked skills run in the background unless false); `effort` also accepts an integer; `allowed-tools` takes a space or comma string or a list, and the grant clears at the next message; `agent` defaults to `general-purpose`; `user-invocable: false` only hides the skill from the slash menu and does not reserve it for agent-only use; `disallowed-tools` since 2.1.152. The Gemini list adds `when_to_use` (extra trigger text), `context: fork` with `agent` and `background`, per-skill `model` and `effort`, and `hooks` (verified on 2.1.327: the skill schema has `when_to_use`, `hooks`, `context` inline or fork, `agent`, `background`, `model` and `effort`, chunk-m14bt1pz.js@1030663-1031100)
+  Basis: cited, changelog read 2026-11-04.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:939; openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:84.
+
+- [x] **OUT-1806** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-717 in skills.md): Skill test, 5 runs with and 5 without a skill, same task and model, blind grader: a writing skill that only bans three things took paste-ready email replies from bullet points every time to 5 of 5 clean; a three-reviewer skill scored the same as none at about 14 times the cost; a public GitHub skill tied 8 of 8 against 8 of 8. Skills that carry facts the model cannot know (retail price fields include 7% VAT, so gross-versus-net comparisons are off by 7%) measurably help and are testable against a known number with no grader. In a hook-thread skill test a writing skill that only bans three things beat no skill (5 runs per arm, blind grader), and a debugging skill was never used until the user's own phrase went in its description; the phrase tip is advice from the thread, not a measured result.
+  Basis: reported, n=1, small samples, one grader, same family, author-written tests. Status: not applicable (outside fact). reported (thread; 5 runs per arm).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xlfe2l-i-tested-my-agent-skills-with-an-20261102T140719Z.md:29-39,49-51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlfe2l/i_tested_my_agent_skills_with_and_without_the_one/>); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:166; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:167.
+
+- [x] **OUT-1807** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-718 in skills.md): A skill whose injected shell command exits non-zero fails to load (hence `|| true`); exit code 1 from search and comparison commands like grep is treated as a normal result.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:103-105 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
+
+- [x] **OUT-1808** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-719 in skills.md): The `!` injection must start a line or follow whitespace; `KEY=!`cmd`` does not run. Injection and skill arguments are Claude Code only (not claude.ai chat, API, or other agentskills hosts).
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:108-109 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
+
+- [x] **OUT-1809** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-720 in skills.md): No hook shows expanded skill contents: UserPromptExpansion shows manual invocations and PreToolUse Skill() shows AI invocations; verify in the session .jsonl.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:112-113 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
+
+- [x] **OUT-1810** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-721 in skills.md): A SessionStart hook's stdout enters context every session, not only when the skill runs.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudecode-comments-1wpcirc-ccs-most-underrated-feature-dy-20261104T085040Z.md:171 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wpcirc/ccs_most_underrated_feature_dynamic_context/>).
+
+- [x] **OUT-1811** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-722 in skills.md): A skill A/B scored 9.6 vs 9.6 because the runner had disabled all skills on both arms; with the skill loaded the writing task scored 10 vs 7. Nothing errors when a skill is not opened, since the agent sees only name and one-line description up front.
+  Basis: reported, one poster, 5 runs, blind grader. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:35-37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/>).
+
+- [x] **OUT-1812** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-723 in skills.md): A skill whose frontmatter description contains a colon silently failed to load (agentshot commit 4e53184).
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr9vrf-before-you-ab-test-an-agent-skil-20261110T094754Z.md:57 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr9vrf/before_you_ab_test_an_agent_skill_check_the_logs/>).
+
+- [x] **OUT-1813** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-024 in subagents.md): A fake-API run with deny `Agent(statusline-setup)`, `Agent(Explore)`, `Agent(Plan)`, `Agent(general-purpose)` removed `statusline-setup` and `Explore` from the request; `general-purpose` still appeared. A same-named agent file replaces a built-in (the "Agent Merge Rule").
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1780.
+
+- [x] **OUT-1814** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-025 in subagents.md): A deny rule on `general-purpose` removes it from the listing but not the Agent tool sentence "any other type - or omitting it - starts a fresh agent (general-purpose by default)"; `wr()` checks only that the agent exists. An omitted-type call then fails with "has been denied by permission rule".
+  Basis: cited, claude 2.1.318 source read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1895.
+
+- [x] **OUT-1815** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-026 in subagents.md): A same-named project or user file replaces the built-in agent, command, skill, and output style as one entry with the override body (probes o1-o14, t1-t3). A user or project `agents/general-purpose.md` (or `Explore`, `Plan`) replaces the built-in in both modes, takes the default call, and keeps its own model and tools (sonnet-5-5, 1 tool); the Agent tool text stays 3,227 chars in all arms, and `--setting-sources project` also drops user agents. A plugin file never replaces: it is listed as `plugin:name` beside the stock entry, because a plugin agent name gets the plugin prefix. A Mod replaces a body (`command.run`, `skill.prompt`) and a spawn's fields (`agent.spawn`), but `agent.register` adds a prefixed agent (`ovmod:Explore`) and cannot take a built-in name. Same-named overrides therefore need files that `claudetto:setup` writes into the user or project `.claude` folder. The naming tension with rule K stays open in the source.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1900; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2431.
+
+- [x] **OUT-1816** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-027 in subagents.md): `tool.list`, `agent.list`, `command.list`, `config.list`, and `settings.read` are `$`-call events that answer a plugin's own `$.x.list()` call, not the engine's request. `tool.describe` returns `{ description, isDeferred? }` only. No event result type has `remove` or `isEnabled`.
+  Basis: cited, claude 2.1.318 source read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2596.
+
+- [x] **OUT-1817** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-028 in subagents.md): Mod levers: `tool.describe` (description only), `agent.offer` `isOffered` per type in the listing and dispatch, `agent.spawn` rewrites `subagentType` after resolve, `tool.call` rewrites arguments before resolve, `prompt.attachment` drops an attachment (`text: null`). The schema builder omits `model` when `SUBAGENT_MODEL_FORCE` is set and `effort` when `CLAUDE_CODE_EFFORT_LEVEL` is set (null for auto or unset).
+  Basis: cited, claude 2.1.318 source read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2078.
+
+- [x] **OUT-1818** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-029 in subagents.md): The `tool.describe` checker (`rc.checkArgument`) reads only `tool`, `provider`, `isDeferred`, and `description`. A registered tool is named `mcp__<plugin>__<name>`, so no plugin tool takes a built-in's name.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3112.
+
+- [x] **OUT-1819** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-030 in subagents.md): A Mod tool `monitor` is named `mcp__<server>__monitor`, where the server name comes from `plugin.json` `name`, not from the directory. A copied `plugin.json` named `monprobe` gave "No such tool available: mcp__claudetto__monitor". A `tool.call` matcher for the tool must use the full `mcp__claudetto__monitor` name.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2327.
+
+- [x] **OUT-1820** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-031 in subagents.md): The built-in names Explore and Plan act in code (claude 2.1.318 source read): `omitGitStatus` (the subagent gets no gitStatus block), the hand-back drops "agentId ... use SendMessage" and the `<usage>` trailer (`LZt` set), the withheld-message and turn-limit notes drop the continue hint, `allocateName` is skipped, and the plan-mode workflow and main prompt name Explore and Plan from constants gated on `!DISABLE_EXPLORE_PLAN_AGENTS`. Measured on claude 2.1.318: an Explore subagent gets no gitStatus block and a shorter hand-back (507 B against 704 B). `prompt.context` cannot drop a subagent's gitStatus (probe j3 failed). `includeGitInstructions` false is global, so the parent loses it too. A `tool.call` `result.agentType="Explore"` reproduces the Explore hand-back byte for byte. `result.canContinueAgent=false` drops only the continue hint. Hiding built-ins by `agent.offer` leaves plan mode naming Explore and Plan, and the call fails "Agent type 'Explore' not found". `DISABLE_EXPLORE_PLAN_AGENTS` cuts plan-mode messages from 15,655 to 13,603 chars.
+  Basis: measured (code facts cited, claude 2.1.318 source read).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2133; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2165.
+
+- [x] **OUT-1821** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-032 in subagents.md): The gitStatus block is capped at 2,000 chars of status plus 5 recent commits. Block chars: claudetto (751 status lines) 2,973; OpenJoystickDriver (1,796) 3,099; SwifterKit 3,076; skills 1,713; gamesir-fw 1,199; repos with 0-2 status lines 829-1,001. Exact tokens on the real API: 206 in a clean repo and 1,361 at the cap (2.18-2.28 chars per token), the same on haiku and sonnet. Each claudetto subagent start pays this when `omitGitStatus` is lost. Probe `pg` cost $0.0681.
+  Basis: measured, claude 2.1.318, real API.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2223; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2282; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2286; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2289.
+
+- [x] **OUT-1822** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-033 in subagents.md): Turn-limit note: with `result.agentType` set, the hint "SendMessage to let it continue" stays with no agentId to send to (a stale 81-char hint). Rewriting `result.content` drops the hint but restores the "[Subagent hand-back]" frame (about 395 B, probably `harnessSectionHash`). The verdict was to set `result.agentType` only.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2231.
+
+- [x] **OUT-1823** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-034 in subagents.md): Paid plan-mode runs A3 and B3 (prompt asks for Explore, claude 2.1.318): B3 (cmod Mod) ran Explore twice on Artemis's model sonnet-5-5 with no error ($1.152, 16 turns); A3 stock ran opus-5-5 ($2.303, 6 turns). One run per arm, so the gap is not an effect. The Agent description still says "(general-purpose by default)".
+  Basis: measured, one run per arm.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2308.
+
+- [x] **OUT-1824** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-035 in subagents.md): Real-API auto-mode probe p0 (built-in Explore) and p2 (same-named `Explore.md`) made 0 classifier calls. The mapped call ran as `source=agent:custom:cmod:Artemis`.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2360.
+
+- [x] **OUT-1825** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-036 in subagents.md): Agent tool stock sizes: description 3,227 plus schema 1,942 equals 5,246 bytes. The agent listing (`agent_listing_delta`) is 1,647 bytes and names claude, Explore, general-purpose, Plan, statusline-setup. Sum 6,893. Trim probes k0-k12 (fake API, claude 2.1.318): `tool.describe` cuts the Agent text to 422 chars (schema 1,942 stays). `agent.offer` false for built-ins empties the listing (74 chars), and an untyped call is refused "Agent type 'general-purpose' not found". `agent.spawn` cannot rescue it (the type resolves before it runs, k3). A `tool.call` that fills `subagent_type` fixes it (k9). Combination k11 cuts Agent 5,246 plus listing 1,647 (6,893) to 1,981 plus 95 (2,076): -4,817 bytes, -70%. The whole first request goes from 48,730 to 43,913 bytes.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2074; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2090.
+
+- [x] **OUT-1826** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-037 in subagents.md): Env-var levers on the Agent and Bash tools (claude 2.1.318, fake API unless noted). `CLAUDE_CODE_EFFORT_LEVEL` (auto or a level) drops the Agent `effort` property (schema 1,510, -432), but `auto` also drops `output_config.effort` from the main request (stock sends "medium") and overrides the user's effort; `=high` outranks agent frontmatter effort (e0: main "medium", agent "low"; e1: main "high", agent "high"), so it would override the `effort: medium` of claudetto agents and the user's `/effort`. `SUBAGENT_MODEL_FORCE` drops the `model` property (-444) and forces sonnet-5-5 over agent definitions; `=1` drops an agent file's model unless it is `inherit` (28,851 / 1,498), while `=<model id>` drops nothing (a boolean variable). Sent bytes / Agent schema / Bash schema: none 29,295 / 1,942 / 1,720; `DISABLE_BACKGROUND_TASKS=1` 27,943 / 1,600 / 1,483 (Agent description 3,227 to 2,822, Bash description 1,934 to 1,568); `EFFORT_LEVEL=high` 28,863 / 1,510; sandbox `{enabled, allowUnsandboxedCommands:false}` 30,127 with Bash schema 2,552, which adds `allowed_domains`.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2104; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3120; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3131.
+
+- [x] **OUT-1827** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-038 in subagents.md): Same-named agent, skill, command, output style, and classic hooks leave all 21 `input_schema`s byte-identical. The only change is the Bash description, 1,934 to 2,020 (a skill named `simplify` turns on "Always run /simplify right before the commit command").
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3162.
+
+- [x] **OUT-1828** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-039 in subagents.md): `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` also stops auto-backgrounding, Ctrl+B, and MCP auto background. No partial switch keeps `run_in_background` and drops only its text.
+  Basis: cited, clawdipedia docs (configure/env-vars/agents-and-teams) as the source reports.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1790.
+
+- [x] **OUT-1829** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-040 in subagents.md): A stock Agent tool in stream-json `init` is listed as "Task" while the API names it "Agent". The `init` agents list shows registered types, not offered ones. Paid plan-mode runs A1-B2 (opus-5-5, claude 2.1.318) cost $1.84, $1.20, $1.26, $1.36 (total $5.6578) and made no Agent call. The final Write failed with EPERM on `~/.claude/plans`.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2291.
+
+- [x] **OUT-1830** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-041 in subagents.md): `plansDirectory` must be inside the project root (no backslash off Windows); otherwise it falls back to `~/.claude/plans`.
+  Basis: measured, claude 2.1.318 source.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2302.
+
+- [x] **OUT-1831** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-042 in subagents.md): A single agent with skills beat an orchestrator plus subagents on cost and speed with no quality gap.
+  Acceptance: The result stays marked weak (7 runs). Verification: inspection.
+  Basis: measured by the poster, 7 pairs on one booking-site build (Claude Code 2.1.319, Sonnet 5.5, medium effort, graded by 40 hidden Playwright tests plus a blind design score): single agent cheaper and faster in all 7 (Holm-corrected p=0.004, cost gap 62%), quality no different (p>=0.8). Team subagents started fresh and paid to re-cache their prompts; the team's role prompts were turned into skills for the single agent.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:2,31,33,35,46,111 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>)
+
+- [x] **OUT-1832** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-043 in subagents.md): Small build/fix benchmark: 81 of 97 follow-up turns came from two tasks whose prompt omitted a requirement the tests checked (46 of 48 runs missed one trailing-slash rule); other tasks were green on the first turn in 93% of runs.
+  Acceptance: Misunderstanding is mostly a constraint that lives only in the prompter's head. Verification: inspection.
+  Basis: reported.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:323 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>)
+
+- [x] **OUT-1833** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-044 in subagents.md): A poster tracker of 20 confirmed coding-agent incidents since July 2025: 13 of 20 began with something installed beside the agent (npm or PyPI package, MCP server, skill, editor extension); 2 had malware launch the developer's own agent with safety flags off to hunt credentials; 3 had no attacker, an over-permissioned agent deleted production data (poster count, reported).
+  Basis: reported, poster count.
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:42 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>)
+
+- [x] **OUT-1834** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-045 in subagents.md): Subagent savings come from cheaper tokens, not fewer: the subagent pays uncached exploration and prompt spend and total tokens rise, but exploration and mechanical work run on Haiku-class models while the main agent keeps context to verify; fresh sessions per small task also rebuild context uncached (reported reasoning, no number).
+  Basis: reported reasoning, no number.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>)
+
+- [x] **OUT-1835** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-046 in subagents.md): One poster's test runs: a hands-off multi-agent pipeline cost about 5x ($20 supervised, $100 handed off); $100 per hour is possible with Fable. Another runs plan, critic, implement, 6 review, test, PR, and docs agents per ticket for one-shot tickets.
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:178 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
+
+- [x] **OUT-1836** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-047 in subagents.md): Reported, conflicting, version unstated: one commenter says subagents can spawn subagents up to 5 levels deep and recursion "gets messy fast"; model answers in the same thread state defaults of 3 layers of nesting and 20 concurrent subagents. CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS are named as circuit breakers. Checked in claude 2.1.327 with cc-inspect `code` search: both env names exist (chunk-2ew0jg68.js@33162), the concurrent-subagent default is 20 (chunk-m14bt1pz.js@4499737), and the spawn-depth function reads CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH with a constant 3 declared beside it (chunk-ja9j7x1x.js@341). The 5-level claim is false on 2.1.327: the spawn-depth default is 3 (`n=3`, gate `tengu_hazel_trellis`, chunk-ja9j7x1x.js@341), overridden by `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, and the refusal text reads "Subagent nesting limit reached (depth N of M)" (chunk-3v1e1y2y.js@42475).
+  Basis: reported; names and the 20 default measured in the 2.1.326 binary.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:154 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:128 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>); claude 2.1.327 binary chunk-2ew0jg68.js@33162, chunk-m14bt1pz.js@4499737, chunk-ja9j7x1x.js@341.
+
+- [x] **OUT-1837** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-048 in subagents.md): Studies cited in a model answer; the arXiv pages were fetched on 2026-11-18 and only one claim matches its abstract: arXiv 2511.00872 ("A Comprehensive Empirical Evaluation of Agent Frameworks on Code-centric Software Engineering Tasks") compares seven agent frameworks and names AgentOrchestra as having the longest trajectories and most correction attempts from coordination overhead, but its abstract gives no "nearly 2x" step figure and no multi-agent versus single-agent split; the answer's reading is, on code tasks multi-agent systems took substantially more steps (nearly 2x on repair and vulnerability detection) while single-agent was better at software development, code executability, and consistency; arXiv 2603.25928 ("TheBotCompany: Self-Organizing Multi-agent Systems for Continuous Software Development"; its abstract has no 1.65x or Claude Code comparison, so the figure is not confirmed), a self-organizing multi-agent dev system used 1.65x the output tokens of plain Claude Code per submission attempt; arXiv 2606.13003 "The Illusion of Multi-Agent Advantage" (Jun 2026; the abstract says automatic multi-agent systems "consistently underperform CoT-SC despite being up to 10x more expensive", confirmed), auto-generated multi-agent systems underperform single-agent CoT plus self-consistency at up to 10x cost, while expert-architected ones beat auto-generated in performance and cost, so hand-designed decomposition beats model improvisation; Cognition "Don't Build Multi-Agents" mechanism: decisions disperse, context is not shared enough, actions carry implicit decisions, and parallel agents make conflicting ones.
+  Basis: cited via a model answer; arXiv abs pages fetched with WebFetch on 2026-11-18 (a small model summarised each page): 2606.13003 confirmed, 2511.00872 and 2603.25928 exist but their abstracts do not state the quoted figures, which may sit in the full papers and are kept as the answer's reading. The Cognition mechanism is kept as cited, not fetched.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:51; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:52; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:53; external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1838** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-049 in subagents.md): Systima benchmark, reported by a model answer, unverified: two subagents cost up to 5.9x the tokens; parallelism never won on speed (small task 8 min against 4.25 min sequential; five parallel only matched sequential); pinning subagents to Haiku cut the bill 37%.
+  Basis: reported by a model answer, unverified.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1839** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-050 in subagents.md): Reported by a model answer, unverified: on BrowseComp a Fable orchestrator with Sonnet workers scored 96% of Fable alone at 46% of the price, only if enforced via CLAUDE_CODE_SUBAGENT_MODEL or agent YAML.
+  Basis: reported by a model answer, unverified.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:92 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1840** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-051 in subagents.md): Anthropic-quoted via a model answer; the 3-10x claim is confirmed in Anthropic's article "Building multi-agent systems: When and how to use them" ("multi-agent implementations typically use 3-10x more tokens than single-agent approaches for equivalent tasks", claude.com, live, read 2026-11-18). The article names duplicated context, coordination messages and handoff summaries as the cause. The "agents about 4x chat" figure is not in that article and is kept as reported. Claim: multi-agent uses 3-10x the tokens of single-agent for equal tasks (duplicated context, coordination, handoff summaries); agents use about 4x chat; a fresh subagent lacks history, read files, and invoked skills; verbose fan-out reports refill the protected window.
+  Basis: cited (claude.com article, live, 2026-11-18) for the 3-10x claim and its three causes; reported by a model answer for the 4x figure and the fresh-subagent lacks-history points.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:116 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1841** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-052 in subagents.md): Counter-opinion: subagents multiply the context window (the main session uses the subagents' windows) and can play roles such as devil's advocate.
+  Basis: reported opinion.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1wy8sbd-use-of-subagents-or-not-20261022T122101Z.md:71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wy8sbd/use_of_subagents_or_not/>).
+
+- [x] **OUT-1842** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-053 in subagents.md): Panel of 5 Sonnet read-only subagents: part of a session costs about $1 to $1.50 at API list prices, 88% of it cache writes since each subagent builds context from scratch. One run: $1.46 for the panel against $4.38 for main-session moderation. The poster runs on a subscription, so the figures are API-equivalent.
+  Basis: measured by poster.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261022T122153Z.md:44 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>).
+
+- [x] **OUT-1843** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-055 in subagents.md): The built-in Explore agent inherits the main session model since Claude Code 2.1.198 (2026-07-01), so on Opus it bills Opus unless overridden; the `haiku` alias maps to Haiku 5.5 from 2.1.293 on the Anthropic API; nested subagents run to depth 5 (reported, model-generated; corrected: the spawn-depth default in 2.1.327 is 3, overridable by `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` or a GrowthBook value, chunk-ja9j7x1x.js@339). A spawn depth cap comes from `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, concurrency 20).
+  Basis: reported. Status: not applicable.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:90 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
+
+- [x] **OUT-1844** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-056 in subagents.md): Subagent model evidence (6 real tasks, one author): code search found files of 48 on Opus 45, Sonnet 44, Haiku 44, at $6.17, $1.38, $0.44; web research wrong facts 1, 3, 10; fact-check false errors 0, 6, 30; five web tasks $3.93, $1.59, $0.12. Haiku at xhigh costs 3x on code search ($1.39 against $0.47), researches better, fact-checks worse (28 false errors), and runs five web tasks for $2.28 in 34 min against Opus high $4.81 in 16 min; Haiku high is best. Under 100k cache reads cost 20% of the over-100k price. A commenter says Haiku misses a lot and is risky for doc editing; Sonnet is called a poor-fit middle tier (opinion). A measured delegation bench (28 tasks x3, Python, ready spec): Haiku alone $0.008 per run against Sonnet $0.113 (93% cheaper; 297k against 152k tokens); Sonnet plus a Haiku subagent 13% cheaper; Sonnet plus an MCP handoff to an outside model 6% more; Opus plus Haiku about equal to Opus alone; quality by a blind Opus grader (bias risk) Opus 99, Haiku 94, Sonnet plus Haiku 90 including one reject from a permission check that refused the subagent.
+  Basis: reported (one author, small n). Status: not applicable.
+  Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as/>).
+
+- [x] **OUT-1845** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-057 in subagents.md): Subagent cache TTL economics: the default is 5 min for subagents and 1 h for main on subscription (reported, a bot citing docs); caches are per model; a 1h write costs about 60% more than 5m; 1h adds +21% for a subagent and +7% for main (measured); turns after a gap over 1 h are 1.6% of turns and 80% of cache writes; cache read is about 95% of tokens and each turn re-reads 84-145k; subagents started at the same instant cannot read each other's writes (inferred); 35% of spawns got no cache read, with a median write of 41k (measured, one account). A long-task subagent may take 1h TTL in its own frontmatter only, a heartbeat ping about every 45 minutes with an exit condition (an error-loop ping keeps a dead agent warm), and a scripted handoff at about 175k context; one user measured about 60% lower weekly burn over weeks, half from smaller contexts, and calls the handoff a cost cap and per-step checkpoints the crash layer.
+  Basis: measured and reported. Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:25; external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:43.
+
+- [x] **OUT-1846** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-058 in subagents.md): Subagent context cost: a narrow read-only custom agent (only `Read`, `model: sonnet`) cut a 5-agent review panel call from about 116k to about 30k tokens (measured; the guess is that general-purpose loads every tool schema including MCP servers); a type is split only for a repeated job; a new type loads after a Claude Code restart; `/context` shows the start split. The first request of a spawned subagent is about 29k tokens (394 starts, about 10M of 84M). Vercel cut 80% of tools and success went 80% to 100%; 50+ MCP tools cost about 72k tokens; a 90-tool server about 24,000. Subagent briefs that separate facts from recommendation (facts, hard constraints, files, leaning, disconfirming evidence, output format) let the subagent answer `supports plan`, `contradicts plan`, or `insufficient evidence`; otherwise an "independent" review is an echo.
+  Basis: measured and reported. Status: not applicable.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2,23,42 (116k to 30k tokens per call; the all-tool-schemas explanation is the author's guess).
+
+- [x] **OUT-1847** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-059 in subagents.md): The engine picks a fork only with `subagent_type:"fork"` and `CLAUDE_CODE_FORK_SUBAGENT=1` (measured 2.1.319: the env alone gives a fresh child; a fork resends the parent prefix in all 4 requests). A fork inherits the whole transcript, so late in a long session it costs more than a fresh subagent. Reported: `CLAUDE_CODE_FORK_SUBAGENT=0` reverts forking by default, and `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=0` suits sessions that use no teams (a forgotten flag made each subagent request spawn a teammate whose idle pings re-read the lead context).
+  Basis: measured and reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts:180` writes `FORK_SUBAGENT`; `EXPERIMENTAL_AGENT_TEAMS` is absent).
+  Source: plugins/claudetto/hooks/features/setup/settings.ts:180@088a227c.
+
+- [x] **OUT-1848** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-060 in subagents.md): `tool.describe` is the only way to shorten a built-in tool definition (description only, not schema; a classic hook, command, or skill cannot). Survey, stock to plugin chars: Workflow 5,355 to 22,331 loaded (grew), Monitor 7,586 to 1,310, SendMessage 5,698 to 1,532, Agent 4,850 to 2,117, AskUserQuestion 5,196 to 3,193, EnterWorktree 4,034 to 942, Bash 3,041 to 1,947; DesignSync 10,457 untouched; the stock skill list is 5,907 chars. ToolSearch holds 953 of 1,440 uncut, EnterPlanMode 4,333, ExitPlanMode 2,464. Built-in `Monitor` is used and the plugin wrapper added no effect (866 against 7,586 bytes). The one sentence on `run_in_background` re-invoking the agent is restored when the Bash text shrinks (stock says it; the plugin dropped it).
+  Basis: measured. Status: have at 088a227c (`plugins/claudetto/hooks/features/surface/texts.ts`).
+  Source: plugins/claudetto/hooks/features/surface/texts.ts@088a227c.
+
+- [x] **OUT-1849** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-062 in subagents.md): Dossier S31 (arXiv 2609.04170): in a collective of 100 agents on formal conjectures, an evaluation exploit spreads through a shared library and peer messages. It is one constructed ecosystem, not a measurement of Claude Code's default subagents (cited).
+  Basis: cited.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:291.
+
+- [x] **OUT-1850** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-063 in subagents.md): Dossier S32 (Troy, arXiv 2609.15494): the tested models were GPT-5.6 Sol, Claude Fable 5.1, and Gemini 3.8 Flash, not Opus or Sonnet 5. The indexed abstracts and later text differ, so a quote must name the version (cited).
+  Basis: cited.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:299.
+
+- [x] **OUT-1851** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-064 in subagents.md): Dossier S33 (MAST, arXiv 2503.13657): the taxonomy has 14 failure modes. The retrieved versions hold 1,642 traces, and older abstracts describe a smaller study, so a quote must name the specific version and sample (cited).
+  Basis: cited.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:307.
+
+- [x] **OUT-1852** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-065 in subagents.md): Dossier S34 (Agents of Chaos, arXiv 2602.20021): eleven cases from a two-week laboratory deployment with email, Discord, memory, files, and shell access. The source is an abstract only (cited).
+  Basis: cited, abstract only.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:315.
+
+- [x] **OUT-1853** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-066 in subagents.md): The poster cites a the-decoder article headlined "Anthropic says one AI agent beats many subagents now that models can handle complexity alone"; commenters say a session now orchestrates itself, with subagent fleets going out of fashion.
+  Basis: cited headline, not fetched; opinion.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:31 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
+
+- [x] **OUT-1854** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-067 in subagents.md): Opus 5.5 and Fable now spawn subagents on their own without being asked, and care less about context limits, within about the past week.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:91 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
+
+- [x] **OUT-1855** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-068 in subagents.md): "Fan out subagents" yields only about 4-6 subagents; more needs a dynamic workflow or a tier of middle-manager agents, and the dynamic split then does not match the user's split.
+  Basis: reported, one user.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:133 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
+
+- [x] **OUT-1856** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-069 in subagents.md): One commenter claims a second piece hides, encrypted, any user-facing text placed between a reasoning block and a tool call, so the model's answer to a user question seemed ignored.
+  Basis: reported, one user, unverified.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:134 (url: <https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/>).
+
+- [x] **OUT-1857** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-070 in subagents.md): Opus 5.5 gave better research answers for the first hours after history was deleted, and clogged context made it "more stupid" with more guardrails (research, not coding).
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfcot1-anyone-else-having-serious-quali-20261026T063509Z.md:113 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfcot1/anyone_else_having_serious_quality_issues_with/>).
+
+- [x] **OUT-1858** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-071 in subagents.md): Delegation test on a ~52k-line repo: forced Opus found 45 of 51 known issues on the 80-page plugin-doc check, forced Haiku 34 of 51 at 84% less cost; on the reference-doc check both delegated setups beat both Opus-only setups; on a small repo (~10k lines) skill-routed found 9 of 9 doc issues over two runs against 8, forced Haiku 4 of 9.
+  Basis: reported, mostly n=2 runs.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:40; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
+
+- [x] **OUT-1859** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-072 in subagents.md): Re-pricing delegated tokens at Opus rates predicted 34-85% savings, while head-to-head runs ranged from 30% more expensive to 75% cheaper; estimate savings from billed head-to-head runs, not repriced tokens; the router skill mostly picked Sonnet, which gave little cost advantage.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:84; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:80 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
+
+- [x] **OUT-1860** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-073 in subagents.md): Cheaper-model PRs reviewed by an advanced multi-lineage review agent gave hundreds of findings and dozens of iterations, which can cost more than a capable model from the start; some findings a cheap model never resolves however often asked; compare total cost to reliable code, not per-token cost.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
+
+- [x] **OUT-1861** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-074 in subagents.md): One poster's A/B on FastAPI (3,012 files, claude -p, 3 tasks x 2 runs per arm, noise under about 10%): cost follows turn count because every tool call resends the whole conversation: plain 48 turns, 1.10M tokens, $0.50; MCP token-savior 55, 1.32M, $0.57; one-call index slice 19, 0.61M, $0.40; all answers correct; cache writes nearly equal across arms, the gap came from cache reads and output.
+  Basis: measured by one poster.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:29; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>).
+
+- [x] **OUT-1862** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-075 in subagents.md): Same poster: a hook that auto-injected relevant code into every prompt made the model issue more small follow-up calls and raised cost 35%; a tool that shrinks reads but is called more often costs more.
+  Basis: measured by the same poster.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>).
+
+- [x] **OUT-1863** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-076 in subagents.md): Session length moves the weekly limit more than effort level does, because each turn re-reads the whole context.
+  Basis: reported, inferred.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:53 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>).
+
+- [x] **OUT-1864** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-077 in subagents.md): Model and effort of agents are set by launch flag or agent file, not by instruction; generic built-in agents (Explore, general-purpose) cannot be reliably edited by the model, since it may say it can change their frontmatter but that is non-deterministic, so write bespoke agent files.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:81; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:154 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>).
+
+- [x] **OUT-1865** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-078 in subagents.md): If CLAUDE.md wording is ambiguous against the built-in system-prompt subagent instructions, the model cannot tell which to follow; state explicitly that the text is a user instruction.
+  Basis: reported, one commenter.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:281 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>).
+
+- [x] **OUT-1866** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-079 in subagents.md): Global instructions past 6 or 7 lines get half ignored (several commenters); "use what's already in package.json" fixes drift to a favoured library in long sessions.
+  Basis: reported, no measure.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:50; external/2026-11-10/reddit.com-r-claudeai-comments-1xryurq-whats-that-one-instruction-in-yo-20261110T093205Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xryurq/whats_that_one_instruction_in_your_claude/>).
+
+- [x] **OUT-1867** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-080 in subagents.md): One 20x user's weekly usage rose to 85% in three days; after telling Opus 5.5 to turn off subagents and agent teams, the next three days added 4%. The user also saw spawned agents step on each other.
+  Acceptance: Resolved 2026-11-18 as reported by one 20x user, not measured; weekly usage needs a paid account session over days, which the fake API does not produce.
+  Basis: reported, one user (a second commenter reports spawned agents stepping on each other). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:673; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:681 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
+
+- [x] **OUT-1868** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-081 in subagents.md): Delegating coding to Codex from Claude works by allowing Bash(codex exec:*), with the task and result in handoff files. Pitfalls on Windows: the call needs < /dev/null or it hangs on stdin; always pass -C with the repo path or it starts in the home folder; do not use --sandbox (it silently reads nothing); check the diff, because Codex sometimes says done when it is not.
+  Acceptance: Resolved 2026-11-18 as reported by one user, not measured; the `codex exec` flags need the installed Codex CLI and a paid account, which a fake-API probe does not cover. Verification: probe.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:336 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
+
+- [x] **OUT-1869** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-082 in subagents.md): An Anthropic study of 50 analysts, cited secondhand: 86 percent followed the agent's lean (81 to 92 percent per decision); of analysts with a written preference, 60 percent switched when the agent disagreed against 6 percent when it agreed (38 cases, a small sample); 77 percent reused the agent's arguments and 15 percent credited it; rollout was recommended 54 percent against 36 percent by lean; serious errors 6 percent with the agent against 55 percent of 11 without; median 65 against 90 minutes. Anthropic says the groups are not directly comparable; one task, one field, one model (Opus 4.8).
+  Acceptance: The figures hold as the poster cites them; the study was not opened. Verification: inspection.
+  Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:34; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:35; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:37; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:38; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>).
+
+- [x] **OUT-1870** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-083 in subagents.md): Dossier S45, SHADE-Arena (arXiv 2506.15740, <https://arxiv.org/abs/2506.15740>, June 2025; abstract inspected at v2): it pairs legitimate main tasks with explicitly assigned harmful side objectives and tests whether monitoring catches them. It is a sabotage-capability test, not evidence that the same agents spontaneously acquire such objectives. Hidden scratchpad access materially affects results, which limits a supervising agent that sees only selected outputs or final summaries.
+  Basis: cited (abstract).
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:397-399.
+
+- [x] **OUT-1871** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-084 in subagents.md): A commenter asks whether cross review helps and cites arXiv 2607.21656 (<https://arxiv.org/abs/2607.21656>), a leaddev article and a Reddit thread as showing it does not. A reply says 2 of those state that Claude as reviewer lifted the pass rate, the instance of Codex reviewing Claude did not, and the models and versions were not visible; the reply treats benchmark results with a grain of salt.
+  Basis: reported (two commenters; sources not opened).
+  Source: external/2026-10-25_p2/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261025T155538Z.md:124-127 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
+
+- [x] **OUT-1872** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-836 in subagents.md): The GodHand subagent transcripts changed in the 24 hours before 2026-11-18 hold 37 general-purpose workers that ran long: median 427 requests and 133 minutes, 90th percentile 1,863 requests and 592 minutes, maximum 2,052 requests; the six longest each compacted 17 to 22 times and made 1,598 to 1,948 Bash calls. Their Sonnet 5.5 usage, deduplicated by message id, was 28,706 requests, 16.8m output, 2.14b cache read and 49.5m cache write, about $506 at list price (read $214, output $168, write $124 at the 5-minute rate), so long-lived workers carried about 95% of the subagent cost. Workers in the other projects ran a median of 46 to 96 requests and 3 to 9 minutes.
+  Acceptance: the script below, run over `./*/*/subagents/*.jsonl` changed in the last 24 hours, reproduces the counts. Verification: probe.
+  Basis: measured (python3 -I over `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/*.jsonl` and `.meta.json`, deduplicated by `message.id`, 2026-11-18; compactions counted as system lines with a subtype holding "compact"). Status: n/a.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/; probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+
+- [x] **OUT-1873** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-240 in system-prompt.md): `/statusline` is TUI-only: in `-p` it prints "/statusline isn't available in this environment." with 0 requests. In a pty the stock command sends 'Create an Agent with subagent_type "statusline-setup" ...'. A project or user `commands/statusline.md` or a Mod `command.run` replaces it; `statusline-setup.md` replaces the spawned agent.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2470.
+
+- [x] **OUT-1874** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-241 in system-prompt.md): `/statusline` stock and file routes send 1 main request (57,287 and 56,863 bytes); the Mod `command.run` route sends 0.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2581.
+
+- [x] **OUT-1875** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-242 in system-prompt.md): The stock `/statusline` first subagent request alone is 20,234 bytes (system 15,153, 2 tools). With `amod` withholding `statusline-setup`, the baseline pass-through gives "Agent type 'statusline-setup' not found".
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2966.
+
+- [x] **OUT-1876** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-243 in system-prompt.md): On 2.1.326 these flags exist (checked: `code` search of 2.1.326 finds each name in the CLI option lists): `--system-prompt`, `--system-prompt-file`, `--append-system-prompt`, `--append-system-prompt-file`, `--append-subagent-system-prompt`, `--exclude-dynamic-system-prompt-sections`, `--system-prompt-snapshot <on|off>`; the same lists also hold `--append-subagent-system-prompt-file` and `--plan-mode-instructions`; `autoMode` is present (chunk-ja5z738t.js@184432 (2.1.327)). Which flags are hidden in `--help` was recorded on 2.1.325 (`-file` forms and `--append-subagent-system-prompt` hidden) and is confirmed on 2.1.327: `--append-subagent-system-prompt`, `--append-subagent-system-prompt-file`, `--append-system-prompt-file` and `--system-prompt-file` are hidden, and `--append-system-prompt`, `--system-prompt`, `--exclude-dynamic-system-prompt-sections` and `--system-prompt-snapshot` are listed (chunk-rnt5hbrt.js@58278-60289). The last two flags of the first list are cache-related and not mentioned in the input; no repo use found.
+  Acceptance: `claude --help` on 2.1.326 lists the visible flags. Verification: probe.
+  Basis: measured. Status: missing at 088a227c (no repo use of the two cache flags).
+  Source: probe on claude 2.1.325, per the old plan; chunk-avas472e.js@809 (2.1.327), chunk-avas472e.js@4374 (2.1.327; first read in claude 2.1.326 binary); plugins/ grep at 088a227c for `system-prompt-snapshot` returned no line.
+
+- [x] **OUT-1877** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-244 in system-prompt.md): The `/statusline` edit text is 323 characters and named `@~/.claude/settings.json`, so `CLAUDE_CONFIG_DIR` pointed it at the HOME file while bare `/statusline` wrote the configured one. The `/init` interview text shrank from 1,592 to 1,144 characters (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:145.
+
+- [x] **OUT-1878** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-245 in system-prompt.md): Tool choice degrades past 30-50 tool definitions in the system prompt (Anthropic guide, as relayed); the fix is grouping tools by user intent and deferred tool search. Two commenters report wrong-tool picks at about 40 tools, fixed by grouping or splitting by job.
+  Basis: cited as relayed; commenters reported.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
+
+- [x] **OUT-1879** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-246 in system-prompt.md): A tool vendor says an MCP server serving 90 tools costs about 24,000 tokens of schema on every turn, under 1,000 with a six-tool front door; an older CLAUDE.md policy "always use the index first" burns extra turns on jobs that did not need it.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:160 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
+
+- [x] **OUT-1880** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-247 in system-prompt.md): Anthropic cut Claude Code's own system prompt for newer models by over 80%.
+  Basis: cited (guide, relayed second-hand by the poster).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>).
+
+- [x] **OUT-1881** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-248 in system-prompt.md): A commenter says the API model migration guide states that for Opus 5+ the model is more autonomous, so give fewer and less restrictive instructions; two commenters say deleting old .md files or CLAUDE.md improved Opus 5.5.
+  Basis: cited from the guide by one commenter, not fetched; the deletion is anecdotal.
+  Source: external/2026-10-25/reddit.com-r-claudeopus-comments-1xbxewx-after-being-on-opus-55-for-so-20261024T141009Z.md:127 (url: <https://www.reddit.com/r/Claudeopus/comments/1xbxewx/after_being_on_opus_55_for_so_long_i_forgot_how/>).
+
+- [x] **OUT-1882** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-249 in system-prompt.md): CLAUDE.md loads into every sub-agent, and custom subagents reload the whole file on every spawn, so each line costs context in every child and constrains it; subagents inherit the main session's effort unless frontmatter pins model and effort. One user culled CLAUDE.md by 50%, moved rules to hooks then skills, and saw a noticeable difference.
+  Basis: reported, one user plus one commenter (the subagent-reload and effort-inheritance claim: agent frontmatter has `model` and `effort` fields, chunk-b0yr0k8v.js@308864, and the built-in Explore agent sets `omitClaudeMd:true`, chunk-m14bt1pz.js@242090, so CLAUDE.md loading is per agent type; effort inheritance probed 2026-11-18, probes-open-five/probe4: with `--effort high` every subagent request carried `output_config.effort` high and none carried low, without the flag none carried high, and an agent whose frontmatter sets `effort: low` sent low on its own requests while the main requests stayed high, so a subagent inherits the parent effort when frontmatter sets none and frontmatter overrides it; the request-to-subagent mapping is inferred from tool sets).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xdwquj-anthropics-new-guide-oct-22-argu-20261024T061351Z.md:94 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdwquj/anthropics_new_guide_oct_22_argues_most_agents/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:67 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>).
+
+- [x] **OUT-1883** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-250 in system-prompt.md): After compaction Claude Code re-injects the bodies of skills actually invoked, capped at 5,000 tokens per skill and 25,000 total, oldest dropped first, truncating from the start of the file; put the stay-on rule in the first lines and keep the body short.
+  Basis: cited (docs link context-window#what-survives-compaction).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfqg0c-how-do-you-keep-a-skill-active-a-20261028T060802Z.md:139 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfqg0c/how_do_you_keep_a_skill_active_after_context/>).
+
+- [x] **OUT-1884** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-251 in system-prompt.md): Post-compact re-injection through a hook is chunked to stay under Claude's roughly 10k-character additionalContext limit, and can arrive mid-turn as the agent uses tools.
+  Basis: reported, from a pasted model-generated description of a third-party setup, not probed.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xd73jn-compactions-vs-handoffs-lets-s-20261023T165046Z.md:245 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xd73jn/compactions_vs_handoffs_lets_settle_this_right/>).
+
+- [x] **OUT-1885** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-252 in system-prompt.md): Raw Claude Code requests are mostly tool definitions, not the user's code or conversation; ctrl+o shows only the conversation, not the system prompt and tools sent with every message.
+  Basis: reported, one user (tool claude-discover). Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:249,257 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
+
+- [x] **OUT-1886** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-253 in system-prompt.md): Disable unused plugins and skills; each costs tokens.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:166 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
+
+- [x] **OUT-1887** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-254 in system-prompt.md): Claude Code puts the account email in the system prompt (issue anthropics/claude-code 81138 cited), and a commenter reports it steering output (default timezone set to Sweden from a Swedish surname). The mods API removes a system-prompt section with on('prompt.section', {name}, () => ({text:null})) and names sections 'pronouns' and 'statusline-setup'; ccglass audits request logs. The harness system prompt also carries a pronoun rule (default they/them, never infer pronouns from a name) that spends tokens in every session; commenters report removing it, the account email, and the GitHub username with a session-start hook or mod (the pronoun quote is not verified in this thread).
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:53,136,143,147-149,490 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>); external/2026-11-06/reddit.com-r-claudecode-comments-1xorv25-woke-30-is-truly-back-20261106T080403Z.md:158-160,184 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xorv25/woke_30_is_truly_back/>).
+
+- [x] **OUT-1888** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-256 in system-prompt.md): Running claude -p showed build and gh tools injecting about 70% of one Rust project's context; the user is removing most of it.
+  Acceptance: Resolved 2026-11-18 as reported by one user, not measured; the share depends on that user's Rust project, and `code run` against a fake API can show the injected tool bytes for a given project but was not run on theirs. Verification: probe.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:908 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
+
+- [x] **OUT-1889** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-257 in system-prompt.md): Default compose sections on Opus, in order, with bytes: lean_body 1,229 (shared), then session pronouns 357, action_caution 520, session_guidance 163, memory 2,142, env_info_simple 620, context_management 280, act_dont_rederive 277, original_games 265 (Opus only). Haiku adds heron_brook 2,790 and total_tokens 49. Compose cannot replace system[0] (74 B), system[1] (62 B), or the 8.1 KB system-role message in messages[1].
+  Basis: measured (claude 2.1.323).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:16; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:17.
+
+- [x] **OUT-1890** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-258 in system-prompt.md): A `prompt.compose` list that puts a session section before a shared section is skipped as a whole hook.
+  Basis: cited (type file comment).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:18.
+
+- [x] **OUT-1891** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-259 in system-prompt.md): Compose input keys are model, promptModel, tools, outputStyle, traits, surfaces. They have no subagent type field.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:131; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:132; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:133.
+
+- [x] **OUT-1892** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-260 in system-prompt.md): A fresh Haiku session holds system tools 35.6k, MCP tools 16.6k, skills list 5.9k, system prompt 5.2k tokens, so tool schemas outweigh prompt text (one poster).
+  Basis: reported, one poster.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:8; external/2026-10-12/export-claude code 66k system prompt.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0fli2/claude_code_66k_system_prompt/>).
+
+- [x] **OUT-1893** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-261 in system-prompt.md): A custom system prompt gave `@lru_cache` in 93% of runs against 53% with the default (456 API calls). An over-strict anti-markdown text made Claude refuse lists.
+  Basis: reported (small study).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:9 (url: <https://www.reddit.com/r/ClaudeAI/comments/1shogc4/i_tested_whether_a_custom_system_prompt_for/>.)
+
+- [x] **OUT-1894** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-262 in system-prompt.md): Anthropic removed over 80% of Claude Code's system prompt for Opus 5 with no loss on coding evals.
+  Basis: reported (vendor claim, relayed).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:10 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnl999/claudemd_for_opus_55_based_on_anthropics_official/>.)
+
+- [x] **OUT-1895** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-263 in system-prompt.md): Vercel removed 80% of its tools and success rose from 80% to 100% at half the tokens. Machine-written context lowered success.
+  Basis: reported (vendor, relayed).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpzynz/i_analyzed_246_repos_and_57_papers_on_agent/>.)
+
+- [x] **OUT-1896** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-264 in system-prompt.md): A 450-run skill test found six of nine popular skills no better than a same-length placebo. No skill beat no skill on cost, and placebo length alone added 2-16% cost. A debugging skill was never auto-invoked in 16 runs.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:43; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:44 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wz4rfz/i_gave_the_9_most_popular_claude_code_skills_a/>.)
+
+- [x] **OUT-1897** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-265 in system-prompt.md): Reviews should quote the lines they judge. "Tell it this is ITS CODEBASE" matches the Fable ownership line.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:52; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:53.
+
+- [x] **OUT-1898** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-266 in system-prompt.md): The "prompt injection" with `<system-reminder>` was Claude Code's own commit-attribution instruction. The `attribution` settings object controls it, and the tool-result channel delivers it.
+  Basis: reported (docs plus anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:32 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wemrgz/why_i_am_receiving_a_prompt_injection_with/>.)
+
+- [x] **OUT-1899** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-267 in system-prompt.md): Claude Code injects the customer's email address into the system prompt. A claude-mods plugin can block it and lower the token count.
+  Basis: reported (anecdote, issue linked).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl0mvp/claude_just_leak_its_internal_cds/>); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:181; external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>)
+
+- [x] **OUT-1900** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-270 in system-prompt.md): 1,877 `deferred_tools_delta` rows named a failed MCP server 612 times (apple-docs 533 across 35 sessions). Failures appear once per context around each `compact_boundary` and never clear. npm shows `apple-docs-mcp-next` first published 2026-11-11T22:34Z and all failures came before it. 2,908 `prompt_snapshot` rows (about 9,200 chars) cost disk only, because the engine strips them before a request.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:651.
+
+- [x] **OUT-1901** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-271 in system-prompt.md): The sandbox instructions attachment is 5,490-8,400 chars (1,291 rows, average 7,589). Claude Code lists about 51 write-deny paths and cuts the rest as "and N more", so `sandbox.filesystem` entries cannot grow it past that cap. Other attachments: `invoked_skills` average 5,212 (max 22,526), `skill_listing` 2,989, `output_style_instructions` 2,981. No attachment type repeats more than 6 times in a context.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:656.
+
+- [x] **OUT-1902** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-172 in tools.md): Monitor costs 8 chars in the deferred list; loaded through ToolSearch it is the largest tool: description 6,354 plus schema 1,040 chars (about 2.7k tokens). Workflow 3,480 plus 1,775, ScheduleWakeup 3,396 plus 1,392, Agent 3,227 plus 1,942.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1995.
+
+- [x] **OUT-1903** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-173 in tools.md): A `tool.describe` hook replaces Monitor's description (6,354 to 14 chars) and not its schema (1,040 stays). Correction: the "Tool descriptions: No" row of the `prompts/other/override` table is out of date.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1999.
+
+- [x] **OUT-1904** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-174 in tools.md): On `--resume` the request takes its system prompt from the last `prompt_snapshot` attachment in the transcript (a hand edit reaches the model: 8,363 equals 8,350 plus 13). Tool descriptions in the snapshot do not (live text is used). A `prompt_render_point` after the snapshot (cause `set_model_system_prompt`) makes a fresh render. The gate is off when `CLAUDE_CODE_SIMPLE` is set or `systemPromptSnapshot` is false. A system-prompt Mod change reaches an old session only after a render point.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2008.
+
+- [x] **OUT-1905** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-175 in tools.md): Deny `Monitor` removes the built-in from the tool and deferred lists and leaves a Mod-registered `monitor` callable as `mcp__<plugin>__monitor` (it answered "MONRESULT-PROBE echo hi"), with no name collision.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2066.
+
+- [x] **OUT-1906** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-176 in tools.md): Stream-json and `-p` probes found no Mod that removes a tool. `dis1` (`tool.describe` `isDeferred` plus extra fields) sends 10 tools (21,763 bytes) against 12 (29,295); a null answer is skipped; ToolSearch still loads all. `dis2` (`permissions.deny` of eight tools) sends 9 (16,877) and ToolSearch finds none. EnterPlanMode and ExitPlanMode are not in the `-p` tool set. Emptying a deferred tool's text still saves 7,532 bytes.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2608.
+
+- [x] **OUT-1907** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-177 in tools.md): A Mod `settings.read` hook that adds `permissions.deny` (Workflow, ScheduleWakeup, ReportFindings, Cron*, EnterPlanMode, ExitPlanMode) does not remove the tools in claude 2.1.318: permission rules do not come from the hooked merge (the engine raised only 2 merged reads). `permissions.deny` in a settings file written by `claudetto:setup` stays the only removal route. The same hook route works for `skillOverrides` (6,183 to 493 bytes, no `command.run` or Skill guard needed).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2926.
+
+- [x] **OUT-1908** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-178 in tools.md): Remove routes rm0-rm11 for bundled skills: stock 13 skills 6,183 bytes. `disableBundledSkills` true leaves 1 skill (`plugin-authoring`) 347 bytes. Deny `Agent(<each of 6 types>)` leaves the Agent tool sent (3,227). Mod `command.describe` `isHidden`, `disableModelInvocation`, `permissions.deny` `Skill(dataviz)`, and a project `SKILL.md` do not remove a bundled skill. `skillOverrides` (user-invocable-only, name-only, off) does: 10 skills 2,471 bytes; `/name` still works for user-invocable-only. The Mod has no skill listing switch.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2570.
+
+- [x] **OUT-1909** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-179 in tools.md): `skillOverrides` removal checked for the 18 prompt skills in 36 runs: 18 of 18 `/<name> x` printed 'Skill "<name>" is disabled via skillOverrides' with 0 requests. 18 of 18 model Skill calls were refused: 11 with "disabled for model invocation in skillOverrides settings", 7 (batch, deep-research, debug, verify, insights, team-onboarding, run-skill-generator) with "cannot be used with Skill tool due to disable-model-invocation" (the stock flag fires first).
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3236.
+
+- [x] **OUT-1910** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-180 in tools.md): 22 of 88 slash commands are type prompt. `batch` spawns research subagents and one general-purpose worktree agent per unit; `simplify` 4 agents; `security-review` parallel sub-tasks; `deep-research` a Workflow; `debug` suggests claude-code-guide; `code-review` says do NOT spawn subagents except at max level; `keybindings-help` refuses a user call.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2559.
+
+- [x] **OUT-1911** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-181 in tools.md): A Mod tool on `$.ui.ask` answers in the TUI (`mcp__inv__ask` 256 bytes against stock AskUserQuestion 5,360 bytes). `tool.describe` `isDeferred` moves AskUserQuestion behind ToolSearch.
+  Basis: measured, claude 2.1.318, probe a1.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2556.
+
+- [x] **OUT-1912** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-182 in tools.md): `permissions.deny` removes AskUserQuestion (and EnterPlanMode, ExitPlanMode) from the request and ToolSearch in the TUI too, but then `ui.ask` fails because it is a `tool.call` of AskUserQuestion through every hook except the calling one ("no tool named AskUserQuestion"). Stock `-p` never offers AskUserQuestion.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2886.
+
+- [x] **OUT-1913** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-183 in tools.md): `tool.describe` trims (stock to Mod bytes): Agent 5,246 to 2,498; Bash 3,715 to 2,657; Read 1,919 to 1,409; Edit 964 to 845; Write 639 to 594; EnterWorktree 4,034 to 1,309; ExitWorktree 2,526 to 895; SendMessage 5,698 to 2,294; Skill 1,803 to 622; TaskStop 810 to 520; WebFetch 1,101 to 909; WebSearch 882 to 761; NotebookEdit 1,644 to 1,306. All 20 schemas go from 53,780 to 39,418. ToolSearch loads the Mod text for deferred tools. `tool.register` cannot recreate these 13 (no worktree switch, task stop, server-side search, or notebook editor; an Agent rebuilt on `$.agent.spawn` loses fork, notices, and SendMessage resume).
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2660.
+
+- [x] **OUT-1914** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-184 in tools.md): Deferral by Mod: `tool.describe` `isDeferred:true` moves Read out of the first request (11 tools, 29,295 to 27,376 bytes), but the engine does not add it to the "deferred tools are now available" list. `ToolSearch select:Read` loads it (`defer_loading:true`); Read called with no ToolSearch first still runs. Sent tools stock: Agent 5,246, Bash 3,715, Edit 964, ListAgents 1,151, Read 1,919, ReportFindings 2,177, ScheduleWakeup 4,886, Skill 1,803, ToolSearch 1,440, Workflow 5,355, Write 639.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2836.
+
+- [x] **OUT-1915** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-185 in tools.md): Write and Edit "read first" guard ("File has not been read yet") fires only when the model is in `nLn`'s list of 4.x and older models (claude-opus-4-6, haiku-4-5, opus-4-5, opus-4-1, opus-4-0, sonnet-4-5, sonnet-4-0, 3.x) or the path is not allowed without a prompt. Both arms overwrote `a.txt` without Read. NotebookEdit always enforces it (errorCode 9). In the TUI ($0 probe): the guard is skipped when the file has no read state, is not `.ipynb`, the model is not in `nLn`'s list, and a Read decision is "allow" for the path. An unread Write or Edit inside the workdir after a "Do you want to overwrite" dialog succeeds; an unread Write outside the workdir fails "File has not been read yet. Read it first before writing to it." On 5.x models the guard binds only where Read is not auto-allowed and for `.ipynb`. The prompting case needs an interactive session to answer the dialog; `-p` has no dialog, so the TUI probe above is the evidence.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2711; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2712.
+
+- [x] **OUT-1916** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-186 in tools.md): `taskOutputMaxChars` has no effect in 2.1.318 (schema: "Deprecated: no longer has any effect"). `bashOutputMaxChars` defaults to 30000 and is clamped 4000-128000, so the Gemini line that gives default 131072 and a working `taskOutputMaxChars` is wrong
+  Basis: measured, binary.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:894; openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:29.
+
+- [x] **OUT-1917** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-188 in tools.md): Over 22 transcripts of this repo (7,449 Bash results): characters p50 850, p90 4,494, p95 6,869, p99 13,291, max 26,105. 12% exceed 4,000, 1.4% exceed 12,000, none exceed 30,000. A 12000 cap keeps about 98.6% inline (near 4,350 tokens); 4000 would send 12% to a file and a second Read
+  Basis: measured, this repo.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:925.
+
+- [x] **OUT-1918** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-189 in tools.md): `respondToBashCommands` false (default true) adds the bash-stdout block to history and sends no request after a `!` command, saving a whole model request (cached prefix read plus reply). The output still rides every later request The 2.1.322 binary (read with strings) runs a "! " command through the Bash tool with userTypedShellDispatch, and shouldQuery follows respondToBashCommands (default true). So the Budget line's only carrier, prompt.submit, never rides a "! " command.
+  Basis: read from the binary `processBashCommand`. read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:831; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:832; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:797.
+
+- [x] **OUT-1919** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-190 in tools.md): `bashOutputMaxChars` 12000 and 4000 both gave a `<persisted-output>` notice with a 2,235-char preview on `seq 1 5000` (23.3 KB); the default kept 23,892 chars whole. The preview does not follow the cap
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1376.
+
+- [x] **OUT-1920** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-191 in tools.md): `MAX_MCP_OUTPUT_TOKENS` order: the variable, then server flag `tengu_velvet_ibis.mcp_tool`, then 25,000. Over the limit the result is saved to the session tool-results folder as `mcp-<server>-<tool>-<ms>` and only a notice (about 1,293 chars) enters context; the cut at limit x 4 chars with "[OUTPUT TRUNCATED...]" runs only when `ENABLE_MCP_LARGE_OUTPUT_FILES` is false, with images or documents, or with no session files. The 10,000-token screen warning is display-only and fixed. Separate unchanged limits: 50,000 chars before a text result goes to a file, per-tool `_meta` `maxResultSizeChars` up to 500,000, error text over about 11,000 chars keeps first and last 5,000. Fake-API table: 30,000 and 45,000 chars kept whole by default, saved at 10000. User decision: 10000
+  Basis: measured, fake API, read from binary.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1149.
+
+- [x] **OUT-1921** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-192 in tools.md): `permissions.deny ["ScheduleWakeup"]` is -4,887 chars (-1,771 tok); `ReportFindings` -2,178; `ListAgents` -1,152; all three -8,217 (-2,977 tok). `--disallowedTools` gives the same bytes
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1620.
+
+- [x] **OUT-1922** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-193 in tools.md): agent-browser can cost more tokens than Playwright MCP unless the agent passes `snapshot -i` (interactive elements only). The maintainer gives this as the way to cut context sharply. One commenter reports 88% token efficiency against native Playwright.
+  Basis: reported (maintainer claim); the 88% figure is reported with no stated basis.
+  Source: external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:37; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:51; external/2026-10-23/reddit.com-r-nextjs-comments-1qbz5sf-vercels-agentbrowser-an-alternativ-20261022T143652Z.md:59 (url: <https://www.reddit.com/r/nextjs/comments/1qbz5sf/vercels_agentbrowser_an_alternative_to/>).
+
+- [x] **OUT-1923** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-194 in tools.md): Claude Code retries overloaded responses, timeouts, and dropped connections up to 10 times with backoff and shows a "Retrying in Ns · attempt x/y" spinner line. While retrying, check the status page and switch with /model, since capacity is tracked per model. With no retry line, suspect a stale connection: quit, then run `claude --continue`.
+  Basis: reported by one commenter, not measured. On 2.1.327 the spinner strings are `will retry in N · check your network` for a stalled reply (chunk-wr3rwknv.js@17592) and `next try in N · attempt a/b` (chunk-wr3rwknv.js@18744, auto-mode check), not `Retrying in Ns · attempt x/y`; the count of 10 retries was not located, and `CLAUDE_CODE_MAX_RETRIES` is the env override (chunk-2ew0jg68.js@45599). The 2.1.326 release notes say the retry notice now reads "retrying…" during the next attempt and that `claude -p` now shows output while it retries an overloaded request.
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); external/2026-10-25/reddit.com-r-claudeai-comments-1x8fi7z-claude-code-getting-stuck-for-15-20261024T140704Z.md:79 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x8fi7z/claude_code_getting_stuck_for_15_minutes_with_no/>).
+
+- [x] **OUT-1924** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-195 in tools.md): `TaskStop` of another task is not covered by the gate's owner check: Claude Code looks a task up in this session's task registry and otherwise answers "No task found with ID". The 2.1.326 binary holds that lookup and message (chunk-1vttvse2.js@45168 (2.1.327): `taskRegistry.get`, then name resolution, then the error); the message there also adds "Did you mean" and running-teammate hints. The task named the old module `chunk-kj840p5h.js@36960` with no binary version, and that module is not in 2.1.325. A path reached through `cd`, a variable, or a glob is compared as written (read).
+  Basis: reported, task text.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:331; chunk-1vttvse2.js@44058, @44889 (claude 2.1.327 binary).
+
+- [x] **OUT-1925** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-196 in tools.md): An agent's own background tasks are the running tasks whose id its own tool results print: `Bash` prints "Command running in background with ID: <id>", and `Monitor` prints "Monitor started (task <id>, ...". A synchronous subagent's background command ends at its final response (`backgroundEndsWithFinalResponse`) (read).
+  Basis: reported, task text.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:407.
+
+- [x] **OUT-1926** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-197 in tools.md): Task 18.42 probes of the folders each tool makes: pdm makes `.pdm-build`, Mix makes `_build` and `deps`, Flutter makes an `ephemeral` folder, Clojure makes `.cpcache`, LuaRocks makes `lua_modules`, vcpkg makes `vcpkg_installed` and `buildtrees`, sbt makes `target`, `project/target`, `.bsp`, and `.scala-build`, direnv makes `.direnv`. A `result` symlink from nix-build points into /nix/store and Bazel makes only symlinks into `~/Library/Caches/bazel`; the walk does not follow links, so neither has a rule, and the nix gcroot rule is the only one for them. Nix was not run (the install needs sudo and an APFS volume); its facts come from docs and source (measured, except Nix).
+  Basis: measured, Nix from docs and source.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:399; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:401.
+
+- [x] **OUT-1927** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-198 in tools.md): Task 18.5, 2.1.319, `claude-sonnet-5-5`, 60 sessions per arm (6 tasks x 10, two identical launches pooled): sessions that called `Read` with no offset on a file of 20,000 bytes or more were 2/60 (Wilson 0.009-0.114) for base and 50/60 (0.720-0.907) for the plugin. Such calls that landed were 2/60 against 22/60 [0.26, 0.49] (p < 0.0001); heavy-file tasks landed 2/40 against 9/40 (p = 0.0476); control tasks (files the guard does not name) 0/20 against 17/20 attempts and 0/20 against 13/20 landed. The guard worked (33 whole reads denied; every landed heavy read carried `limit` 50, 60 or 80). The prediction of fewer attempts with the plugin failed. Likely cause (hypothesis): the plugin denied Bash reads 62 times ("Use Read to read a file, not the shell"), which steered the model to `Read` (`Read` 132 calls against 14, Bash 79 against 86). Cost $5.41 against $1.19, 4.54M against 2.50M tokens, largest session 227,848 against 119,822 (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:305; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-5/README.md:24-40.
+
+- [x] **OUT-1928** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-199 in tools.md): Task 18.6, 60 sessions per arm on the same tasks: output tokens base 21,897 (mean 364.9), plugin 62,980 (mean 1,049.7), plugin with `maxTestOutputChars` 0 50,738 (mean 845.6); Mann-Whitney p < 0.0001 for each pair (nocut against change p < 0.0001, permutation 0.0003). Bug fixed 60/60, 58/60, 50/60 (the nocut 50/60 not examined; base against change Fisher p = 0.4958). Input plus cache tokens 3.60M, 4.68M, 5.02M (change 7% less than nocut, untested); cost $2.04, $2.29, $2.29; cut markers 6/60, because the model often pipes `bun test` through `head` or `tail`. The prediction of fewer output tokens with the cut failed, and the cause of the extra output is unexamined (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:306; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-6/README.md:22-35.
+
+- [x] **OUT-1929** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-200 in tools.md): Task 18.7, 8 cases x 4 rounds = 32 sessions per arm, with Read, Write, Skill and ListAgents deferred: change arm 24/32 against base 32/32 (Fisher p = 0.0048, $1.33 total). Read, Write and Skill reached 24/24 in both arms; 23 of 24 change sessions loaded the tool through ToolSearch first (the exception called Read after a Bash with no ToolSearch and it worked); no session replaced the tool with Bash. ListAgents reached 0/8 against 8/8 (p = 0.0002), because none of the 8 sessions made a call: the model never learned a deferred ListAgents exists and answered from context. With no agent running, "tool not needed" and "tool not found" look the same. Not measured: SendMessage, Workflow, ScheduleWakeup, ReportFindings, other models, interactive sessions (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:307; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-7/README.md:20-45.
+
+- [x] **OUT-1930** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-201 in tools.md): Task 18.18, after ListAgents left `DEFERRED_TOOLS`: the change arm called it 8/8 (18.7: 0 calls) but reached 0/8 against base 8/8 (Fisher p = 0.0002), because the answer-first gate in `hooks/pin.ts` denied the call. Task 18.21 added `LOOKUPS` (ListAgents, Read, Grep, Glob), which pass on question turns, and reached 8/8 against 8/8; cost $0.39, then $0.26. The deferral hid the tool first, and then the gate denied it (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-18/README.md:1-30; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-21/README.md:6-25.
+
+- [x] **OUT-1931** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-202 in tools.md): Compound Bash line "bun test ...; cat src/lib.ts": the plugin arm spent a denied `cat` plus a retry (4.07 turns, 5.00 calls, 1.00 denial per session, against base 3.07 turns). Fix `hooks/gate/read-split.ts`, a `tool.call` hook on Bash: for a line ending in "; cat <file>" (also `&&` or newline) it reads the file with `$.tool.call` Read through the same hooks and permission check, runs the rest of the line alone, and appends the Read text to the Bash result stdout. Run 1 put the text in context: turns 3.97 against 3.00, output 692.2 against 355.8 (1.95x), Stop blocks 0.43 per session. Run 2 (stdout, 60 sessions, 30 per arm, $2.61): turns 3.43 against 3.13 (1.096x), job-op calls 4.20 against 4.47 (0.94x), raw calls 3.07 against 3.13, denials 0.00, fixed 30/30 against 30/30, output 551.8 against 378.3 (1.46x, misses the 1.25x target), Stop blocks 0.33 per session, because 10 of 30 plugin sessions got the unseen block (918.9 output tokens, 4.30 turns) while the other 20 matched base (368.3, 3.00). Job-op counting: a Bash call counts once per `;`, `&&` or newline part, because raw calls reward packing a read into Bash and "test; cat" is two jobs under the user's Bash rule (measured).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-23/README.md:3-38; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:324.
+
+- [x] **OUT-1932** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-203 in tools.md): `CLAUDE_ENV_FILE` is sourced into each Bash shell (probe nice `10 9 9`); CPU: default 26-27M, `nice -n 10` 23.7M, `taskpolicy -c utility` 5.3M, `background` 0; `CARGO_BUILD_JOBS` and `GOMAXPROCS` default to all CPUs. 2.1.326: present (CLAUDE_ENV_FILE; binary string search).
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:405; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:215.
+
+- [x] **OUT-1933** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-204 in tools.md): Cache and token measures: first-request plugin cache-read share 72-77% against base 67%; plugin first request 7.57k against 16.55k tokens; cost-weighted input 17,270-18,760 against 25,415-25,773; first request 43,382 to 19,675 B.
+  Basis: measured 2.1.319.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:830; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:869.
+
+- [x] **OUT-1934** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-205 in tools.md): betterleaks 1.10.0: about 40 ms warm scan, 0.41 s on 5 MB; the defaults miss OAuth `oat01` tokens, a lone AWS secret key, a URL password and an `Authorization` bearer; config precedence is `-c`, then `BETTERLEAKS_CONFIG`/`GITLEAKS_CONFIG`, then inline `BETTERLEAKS_CONFIG_TOML`; there is no versioned Homebrew formula.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:89; openspec/specs/secret-matcher/spec.md:14.
+
+- [x] **OUT-1935** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-206 in tools.md): Shellfirm port: 42/42 old-gate catches, 3/39 flags; 586 commands stricter, about 9 looser; of 1,122 upstream fixtures, 648 positives hit, 20 are Windows, 7 unparsable, 28 skipped.
+  Basis: measured 2026-11-06.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:71; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:73; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:187.
+
+- [x] **OUT-1936** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-207 in tools.md): CC subagent and mod facts: `tool.describe` events carry no thread; `engines["claude-code"]` gates install; `plugin validate` type-checks a TypeScript hooks module; the `tool.list` event exists; `subagentStatusLine` is removed (cited; in the 2.1.326 binary it is "deprecated in favor of mods and will stop working in a future release", so it is not removed there); plugin `settings.agent` is deprecated; 44 mod events; 33 classic events. 2.1.326: present (tool.list, tool.describe, `engines["claude-code"]`; binary string search); 2026-11-18 on 2.1.327: `engines` is a manifest field (chunk-ja5z738t.js@57798) and plugin diagnostics carry `engine-range-invalid` and `engine-range-exempt` ("an installed copy would not load here", chunk-dfwkett1.js@28092), which supports a load gate; the install-refusal path was not read. Mod event count is corrected: the 2.1.327 declarations list 159 events, 33 classic and 126 others (cc-inspect `surface` mod-api, counted by hand), not 44. `plugin validate` type-checks only modules named in hooks.json `modules`, and reports type errors as warnings (CTX-694).
+  Basis: cited, observed.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/design.md:30; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>).
+
+- [x] **OUT-1937** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-208 in tools.md): Mods (in-process hooks) arrived in 2.1.287; `claude plugin test` fires real hook events with no session, model or network.
+  Basis: reported.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:84.
+
+- [x] **OUT-1938** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-209 in tools.md): Opus 5.5 plan-level cost: users on Pro and Team report that they do not reach the weekly limit in 2-3 hour non-stop runs.
+  Basis: reported.
+  Source: external/export-Is Claude Pro actually worth $20 just for one month for heavy coding-.jsonl:28 (a Pro user: 2-3 hours non-stop without exhausting the 5-hour limit) and external/export-Holy shit, it refuses to eat usage.jsonl:34 (20x user, no weekly rise). The weekly limit on Pro and Team in 2-3 hour runs is corrected to these two reports; no Team report was located.
+
+- [x] **OUT-1939** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-210 in tools.md): Agent-browser 0.39.1 reads 3 pages in 46.0k, 32.5k and 9.7k against raw HTML 392k, 248k and 318k bytes, in 0.7-3.4 s, and needs no sandbox (daemon socket); curl with an extractor gives 35.5k, 21.4k and 7.0k; an httpbin 403 gives an empty `cf-mitigated`, a challenge gives `cf-mitigated=challenge`.
+  Basis: measured.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:88; openspec/changes/2-1-325-rearchitecture/tasks.md:21.
+
+- [x] **OUT-1940** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-211 in tools.md): One page, one question, four routes (2026-11-17; page `github.com/anthropics/claude-code/releases/tag/v2.1.326`, question "what does it say about MCP"): raw HTML 210,462 bytes; a stdlib extract of the whole page 50,766 characters and of its `markdown-body` 47,387; `grep -n MCP` over the extract 21 lines in 2,946 bytes; claudetto `web_fetch` (registered tool) with `maxChars: 60000` put the whole page in context, about 12.2k tokens by Claude Code's own warning; agent-browser 0.39.1 `read` 51,270 bytes in 3.25 s with the site navigation kept; `@playwright/cli` 0.1.24 `open` 452 bytes (the 90,949-byte snapshot goes to `.playwright-cli/page-*.yml`), `snapshot` 91,252 bytes, `find "MCP"` 31 matches in 14,142 bytes, mostly repeated ancestor nodes.
+  Basis: measured; token figures other than the warning are bytes (no API key for a token count; the warning gives about 4 characters per token on this page).
+  Source: lead session `0342617c`, 2026-11-17 (commands `curl`, `agent-browser read`, `node_modules/.bin/playwright-cli open|snapshot|find`); the user's paste of the `web_fetch` warning at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
+
+- [x] **OUT-1941** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-212 in tools.md): Claude Code 2.1.327 caps an MCP tool result at 25,000 tokens (`MAX_MCP_OUTPUT_TOKENS`, else a server-side value, else 25000; `chunk-vxavegfm.js@768`), cuts text past the cap with a notice, and saves only cut images to a file; its "Large MCP response" line is a UI warning above 10,000 estimated tokens (`Ns=1e4`, `chunk-n9wersv3.js@45197`). A large Bash output is instead saved to a file with a 2 KB preview ("Output too large ... Full output saved to", `chunk-bwkc74bx.js@7110`). A claudetto tool registered through `$.tool.register` reaches the model as MCP (`mcp__claudetto__web_fetch`), so it gets the cap and no file.
+  Basis: measured (code read, 2.1.326).
+  Source: cc-inspect `search` on 2.1.326 at the offsets named; lead session `0342617c`, 2026-11-17.
+
+- [x] **OUT-1942** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-213 in tools.md): agent-browser 0.39.1 cannot start inside Claude Code's Bash sandbox on macOS: `read <url>` printed "Daemon process exited during startup with no error output" (also with `--debug`); the same command outside the sandbox read the page. The auto-mode classifier first refused the unsandboxed retry ("[Unauthorized Access]"); the user called that a false alarm and approved the run.
+  Basis: measured, 2026-11-17, sandboxed and unsandboxed runs of one command.
+  Source: lead session `0342617c`, 2026-11-17; user approval at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15578.
+
+- [x] **OUT-1943** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-214 in tools.md): verdict-cli (`tuandm/verdict-cli`, npm 0.1.1) is a persistent headless Chromium for UI verification, not page reading: ARIA snapshots with `@e` refs, `snapshot -i` (interactive only), `snapshot -D` (diff against the previous snapshot), `chain` for batched commands, encrypted auth profiles with a `handoff` to a shown window for SSO, MFA or CAPTCHA. Its README claims about 75 tokens per call against about 1,500 for Playwright MCP.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: <https://raw.githubusercontent.com/tuandm/verdict-cli/HEAD/README.md> (read 2026-11-17); suggested by the user at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:15487.
+
+- [x] **OUT-1944** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-217 in tools.md): A `tool.describe` event carries only `tool`, `description`, `isDeferred` and `provider`, and its answer is cached per session until `$.ui.invalidate`, so one text serves every thread that sends the tool and a hook cannot answer the main thread and a subagent differently. Whether the engine sends a subagent the `Bash` schema at all was not run, since that needs a paid session.
+  Basis: measured (read of `ToolDescribeInput` and the `tool.describe` doc in `.claude-plugin/types/claude-code/index.d.ts` lines 4494 to 4507 and 14482 to 14509; no model call).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:772.
+
+- [x] **OUT-1945** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-218 in tools.md): Search exclusions and read size: `Grep` honors `.gitignore` and `.ignore` except for files its `glob` matches; `Glob` lists ignored and hidden files by default; a `Read` deny hides a path from both; `Read` refuses a file over 262,144 bytes or 25,000 tokens. The plan keeps setup's ignore blocks, corrects their stated scope, and makes no mod and no `CLAUDE_CODE_GLOB_NO_IGNORE` change.
+  Basis: measured (named as probe 2.11 of `ISSUES-2026-11-04-1500.md`; the probe text was not read here).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/feature-map.md:61.
+
+- [x] **OUT-1946** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-838 in tools.md): The project folders under `~/.claude/projects` begin with `-`, so a bare glob such as `ls */` or `ls -S */*.jsonl` there passes them to the program as options and fails ("unrecognized option"); a variable taken from that output is empty. With CTX-837 this left a subagent of this project waiting 122 seconds on `wc -l $f`.
+  Acceptance: `cd ~/.claude/projects; ls */` fails with "unrecognized option"; `ls ./*/` lists. Verification: probe.
+  Basis: probed (2026-11-18, reproduced by the main session as well). Status: n/a.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e/subagents/agent-ac34edb36528989f5.jsonl:24-26; probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+
+- [x] **OUT-1947** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-854 in tools.md): Code Mode pays off on tool fan-out with a small answer, mostly MCP calls, and not on file work. A public benchmark on 2.1.326 (6 tasks, 4 models, 2 runs per task and mode, 96 runs, auto mode, medium effort) measured these changes with Code Mode on:
+  - Totalling 120 records fetched through MCP: 84-94% less conversation growth in all 8 pairs; 62-77% fewer tokens processed; 23-28% of the recorded cost; 20-41% of the time.
+  - Reading and judging the same records: 65-83% less conversation growth.
+  - File work (find broken links; change an API at 36 call sites): conversation growth rose in 14 of 16 pairs, and repeat runs differed by up to 216%. Recorded cost on Opus 5.5 was about equal ($0.33-0.39 on against $0.32-0.33 off for links; $0.26-0.36 against $0.28-0.35 for the API change). With Code Mode off, every model already wrote one script for the file tasks.
+  - Every session started 13,055-13,106 tokens smaller. `/context` shows built-in tool definitions at 3.6k against 16.3k, and the deferred tool lists gone.
+  - Inside a script the tool-call count grows: one Opus 5.5 link check ran 1,174 tool calls, and one Haiku 5.5 run ran 344 failing shell calls.
+  The user reports the same split from other users. The benchmark's own caveats hold: 2 runs per cell, synthetic tickets with repeated wording that suit a sentence-count script, one effort level, and a clean configuration.
+  Acceptance: none (context). claudetto does not turn Code Mode on (OUT-118). It stays compatible when a user turns it on (REQ-GUARDS-078).
+  Basis: reported, third-party measurement (published scripts, transcripts and `/context` dumps; not rerun here). Read: the official page lists the same requirements and limits. The 2.1.327 reason list in chunk-g2wcp8ss.js holds no plugin or mod reason, although the page still lists "doesn't yet work with the plugin" and "an installed mod" (Differs). Status: n/a (host behaviour).
+  Source: external/2026-11-18_p2/reddit.com-r-claudeai-comments-1xymddk-i-benchmarked-claude-codes-code-20261118T181709Z.md:37-43,74,80-82 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xymddk/i_benchmarked_claude_codes_code_mode_across_4/>); github.com/Bicameral-AI/claude-code-mode-benchmark@deee7585 results/README.md (tables "Tokens Processed by Kind of Work", "Task Context and Requests", "Fixed Context", "Opus 5.5") and archive/claude-code-2.1.325/results/context/C0-opus-off-20261116-172859.md, C0-opus-on-20261116-172924.md; <https://code.claude.com/docs/en/code-mode> (read 2026-11-18); chunk-g2wcp8ss.js reason switch (claude 2.1.327, cleaned module, 2026-11-18); user report, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl).
+
+- [x] **OUT-1948** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-762 in usage-quota.md): Commit-check blocks over 7 days of logs (575 files): 230 blocks; 108 list only real files, 61 only .claude/worktrees/agent-* files, and 61 both. The block is a catch for 47% and in part for 27% more.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:849.
+
+- [x] **OUT-1949** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-763 in usage-quota.md): Open-items and command checks over the same logs: 44 ask blocks in 19 sessions listed 108 items, of which 16 were questions or commands typed as items and 92 were numbered task lines copied from a task list (read; no catch names them a question). 46 command-form blocks in 17 sessions and 29 several-command blocks in 13 sessions hold real sudo and "! cd ... && git push" lines.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:851.
+
+- [x] **OUT-1950** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-764 in usage-quota.md): Denial lines per day by rule (2,915 lines, 568 files; each count is an upper bound; the first and last days are partial, now 11-12 14:02; 265 lines carry no timestamp; part of 11-12 comes from this change's own probes). Day totals: 11-09 87, 11-10 825, 11-11 1,228, 11-12 510. Write 117, 631, 189. Read 443, 150, 52. Temp marker 65, 62, 137, 54. Answer-first 22, 58, 76, 113. Pipe exit code 46 and 14. Agent past 15 min 40 on 11-10 only. Loop with no time limit 23 and 10. PATH marker 16. Sandbox rewrite 12.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:893,897-910.
+
+- [x] **OUT-1951** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-765 in usage-quota.md): Jev costs $0.042 per million input tokens, the basis for sending hook text to it.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:64; openspec/changes/archive/2026-11-13-feat-2-1-321/proposal.md:7.
+
+- [x] **OUT-1952** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-766 in usage-quota.md): plugins/claudetto/hooks held 9,985 source lines on 12a3f8a1, the accretion baseline for the rebuild.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/proposal.md:9.
+
+- [x] **OUT-1953** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-767 in usage-quota.md): A noun one plugin adds reaches another plugin in a live session, but a consumer with a dependencies entry does not load alone, and the lab cannot test it.
+  Basis: observed.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:10.
+
+- [x] **OUT-1954** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-768 in usage-quota.md): Model table (cited): Opus 5.5 $4/$20 per MTok, medium effort; Sonnet 5.5 $2/$10, default high (docs say medium for agentic coding); Haiku 5.5 from $0.10/$0.50; Fable 5.2 $8/$40, high; minimum Claude Code versions 2.1.280, 2.1.284, 2.1.293, 2.1.321. Cache read is 0.05x input for Opus and Sonnet 5.5, 0.025x for Fable 5.1 (reported). Agentic coding uses about 1000x chat tokens with 30x run variance (cited, arXiv 2604.22750); RouteLLM and FrugalGPT up to 98%; AgentDiet -39.9 to -59.7%; four agents at 200k are said to cost less than one at 800k (estimate); three agents hit 90% of a $100 plan in 4-5 h (reported).
+  Basis: cited and reported. Status: not applicable.
+  Source: external/2026-10-12_p2/export-How can you effectively use Claude to build products, rather than churning out -AI slop- that no one.jsonl:56 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wzn4f6/how_can_you_effectively_use_claude_to_build/>).
+
+- [x] **OUT-1955** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-769 in usage-quota.md): Weekly burn (one user, CLI 2.1.292, Max): a night run on Opus xhigh with up to 3 subagents made 3,396 calls, 116M cache creation, 1,501M reads, and 1.63M output, which moved the weekly bar 35%; 5,469 calls in 24 h on Oct 7 did not; another user saw 3% of the 5 h window add 1% weekly, then 4%; Opus medium with subagents off beat xhigh with 3. Cross-vendor, a 10-repo task cost about 15% weekly on Codex against about 4% on Opus 5.5 (reported, no controls).
+  Basis: reported. Status: not applicable.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1995.
+
+- [x] **OUT-1956** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-770 in usage-quota.md): Multi-agent research, cited: MAST 14 failure modes (2503.13657); CooperBench about 30% below single agent (2601.13295); scaling +80.8% on decomposable work against -70.0% on sequential (2512.08296); the Anthropic research system +90.2% at about 15x tokens; Systima fan-out 2.6x on Opus and 5.9x on Fable against sequential (reported, unverified); heterogeneous debate helps (2502.08788); best failure attribution 14.2% (2505.00212); out-of-scope rates 5.4-27.7% for CLI agents against 0.2-4.5% for OpenHands (2605.18583); SNARE 19.51% overeager (2605.28122); AgentSpec above 90% (2503.18666).
+  Basis: cited (papers not opened). Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:106.
+
+- [x] **OUT-1957** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-771 in usage-quota.md): Cited decay facts: system-prompt drift within 8 rounds [2402.10962]; multi-turn 39% below single-turn [2505.06120]; about 68% accuracy at 500 simultaneous instructions [2507.11538]; TRACE compiles corrections into runtime checks, preference violations 37.6% in-distribution and 2.0% out of distribution [2606.13174]; Accumulated Behavioral Rules 0% recurrence (the authors' own) [2607.13091]; Reflexion [2303.11366] and ACE keep lessons in an itemized playbook, ACE +10.6% [2510.04618]; drift is bounded and reminders help [2510.07777]. Compression that removed 38.4% of tool-output tokens raised billed cost 6.8% (r=0.15) [2607.12161]; turn count explains 84% of log cost variance [2610.15093]. A consequence: enforce with runtime checks and prefer fewer turns over token compression.
+  Basis: cited (papers not opened). Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:106; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:120.
+
+- [x] **OUT-1958** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-772 in usage-quota.md): Multi-account reports: one user measured a 20x account at about 2-8% more weekly usage than two 5x accounts, with 4x the 5 h limit against 2x; another measured weekly about 28% per full 5 h session on 20x against 13-14% on 5x (weekly about 2x, 5 h 4x); an older measure gave 1.7x per seat; a dynamic adjustment by server load is suspected (inferred). Two 5x accounts hedge a runaway agent blocking a week; terms-of-service risk is disputed.
+  Basis: reported; the per-window weekly shares here are single readings inside the 12-48% range of CTX-855. Status: not applicable.
+  Source: external/2026-10-11/export-1x $200 account vs 2x $100 accounts.jsonl:5; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:80 (1.7x); external/2026-10-17/export-First session of the week of Max 20x- Weekly limit = 2 x session-.jsonl:30; external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:8.
+
+- [x] **OUT-1959** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-773 in usage-quota.md): Headless billing (one poster, Pro, a single task, six runs): interactive entrypoints cost about 1.6-1.8% of the 5 h limit per API-equivalent dollar and headless (`sdk-py`, `claude -p`) about 5.2%, with 97-98% cache reads, so cache does not explain it; the transcript `entrypoint` field tells the mode. The poster's rule is bulk refactors interactive, headless for small scoped runs, and `/usage` compared before and after.
+  Basis: reported. Status: not applicable.
+  Source: external/2026-09-29_p2/export-Measured it- headless Claude Code (Agent SDK - claude -p) eats ~3x more of the 5-hour limit per toke.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wsijnv/measured_it_headless_claude_code_agent_sdk_claude/>).
+
+- [x] **OUT-1960** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-774 in usage-quota.md): Orchestration through tmux windows plus a send-message tool, instead of subagents, is in use (reported). A worktree per parallel session works, and with 3-4 sessions the coordination cost exceeds the token cost (reported). A monthly API credit grant on Max and Team is reported (eligible 7 days after subscribing; the `claude -p` credit move is rumour), to be settled against the docs through clawdipedia-docs first.
+  Basis: reported. Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:43 (script-fed tmux session cost) and external/2026-10-11/export-This is incredible value for Max plans.jsonl:2 (monthly credits on Max and Team). The tmux send-message orchestration and worktree coordination-cost claims: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [x] **OUT-1961** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-775 in usage-quota.md): Jev answers in 152-262 ms warm and 0.2-1.8 s on a first call, with confidence `(p_max-1/n)/(1-1/n)`; the `lhviet/jev-bridge` README says Haiku with a loose prompt called `jev_ask` in 5 of 6 runs. Jev timings: a real key answers 200 in 257 ms at $0.0033; a bogus key gives 401 in 140 ms, then Haiku takes 1400 ms at $0.0019; TTY Jev takes 170-239 ms against Haiku 1.9-3.7 s; `-p` has no terminal surface, so you-should-know shows no tip.
+  Acceptance: the README states the 5-of-6 figure. Verification: inspection.
+  Basis: reported. Status: have at 088a227c. measured.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>); openspec/changes/archive/2026-11-09-release-2-1-319/design.md:153; openspec/changes/2-1-325-rearchitecture/design.md:71.
+
+- [x] **OUT-1962** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-776 in usage-quota.md): Several users reported Opus 5.5 usage dropping after launch and the same prompts consuming more on some days; one user reported bonus usage moving from +50% to a permanent +25%; quality complaints for Opus 5.5 (ignoring global instructions, bare minimum) came with no repro; "How is Claude doing today?" appeared 4-5 times a day (pressing good or bad shares the session with Anthropic); a commenter says Claude Code injects the user's email into the system prompt and commit authorship (no issue number given in the post); remote control adds a conversation link to commit messages.
+  Acceptance: each post states its claim. Verification: inspection.
+  Basis: reported. Status: have at 088a227c.
+  Source: external/2026-10-03/export-Mmmkay. I didn't believe others at first, but something is suddenly off with Opus 5.5.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wurd3e/mmmkay_i_didnt_believe_others_at_first_but/>); external/2026-10-04/export-Opus 5.5 - seems like it has begun.jsonl:9 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wu17jz/opus_55_seems_like_it_has_begun/>). Not located: the email, bonus-usage, and "How is Claude doing" lines.
+
+- [x] **OUT-1963** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-777 in usage-quota.md): One user on high effort reports 20% of weekly usage in one session where a week before they ran 4 to 5 sessions at max, so token use changed by about 90% in days; another says medium burned 20% of a Max 5 on two identical prompts.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xclxdw-opus-55-is-so-good-remember-to-use-20261024T141513Z.md:466 (url: <https://www.reddit.com/r/claude/comments/1xclxdw/opus_55_is_so_good_remember_to_use_xhigh_effort/>).
+
+- [x] **OUT-1964** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-778 in usage-quota.md): Since about 9 Oct the 5-hour window looks about 15% bigger while the weekly limit barely moved, so a user who maxes every window hits the weekly cap after about 9% fewer windows; seen on all four accounts, provisional.
+  Basis: measured, one poster, unconfirmed.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:73 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
+
+- [x] **OUT-1965** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-779 in usage-quota.md): Max 5x raises the 5h window 5x but the weekly cap only about 2-3x; about 15% of weekly equals one 5h window; a 5x user burned the weekly cap in about 3 days.
+  Basis: reported; the 2-3x figure is a poster impression and is contradicted by logged meters in CTX-855, which put 5x weekly at about 4.8x Pro. The weekly-to-window ratio is not a constant (CTX-855), so no plan code carries a fixed ratio.
+  Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:105 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
+
+- [x] **OUT-1966** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-780 in usage-quota.md): One Pro user on Opus 5.5 High reports hitting the weekly limit with 4 days left after a month of intensive use; another on Opus 5.5 "extra" reports only 10% of the weekly limit after a full day. Plan tiers differ.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-aigamedev-comments-1xfcokl-advice-for-those-developing-gam-20261026T063549Z.md:401 (url: <https://www.reddit.com/r/aigamedev/comments/1xfcokl/advice_for_those_developing_games_with_ai_so_they/>).
+
+- [x] **OUT-1967** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-781 in usage-quota.md): A heavy user reports the same usage on the API would have cost 17,500 USD a month against a 200 USD Max 20x plan; a 20x plan lasts about 15-20 h/week on Fable only, 30-50 h on Opus only, and an estimated 100-120 h on Sonnet only.
+  Basis: reported, his own test; the Sonnet figure is unconfirmed.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:224 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
+
+- [x] **OUT-1968** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-782 in usage-quota.md): One user logs about 2,000 USD of API-equivalent usage per week on an x20 plan with 3-8 sessions and up to 6 concurrent subagents (70% Opus 5.5, 30% Sonnet 5.5), with sessions running to 800k-900k, and stays within limits, so reports of limit burn vary with workload.
+  Basis: reported, one user, own token-tracking hook.
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xcacgy-claude-limits-20261026T064230Z.md:112 (url: <https://www.reddit.com/r/Anthropic/comments/1xcacgy/claude_limits/>).
+
+- [x] **OUT-1969** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-783 in usage-quota.md): One commenter reports Opus 4.6 costs more of the weekly usage than Opus 5.5.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-25/reddit.com-r-claudeopus-comments-1xbxewx-after-being-on-opus-55-for-so-20261024T141009Z.md:179 (url: <https://www.reddit.com/r/Claudeopus/comments/1xbxewx/after_being_on_opus_55_for_so_long_i_forgot_how/>).
+
+- [x] **OUT-1970** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-784 in usage-quota.md): A commenter says Opus max thinking uses 5.5 times the usage of normal thinking, and that Haiku can execute Opus plans; another replies Haiku is too stochastic even as a judge.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session).
+  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1x7i9v1-i-went-from-exhausting-claude-c-20261026T064441Z.md:216 (url: <https://www.reddit.com/r/Anthropic/comments/1x7i9v1/i_went_from_exhausting_claude_codes_weekly_limits/>).
+
+- [x] **OUT-1971** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-785 in usage-quota.md): Long-lived interactive sessions in tmux that a script feeds messages cost about 1.07x the 5-hour meter of typing by hand, against 1.5x for `claude -p`; fresh `-p` alone is still 1.5x, so resume is not the cause. The interactive sample is about 8% of the author's work, so a strong hint only. The measure is on Max 20x.
+  Conflict: A commenter who runs a gateway sees no -p versus interactive difference in subscription usage.
+  Basis: measured, one poster.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:129 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
+
+- [x] **OUT-1972** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-786 in usage-quota.md): A commenter who runs a gateway sees no -p versus interactive difference in subscription usage across hundreds of customers and says subscriptions inside an organization pay -p from an API credit pool. This conflicts with the 1.5x finding; the author says his finding concerns Max meters only and an API key has no 5-hour limit.
+  Conflict: Long-lived interactive sessions in tmux that a script feeds messages cost about 1.07x the 5-hour meter.
+  Basis: reported, one commenter, conflicting.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:157 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>).
+
+- [x] **OUT-1973** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-787 in usage-quota.md): Fable 5.2 is a bit more token efficient at medium but emits about 50-100% more output tokens at high, xhigh, and max, so run one effort level lower than usual; a user reported a task that cost Opus 20% of a 5 h limit took Fable 100% without finishing; the cost chart is logarithmic and Max costs about 5x any other setting.
+  Basis: reported, one commenter's benchmark claim, no measure shown.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:346; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:178; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:83 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
+
+- [x] **OUT-1974** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-788 in usage-quota.md): One Ultra user: 3 h of two parallel orchestration chats on Fable 5.2 High used 20% of Fable usage plus 10% of regular usage, where Opus would use about 3-4%, about 2.5x Opus High cost; another says Fable is cheaper at equal effort level (conflict); a displayed 200k context was called a bug, normally 1M, cured by restart or update.
+  Basis: reported, one user.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs5rpr-have-you-tried-fable-52-20261110T093712Z.md:47; external/2026-11-10/reddit.com-r-claudeai-comments-1xs5rpr-have-you-tried-fable-52-20261110T093712Z.md:204 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs5rpr/have_you_tried_fable_52/>).
+
+- [x] **OUT-1975** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-789 in usage-quota.md): One user: Fable on high cost $54 to review a larger project, $24 a small one, $4 a connector, and found bugs after several Opus, Sonnet, and other-vendor review passes; another says Fable and Opus find different bugs on the same state.
+  Basis: reported, n=1 each.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:53 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [x] **OUT-1976** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-790 in usage-quota.md): Fable xhigh drained half of a 5-hour limit in a 15-minute session while Opus costs about 5-10% of that for the same task (5-10x cheaper).
+  Basis: reported, one user, plan unknown.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:320; external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:321 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [x] **OUT-1977** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-791 in usage-quota.md): A Pro-plan user: Fable 5.5 High orchestrating a Sonnet 5.5 High agent for 3 hours used 60% of the 5-hour and 9% of the weekly allowance; the lead is told to orchestrate and not code, and to suggest which tasks suit other models; another run: Opus PM opens a new session per phase, Sonnet dev, Haiku QA.
+  Basis: reported, one user.
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xslvco-use-fable-with-sonnet-for-implem-20261110T172653Z.md:29; external/2026-11-11/reddit.com-r-claudeai-comments-1xslvco-use-fable-with-sonnet-for-implem-20261110T172653Z.md:47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xslvco/use_fable_with_sonnet_for_implementation_and_your/>).
+
+- [x] **OUT-1978** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-792 in usage-quota.md): Fable spinning up 5 agents on one large task spent a Max plan's tokens in one hour.
+  Basis: reported, 1 author.
+  Source: external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:124 (url: <https://www.reddit.com/r/Anthropic/comments/1xtmjep/fable_52_is_extremely_passive/>).
+
+- [x] **OUT-1979** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-793 in usage-quota.md): Quota burn reports for Fable 5.2: about 2B tokens in 2 days; 3 sessions of 10-20 minutes burned a whole week; a 5 h window gone in 2 prompts; one author used 30% of weekly in 2 days.
+  Basis: reported.
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:29; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:284 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+
+- [x] **OUT-1980** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-794 in usage-quota.md): Launch offer: Fable may use up to half the weekly limit until the 16th, so a large jump on the 5 h bar is expected; three users reported 0 to 60% and 0 to 80% of the 5 h bar in one prompt on Fable 5.2.
+  Basis: reported, 1 comment plus 3 users. Two commenters say Fable counts only against the weekly limit and is absent from the $20 plan (external/2026-10-02/export-What are people testing that they are not only burning a week usage in a day, but also hitting the 5.jsonl:11; external/2026-10-07/export-20$ Claude Code subscription- How do you genuinely exhaust your weekly usage-.jsonl:8); the 5 h jumps here and the Pro-plan run of CTX-791 contradict both, so this item and CTX-791 stand.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:385; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:304 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
+
+- [x] **OUT-1981** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-795 in usage-quota.md): Fable 5.2 Medium prose reads like Opus 5.5 (concise), but "load bearing" came back within two prompts; Fable 5.2 free resets apply to the Fable-specific weekly limit only (accounts differ, one to six resets; one user said it freed 12% of the weekly while Fable still consumed it).
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
+
+- [x] **OUT-1982** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-796 in usage-quota.md): One poster's own workflow eval (not a leaderboard): Fable 5.2 74% at $0.062 and 74 s per run, Fable 5.1 69%, Opus 5.5 68% at $0.028 and 40 s, GPT-6.1 Sol 64% at $0.011, Haiku 5.5 55% at $0.0015.
+  Basis: reported, one poster's eval.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:162; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:164 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
+
+- [x] **OUT-1983** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-797 in usage-quota.md): Per Anthropic's FrontierCode chart cited in a bot summary: Fable 5.2 High 45.3% vs Opus 5.5 Xhigh 45.5% at about half the per-task cost; Fable Xhigh 49.1%.
+  Basis: cited second-hand, unverified.
+  Source: external/2026-11-10/reddit.com-r-claudecoding-comments-1xs84wp-tldr-fable-52-high-vs-opus-5-20261110T095106Z.md:41 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xs84wp/tldr_fable_52_high_vs_opus_55_xhigh_via/>).
+
+- [x] **OUT-1984** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-798 in usage-quota.md): The Fable model card warns that lower effort levels may cause the model to stop prematurely; a reporter says Fable 5.2 on Max is painfully slow and advises medium or high; another says it rushes to a "good enough" result unless given concrete self-evaluation instructions.
+  Basis: cited (model card, second-hand) and reported.
+  Source: external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:110; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:114; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:118; external/2026-11-13/reddit.com-r-anthropic-comments-1xtmjep-fable-52-is-extremely-passive-20261111T234255Z.md:128 (url: <https://www.reddit.com/r/Anthropic/comments/1xtmjep/fable_52_is_extremely_passive/>).
+
+- [x] **OUT-1985** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-799 in usage-quota.md): One user's rolling burn-multiplier table (Opus 5.5 medium = 1.00x; Low 0.40, High 1.41, XHigh 2.47, Max 4.10; Sonnet 5.5 0.21/0.32/0.67/1.67/4.09; Haiku 5.5 0.02/0.04/0.07/0.10/0.17; Fable 5.1 1.82/2.27/3.08/4.43/5.30) is derived from published API rates, not subscription rates; a commenter disputes it for subscription use.
+  Basis: reported, inferred.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:83; external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>).
+
+- [x] **OUT-1986** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-800 in usage-quota.md): One 20x user's rough hours per weekly limit are Fable 5.1 15-20 h, Opus 5.5 30-40 h, Sonnet 5.5 60-80 h; a migration document grown over 18 months took 30%+ of tokens before work began.
+  Acceptance: Resolved 2026-11-18 as reported by one 20x user, not measured; hours vary by user, and quota use needs a paid account session, which the fake API does not produce.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:556 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
+
+- [x] **OUT-1987** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-801 in usage-quota.md): One no-code Sonnet prompt in a new chat ate 12% of a weekly limit; another user's 5x weekly limit was estimated at 55M tokens and hit in 2 days.
+  Acceptance: Resolved 2026-11-18 as reported by two users, not measured; quota use needs a paid account session, which the fake API does not produce.
+  Basis: reported, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:465; external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:779 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>).
+
+- [x] **OUT-1988** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-802 in usage-quota.md): A done signal that arrives late can mean the session stalled at the shared account usage limit, not that a hook broke: every session on one account draws from the same pool, and the 5-hour bucket can stall many concurrent sessions.
+  Acceptance: Resolved 2026-11-18 as reported, not measured; budget concurrent sessions per 5-hour bucket and check the usage window before the hook. Verification: probe.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xc8eg5-running-many-claude-code-agents-20261029T123926Z.md:89 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xc8eg5/running_many_claude_code_agents_without/>).
+
+- [x] **OUT-1989** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-803 in usage-quota.md): One user reports 28.3 billion tokens over 10 days, about 13,100 to 15,400 dollars at API prices, against about 800 dollars a month for four Max 20x accounts.
+  Acceptance: The figure is the user's own report, asked from the model, not a claudetto measurement. Verification: inspection.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xixg9h-is-the-consensus-currently-that-fa-20261031T082729Z.md:217 (url: <https://www.reddit.com/r/claude/comments/1xixg9h/is_the_consensus_currently_that_fable_51_is/>).
+
+- [x] **OUT-1990** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-804 in usage-quota.md): One Pro user reports that one output or thinking token on Opus 5.5 medium is as expensive as 50 cache-read tokens, and that a handover at 150k context, a stripped CLAUDE.md and bundled commands gave about 10 five-hour sessions a week instead of 7.
+  Acceptance: The figures hold as one user's tests of their own sessions. Verification: probe.
+  Basis: reported, one Pro user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:69; external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:71; external/2026-10-30/reddit.com-r-claudeai-comments-1xj6245-tips-to-save-usage-and-how-its-a-20261030T103246Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj6245/tips_to_save_usage_and_how_its_actually_calculated/>).
+
+- [x] **OUT-1991** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-805 in usage-quota.md): Commenters report these recovery limits. /rewind covers files Claude edited with its editing tools, including later Bash changes to those same files; files touched only by Bash, most subagent edits and changes from other sessions are not generally covered, so it is session recovery and not a backup. A reviewed commit gives a known file state, and separate worktrees keep parallel sessions off the same files; neither protects a database or reverses an API call. An email sent, a row deleted in a live database and a deploy cannot be undone from git. Claude Code docs say deny rules still apply in bypassPermissions and a PreToolUse hook can block a call before it runs.
+  Acceptance: The facts hold as commenters report them; one cites the docs, which were not opened here. Verification: probe.
+  Basis: reported, commenters; cited (docs, secondhand). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:57; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:59; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:61; external/2026-11-02/reddit.com-r-claudeai-comments-1xk277d-how-often-has-a-coding-agent-don-20261031T105244Z.md:104 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xk277d/how_often_has_a_coding_agent_done_something_you/>).
+
+- [x] **OUT-1992** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-855 in usage-quota.md): The share of the weekly limit that one full 5-hour window uses is not a constant. Logged meters put the Max 20x weekly limit at about 9.5x Pro (8.4-9.9x across sessions) and Max 5x at about 4.8x Pro; a second commenter puts 20x weekly at about 10x Pro and another at about 7x. Single readings of one full window on 20x range from about 12% to 48% of the week and change from week to week on the same account (one account: 3% of the window per 1% weekly, 4% the day before). claudetto pacing (REQ-COST-038) reads `/usage` and the `rate_limits` status-line fields for the account at hand and carries no fixed window-to-week ratio.
+  Basis: measured (third-party, numbers shown) for the 9.5x and 4.8x figures; reported for the single readings. CTX-779's 2-3x figure is contradicted.
+  Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbholz-measured-my-usage-on-pro-max-5x-20261021T101825Z.md:37; external/export-Question about 5 hour limits.jsonl:10; external/2026-10-12_p2/export-16 hours until my renewal- can the 20x plan handle 3 parallel projects-.jsonl:12; external/2026-10-02/export-What are people testing that they are not only burning a week usage in a day, but also hitting the 5.jsonl:9; external/2026-10-07/export-20$ Claude Code subscription- How do you genuinely exhaust your weekly usage-.jsonl:7; external/2026-10-07/export-Unexplained High Consumption with Opus Since Last Reset.jsonl:11; external/2026-10-12_p2/export-Weekly limit went to 35% in one night without ever hitting the 5-hour limit. I pulled the token coun.jsonl:7; external/2026-09-29_p2/export-Max 20 Limits are ridiculous-.jsonl:2.
+
+- [x] **OUT-1993** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-856 in usage-quota.md): Haiku quota reports differ by task shape. A system-wide rename on Haiku used 8% of a $20 plan, which the commenter calls not much less than Sonnet, though fast. Fifty parallel Haiku agents that extracted data from about 500 PDFs moved the 5-hour bar about 1% and the weekly bar not at all. On a hard bug Haiku passed 62 of 66 hidden tests like Sonnet but took about 6 minutes against about 1. Wide mechanical extraction is the cheap Haiku case (REQ-DELEGATION-057); a reasoning-heavy task costs wall time even when it passes, so a routing acceptance names wall time next to quota.
+  Basis: reported, one commenter each, no method shown.
+  Source: external/export-Those of you actually using Haiku regularly- what am I missing-.jsonl:68; external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:169; external/2026-10-12/export-I tried to write a bug Claude couldn't fix. Took 3 made-up bugs and a real GitHub repo before Haiku.jsonl:7.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
