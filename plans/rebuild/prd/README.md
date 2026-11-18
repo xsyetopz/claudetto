@@ -6244,6 +6244,1694 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, one commenter each, no method shown.
   Source: external/export-Those of you actually using Haiku regularly- what am I missing-.jsonl:68; external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:169; external/2026-10-12/export-I tried to write a bug Claude couldn't fix. Took 3 made-up bugs and a real GitHub repo before Haiku.jsonl:7.
 
+#### Context Facts
+
+Context facts from `arc42/03_context_and_scope/` that a paid model run would be needed to recheck on 2.1.327, or that no shipped claudetto part uses.
+
+- [ ] **OUT-900** claudetto shall not carry CTX-106 (from `auto-mode.md`) as a checked context fact: `classifyAllShell` paid runs (haiku-5-5, `AUTO_MODE_SERVER=0`): read-only commands skip the classifier with or without the setting (0 calls, about $0.0026). A write outside the cwd reaches the classifier even with an allow rule (1 call). An in-cwd write passes with no call ("would be allowed in acceptEdits mode"). The setting is read from user, flag, and policy settings only. `AUTOMODE_DECISION_LOG=1` writes `<cwd>/.automode_decisions.jsonl`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid auto-mode runs (haiku-5-5) with call counts and cost; no part in plugins/ sets classifyAllShell. Code on 2.1.327 still describes the setting (chunk-ja5z738t.js@185593).
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1925.
+
+- [ ] **OUT-901** claudetto shall not carry CTX-107 (from `auto-mode.md`) as a checked context fact: `classifyAllShell` adds a classifier call only for a shell command that an allow rule would pass and no other auto-mode path passes. claudetto keeps few Bash allow rules, so the added cost is 0 calls. Allow rules dangerous for auto mode are dropped ("Ignoring dangerous permission ... (bypasses classifier)").
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts classifier calls on a paid run; no part in plugins/ sets classifyAllShell or Bash allow rules. 2.1.327 text: classifyAllShell suspends every Bash and PowerShell allow rule in auto mode.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1948.
+
+- [ ] **OUT-902** claudetto shall not carry CTX-108 (from `auto-mode.md`) as a checked context fact: One classifier call: 160 input, 7 output, 46,221-46,398 cache-read, 0-177 cache-write tokens; `costUSD` 0.00048-0.00050 on haiku; 905-2,985 ms; about 46.6k tokens per call against the weekly limit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Per-call token and cost numbers come from a paid haiku run; the server classifier is now first-party and the numbers are not rechecked.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1955.
+
+- [ ] **OUT-903** claudetto shall not carry CTX-109 (from `auto-mode.md`) as a checked context fact: The log warning "ignoring CLAUDE_CODE_AUTO_MODE_MODEL ... server-configured classifier model (claude-sonnet-5[1m]) takes priority" is false with `--model haiku`: classifier requests ran on `claude-haiku-5-5` (decision log `classifierModel`; haiku-5-5 auto-mode probes, 2026-11-04). The cached `tengu_auto_mode_config.modelByMainModel` maps sonnet and opus -5-5 to `claude-sonnet-5[1m]` and has no haiku key. `ANTHROPIC_DEFAULT_MODEL` is not the cause. Fake-key runs do not apply the cached config. In the same probes a read-only `ls` never reaches the classifier (4 ms). The client classifier runs two stages (`xml_s1` then `xml_s2`, 1.3-4.6 s) and denied an agent-picked `curl|sh` from SETUP.md while allowing the same command when the user asked in plain words (an explicit user request counts as consent, inferred). The classifier request is about 138,945 chars (about 34.7k tokens), sent once per stage with `cache_control` (1h TTL) on the last transcript block and the action; `total_cost_usd` excludes classifier calls (inferred).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid haiku auto-mode probes; the warning text exists on 2.1.327 but the behaviour needs a real run.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1114; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1970.
+
+- [ ] **OUT-904** claudetto shall not carry CTX-110 (from `auto-mode.md`) as a checked context fact: Auto-mode classifier stock system part is 140,281 chars: SOFT BLOCK 66,280 (72 rules), Evaluation Rules 14,682, User Intent Rule 14,288, Input 9,780, ALLOW 9,436, Definitions 9,168, HARD BLOCK 5,607, Environment 4,659. Defaults: allow 16 (7,380), soft_deny 72 (64,546), hard_deny 1 (5,278), environment 21 (3,483). About 59K of fixed text that no `autoMode` key trims. The 140,512 chars of real-API probe p1 used the stock lists, not the user's.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Stock classifier prompt sizes are built from server config at run time and need a real run to measure; no part in plugins/ trims them.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2572.
+
+- [ ] **OUT-905** claudetto shall not carry CTX-111 (from `auto-mode.md`) as a checked context fact: No route trims the classifier's fixed 63,413-char text: 38 env runs (`CLAUDE_CODE_TWO_STAGE_CLASSIFIER` and 18 `AUTO_MODE_*` variables at 0 and 1) all gave sys 63,413 and msg 635. Hidden flags (`--enable-auto-mode` deprecated; subcommands config, critique, defaults, reset) neither trim nor score. No Mod event carries the classifier prompt. `CLAUDE_CODE_CLASSIFIER_SUMMARY` belongs to the session recap classifier.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 38-run fake-API environment matrix; no part in plugins/ sets these variables.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3000.
+
+- [ ] **OUT-906** claudetto shall not carry CTX-112 (from `auto-mode.md`) as a checked context fact: `CLAUDE_INTERNAL_FC_OVERRIDES` cannot override `tengu_auto_mode_config` (`getEnvironmentOverrides` returns null; runs cx-fc and cx-fc2 with `CLAUDE_CODE_EVAL_ALLOW_FLAG_OVERRIDES=1` both left sys 63,413 and 10 classifier requests). The gate route is closed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a fake-API run with the flag-override variables; no part in plugins/ sets them.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3017.
+
+- [ ] **OUT-907** claudetto shall not carry CTX-114 (from `auto-mode.md`) as a checked context fact: A judge Mod (`tool.check` after `next(e)` on core's ask in auto mode, one `$.model.complete`) sent system 74 plus 4,745 chars of the user's `autoMode` lists, messages 235, `max_tokens` 64 (2112 with thinking), 5,429 bytes, against stock 63,413 plus 712. "allow" allows, "block: ..." denies, anything else falls back to the stock decider. `tool.check` and `classic.PreToolUse` carry no mode, so the Mod keeps the last `permission_mode` from `classic.UserPromptSubmit` or `PostToolUse`; a shift+tab in between is judged under the old mode.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid sonnet-5-5 judge-Mod run; the Mod is not a shipped part in plugins/.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3032.
+
+- [ ] **OUT-908** claudetto shall not carry CTX-115 (from `auto-mode.md`) as a checked context fact: Paid comparison of the judge Mod with stock (14 inert commands, sonnet-5-5 auto mode, judge logging). Both agree on `ls`, `git status`, `git log`, `echo`, `python`, `git push --force` (block), `curl|sh` (block). The judge differs on `git commit` ("unclear", prose and not a verdict line), `rm -rf ~/probe-cls-none-dir` ("block: Destroy Work" where stock allowed), and `cat ~/.aws/credentials-probe-none` ("unclear" where stock blocked). Tally: agree on 10 of 14, 3 unclear (fall back to stock, outcome agrees), 1 differs (judge stricter). Stock logged "Classifier denial limit exceeded, falling back to prompting" from the 3rd consecutive block. The model's report blamed the working directory and a write grant while the debug log shows server-classifier blocks. The judge cost 14 calls, 24,146 input plus 1,434 output tokens, $0.0626 at $2/$10 per MTok, 48.8 s added (1.2-6.1 s a call). The run's `total_cost_usd` $0.0996 leaves out `$.model.complete`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid 14-command comparison on sonnet-5-5; the judge Mod is not a shipped part in plugins/.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3049; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3060.
+
+- [ ] **OUT-909** claudetto shall not carry CTX-116 (from `auto-mode.md`) as a checked context fact: Paid auto-mode first-party runs: a nested `$.tool.call` of Monitor is skipped by the classifier ("Skipping auto mode classifier for Monitor: called by plugin claudetto"), so it adds no classifier cost. A result rewrite keeps the server route (no "a hook rewrote" line). A rewrite of a call's input forces the local classifier (see the input-rewrite risk). The ToolSearch keyword "monitor" still loads stock Monitor (7,586 bytes), so a ToolSearch `tool.call` rewrite (`next(e)` unchanged, `result.matches` Monitor to `mcp__claudetto__monitor`) is needed. Runs: 8 in, 6,847 1h-write, 44,469 read, 271 out tokens; $0.0346 and $0.0324.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid first-party auto-mode runs; no shipped part in plugins/ calls Monitor through a nested tool call.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3299; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: "Improved how a PreToolUse hook's `updatedInput` is kept when more than one hook answers a tool call; the rewrite now runs in more cases"; the input-rewrite local-classifier fact is unrechecked in 2.1.326).
+
+- [ ] **OUT-910** claudetto shall not carry CTX-119 (from `auto-mode.md`) as a checked context fact: The auto-mode classifier (140,015 chars; 72 soft-deny, 1 hard-deny, 17 allow, 21 environment fields) places "fabricating or misreporting results" out of scope, sees commands not output, runs in auto mode only, and gates `git stash drop` and `clear` but never names `stash pop`; so false or partial reports need Stop checks, not the classifier. In the 24 corpus denials the agent always stopped; an independent report counts 19 stops in 7,266 operations (0.26%). When the server returns no verdict ("auto-mode permission check has failed four times in a row", "no safety verdict for the last 10 responses") auto mode blocks. The 2.1.326 release notes say auto mode now stops some shell commands that ran before and ignores some wildcard shell allow rules; the counts above are dated to the 2.1.319 survey and bind to that build; the classifier text is built at run time from server config, so they are cited and not restated for 2.1.327.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: The classifier text is built at run time from server config, so the counts and denial rates cannot be checked without a real run; the file already marks them as cited and bound to 2.1.319.
+  Basis: measured. Status: partial at 088a227c.
+  Source: claude 2.1.327: `autoMode` present (chunk-ja5z738t.js@184432); counts in plan:695 (external dossier); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes). Not located: tag for the 140,015-char measure. The input text was cut after "classifier"; the rest is not recorded.
+  ## Auto Mode
+
+- [ ] **OUT-911** claudetto shall not carry CTX-120 (from `auto-mode.md`) as a checked context fact: A write to `/tmp/claude-501` asks for permission even in a sandbox. It was refused with no setting, with `additionalDirectories`, `sandbox.enabled`, allow `Write(//tmp/claude-501/**)`, allow `Edit(//private/tmp/claude-501/**)`, or `acceptEdits` alone. It was written with allow `Edit(//tmp/claude-501/**)` and with `additionalDirectories` plus `acceptEdits`. The folder needs an `Edit` rule (a `Write` rule does not cover `Write`) in the exact path form the call uses (a /private/tmp rule missed a /tmp path).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a permission run per rule form; no part in plugins/ names /tmp/claude-501.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:735.
+
+- [ ] **OUT-912** claudetto shall not carry CTX-121 (from `auto-mode.md`) as a checked context fact: Planned permission settings cover 26 of 696 expect-block fixtures with a rule. 669 fall to the default prompt, 1 allows (`curl | python3 -I -`), and 3 expect-pass rows become over-asks. `pkill` and `killall` denies are untested (1,100 commands).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 696-fixture harness against planned permission settings; no part in plugins/ ships those settings.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:84; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:86; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:88; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:99.
+
+- [ ] **OUT-913** claudetto shall not carry CTX-122 (from `auto-mode.md`) as a checked context fact: 27 extra ask patterns lift rule cover from 26 to about 380 of 696 (316 uncovered: fs 239 of 507, git 37 of 113, shell 40 of 76) and allow nothing. Over-asks on expect-pass rows rise from 6 to 99, because every `curl` and `wget` then asks.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 696-fixture harness against planned permission settings; no part in plugins/ ships those settings.
+  Basis: measured; the re-classification is inferred.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:183; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:189.
+
+- [ ] **OUT-914** claudetto shall not carry CTX-123 (from `auto-mode.md`) as a checked context fact: Command-prefix patterns cannot cover `git config core.hooksPath`, `core.sshCommand`, `uploadpack.packObjectsHook`, `protocol.ext.allow`, and `git -c core.hooksPath=` (12 fixtures), wrappers and `$(curl)` inside `python3 -c`, `eval`, `at`, and PowerShell LOLBin forms. `sudo`, `timeout`, `nice`, and `env` wrappers do not hide a command from a rule. With the sandbox on, only the hook layer covers these forms.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Fixture-based command-pattern coverage; no part in plugins/ ships these patterns.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:186.
+
+- [ ] **OUT-915** claudetto shall not carry CTX-314 (from `claude-code-surface.md`) as a checked context fact: Subagents do not respect the user's auto-compact threshold setting.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter.
+  Status: n/a (fact).
+  Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:203 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>)
+
+- [ ] **OUT-916** claudetto shall not carry CTX-316 (from `claude-code-surface.md`) as a checked context fact: Measured hook effect over 34,053 hook events (Nov 1-12, one poster): when a hook let the action through with a warning, the agent corrected on its next try 36% of the time; when it rejected the action and named the replacement command, 95%.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured by one outside poster over their own hook events; cannot be rerun on 2.1.327 and no shipped part in plugins/ depends on the percentages.
+  Basis: measured by the poster. In a small test a rejection stopped 3 of 3 but the agent took the suggested command 1 of 3; a rejection whose suggested path another rule blocked made the agent invent a path; a context note injected before a command did not stop it (3 of 3 ran).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:75,77,79 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>)
+
+- [ ] **OUT-917** claudetto shall not carry CTX-317 (from `claude-code-surface.md`) as a checked context fact: Auto memory's "feedback" note type is corrections plus approaches the user confirmed, so telling Claude "it works" is a signal it saves; the first 200 lines of the MEMORY.md index load each session.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported by a commenter; a search of the 2.1.327 bundle found no "first 200 lines" text, so it cannot be confirmed by a cheap probe.
+  Basis: reported (reported by a commenter citing docs, not measured; a constant 200 sits next to `MEMORY.md` handling at chunk-m14bt1pz.js@1644617, but its use as the index line limit was not read).
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvcy0y-tip-take-the-time-to-say-it-wo-20261116T052243Z.md:93,97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvcy0y/tip_take_the_time_to_say_it_works_to_claude_after/>)
+
+- [ ] **OUT-918** claudetto shall not carry CTX-318 (from `claude-code-surface.md`) as a checked context fact: Account-level experiments can change the model behind one model string.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter: account in "experiment 763" from Nov 1 to 6, during which claude-opus-5-5 knew news from late May 2026 that it does not know outside the experiment; same-week reports of extra unrequested additions, ignored CLAUDE.md and uppercase Go error strings from Fable 5.2.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvfbtd-opus-55-not-working-well-today-20261116T051607Z.md:57,59,95 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvfbtd/opus_55_not_working_well_today/>)
+
+- [ ] **OUT-919** claudetto shall not carry CTX-319 (from `claude-code-surface.md`) as a checked context fact: Long-session evidence from one poster's five longest sessions (29 to 54 h): three never compacted and peaked at 425k-490k; one auto compaction fired at 323k (Opus 5.5, CLI 2.1.322) while a same-model 54 h session on 2.1.321/2.1.322 reached 480k without one; the 36.5 h session's three drops (621k, 469k, 539k down to 32k-43k) were manual /compact.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured by one outside poster on 2.1.321 and 2.1.322 sessions; cannot be rerun on 2.1.327.
+  Basis: measured by the poster.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvr4ob-i-grouped-18629-claude-code-re-20261116T051613Z.md:57,65,67,71 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvr4ob/i_grouped_18629_claude_code_requests_by_session/>)
+
+- [ ] **OUT-920** claudetto shall not carry CTX-320 (from `claude-code-surface.md`) as a checked context fact: A CLAUDE.md prose pointer "look at AGENTS.md" is compacted with the conversation, while an `@AGENTS.md` import is re-read verbatim and not diluted.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, inferred, one commenter; compaction named factor 1 of instruction drift.
+  Status: n/a (fact).
+  Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:96,97 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>)
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-921** claudetto shall not carry CTX-324 (from `claude-code-surface.md`) as a checked context fact: /usage flags sessions with requests in 8 or more hours, which matches the long-session violation.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: The "requests in 8 or more hours" text is not in the 2.1.327 bundle and the /usage flag needs a live account to see; no shipped part in plugins/ depends on it.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:42.
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-922** claudetto shall not carry CTX-337 (from `claude-code-surface.md`) as a checked context fact: With remote control enabled Claude Code puts a link to the conversation in the commit message, and commenters add that author emails always get committed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported by commenters; the 2.1.327 bundle has a Co-Authored-By text but no claude.ai session link text, so the remote-control claim cannot be confirmed cheaply.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
+  ## Claude Code Surface and Version Notes
+
+- [ ] **OUT-923** claudetto shall not carry CTX-338 (from `claude-code-surface.md`) as a checked context fact: A poster's subagent limits are 60 tool calls, a 100K-token soft handoff and a 150K hard limit; another poster's hook caps 20 agents per session.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party report of one user's experience; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:134; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:138.
+
+- [ ] **OUT-924** claudetto shall not carry CTX-340 (from `claude-code-surface.md`) as a checked context fact: Hook denial counts in the audited sessions: "Use Read, not the shell" 60 (claudetto), 184 (OpenSAD subagents), 88 (OpenJoystickDriver); "Use Write, not the shell" 34 and 199; "Worktree not created by this session" 48 and 13; "User remarked or asked; requested no work" 28, 21, 64 and 12; pkill or loop limit 16+16; the 15-minute agent limit 20 in OpenSAD subagents; pipe without pipefail 13 in subagents.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs of three projects; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted from session logs).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:59-66.
+
+- [ ] **OUT-925** claudetto shall not carry CTX-341 (from `claude-code-surface.md`) as a checked context fact: About 207 turns were lost to retries after denials in claudetto sessions (inferred), and the HooksError "was not resolved" from `$.fs.stat` on non-path Bash operands showed 224 lines from `useSetup/rules.ts:93` in OpenJoystickDriver and 1,818 in the audited session itself.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted; the 207 turns inferred).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:72-73.
+
+- [ ] **OUT-926** claudetto shall not carry CTX-342 (from `claude-code-surface.md`) as a checked context fact: The biggest sessions by cache read: claudetto 5709ef73 with 1,199 turns and 101.8M, clawdipedia 76585f31 with 1,508 turns and 133.6M, OpenJoystickDriver with about 1,400 turns and 114-124M; `design.md` was read 34 and 58 times in two claudetto sessions; persisted-output shows 0-3 hits per session, so it is not a driver.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:79-90.
+
+- [ ] **OUT-927** claudetto shall not carry CTX-343 (from `claude-code-surface.md`) as a checked context fact: Compaction sizes: claudetto 120 compactions, all auto, at 140-145k before and 18-22k after; OpenSAD 67 at 140-150k before, 8-26k after and 15-44k re-cache; one OpenSAD session compacted 15 times in 3 hours.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts from past session logs; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: measured (counted).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:108-113.
+
+- [ ] **OUT-928** claudetto shall not carry CTX-344 (from `claude-code-surface.md`) as a checked context fact: Four outside sources that call built-in compaction expensive were read on 2026-10-28 and none changed a value: the only one with a real sample fits its band on a window near 1M against the 300,000 this project sets, and the most-quoted figure (about $3.00 per compaction) appears in no source read.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside sources read on 2026-10-28 about compaction cost; not checkable on 2.1.327 and no shipped part in plugins/ depends on them.
+  Basis: reported (spec).
+  Source: openspec/specs/compaction-path/spec.md:68.
+
+- [ ] **OUT-929** claudetto shall not carry CTX-345 (from `claude-code-surface.md`) as a checked context fact: Measured on 2.1.319 with `claude-sonnet-5-5` and 32 held-out prompts per arm: the output-style checkbox line 21/32 (Wilson 0.483-0.796), the strict form 2/32 (0.017-0.201), the heading 20/32; base 0/32 on all three; total $2.21 and 1,316,831 tokens. The Write tool was denied by `--permission-mode default`, which inflates the checkbox count; only 7/32 plugin replies had a `!` command in a checkbox item; no rerun with write permission.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid sonnet-5-5 run on 2.1.319 (2.21 USD); cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-8/README.md:20-36.
+
+- [ ] **OUT-930** claudetto shall not carry CTX-346 (from `claude-code-surface.md`) as a checked context fact: Run 1 of the 18-23 test (Read text in context): turns 3.97 against base 3.00, output 692.2 against 355.8 (1.95x), 0.43 Stop blocks per session. Run 2 (text in stdout, 60 sessions, $2.61): turns 3.43 against 3.13 (1.096), job-op calls 4.20 against 4.47 (0.94), output 551.8 against 378.3 (1.46x, which misses the 1.25x bound), fixes 30/30 in both arms, 0 denials. The Stop block "names something the user has not seen" fired in 10 of 30 plugin sessions; those averaged 918.9 output tokens and 4.30 turns and the other 20 averaged 368.3 and 3.00. The cause (the grader reads the first `RESULT_CHARS` of each tool result) is not tested; it is moot for the rebuild, because ADR-0104 drops the Stop claim grader.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid runs on 2.1.319 with the dropped grader; cannot be rechecked without a paid model run.
+  Basis: measured (the cause is untested and concerns the dropped grader, ADR-0104).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-23/README.md:15-38.
+
+- [ ] **OUT-931** claudetto shall not carry CTX-347 (from `claude-code-surface.md`) as a checked context fact: `ours.sh` lists only the folder whose `.created-by-claudetto` holds this session's id; the mutant without the id check also lists other folders. `/tmp` is a link to `/private/tmp`, so `find` needs `-H` to list the seven `/tmp/probe-*` folders.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: ours.sh is not in plugins/ (a search finds no ours.sh or .created-by-claudetto there); /tmp is a link to /private/tmp on this machine (probe 2026-11-19) but the script is not a shipped part.
+  Basis: measured (2026-11-07).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-11/README.md:5-15.
+
+- [ ] **OUT-932** claudetto shall not carry CTX-445 (from `compaction.md`) as a checked context fact: Audit of one user's transcripts: 72% of input was Claude re-reading context past 400k tokens (method unstated).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, method unstated.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:266 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-933** claudetto shall not carry CTX-446 (from `compaction.md`) as a checked context fact: Four outside sources that claim built-in compaction is expensive were read on 2026-10-28. None changed a value, because the only one with a real sample fits its band on a window near 1M against the project's 300,000, and the often-quoted figure of about $3.00 per compaction appears in no source read
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/compaction-path/spec.md:27.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-934** claudetto shall not carry CTX-449 (from `compaction.md`) as a checked context fact: Paid four-arm handover probe, run 2 (18 runs, cost by total_cost_usd, last value per session): A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47. No B arm cost less than C in all 3 pairs. Run 1's $13.52 summed every running total, so it overstates cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160.
+
+- [ ] **OUT-935** claudetto shall not carry CTX-450 (from `compaction.md`) as a checked context fact: Paid probe run 1 (18 runs) was invalid, and its numbers show the span: peak main context per run 35,591-59,957, growth about 1,000 tokens a turn, about 65,000 by turn 40. Thresholds must sit inside 25,000-65,000 for any arm to fire, so B70 and C could not fire at 140,000. The 17-of-18 firing came after thresholds were set inside that span.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:159.
+
+- [ ] **OUT-936** claudetto shall not carry CTX-451 (from `compaction.md`) as a checked context fact: The within-1% band for the 140,000 threshold, the 213,846-token Haiku window, and the vendor "70% less" claim (read 2026-10-28) are the basis of the tier numbers.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured and cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/tier-profiles/spec.md:73,85.
+
+- [ ] **OUT-937** claudetto shall not carry CTX-452 (from `compaction.md`) as a checked context fact: Read-window study 2.12: accuracy and cost tables over 1,985,569 tokens, $3.2949.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Past study over 1,985,569 tokens (3.29 USD); cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:41.
+
+- [ ] **OUT-938** claudetto shall not carry CTX-453 (from `compaction.md`) as a checked context fact: Cache-prefix study 2.9: 7,716 requests and 111 prefix breaks, 108 of them after compact.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:36.
+
+- [ ] **OUT-939** claudetto shall not carry CTX-454 (from `compaction.md`) as a checked context fact: Swift 6.4 with the Xcode macOS SDK has no YAML decoder (YAMLDecoder does not compile; JSON and plist decode through Codable), so a Swift reader cannot parse YAML files directly.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: A Swift decoder fact about the build machine, not about Claude Code 2.1.327; no shipped part in plugins/ reads YAML from Swift.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27.
+
+- [ ] **OUT-940** claudetto shall not carry CTX-456 (from `compaction.md`) as a checked context fact: Community reports on what survives compaction: root CLAUDE.md and unscoped rules are re-read after compaction; scoped rules, mid-session instructions, and hook output become summary paraphrase. A post found 2 of 8 compactions dropped a skill body (v2.1.285, `-p --resume` only) and compact-hook output attached in 4 of 4 tests. Bug #15174 (compact matcher output not injected) was closed (reported, anecdote).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdote.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:26.
+
+- [ ] **OUT-941** claudetto shall not carry CTX-457 (from `compaction.md`) as a checked context fact: Other community reports, from search snippets only: issue #4017 claims a rule is violated "100% of the time after compaction"; Cursor staff say many loaded rules cost context, so keep each rule file under 500 lines and scope rules to files; a Cline Memory Bank re-read has token and staleness costs (reported, snippet).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, snippet.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:12-14; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:28.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-942** claudetto shall not carry CTX-459 (from `compaction.md`) as a checked context fact: One user's own monitoring found 130k tokens the most cost-effective point to clear; the app injects a save-progress-to-disk request, then clears and continues, with auto-compact off.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, no figures. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:516 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
+
+- [ ] **OUT-943** claudetto shall not carry CTX-460 (from `compaction.md`) as a checked context fact: Settings rationale given for 300k and 75: below 300k summaries lose detail, above it context cost creeps; 75 leaves the agent room to write the compact, while 80-100 fumbles and below 75 compacts too often.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, 20 USD plan, no measures. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-944** claudetto shall not carry CTX-462 (from `compaction.md`) as a checked context fact: Commenters report that hitting the 5-hour limit mid-task, or switching accounts mid-task, causes a cache miss that wastes weekly limit. On Max 5x each redo costs about 3 to 5 percent of the 5-hour window and 1 to 2 percent of the week, over 10 percent of the week when repeated; with many agents it also pays 200k to 999k of fresh input, a cache write and agent re-orientation. One user reports that 4 percent of the 5-hour window was usually about 1 percent of the weekly limit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-945** claudetto shall not carry CTX-463 (from `compaction.md`) as a checked context fact: /export writes what was reported on the terminal during the session, not the loaded context or thinking tokens. One commenter never compacts: a tool clones and truncates messages or starts a new session with parent-session back pointers, plus a fast full-text search over past session files so agents or humans can search prior work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: <https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/>).
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-946** claudetto shall not carry CTX-464 (from `compaction.md`) as a checked context fact: One author reports that in the last 30 days 78 of 82 auto-compactions landed mid-task, and that Claude re-reads files afterwards to work out where it was. In a replay of long sessions Claude re-read about 30 percent less context once it picked its own moment to compact; the author says the replay side flatters this tool a bit, since it includes the handoff steps, which is why the figure is about 30 percent and not 33.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-947** claudetto shall not carry CTX-468 (from `compaction.md`) as a checked context fact: Vendor sources and machine facts: the Anthropic page `about-claude/models/optimizing-for-cost-and-intelligence` is the first vendor source for the 90,000 Haiku trigger and for $0.50 against $0.10 per MTok at 100,000 (cited). Mole 1.68.0 `mo purge` defaults miss `~/CodeProjects`; a purge-paths file replaces discovery; `mo clean --dry-run` previewed about 9 GB. Dossier defects D1-D10.38 (headings only read) include path spam, a hygiene sweep deleting live probe folders, worktree creation rewriting a shared hooks path, and rule reminders moving the cache breakpoint (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor page and a machine-cleaner default; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited / reported.
+  Source: openspec/specs/compaction-path/spec.md:70; openspec/specs/setup/spec.md:115; the "about 9 GB" and D1-D10.38 wording: unresolved.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-948** claudetto shall not carry CTX-469 (from `compaction.md`) as a checked context fact: 524 `thinking_drop` `prefix_mismatch` rows: 515 fall within 10 minutes after a `compact_boundary` and 510 report `firstChangedMessageIndex` 0, so compaction causes them, not a plugin hook.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:644.
+
+- [ ] **OUT-949** claudetto shall not carry CTX-470 (from `compaction.md`) as a checked context fact: Cache rebuilds (82 in 5 days, 5.73M cache-write tokens) follow a `nested_memory` row in 73 of 82 (89%, against 0.8% of non-rebuild requests). One rule load alone did not rebuild (billed Haiku probe, 0.0065 USD). The cause is lookback: the API checks at most 20 positions back from the single moving message breakpoint; each system-reminder text block counts one position and a run of `tool_use` or `tool_result` counts one. By positions: 21 steps or fewer 46,612 with 22 rebuilds (0.05%); 22-25 88 with 56 (63.6%); over 25 44 with 43 (97.7%). One first read loading 22 path-scoped rules (5 user, 17 project) wrote 41,147 tokens.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured, with the lookback rule cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:693; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:707; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:713.
+
+- [ ] **OUT-950** claudetto shall not carry CTX-471 (from `compaction.md`) as a checked context fact: Archive-wide cache rebuild rates by step size: 1-4 calls rebuilt 0.2% within a minute, 5.9% at 1-5 min, 95% past an hour (TTL); 5-8 calls 1.6% and 28.2%; 9+ calls 2.2% and 18.2%. Rebuilds wrote 17.2M of 151.5M cache-write tokens. Compaction (keep 0) preceded 172 rebuilds in 1,410 steps (12.2%). No-change steps rebuilt 119 of 46,936 (0.25%). A model change rebuilt 9 of 9. The main loop ran 4,634 requests on Mythos (425M tokens). Base: 841 transcripts, 2026-11-08 to 11-13.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count from past session logs or archives; not rerunnable on 2.1.327 without new sessions, and no shipped part in plugins/ reads it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:774; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:777.
+
+- [ ] **OUT-951** claudetto shall not carry CTX-472 (from `compaction.md`) as a checked context fact: `autoCompactWindow` 100000 on a plugin agent: stub usage 150,000 gave "fixed prefix ~147466 > threshold 40000 -- compaction cannot help" and a reactive compact that bailed once. With usage 1,000 nothing compacted and the request body grew to 169 KB. Compaction follows reported usage, not request size.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Fake-API run on an earlier build with a plugin agent; the stub harness is not rerun and no shipped agent in plugins/ sets autoCompactWindow.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:140; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:141.
+
+- [ ] **OUT-952** claudetto shall not carry CTX-473 (from `compaction.md`) as a checked context fact: One user's weekly limit ran out in 5 days at 3.20B tokens, 96.8% cache reads, main sessions 57%.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:77.
+
+- [ ] **OUT-953** claudetto shall not carry CTX-474 (from `compaction.md`) as a checked context fact: Compaction took 62-80 s, 7 times in 2 h. The cause was large tool outputs; the claudetto part took under 1 s.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reported; the 2.1.327 rerun needs a paid Sonnet run, so it cannot be rechecked without a paid model run.
+  Basis: reported (one issue row with no quote); not reproduced on 2.1.327 (paid run, Sonnet 5.5, `/compact` in a stream-json session, `compact_metadata.duration_ms`, reports/2026-11-18-research/paid-labs/README.md). With three 80 KB file reads in context (about 122k tokens before compaction, 3.2k after), compaction took 9.3-10.5 s in 3 runs. With one 2 KB read (about 17k tokens) it took 7.5-8.1 s in 3 runs. Large tool outputs add about 2 s here, not 60 s. The reported 62-80 s came from another model, version or server load, and the row does not say which.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:24.
+
+- [ ] **OUT-954** claudetto shall not carry CTX-475 (from `compaction.md`) as a checked context fact: API compaction on Haiku: one session cost $0.272 at a 150k trigger, $0.082 at 90k, $0.075 at 50k, $0.729 with none.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:38.
+
+- [ ] **OUT-955** claudetto shall not carry CTX-476 (from `compaction.md`) as a checked context fact: Subagent start costs 5k-11k tokens. Cache TTL expiry makes weak-model subagents cost the root more. No `subagentPromptCacheTtl` hit exists under hooks.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (observed in the source log).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:70.
+
+- [ ] **OUT-956** claudetto shall not carry CTX-477 (from `compaction.md`) as a checked context fact: `subagentPromptCacheTtl` "1h" raised total cost for subagents and lowered it for the orchestrator (one user). A second user reports the opposite: subagents that worked one lane for 30-60 minutes used about 500k tokens each at the 5-minute TTL and about 100k after the switch to 1 hour; a third notes that a subagent running a test suite outlasts 5 minutes. The two reports agree with CTX-294: the 1-hour write pays only when a subagent re-reads its prefix after more than 5 minutes idle, so the choice follows subagent lifetime and idle gaps, not a fixed rule.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user each, opposite results; resolved by the CTX-294 break-even, not by either report.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>.); external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:84; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:88; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:92.
+  ## Compaction and Context Thresholds
+
+- [ ] **OUT-957** claudetto shall not carry CTX-857 (from `compaction.md`) as a checked context fact: Reports of degradation after repeated compaction: one user's logs show thinking tokens falling after each compaction and not without it; another finds Opus loses orchestration state and forgets its skills after two or three compactions. This supports renewal at a task boundary before compaction stacks up (ADR-0178) over chained compactions.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, two users, no numbers shown.
+  Source: external/2026-11-14/reddit.com-r-claudecode-comments-1xul65u-opus-55-is-still-the-better-da-20261114T021719Z.md:230; external/2026-11-16/reddit.com-r-claudecode-comments-1xwgcbm-i-worry-that-anthropic-does-no-20261115T134431Z.md:322.
+
+- [ ] **OUT-958** claudetto shall not carry CTX-858 (from `compaction.md`) as a checked context fact: Keeping every user message that sets or changes something word for word through compaction raised one author's "what changed" test from 9 or 10 of 12 to 12 of 12 on the same model. The handover file and the PreCompact instructions (ADR-0075) carry user-set decisions verbatim, not paraphrased.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:64.
+
+- [ ] **OUT-959** claudetto shall not carry CTX-859 (from `compaction.md`) as a checked context fact: One commenter's context-publisher mod hands work off when a subagent runs longer than 20 minutes or fills 30% of its context, and the main agent hands off when its own context grows; the commenter says the status-line context percentage was miscounted and measured context from a PostToolUse hook instead. claudetto's renewal threshold (ADR-0069, ADR-0178) reads a context figure, so the figure is checked once against request `usage` before a threshold is tuned on it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report from one user or a few commenters; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party); the miscount is unverified.
+  Source: external/2026-10-12/export-Now that mods are here, what are your favorites-.jsonl:15.
+
+- [ ] **OUT-960** claudetto shall not carry CTX-886 (from `compaction.md`) as a checked context fact: One author measuring long unattended sessions found half of all tokens came from turns where the context was already past 200k; autocompact at 200k gave little control over what was handed over. Supports renewal at a task boundary above 70k (ADR-0178) over waiting for autocompact. A third-party post quotes Anthropic help text for the Claude apps: longer conversations that trigger automatic context management use more of the usage limit, and a new conversation is advised near the limit; the help-center page is not among the doc sources read this session, so the quote stays reported.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Vendor or third-party figure; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured (third-party, one author, no raw data); quote reported.
+  Source: external/2026-10-03/export-handoff-compact, a mod that does the handoff + -clear routine for you every time autocompact fires.jsonl:2; external/2026-11-18_p2/reddit.com-r-anthropic-comments-1xzigir-that-organizing-its-thoughts-pa-20261118T182414Z.md:31.
+
+- [ ] **OUT-961** claudetto shall not carry CTX-129 (from `cost-pricing.md`) as a checked context fact: Classifier cost is in no `-p` result field: `total_cost_usd` equals `modelUsage` `costUSD` of the main loop (a2: 0.0015538 against a real 0.0020576). The decision log's `costUSD` holds the classifier cost. A claudetto budget line that reads `total_cost_usd` undercounts auto mode. Confirmed in paid run P1 (0.000503 per call).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958.
+
+- [ ] **OUT-962** claudetto shall not carry CTX-130 (from `cost-pricing.md`) as a checked context fact: Paid probe spend (reported by the source): 41 results across `/tmp/probe-sett`, $0.169665, 1,894,109 tokens, under the 2M cap. Plan-mode and Agent probes: A1-B2 $5.6578, A3 $2.3030, B3 $1.1520 (sum $9.1128), plus p1 $0.0219, p0 $0.0025, p2 $0.0222 (the earlier handoff said $8.82). Per-tool half of item 3: 27 runs $1.5047 (one stock rerun $0.0614 wasted); running total $9.11 plus $1.50 is $10.61.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Spend figures from earlier paid probe runs; not a behaviour of 2.1.327.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2040; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2411; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2726.
+  ## Cost and Pricing
+
+- [ ] **OUT-963** claudetto shall not carry CTX-133 (from `cost-pricing.md`) as a checked context fact: The Gemini benchmark figures (193,000 output tokens per task at max; $7.60 against $5.98) were not checked: third parties and a system card were not read, a grep of the binary for 193000 and 7.60 finds none, and the docs only say max has "no constraints on token spending"
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported (a third-party benchmark relayed in a settings review; the system card and the third-party sources are outside the binary and the docs this plan reads, so the figures are kept as reported).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:860; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1603.
+
+- [ ] **OUT-964** claudetto shall not carry CTX-135 (from `cost-pricing.md`) as a checked context fact: Haiku 5.5 fails API tasks that need an output spec, yet works near Opus on coding and review.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter; another commenter found the opposite on classification (see next item).
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xcfufy-haiku-55-is-very-good-heres-why-20261023T025633Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcfufy/haiku_55_is_very_good_heres_why_i_dont_use_it/>).
+
+- [ ] **OUT-965** claudetto shall not carry CTX-136 (from `cost-pricing.md`) as a checked context fact: Headless API classification of companies was as accurate on Haiku 5.5 as on Opus at about 1/20th the price. Under 100k context, about 40 Haikus cost one Opus. On Max the win is iteration speed and a clean main context more than usage.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one workplace; the 40-per-Opus figure and the Max point are each one commenter.
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xct77y-do-you-use-haiku-55-even-when-yo-20261023T025540Z.md:65; external/2026-10-23/reddit.com-r-claudeai-comments-1xct77y-do-you-use-haiku-55-even-when-yo-20261023T025540Z.md:33; external/2026-10-23/reddit.com-r-claudeai-comments-1xct77y-do-you-use-haiku-55-even-when-yo-20261023T025540Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xct77y/do_you_use_haiku_55_even_when_your_on_a_max_5x/>).
+
+- [ ] **OUT-966** claudetto shall not carry CTX-137 (from `cost-pricing.md`) as a checked context fact: Artificial Analysis figures quoted by a commenter: Claude Code with Sonnet 5.5 scored 68.4, above Claude Code with Opus at 66.0. Devin Fusion (Opus lead, GPT-6 Luna sidekick) scored 68.1 at $9.01 per task against $13.04 for Claude Code with Opus, in API cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported by one commenter, not checked.
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:106 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-967** claudetto shall not carry CTX-138 (from `cost-pricing.md`) as a checked context fact: Per-feature artifact files (spec, plan, review, QA, notes) run to about 20,000 tokens per feature per read. A local no-LLM graph query over stable story and criterion IDs (US-2, AC-2.3) answered "which criteria, which tasks, did each pass QA" at a median of about 690 tokens, against about 21,000 reading spec, plan and QA and about 11,000 grepping the IDs, over 61 stories.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by the author; stand-in tokenizer, cached reads cost less, C++ code not parsed.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xbyg3k-i-made-claude-write-down-what-it-20261023T040746Z.md:41:43; :44; :45; :47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbyg3k/i_made_claude_write_down_what_it_rejected_not/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-968** claudetto shall not carry CTX-139 (from `cost-pricing.md`) as a checked context fact: A task that costs about 3x its neighbours usually was badly cut, not hard, so cost works as a signal of skill or spec quality.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a vendor founder about 60 engineers; no data shown.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcnaru/we_measured_how_60_engineers_direct_ai_coding/>).
+
+- [ ] **OUT-969** claudetto shall not carry CTX-140 (from `cost-pricing.md`) as a checked context fact: A same-vendor checker in a separate session may share the writer's blind spots. A number altered to match in all six places it appeared was flagged at all six spots, and a consistency-only checker would have passed it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, a single test (n=1); the author does not call it proven.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:41; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-970** claudetto shall not carry CTX-141 (from `cost-pricing.md`) as a checked context fact: METR Feb-Mar 2026: "only around half" of passing SWE-bench solutions would pass review; Mythos Preview system card 4.5.5.3 test deletion and grader-file access; the dossier: 1,662 merged claims judged (674 adopted, 887 rejected, 50 blocked, 51 candidate); 49 records, 40 failure patterns; related ImpossibleBench, MALT (10,919 transcripts, 21 models), lost-in-conversation.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited. Status: not a code requirement.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:259; openspec/changes/2-1-325-rearchitecture/design.md:413; external/please-use-me-often/swe-best-practices.md:41; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:103; unresolved for the METR "only around half" quote (no hit for that phrase in openspec or external).
+
+- [ ] **OUT-971** claudetto shall not carry CTX-143 (from `cost-pricing.md`) as a checked context fact: The Reddit corpus holds 338 threads and 13,110 posts or comments, with a catalog of 1,218 records: about 470 over-engineering, 191 cost, 75 sycophancy, 60 false completion, 60 gaming, 55 grounding, 45 hallucination, 40 context, 35 instruction decay.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts of a Reddit dossier corpus; not a Claude Code behaviour and no shipped part in plugins/ reads them.
+  Basis: cited (counts as stated in the dossier index; not recounted). Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:6 (338 threads, 13,110 posts and comments, 1,218 records). The category counts (470, 191, 75, 60, 60, 55, 45, 40, 35) were not located; Dropped (2026-11-18) for those counts: no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-972** claudetto shall not carry CTX-144 (from `cost-pricing.md`) as a checked context fact: Paid runs cost: narration A/B $14.49 (largest run 108,533 tokens); fresh run $30.24 (largest 160,283); ledger runs about $0.0021 live; probe-140 Haiku about 64k tokens $0.0027; slices probe $0.0019; paid ledger about 9.15M tokens after task 12.1.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. Status: not applicable.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:285.
+
+- [ ] **OUT-973** claudetto shall not carry CTX-145 (from `cost-pricing.md`) as a checked context fact: Measured effects: one claim-checking prompt line moved sycophancy 14/24 to 17/24 (noise, not shipped); claim check 9/16 to 16/16 (p=0.0068); ledger 39/48 to 48/48; `tool-before-text` 5/10 to 0/10; `asks`-widened `narrates` 8/8 against 0/8.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. Status: not applicable.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:229; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:393.
+  ## Cost and Pricing
+
+- [ ] **OUT-974** claudetto shall not carry CTX-147 (from `cost-pricing.md`) as a checked context fact: The same 6 weeks repriced per model (author's correction after a commenter showed the 0.1x cache-read weight was not fixed: Opus 5.5 and Sonnet 5.5 read the cache at 0.05x, Fable 5.1 at 0.025x): cache reads 57% of spend (not 75%), cache writes 21%, output 16% (not 10%), requests absent from transcripts (compaction summaries, titles, WebFetch page reads) 6%, raw cache-read tokens still about 99% of prompt tokens. The fix reads Claude Code's own session total, which matched the reported cost on 77 of 78 runs. These are API list prices, not plan-limit usage.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one author. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecoding-comments-1xnb645-i-mapped-6-weeks-of-my-claud-20261105T173120Z.md:74-88 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xnb645/i_mapped_6_weeks_of_my_claude_code_tokens_on_one/>).
+
+- [ ] **OUT-975** claudetto shall not carry CTX-148 (from `cost-pricing.md`) as a checked context fact: A complexity-score router (last user message only; score>=4 Opus, >=2 Sonnet; +5 points if context is over 100K tokens or over 50 messages) claimed a 93% cost cut over 10K requests (own proxy, quality unproven). A commenter's routed-Sonnet trial gave about 1.3x plan stretch, not 2x, because about 30% of Sonnet tasks needed an Opus redo.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, own proxy; one user. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:38,202,354-358 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
+
+- [ ] **OUT-976** claudetto shall not carry CTX-149 (from `cost-pricing.md`) as a checked context fact: Local API-equivalent cost estimators were off 20-40% against the settings/usage page: $32 on a Tuesday showed 47% weekly used, $18 on Thursday showed 71%. Only the usage page predicted cutoffs.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, 6 weeks of proxy logs. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:194 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
+
+- [ ] **OUT-977** claudetto shall not carry CTX-150 (from `cost-pricing.md`) as a checked context fact: In 10K logged requests about 15% had cache-creation spikes over 5K tokens (up to 149K), nearly all with zero cache reads, clustered at model switches and new sessions.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured, one user via proxy. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:219 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
+
+- [ ] **OUT-978** claudetto shall not carry CTX-151 (from `cost-pricing.md`) as a checked context fact: A proxy that downroutes Opus to Sonnet must strip the context-1m beta header (400 'long context beta is not yet available for this subscription') and drop thinking params when the routed model differs from the requested one (400 'adaptive thinking is not supported on this model').
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, proxy maintainer. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:180-182 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-979** claudetto shall not carry CTX-152 (from `cost-pricing.md`) as a checked context fact: A cheaper split than an advisor: Opus writes the brief or spec and the done conditions once, Sonnet builds, Opus reviews against the spec and sends misses back as a residual carried into the next build, so the strong model wakes twice instead of repeatedly.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, inferred. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:160 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
+
+- [ ] **OUT-980** claudetto shall not carry CTX-153 (from `cost-pricing.md`) as a checked context fact: Test for advisor cost: look for large Opus cache writes right after each consult, or run two similar tasks (Sonnet only vs advisor) and compare weekly Usage % before and after plus the advisor fire count.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, inferred. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:128 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-981** claudetto shall not carry CTX-154 (from `cost-pricing.md`) as a checked context fact: One commenter says that setting Fable as advisor does not draw down the separate Fable usage.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Conflict: dedup/chunks/ctx-1.md:331 says a Fable advisor bills to usage credits on plans where Fable usage does; this item reports the opposite from one commenter. Resolved by docs: on plans where Fable usage bills to usage credits, Fable as the advisor bills the same way, and Claude Code applies it only after the one-time consent (code.claude.com `advisor`, section "Fable advisor and usage credits", read 2026-11-17); the commenter's claim is contradicted.
+  Basis: reported, one commenter, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:74 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
+  ## Cost and Pricing
+
+- [ ] **OUT-982** claudetto shall not carry CTX-155 (from `cost-pricing.md`) as a checked context fact: Two commenters say that saying what is going on (or which bug is hunted) and listing the files involved saves a huge amount of tokens and discovery time, and that only the files a task touches should be sent, since whole-project uploads burn the budget.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, commenters, not measured. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:179; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:141 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-983** claudetto shall not carry CTX-156 (from `cost-pricing.md`) as a checked context fact: One commenter says that running analysis, planning and implementation all in Claude Code fills the context with codebase detail, and that implementation can be handed to Sonnet.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:113 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
+  ## Cost and Pricing
+
+- [ ] **OUT-984** claudetto shall not carry CTX-157 (from `cost-pricing.md`) as a checked context fact: Haiku 5.5 bills input at $0.50 per MTok past 100,000 prompt tokens against $0.10 at or below (cache reads and writes count); on 79 Managed Agents tasks about 5% of requests carried 73% of cost. Also reported: Haiku 5.5 costs about 50x less than Opus for the first 100k tokens, about like Opus 4.8 (another post says "40x cheaper under 100k"); the lower rate applies under 100k request context on the API and not in the app plan; light use (10 prompts) was 0% of the 5h window; chat re-sends the conversation, so a long session crosses 100k silently; under 1% of one author's token use; it is reported to lose basic context after long competent stretches; the orchestrator was billed 5x in one fleet. Lineup named in a post (Oct 2026): Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (the post wrongly says Haiku 4.5); account models follow repo rules. A plugin withholds reads once a worker's context passes 100k, and Haiku workers also overflow ("Autocompact is thrashing") (observed in transcript, 2026-11-16).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited; reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:97; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:37; unresolved: the thread behind plan tag G:154 was not located by grep; the Haiku billing rule itself is openspec/changes/archive/2026-11-16-2-1-323/design.md:97 (billed at $0.50 per MTok above 100,000 tokens, read 2026-11-13); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:18; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+  ## Cost and Pricing
+
+- [ ] **OUT-985** claudetto shall not carry CTX-158 (from `cost-pricing.md`) as a checked context fact: Measured spend (2026-11-07, Sonnet 5.5): held-out r4 (24 cases) 10 runs 237/240 twice then 239/240, 33 sessions, $2.3-$2.6 per run, largest session ~205k tokens; public cap $60 spent 2026-11-08 ($61.98); paid ledger over 9.15M tokens by task 12.1. 18 paid runs on 2.1.319 by `total_cost_usd`: A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47; recall 10/10 in all 18; growth ~1,000 tokens a turn; no B arm cheaper than C in 3 paired runs.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid run on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:347.
+
+- [ ] **OUT-986** claudetto shall not carry CTX-159 (from `cost-pricing.md`) as a checked context fact: Measured: Haiku 5.5 labels closed-label text 130/130 and 120/120 versus 101-111 for open wording; a dispute-ending-in-question `question` 20/20; Haiku thinking did not cut the 300-token cap (`max_tokens` 2348, 0-447 thinking tokens). Sonnet 5.5 deferred-tool reach 24/32 versus 32/32 (p=0.0048). Edit failed 0 of 188 calls over 82 runs; 95 tools listed in claude 2.1.325, no MultiEdit (2.1.327 `surface` tool lists 97 entries, including `enable__mcp__*` pseudo-entries, chunk-1vttvse2.js; `Edit` is listed and `MultiEdit` is not; on 2.1.326 `MultiEdit` appears only as a deny-rule tool name, chunk-ja5z738t.js@190746 (2.1.327)).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid Haiku and Sonnet run counts; cannot be rechecked without a paid model run. The 2.1.327 tool-list part (97 entries, Edit listed, MultiEdit not) is kept in the moved text.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:347; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160.
+
+- [ ] **OUT-987** claudetto shall not carry CTX-160 (from `cost-pricing.md`) as a checked context fact: Haiku thinking can be disabled at `high` and below (`disabled` allowed), so the claim "cannot be turned off on Sonnet or Haiku 5.5" is false for Haiku. For Sonnet the guidance says use `between_tools`; `disabled` on Sonnet 5.5 returns a 400 `invalid_request_error` that names `between_tools` (platform docs, models/sonnet-5-5/migration-guide, source badge "platform.claude.com, live", read 2026-11-18); `between_tools` is accepted at low, medium and high effort and returns 400 at xhigh or max. Haiku 5.5 is the first Haiku with effort.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Claude API behaviour (a 400 on disabled thinking) needs a live API call; cannot be rechecked without a paid model run.
+  Basis: measured for Haiku; cited for Sonnet (platform docs, live, 2026-11-18).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:33; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:67. (url: <https://platform.claude.com/docs/en/models/sonnet-5-5/migration-guide>).
+
+- [ ] **OUT-988** claudetto shall not carry CTX-161 (from `cost-pricing.md`) as a checked context fact: Effort and model facts, cited via posters and not verified: Opus 5.5 Terminal-Bench 4.0 low 38.5%/$1.29, medium 57.6%/$2.94, high 64.2%/$3.88, xhigh 66.4%/$7.35, max 64.8%/$11.24 per attempt; FrontierCode high 54.0% $1.09 versus xhigh 51.4% $2.25; CursorBench high 56.0% $3.97 versus xhigh 56.0% $6.99. Sonnet 5.5 versus Opus 5.5 launch table: GDPval-AA 1844/1846; OSWorld 2.1 80.1/81.8; CursorBench 55.5/57.8; HLE tools 64.5/67.7; FrontierCode 46.2/54.4; Terminal-Bench 61.5 versus 66.4. Opus 5.5 recommended effort medium; high better than medium in Anthropic's benchmark, extra/max prone to logic loops. Sonnet 5.5 only cheaper at low and medium (disputed); Opus 5.5 low ~25% cheaper than Sonnet high for similar score (reported); Sonnet 5.5 repetition cost can exceed Opus 5.5 (one report). `effort_cost_index` in the binary (normalised high=1): measured by a poster, within-model only; the field is present in the 2.1.327 model tables (chunk-f892tj2r.js@4421, @8746; code search), the poster's reading unverified.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited, not verified.
+  Source: external/export-Opus 5.5 Still Overthinks at Higher Effort.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnj4jl/opus_55_still_overthinks_at_higher_effort/>).
+
+- [ ] **OUT-989** claudetto shall not carry CTX-164 (from `cost-pricing.md`) as a checked context fact: Plan and weekly-limit facts, reported and mostly unverified: 20x gives ~4x the 5-hour window of 5x but 1.5-2x weekly (one source: published ratio exactly 1.71x; another 2x, another 2-3x); measured on one account over 3 weeks, 14 sessions: weekly-to-5-hour ratio ~0.13 on Pro and Max 5x, ~0.27 on Max 20x (method: note 5h % and weekly % at session start and end, divide the weekly change by the 5h change). Weekly burn rose the week of Oct 12-17 for many (60% in 3 days on $100; 25% of 20x per day); bonus usage +50% to permanent +25%; cause unverified. Fable draws the weekly limit (reported). Plan anecdotes: Opus 5.5 medium 5 hours ~40% of a 5-hour window; the $20 plan 5h limit gone in 10 minutes to 4 hours; Opus 5.5 orchestrator overnight 2% versus 25% before; a 20-database macOS app in 2 days for ~10% weekly on $200 Max; ~$1100 API-equivalent over 4 days of 24/7 medium on $100; a 20x 5-hour window used in 80 minutes cost $26 of extra credits. `/rate-limit-options` and `/extra-usage` present in 2.1.327 (chunk-271f7twe.js@1463, @1024; code search); verified on 2.1.327: `/usage` has aliases cost and stats (chunk-m14bt1pz.js@2510768), `/extra-usage` is hidden and described "Renamed to /usage-credits" (@2532094), and `/usage-credits` exists (@2531696).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported; one measurement by one account.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:51; external/2026-10-11/export-This is incredible value for Max plans.jsonl:4 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x08rwi/this_is_incredible_value_for_max_plans/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [ ] **OUT-990** claudetto shall not carry CTX-165 (from `cost-pricing.md`) as a checked context fact: Headless versus interactive, measured by one poster on four Max accounts: `claude -p` burns the 5-hour window ~1.49x faster per 1% weekly (4.4% versus ~7%; range 1.4-1.6x, Max 20x only; also stated as about 1.5x); causes not found. A weekly burn from goal check-ins was uncapped before 2.1.246 (reported). Monthly API credits for Max and Team were announced with Haiku 5.5 (Max 5x 100 USD, Max 20x 200 USD, Team up to 500 USD pooled); `claude -p` limits are suspected. Verify against the docs.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured by one poster (the headless ratio); reported (the credits, the check-in burn).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xdk3cn-heads-up-headless-claude-p-eat-20261024T061525Z.md:42 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xdk3cn/heads_up_headless_claude_p_eats_your_5hour_limit/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:51; external/2026-10-11/export-This is incredible value for Max plans.jsonl:4 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x08rwi/this_is_incredible_value_for_max_plans/>).
+
+- [ ] **OUT-991** claudetto shall not carry CTX-166 (from `cost-pricing.md`) as a checked context fact: Usage dashboards, reported: Pro Overview 3.5B tokens total is mostly cache reads; the /usage billing view may differ from the VS Code view (single case); cache-read spikes on one API key twice in two months: rotate the key, one key per process/workspace, filter the Usage and Cost API by key ID. A third-party client without `cache_control` and a wrong aggregator price caused a $5 surprise on 10M Haiku input tokens.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:49 (about 3.5B tokens in a month on a $20 plan) and external/2026-10-04/export-High total token consumption-.jsonl:2. The $5 surprise and the VS Code view difference: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-992** claudetto shall not carry CTX-167 (from `cost-pricing.md`) as a checked context fact: Reported: claude.ai web chat stops after ~20 tool calls per turn (not a CLI limit); Copilot CLI billing per-token after 2026-06-01 (not Claude); web search is a server-side tool with an undocumented backend; an `<ip_reminder>` block is sometimes read as prompt injection; an account suspension false positive reinstated with a $241 refund; Opus 5.5 reverse-engineering practices (eyes on target, tools in loop, rule-to-build-check). Thinking summaries are folded in tool-call blocks on desktop; `showThinkingSummaries` is present in 2.1.327 (the repo writes false; chunk-ja5z738t.js@290257, described as requesting API-side thinking summaries shown in the conversation and transcript view), reportedly with no effect on desktop.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xd2osf-account-banned-reinstated-with-20261023T040154Z.md:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xd2osf/account_banned_reinstated_with_refund_in_less/>).
+
+- [ ] **OUT-993** claudetto shall not carry CTX-168 (from `cost-pricing.md`) as a checked context fact: Advisor figures: 95 calls, 19.6M uncached input, 3-5% of usage (measured, one user); Opus 5.5 high plus a Fable advisor 1.7 points above Opus alone at ~2.1x cost (cited second-hand); at max effort Opus 5.5 ~119K output tokens per task (AA, cited second-hand). Fable 5.2 weekly: "Fable access week" free access reported.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (one user) and cited second-hand.
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/>).
+
+- [ ] **OUT-994** claudetto shall not carry CTX-169 (from `cost-pricing.md`) as a checked context fact: Dossier validity: one user, three days, one project (one plugin project); same-family model readers; corpus on 2.1.292-2.1.296 versus captures on 2.1.312; the author maintains Clawdipedia and the plugin; occurrence counts are not rates (Reddit evidence counts are a keyword heuristic, not an incidence rate); session-log quotes were checked verbatim.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Dossier limits note; not a Claude Code behaviour.
+  Basis: reported (the dossier's own limits and index conventions).
+  Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:72; /Users/krystian/CodeProjects/xsyetopz/claudetto/external/please-use-me-often/agent-failure-dossier/00-INDEX.md:13; /Users/krystian/CodeProjects/xsyetopz/claudetto/external/please-use-me-often/agent-failure-dossier/00-INDEX.md:16.
+
+- [ ] **OUT-995** claudetto shall not carry CTX-170 (from `cost-pricing.md`) as a checked context fact: Routing papers named in the dossier: RouteLLM (arXiv 2406.18665, <https://arxiv.org/abs/2406.18665>) and FrugalGPT (arXiv 2305.05176, <https://arxiv.org/abs/2305.05176>; up to 98% lower cost at matched quality).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (papers not opened).
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:183.
+
+- [ ] **OUT-996** claudetto shall not carry CTX-171 (from `cost-pricing.md`) as a checked context fact: Goal check-ins have a name and a switch: while background work keeps a goal waiting, Claude Code asks Claude to look in on it even when the session is idle, and each check-in is a new turn that sends the full context, so a "waiting" message costs the same as real work. They are capped at three idle check-ins per goal between prompts; `CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0` turns them off entirely. It needs 2.1.236 or later, and before 2.1.246 they were not capped.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one commenter).
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x8xqu7-this-feature-eats-up-usage-for-20261020T052435Z.md:47 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x8xqu7/this_feature_eats_up_usage_for_nothing/>).
+  ## External Sweep, 2026-11-18
+
+- [ ] **OUT-997** claudetto shall not carry CTX-864 (from `cost-pricing.md`) as a checked context fact: Price per token is a poor proxy for cost per task between Opus 5.5 and Sonnet 5.5. One poster measured Opus at 1.8x Sonnet's plan usage per token; another measured one task at $0.31 on Opus and $0.15 on Sonnet; several commenters say Sonnet re-reads and retries more and spends more tokens on the same work. This supports ADR-0157: route by the measured cost of a wrong answer and of the whole task.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (third-party, single tasks) for the 1.8x and $0.31/$0.15 figures; reported for the rest.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1wusaec-sonnet-55-is-much-cheaper-than-opu-20261025T160619Z.md:41; external/2026-11-16/reddit.com-r-claudeai-comments-1xwla4y-i-measured-how-much-each-save-to-20261115T135549Z.md:41; external/2026-10-21/reddit.com-r-claudecode-comments-1xamnkc-sonnet-subagents-workflow-20261020T095918Z.md:100; external/2026-10-25_p2/reddit.com-r-claude-comments-1x4a3bi-how-do-i-actually-work-with-sonnet-20261025T160641Z.md:49; external/2026-10-25_p2/reddit.com-r-claude-comments-1xamwev-when-did-opus-55-become-the-new-de-20261025T160319Z.md:145; external/2026-09-29/export-So what do we think about Sonnet 5.5 so far guys-.jsonl:22.
+
+- [ ] **OUT-998** claudetto shall not carry CTX-865 (from `cost-pricing.md`) as a checked context fact: Role-split cost reports: a 0.5M-line port ran about 3x cheaper with Haiku porting, Sonnet writing tests and Opus reviewing; Opus-planned, Sonnet-implemented work cost one half to two thirds of Opus alone; one draft-pick-polish run cost $1.34, $0.81 of it on the Opus sign-off. Against that, one commenter's 13 variants found that a cheap builder with a strong reviewer did not work for build work. ADR-0033 sends mechanical bulk passes, not open-ended building, to cheap workers, and the ADR-0177 gate measures each split; the strong reviewer step can dominate run cost, so the reviewer reads a diff, not the whole run.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party, single projects; the $1.34 split is one measured run; the 13-variant result has no numbers shown).
+  Source: external/2026-10-14/export-Does anyone else feel like Opus 5.5 is on a completely different level from every other model-.jsonl:33; external/2026-10-25_p2/reddit.com-r-claude-comments-1x4a3bi-how-do-i-actually-work-with-sonnet-20261025T160641Z.md:53; external/2026-10-21/reddit.com-r-claudeai-comments-1xaur97-what-is-haiku-55-best-suited-for-20261021T101753Z.md:164; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xckkpr-are-superpowers-skills-and-sdd-s-20261102T084956Z.md:269.
+
+- [ ] **OUT-999** claudetto shall not carry CTX-866 (from `cost-pricing.md`) as a checked context fact: A pre-registered study of 424,108 public agent sessions (mostly Claude Sonnet, started from GitHub) found run cost unpredictable up front (same task three times: median 1.55x spread; prompt text and repo added nothing), but a per-group "at least" cost held for 90% of runs, and runs that passed the cost of 90% of similar runs were 2.3 to 7 times less likely to finish. claudetto's cost record (REQ-COST-014) gives a usable stall signal: a run past the p90 cost of its task type is stopped for review.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: measured (third-party, pre-registered tests, numbers shown).
+  Source: external/2026-10-07_p2/export-This study of 424k agent runs showed you can't predict what a Claude agent run will cost up front, b.jsonl:2.
+
+- [ ] **OUT-1000** claudetto shall not carry CTX-524 (from `machine.md`) as a checked context fact: Git Bash heredocs collapse double backslashes before Python sees them, so a Windows path with \t silently becomes a tab; the browser upload tool caps files at 16 MB, so render under that instead of retrying; a quoted rate applies to its job only.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:66 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1001** claudetto shall not carry CTX-525 (from `machine.md`) as a checked context fact: `additionalDirectories`: `"$TMPDIR"` is not expanded and the read is refused; `"~/side"` expands to `$HOME` and reads (SIDE-CANARY returned); an absolute path reads. `blockReadsExemptPaths` is ignored in every `settings.json` and has no temp-dir exemption
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured on an earlier version; rechecking needs a paid model run or an installed marketplace plugin, and no shipped part in plugins/ depends on the number.
+  Basis: measured, fake API.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:827.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1002** claudetto shall not carry CTX-527 (from `machine.md`) as a checked context fact: memoryGuard reads the free share at tool.check only. A 4 GB single-process growth (8 blocks of 512 MB, 1.5 s apart) moved memory_pressure -Q free share only from 47% to 52%, because macOS compresses pages and frees cache. So the share cannot follow one process, and per-process RSS is the signal.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a 4 GB growth run on one machine; a measurement of macOS memory pressure, not of Claude Code.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:801.
+
+- [ ] **OUT-1003** claudetto shall not carry CTX-529 (from `machine.md`) as a checked context fact: The reported 120 GB RAM incident was explained as clawdipedia's surface tests (bun test 10,125 MB; one snapshot.test.ts 15,332 MB, others 8 GB; one Claude Code bundle parse 4,700 MB; a test comment says each build peaks near 18 GB) beside 8 Claude Code processes and backgrounded agent checks on a 32 GB MacBookPro18,2. The kernel logged JETSAM_REASON_LOWSWAP kills (60 processes at 01:26:59). 120 GB is the summed footprint counting compressed and swapped pages. No claudetto run exceeds 1.5 GB (replay of the agents' edits: 699 MB lint, plugin test 1,410 MB).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured; the 120 GB reading is inferred.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:476-487.
+
+- [ ] **OUT-1004** claudetto shall not carry CTX-533 (from `machine.md`) as a checked context fact: Disk on 2026-11-12: /private/tmp/claude-501 1.85 GB (474 entries, 166 older than 60 min), /private/tmp 1.98 GB, system temp folder 0.31 GB (22,123 TemporaryDirectory.* entries made by Swift, not by this repository), ~/.claude 1.44 GB, data volume 282 of 460 GiB (68%). A dry run said "would remove 0 entries, 0 B" for temp and trash, named 28 OpenJoystickDriver agent worktrees (51.4 GB), and kept 4 with uncommitted changes (2.7 GB). Most space is worktrees.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:810,831.
+
+- [ ] **OUT-1005** claudetto shall not carry CTX-534 (from `machine.md`) as a checked context fact: Tests leave no temp folder: 18 hygiene, statusline, and manifest test files left 0 entries under a fresh TMPDIR. tools/hygiene/trash.test.ts exited 1 under the changed TMPDIR and passed 12 tests under the default. The helper tools/temp.mock.ts removes each test's folder. The hygiene sweep starts only at SessionStart source startup (67 session files in 3 days, 10 spanning over 12 hours, 4 transcript records of SessionStart:startup, so at most 67 runs), and a session that compacts or resumes starts none. The later fix sweeps at startup, resume, clear, and compaction (openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:139).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:812; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:139.
+
+- [ ] **OUT-1006** claudetto shall not carry CTX-535 (from `machine.md`) as a checked context fact: Local branch survey (git cherry per branch in 12 listed projects): OpenJoystickDriver 121 local branches (36 in a worktree, 85 with a commit the default lacks, 0 merged); OpenRAC-next 19 (2 merged, both worktree-agent-*); bedrock 11 and claudetto 11, none merged; asd-ste100-skill-next 7 (4 merged); SwifterKit 1 merged. 6 would go, no upstream gone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:813.
+
+- [ ] **OUT-1007** claudetto shall not carry CTX-536 (from `machine.md`) as a checked context fact: GitHub delete_branch_on_merge is true only for OpenJoystickDriver and false for the other 11 repositories, so merged remote heads remain (JagFx 8, bedrock 9, claudetto 2, SwifterKit 1, versionlens-redux 2, OpenJoystickDriver 1, OpenSAD 1). 9 heads have no open PR and a merged PR tip or all commits in default. git cherry misses a squash-merged head (bedrock fix/clang-format-binpack shows 2 commits, only the PR shows it). gh needs the sandbox off (HTTP 401).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:814.
+
+- [ ] **OUT-1008** claudetto shall not carry CTX-537 (from `machine.md`) as a checked context fact: Dry run with --remote after the fixes: "would remove 26 entries, 790704 B" of temp, 28 agent worktrees (51399544832 B), and "would delete 10 branches" (4 local in asd-ste100-skill-next, 6 remote). claudetto feat/2.1.319+1 is named twice because the session worktree and its checkout are both listed. The other 4 merged bedrock heads stay because a worktree has them checked out. Nothing was removed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:815.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1009** claudetto shall not carry CTX-542 (from `machine.md`) as a checked context fact: A stray `tsc --lsp --stdio` (TypeScript 7.0.2, pid 48197, running 27 hours at 127% CPU, parent launchd) was not started by the session. The user ran `! kill -9 48197`, and `ps -p 48197` then found no process (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:412.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1010** claudetto shall not carry CTX-543 (from `machine.md`) as a checked context fact: Eight commits that commitlint rejected (4 headers over 100 characters, 4 body lines over 100) were reworded by `git rebase -r --exec` with the same trees. All 365 signatures stayed (`G`), `bunx commitlint` exited 0, and `git push --force-with-lease` replaced the remote head. The `just validate` check reports README_MISSING (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:413; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:415.
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1011** claudetto shall not carry CTX-544 (from `machine.md`) as a checked context fact: A sparse disk image (Docker.raw) showed 60 GB apparent size but 14 GB actual disk usage, so a cleanup agent must measure actual usage (du), not apparent size.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (author).
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xd77e8-agentic-disk-cleanup-workflow-20261024T061644Z.md:38 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xd77e8/agentic_disk_cleanup_workflow/>).
+
+- [ ] **OUT-1012** claudetto shall not carry CTX-545 (from `machine.md`) as a checked context fact: Semgrep in a commit gate took 26 s on one file because 11 leftover worktrees held 678k files; it took 0.7 s after cleanup.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured, one user.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xgsku3-i-parsed-34-gb-of-my-claude-code-20261028T061008Z.md:35 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xgsku3/i_parsed_34_gb_of_my_claude_code_transcripts_20/>).
+
+- [ ] **OUT-1013** claudetto shall not carry CTX-546 (from `machine.md`) as a checked context fact: An OS audit rule (Linux auditd on execve under a dedicated claude user) logs every command and the agent cannot edit it without sudo, but it sees only execs, not file reads or MCP calls.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (author reply).
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcu5xq-built-a-hook-that-logs-what-cl-20261024T061657Z.md:133 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcu5xq/built_a_hook_that_logs_what_claude_code_does_on/>).
+
+- [ ] **OUT-1014** claudetto shall not carry CTX-547 (from `machine.md`) as a checked context fact: With --permission-mode acceptEdits, an explicit allow of bare Edit or Write lets the model edit other checkouts by absolute path; acceptEdits alone confines to the working folder; allow find, bash, npx, and npm run anything, so leave them out; Read-tool rules are needed because the sandbox does not cover Read.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1015** claudetto shall not carry CTX-548 (from `machine.md`) as a checked context fact: A .env deny pattern under the home folder missed worktrees outside home, letting a model-written script read .env; deny under the run's own checkout too; allow localhost binding only if tests start a server.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:136 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1016** claudetto shall not carry CTX-549 (from `machine.md`) as a checked context fact: In an unattended claude -p run, Claude Code refuses edits under .claude/ (skills, hooks, settings) and asks for an approval nobody gives; the executor refuses such briefs up front and routes them to the cloud.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:258 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
+
+- [ ] **OUT-1017** claudetto shall not carry CTX-550 (from `machine.md`) as a checked context fact: Worktrees share the object store, but node_modules and build output are untracked, so each worktree keeps its own copy; a hardlinking package manager with a shared store shrinks it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside fact about git worktrees and package managers; not a Claude Code behaviour and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:79,81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
+
+- [ ] **OUT-1018** claudetto shall not carry CTX-551 (from `machine.md`) as a checked context fact: gitignore only affects what Git tracks; it neither removes files from the working directory nor stops an agent reading them, so raw material needs an archive outside the default reading path.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Outside fact about gitignore; not a Claude Code behaviour and no shipped part in plugins/ depends on it.
+  Basis: reported, two commenters. Status: not applicable (outside fact).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>).
+  ## Machine, Shell, and Disk
+
+- [ ] **OUT-1019** claudetto shall not carry CTX-831 (from `machine.md`) as a checked context fact: On 2026-11-18 the user's 512 GB Mac had 51.6 GB free in its APFS container (about 90% used, against 68% on 2026-11-12); the Data volume used 394.2 GB. `du -xhd1 /System/Volumes/Data` outside the sandbox totals 306 GB (Users 128 GB, private 128 GB, opt 20 GB, System 15 GB, Applications 13 GB); the gap is not snapshots: the Data volume has none (the three `com.apple.os.update` snapshots belong to the system volume). `du` also counts 79 GB of Chrome clones that cost about one copy (CTX-832), so about 166 GB of real use sits in 585 folders that `du` cannot read even outside the sandbox: 280 under `~/Library/Containers`, 134 under `~/Library/Group Containers` (including OrbStack's `HUAQ24HBR6.dev.orbstack` data), 70 under `/private/var/folders/cl`, and root-owned folders under `/private/var/db` (Spotlight, biome and others). These folders and `~/.Trash` (CTX-834) are protected by macOS privacy controls (TCC), so only the user can size them: grant the terminal Full Disk Access and run `du -sh ~/Library/Containers ~/Library/Group\ Containers ~/.Trash`, run `docker system df` or `orb` outside the sandbox, or read System Settings > General > Storage. `/Volumes/DevAudioStore` is an external drive and not part of the gap. The user's `docker system df` (Docker 29.8.2 on OrbStack, 2026-11-18) reports 42.7 GB, of which 34.5 GB is reclaimable: 485 local volumes, none in use, 23.27 GB; 11 images, 7.50 GB (5.48 GB reclaimable); build cache 11.91 GB (5.76 GB reclaimable); 20 containers, 155.6 kB. Unused Docker volumes are the largest single reclaimable item measured on the machine. `docker volume prune` removes only anonymous volumes; `-a` also removes unused named ones (`docker volume prune --help`). On the user's instruction the same day, `docker image prune -a -f`, `docker builder prune -a -f` and `docker volume prune -a -f` freed 4.3, 11.9 and 23.3 GB (39.5 GB in all; `builder prune -a` also removes cache that `docker system df` counts as not reclaimable). The data volume then had 85 GB free (`df -h`, 80% used), and the running containers kept running. The collector of ADR-0185 repeats this without asking, for unused items only.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (`diskutil apfs list`, `df -h`, `du` error count by folder outside the sandbox, `diskutil apfs listSnapshots` on the Data volume, 2026-11-18; inside the sandbox `diskutil` returns ERROR -69620). The sizes behind TCC are a user-held measurement. Status: n/a (machine state).
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671 and :3505); probe output of this session.
+
+- [ ] **OUT-1020** claudetto shall not carry CTX-832 (from `machine.md`) as a checked context fact: `du` counts each APFS clone in full, so it overstates disk use. `/private/var/folders/*/X` held 79 GB by `du` in 55 `com.google.Chrome.code_sign_clone` copies of about 1.4 GB each, but a `getattrlist` probe of `ATTR_CMNEXT_PRIVATESIZE` gave 0.00 GB of private bytes for them: they share blocks, so their real cost is about one copy.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (C program using `fts` and `getattrlist` with `FSOPT_ATTR_CMN_EXTENDED`, built and run 2026-11-18). Status: n/a (machine state).
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl; CTX-544.
+
+- [ ] **OUT-1021** claudetto shall not carry CTX-833 (from `machine.md`) as a checked context fact: On 2026-11-18 the largest measured consumers outside the system were: `~/CodeProjects` 55 GB (OpenJoystickDriver 26 GB, of which agent worktrees under `.claude/worktrees` 14 GB and `.build` 11 GB); `/opt/homebrew` 20 GB; `~/.gradle` 13 GB (caches 8.8 GB, jdks 3.1 GB); `/Applications` 13 GB; Xcode `iOS DeviceSupport` 6.6 GB; `~/.rustup` 5.6 GB; `~/.bun` 5.6 GB; a Swift toolchain 4.8 GB; `~/.konan` 3.2 GB; `$TMPDIR` 8.5 GB in 87,631 entries (65,295 `TemporaryDirectory.*`, 1,065 `ccdocs-cli-test`, 1,064 `claude-run`, 758 `surface`, 671 `bedrock-test`, 385 `claude-session-repo`, 133 `mutant`). The `~/.claude` folder held 899 MB and `~/.local/share/claude` 1.6 GB (versions 2.1.323, 2.1.325, 2.1.326, 2.1.327).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measurement of one machine or one repository set on a past date; machine state, not a Claude Code behaviour that 2.1.327 can settle.
+  Basis: probed (`du -xhd1`, `find`, 2026-11-18; apparent sizes, clones counted in full). Status: n/a (machine state).
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+
+- [ ] **OUT-1022** claudetto shall not carry CTX-834 (from `machine.md`) as a checked context fact: `~/.Trash` cannot be read by a process without Full Disk Access: listing it fails with "Operation not permitted" even outside the sandbox (macOS TCC). Its size is held by the user.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: macOS TCC permission of one machine; the size is held by the user and no probe can read it.
+  Basis: probed (2026-11-18). Status: n/a.
+  Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
+  ## External Sweep, 2026-11-18
+
+- [ ] **OUT-1023** claudetto shall not carry CTX-878 (from `machine.md`) as a checked context fact: Two parallel background subagents re-rendered video frames, each frame starting a headless Chrome with a 4 GB GPU memory budget, and two Chrome processes never exited; with 11 sessions and 44 MCP server processes, swap reached 5.4 of 7 GB at load average 26 on a 16 GB, 10-core MacBook, which froze three times in a week. Heavy subagent jobs wait for free memory and leaked browser processes are reaped (RISK-048).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (third-party, numbers shown).
+  Source: external/2026-10-17/export-My Mac kept freezing while Claude Code agents ran, so I built a plugin that makes heavy jobs wait th.jsonl:2.
+
+- [ ] **OUT-1024** claudetto shall not carry CTX-879 (from `machine.md`) as a checked context fact: Disk growth from agents on one 16 GB Mac: transcripts reached 11 GB (one 262 MB log held 175 MB of base64 screenshots); setting `cleanupPeriodDays` to 7 (default 30, CTX-142) freed 7.4 GB on the first cleanup; one session left 6 copies of DerivedData (6.9 GB), one per variant. A cleanup agent once deleted two folders it judged build junk that held test-package source, so its rules became: delete only what is untouched for 3+ hours, skip folders `lsof +D` shows open, and nothing during a build. A commenter adds: check each agent worktree for uncommitted work first, then run `git worktree prune`. claudetto's hygiene step (CTX-550) follows these rules, and deletion of anything outside its own scratch paths needs the user's confirmation.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured (third-party, numbers shown) for the sizes; reported for the rules.
+  Source: external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:40; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:46; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:52-56; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:75; external/2026-11-18_p2/reddit.com-r-claudecode-comments-1xzgmo3-claude-code-kept-filling-my-25-20261118T181803Z.md:147.
+
+- [ ] **OUT-1025** claudetto shall not carry CTX-556 (from `model-behaviour.md`) as a checked context fact: Measured cheap-decision-model (Jev) trap: each extra round trip resends 60-75k tokens of context to the orchestrator, so on a 14-issue backlog the Jev run used more Opus tokens than Opus reading the issues; break-even about 45-60 issues (15-20k tokens of bodies). On 267 closed issues Opus used 1.7M against 9.5M tokens (5.7x fewer raw, about 4x cost-weighted); Jev made 223 calls for $0.014; verdicts agreed 208 of 223, Jev the stricter.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured, one author.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:98 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1026** claudetto shall not carry CTX-557 (from `model-behaviour.md`) as a checked context fact: Haiku 5.5 chat rule: past about 5 prompts in one thread move to Sonnet, because Haiku asks for the same information again; it forgot to write decisions to the database and to close open issues and claimed it recorded them while re-asking, so as a subagent it needs a handler.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xcfufy-haiku-55-is-very-good-heres-why-20261023T025633Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcfufy/haiku_55_is_very_good_heres_why_i_dont_use_it/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1027** claudetto shall not carry CTX-558 (from `model-behaviour.md`) as a checked context fact: A commenter cites Anthropic's September 2025 postmortem as confirming three infrastructure bugs that degraded output for weeks, in a list of nerf explanations: A/B routing, infra bugs, distillation, harness changes, release prep.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not checked.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:76; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:77 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
+
+- [ ] **OUT-1028** claudetto shall not carry CTX-559 (from `model-behaviour.md`) as a checked context fact: One user reports Opus 5.5 effort showing medium after starting on high with no change by the user. Another dropped xhigh to high, then medium, over two weeks with no visible quality loss.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user each.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:139; external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:312 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
+
+- [ ] **OUT-1029** claudetto shall not carry CTX-560 (from `model-behaviour.md`) as a checked context fact: A commenter reports tracker numbers: nerf-bench moved from -5% to +5%; Margin Lab shows Opus 5.5 at a 77% pass rate today, 76% over 7 days, 81% over 30 days.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not checked.
+  Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:129; external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:130 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
+
+- [ ] **OUT-1030** claudetto shall not carry CTX-561 (from `model-behaviour.md`) as a checked context fact: Context quality is ideal up to about 150K tokens and degrades at 250-300K even on a 1M window (anecdotal). Opus 4.6 is preferred for conversation and concision, 5.5 is smarter but flatter, harness prompts flatten tone, and 5.5 at low effort feels most like 4.6 (opinion).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable.
+  Source: external/export-Opus 5.5 is the smartest model I've used but it fucking forgets everything 😭.jsonl:15 (a commenter: ideal performance to about 150K tokens, degradation at 250K-300K on a 1M window). The 4.6 versus 5.5 tone opinions: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-1031** claudetto shall not carry CTX-562 (from `model-behaviour.md`) as a checked context fact: Sonnet 5.5 cost more per task than Opus 5.5 Max at max effort ($7.60 against $5.98 per AA task; 193k output tokens); Haiku hidden thinking mode tripled tokens, and off it is about 50% cheaper than Sonnet 5.5 low (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:37.
+
+- [ ] **OUT-1032** claudetto shall not carry CTX-563 (from `model-behaviour.md`) as a checked context fact: Compaction costs more tokens than it saves (reported by other users, 2026-11-09); a current handoff file plus `/clear` at a milestone while the cache is warm works better; small subagent tasks on a lesser model save tokens; hooks that inject a skill at session start and after compaction work "reasonably" on Opus 5.5. Not measured. The 2.1.326 release notes say automatic compaction in plan mode now uses the model answering you, such as Opus with `opusplan`, so it can cost more. Auto-compaction runs on the session model at 5m TTL: 434 compactions in a week, 2.8% of tokens. The 2.1.326 notes add that automatic compaction in plan mode uses the model answering the user, such as Opus with `opusplan`, so it can cost more.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable. inferred (from a log).
+  Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); unresolved: no source line located for the reports; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:78; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [ ] **OUT-1033** claudetto shall not carry CTX-564 (from `model-behaviour.md`) as a checked context fact: Third-party tip threads are kept as mentions only: ASD-STE100 for skills (the repo already cites it), weekly-limit complaint threads, and a worktree-coordination thread in which one deploy or test worker owns the environment and reports per commit SHA. They carry no measurements.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: not applicable.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:259,265 (ASD-STE100) and external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:54 (one deploy or test worker owns the shared environment and reports per commit SHA). The weekly-limit complaint threads: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  ## Model Behaviour
+
+- [ ] **OUT-1034** claudetto shall not carry CTX-565 (from `model-behaviour.md`) as a checked context fact: A user reports the built-in you-should-know agent said Fable 5.2 "was trained with deliberate limits" on optimization and frontier-risk work (a CPU inference hill-climb), so a worse result may be the model's safeguard, not the prompt; the Fable 5.2 announcement carries an "AI research and development" safeguard header; a commenter says the screenshotted prompt is not found in the installed repo.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one screenshot, disputed, unverified.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsbmk1-youshouldknow-fable-52-may-be-sa-20261110T093112Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsbmk1/youshouldknow_fable_52_may_be_sandbagging_you/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:139; external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:149 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>).
+
+- [ ] **OUT-1035** claudetto shall not carry CTX-566 (from `model-behaviour.md`) as a checked context fact: After Opus said no more speedup was possible on an 80k-agent simulation, Fable found about 25% more performance; others report 6% and about 40% (Fable planning with Opus agents coding) on rendering and perf work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdotal.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:178; external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:196 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [ ] **OUT-1036** claudetto shall not carry CTX-567 (from `model-behaviour.md`) as a checked context fact: For a periodic fleet check-in, Sonnet "spaced out" and missed inefficiencies, while Opus went off on tangents and invented non-existent security requirements that wasted the fleet's resources; Fable did it right.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user. Another user ran Sonnet 5.5 as orchestrator for a weekend and found no arguing, no tangents, no invented mechanisms and two marginally wrong judgement calls (external/2026-10-31/reddit.com-r-claude-comments-1xindob-sonnet-55-opusfable-20261031T082828Z.md:27). The tasks differ (periodic check-in against continuous orchestration), so neither report changes the orchestrator model; the ADR-0177 gate decides it.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xs6tkq-for-those-of-you-who-use-fable-20261110T095324Z.md:222 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xs6tkq/for_those_of_you_who_use_fable_daily_what_does_it/>).
+
+- [ ] **OUT-1037** claudetto shall not carry CTX-568 (from `model-behaviour.md`) as a checked context fact: Reported Fable 5.2 use: a full code review of a 100k-line game found 31 improvements including a physics tick lower than display tick; another review found about 50 bugs Opus did not on the same code; Opus 5.5 high twice found fewer than Fable.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 3 authors, no baseline measured.
+  Source: external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:35; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:180; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:182; external/2026-11-13/reddit.com-r-aigamedev-comments-1xtallk-is-fable-52-and-improvement-ove-20261111T233500Z.md:261 (url: <https://www.reddit.com/r/aigamedev/comments/1xtallk/is_fable_52_and_improvement_over_opus_55_for_game/>).
+
+- [ ] **OUT-1038** claudetto shall not carry CTX-569 (from `model-behaviour.md`) as a checked context fact: Models "fake it over the finish line" on projects with messy multi-faceted acceptance criteria, but work well when boxed in with exhaustive closed-form tests.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 1 author.
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:126 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+
+- [ ] **OUT-1039** claudetto shall not carry CTX-570 (from `model-behaviour.md`) as a checked context fact: One author says telling Fable it is "a big strong capable frontier model" cures its laziness; another suspects A/B testing for opposite experiences.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, no check.
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:392 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+
+- [ ] **OUT-1040** claudetto shall not carry CTX-571 (from `model-behaviour.md`) as a checked context fact: Reported Fable 5.x wins: decompilation moved ahead in 1 hour where Opus 5.5 was stuck in one function across more than 10 agents; a roadmap of 26 dependency-checkpointed tasks where Opus gave only the next 5 steps regardless of effort; a use-after-free found in a public library; a shader and a portfolio site fixed on first pass when told "full creative freedom".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, anecdotes, n about 8.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:88; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:260; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:228; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xta14a/examples_of_fable_doing_things_much_better_than/>).
+
+- [ ] **OUT-1041** claudetto shall not carry CTX-572 (from `model-behaviour.md`) as a checked context fact: A team reports a Fable 5.2 custom harness without discovery steps is "orders of magnitude" cheaper in tokens than Claude Code's discovery-based exploration; 5.5 may suit harnesses that must read hundreds of millions of tokens to learn an architecture.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported, 1 author, no numbers.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:270 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
+
+- [ ] **OUT-1042** claudetto shall not carry CTX-573 (from `model-behaviour.md`) as a checked context fact: Anthropic published a guide with about ten rules for prompting Fable 5.2.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported by a commenter, not read.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:490 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
+
+- [ ] **OUT-1043** claudetto shall not carry CTX-574 (from `model-behaviour.md`) as a checked context fact: One commenter runs a daily benchmark on Opus 5.5 and says it is strictly identical since launch, against reports of a quality drop.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, 1 author, no data shown.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:58 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>).
+
+- [ ] **OUT-1044** claudetto shall not carry CTX-575 (from `model-behaviour.md`) as a checked context fact: Tasks the agent cannot verify in place lower the quality of every model.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:50 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>).
+
+- [ ] **OUT-1045** claudetto shall not carry CTX-576 (from `model-behaviour.md`) as a checked context fact: Giving 2-3 past reports as examples in a Project moves output more than model choice; Sonnet matches Opus quality on many small well-defined tasks at lower cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xshd7l-models-and-use-cases-what-works-20261110T093140Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xshd7l/models_and_use_cases_what_works_best/>).
+
+- [ ] **OUT-1046** claudetto shall not carry CTX-577 (from `model-behaviour.md`) as a checked context fact: Cross-harness test: DeepSeek 4.1 Flash matched Opus 5.5 and Kimi on a QA and security task list, GLM 5.3 Flash missed much; both strong models omitted file:line in findings; the setup needs hooks to force each model to follow rules.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user, other vendors.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:156; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:158 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1047** claudetto shall not carry CTX-578 (from `model-behaviour.md`) as a checked context fact: Amazon Bedrock keeps a model available about a year after Anthropic removes it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmcdri-opus-55-for-code-opus-46-for-ide-20261104T090223Z.md:60 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmcdri/opus_55_for_code_opus_46_for_ideas_and/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1048** claudetto shall not carry CTX-579 (from `model-behaviour.md`) as a checked context fact: PR-review replay: Sonnet found 13 real findings plus 7 false positives (about 50% extra), Opus 13 real plus 1 false positive.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: not applicable (outside fact).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmn6qp-is-sonnet-actually-any-worse-at-20261104T090031Z.md:189 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmn6qp/is_sonnet_actually_any_worse_at_executing_tasks/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1049** claudetto shall not carry CTX-580 (from `model-behaviour.md`) as a checked context fact: A cited paper (arXiv 2610.01023) says weaker models are acceptable as judges when the checks are decisive.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-31/reddit.com-r-claude-comments-1xixg9h-is-the-consensus-currently-that-fa-20261031T082729Z.md:240 (url: <https://www.reddit.com/r/claude/comments/1xixg9h/is_the_consensus_currently_that_fable_51_is/>).
+  ## Model Behaviour
+
+- [ ] **OUT-1050** claudetto shall not carry CTX-581 (from `model-behaviour.md`) as a checked context fact: Harness matters as much as model: the SNARE framework explains about 56% of the variance in overeager behaviour against about 21% for the model [2605.28122]; harness alone costs 5-30x (catalog Cat 24:3 citing [2608.01347]; the multiplier is the catalog's). Opinion on Opus 5.5 is split: the majority says heavy harnesses (Superpowers, GSD) waste tokens and a short grill-me skill, a spec split into issues, a definition of done, and a fresh-context adversarial review suffice; a minority keeps design-implement-verify. Sequential execution is cheaper than per-step subagents.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (the variance and cost figures); reported (the split opinion).
+  Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:55; external/please-use-me-often/agent-failure-dossier/judged/spec.jsonl:3.
+
+- [ ] **OUT-1051** claudetto shall not carry CTX-582 (from `model-behaviour.md`) as a checked context fact: Effort in code review, measured by one poster (not agentic): 36 seeded bugs, 144 `claude -p --effort` runs. Recall 80% low, 85% medium, 86% high (noise about 4 points, so medium equals high); false alarms per review 3.4, 2.3, 1.9; output tokens Opus 5.5 1,496/2,701/3,734, Haiku 5.5 5,930/10,993/18,614; Sonnet 5.5 low false alarms 5.8 against 0.8 at high. Practice: medium by default, high when a false alarm blocks a merge. Cross-lab review did not beat same-lab (22 of 100 defects caught by the other lab).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured, one poster.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>).
+
+- [ ] **OUT-1052** claudetto shall not carry CTX-583 (from `model-behaviour.md`) as a checked context fact: Per-model notes (cited from Anthropic 5.5 guides plus corpus). Opus 5.5 stops prematurely in four named ways (announce next step, offer to continue, list non-blocking decisions); Sonnet 5.5 calls tools with wrong case (`bash`; 6 corpus calls, all subagent), adds unrequested tests and docs, may report done unchecked at low effort; Haiku 5.5 stops early and reports unverified at low or medium. Sonnet 5.5 batches reads into one shell command and writes whole files (fewer test runs 1.6 against 6.7, passes 25/30 to 30/30, about $0.15 against $0.36 per task; one poster, 10 tasks x 3 runs, saturated). Cost at max effort against high: Sonnet 5.5 5x, Opus 3.44x, Haiku 4.34x. Speed does not follow price (one 7-task set: Opus 5.5 about 121 s, Sonnet 5.5 about 140 s, Haiku 5.5 about 100 s). One game-dev anecdote: Opus 5.5 180k output tokens and all of the remaining 85% usage, unfinished; Sonnet 5.5 58k, about 15%, finished.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (Anthropic guides); measured, one poster (the task and speed figures); reported, one user (the game-dev anecdote).
+  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xak96j-i-measured-87000-of-my-claude-20261020T074808Z.md:84 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xak96j/i_measured_87000_of_my_claude_code_api_calls_two/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkhps9-opus-55s-safety-guardrails-are-b-20261101T191226Z.md:249 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkhps9/opus_55s_safety_guardrails_are_becoming/>).
+
+- [ ] **OUT-1053** claudetto shall not carry CTX-584 (from `model-behaviour.md`) as a checked context fact: Fable 5.2 at high to xhigh and Opus 5.5 at medium to high are reported as sweet spots (Anthropic reportedly said xhigh adds little over high). Fable ties Opus on controlled runs at 1.5-3x cost. Mythos 5.2 is reported as the same model with extra safeguards. Fable draws the weekly all-models limit with no separate pool; the extra cap is about half the weekly limit on some plans; one claim that a Fable advisor draws no separate usage is unverified. Reopen rates are equal at twice the cost on 30 issues (one codebase). Fable as a Projects coordinator is wasteful (a router is Haiku-grade). `claude-fable-5-2` and `claude-mythos-5-2` are present as model IDs in 2.1.327 (chunk-jtw26wbb.js@622, chunk-f892tj2r.js@21145; code search). Fable 5.2 and Mythos 5.2 are reported (by the user, 2026-11-13) to be one model with different guardrails; most dossiers cover Fable 5.1; many reports say Fable falls short of standards (a claim, not checked against a dossier).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (reported, user, 2026-11-13 for the one-model claim).
+  Source: external/2026-11-10/reddit.com-r-claudecoding-comments-1xs84wp-tldr-fable-52-high-vs-opus-5-20261110T095106Z.md:2 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xs84wp/tldr_fable_52_high_vs_opus_55_xhigh_via/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:26; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5317, reported, user, 2026-11-13.
+
+- [ ] **OUT-1054** claudetto shall not carry CTX-585 (from `model-behaviour.md`) as a checked context fact: Community reports relayed by the user say: Haiku gets stuck on small mistakes as a coordinator and is best for cheap reviews, quick answers, and scouting; Sonnet at medium is the everyday default; Opus 5.5 at medium is the default and max effort inflates cost; Fable at max effort is discouraged.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, several Discord users, relayed by the user, 2026-11-13.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6028; reported, user, 2026-11-13.
+
+- [ ] **OUT-1055** claudetto shall not carry CTX-586 (from `model-behaviour.md`) as a checked context fact: A poster using Sonnet 5.5 on the free tier asked about papers on LLM introspection; Claude saw a cited paper on fine-tuning a model to predict its own outputs to gain introspective access (arXiv 2410.13787, <https://arxiv.org/abs/2410.13787>), asked to try an experiment, and then made up its own protocol that had nothing to do with the paper, writing predictions with confidence levels first (for example 42 at 45% for "pick a number between 1 and 100").
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one poster; no run).
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfs68x-claude-decided-to-run-an-experim-20261028T060928Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfs68x/claude_decided_to_run_an_experiment_on_itself/>).
+  ## External Sweep, 2026-11-18
+
+- [ ] **OUT-1056** claudetto shall not carry CTX-868 (from `model-behaviour.md`) as a checked context fact: Scope escapes: in one author's 35-task bug-fix test (hidden tests) Opus 5.5 and Sonnet 5.5 each fixed 34, and Sonnet wrote outside its assigned folder on 4 of 35 tasks against 0 for Opus; in another report Opus 5.5 moved a folder outside the repo that it was told to leave. A scope fence in the brief (ADR-0140) is paired with a guard that rejects writes outside the scope path, for every model.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, one harness, numbers shown) for the 4 of 35; reported for the folder move.
+  Source: external/2026-09-29/export-Sonnet 5.5 has been out for an hour. Has anyone gotten a chance to stress test it-.jsonl:4; external/export-Opus 5.5 made a significant, -non-aligned- decision without instruction or being explicit.jsonl:2.
+
+- [ ] **OUT-1057** claudetto shall not carry CTX-869 (from `model-behaviour.md`) as a checked context fact: Haiku used only for exploration ignored an explicit read-only instruction and wrote and changed files. A read-only subagent gets read-only tools in its definition (ADR-0120), not an instruction alone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-25_p2/reddit.com-r-claude-comments-1x4gs6s-do-you-recommend-haiku-55-high-or-20261025T160635Z.md:69.
+
+- [ ] **OUT-1058** claudetto shall not carry CTX-870 (from `model-behaviour.md`) as a checked context fact: Instruction adherence differs by model and effort: on one morning Opus 5.5 and Sonnet 5.5 answered Thai input in Thai against a project rule to translate it, while Opus 4.8 and Haiku 4.5 followed it; another user found Sonnet at low effort ignored CLAUDE.md and memory rules that Opus 5.5 at low rarely ignores. A subagent brief restates the rules the task depends on (REQ-DELEGATION-047, ADR-0140), and a hook checks the ones a machine can check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, two users, no controlled run.
+  Source: external/2026-10-01/export-What is wrong with Opus 5.5 all of a sudden- I have it on Max and it's only used 20k tokens in 30 mi.jsonl:49; external/2026-10-21/reddit.com-r-claudecode-comments-1xakpl1-am-i-the-only-one-sonnet-55-ro-20261020T073630Z.md:86.
+
+- [ ] **OUT-1059** claudetto shall not carry CTX-871 (from `model-behaviour.md`) as a checked context fact: A coordinating agent asked to choose a model for delegated work picks its own model about 95% of the time, whether that is overkill or underkill, by one commenter's account. claudetto fixes the model per step type in the agent file or a routing table (ADR-0103, REQ-DELEGATION-057) and does not ask the orchestrator to choose.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter; the 95% has no count behind it.
+  Source: external/export-The one thing LLMs still can't do.jsonl:2; external/export-The one thing LLMs still can't do.jsonl:13.
+
+- [ ] **OUT-1060** claudetto shall not carry CTX-873 (from `model-behaviour.md`) as a checked context fact: Two verification traps in model-written test suites: storage and system APIs are mocked, so the suite stays green while real persistence breaks on restart or upgrade; and expected values written by the model agree with the model's wrong formula, so code and test share the same wrong number. A reviewer asks which tests hit real persistence, and expected values for computed results come from the specification or the user, not from the model that wrote the code (REQ-VERIFICATION-075, ADR-0180).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party).
+  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:85; external/2026-11-16/reddit.com-r-claudecode-comments-1xx6asn-how-do-you-make-sure-your-app-20261116T051049Z.md:139.
+
+- [ ] **OUT-1061** claudetto shall not carry CTX-874 (from `model-behaviour.md`) as a checked context fact: UI work converges faster when a script renders the current state to an image that the agent reads after each change, and when vague adjectives are replaced by a spacing scale and a named palette in a file. A UI verification step reads a rendered image, not a text description of it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-17/export-I learned I have to completely change my prompt style when building backend vs. frontend.jsonl:4.
+
+- [ ] **OUT-1062** claudetto shall not carry CTX-875 (from `model-behaviour.md`) as a checked context fact: Verification loops are not silent: in 7 of 8 timeouts on one comparison night the change was already correct and the model kept retaking screenshots until the limit; a note at 5 minutes to stop checking and answer, and two screenshot tries per reply, fixed it. A stall timeout that counts silence (ADR-0041) does not catch this; the guard also counts repeats of the same check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, numbers shown, one author).
+  Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmzcut-how-did-you-get-better-at-buildi-20261104T085832Z.md:68.
+
+- [ ] **OUT-1063** claudetto shall not carry CTX-889 (from `model-behaviour.md`) as a checked context fact: Test cadence conflict. For: a commenter says the harness instruction to test after every change gives 20-30% more passes in their benchmarks. Against: the agent ran the full suite repeatedly despite explicit instructions not to; it re-ran the full suite after a wording change in a settings menu (Opus 5.5 high); a suite cut from 13 to under 3 minutes grew back to 13 as the agent kept adding tests. Resolution: test after each change, lightest check first and the nearest tests only, with the full suite once per tree from the main loop (REQ-REPLY-104, REQ-DELEGATION-006); test growth is reviewed like code.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (four commenters; the +20-30% has no data shown).
+  Source: external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:29; external/2026-10-07/export-ClaudeCode Opus 5.5 overtesting-.jsonl:21; external/2026-10-17/export-After this latest update Claude code is slower, uses more tokens, and makes mistakes constantly.jsonl:8; external/2026-10-13/export-What do you do about the growing number of tests in a large project-.jsonl:6.
+
+- [ ] **OUT-1064** claudetto shall not carry CTX-890 (from `model-behaviour.md`) as a checked context fact: Scope creep on a long-term project (changes beyond the task, unneeded abstractions) is held by a written task contract, not more docs: before the session, one task, the files it may touch and the test that proves it, with a stop-and-ask outside that list; a short per-task plan approved before any edit, then a review of the diff against that plan; code that should not be imitated is removed or marked legacy; generated files get `permissions.deny` `Edit(...)` rules (Unity scene, prefab and meta YAML), which stop only the Edit tool unless the sandbox is on (REQ-GUARDS-076). Asking first for the assumptions and the three riskiest parts, then waiting, is REQ-REPLY-065.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (four commenters, no counts).
+  Source: external/2026-11-18_p2/reddit.com-r-claudeai-comments-1xzfuv3-using-claude-code-on-a-longterm-20261118T183016Z.md:35,67,89,103,125; external/2026-11-18_p2/reddit.com-r-promptengineering-comments-1xxoxn1-stop-chasing-the-onesho-20261118T183200Z.md:35.
+
+- [ ] **OUT-1065** claudetto shall not carry CTX-724 (from `models-effort.md`) as a checked context fact: `showThinkingSummaries` on against off, two runs each at effort high: output 187 and 275 against 144 and 164 tokens; thinking 94 and 143 against 84 and 91. No separate charge, under $0.0001 per Haiku call; noise cannot be separated at n=2
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:814.
+
+- [ ] **OUT-1066** claudetto shall not carry CTX-726 (from `models-effort.md`) as a checked context fact: An article "Spending your effort" and commenters say: Opus 5.5 high is the new xhigh and medium the default; Fable 5.1 low is cost-effective; thinking cannot be disabled, so start low and measure; lowering effort cuts thinking more reliably than prompt wording. Second-hand points of the Opus 5.5 prompting guide: drop "think carefully", name exact styles to ban, look around before acting.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (cited via link, not read). Status: have at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:121 (Opus 5.5 high is the new xhigh) and external/export-Token optimization from Anthropic- choosing the right effort level to the task.jsonl:9. The article "Spending your effort" itself was not found; the article claim is Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+  ## Models and Effort
+
+- [ ] **OUT-1067** claudetto shall not carry CTX-727 (from `models-effort.md`) as a checked context fact: A poster on the 20x plan (confounded) used about 5 of 7 weekly days on Opus medium, 3.5 days with 45% done on Opus low, 6.25 days with 95% done on Sonnet low (inferred: low effort causes retries). One build per approach with hidden tests: consensus that a detailed prompt beats skill packs on Opus 5.5 (opinion, no repeat runs). A vendor audit skill at high effort exhausted three 5-hour windows in about 10 minutes (second-hand, kept as reported; the burn rate needs a paid run, subagent cache about 5 min against main about 1 h, second-hand); a two-pass audit (cheap architecture map, then one file at a time) cuts cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported. Status: have at 088a227c.
+  Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>). Not located: the line numbers and the skill-pack build comparison.
+  ## Models and Effort
+
+- [ ] **OUT-1068** claudetto shall not carry CTX-728 (from `models-effort.md`) as a checked context fact: Task 3.1a, 120 sessions per arm, passed/failed and cost: built-in 120/0 ($2.14), suite 120/0 ($1.06), haiku 120/0 ($0.03), sonnet 114/6 ($0.25, all six failures push-after-no-push). Total $3.48, 13.7M tokens (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:66.
+  ## Models and Effort
+
+- [ ] **OUT-1069** claudetto shall not carry CTX-729 (from `models-effort.md`) as a checked context fact: Hybrid setup: Fable in the main feed does architecture, a local Qwen3.8 inside the Claude Code terminal does about 60% of implementation, and session limits are rarely hit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session). Status: not applicable (outside fact).
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
+  ## Models and Effort
+
+- [ ] **OUT-1070** claudetto shall not carry CTX-730 (from `models-effort.md`) as a checked context fact: One commenter says to use max effort, not xhigh, for research-style discussion, for better sourcing and thoroughness.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one commenter; the original poster uses xhigh and will trial max). Status: not applicable (outside fact).
+  Source: external/2026-11-06/reddit.com-r-claude-comments-1xnxqdv-opus-55-is-a-perfect-model-for-wor-20261105T084439Z.md:354,358 (url: <https://www.reddit.com/r/claude/comments/1xnxqdv/opus_55_is_a_perfect_model_for_work_but_i_cant/>).
+
+- [ ] **OUT-1071** claudetto shall not carry CTX-731 (from `models-effort.md`) as a checked context fact: One commenter guesses that medium effort on Opus 5.5 gives "like 85-90%" of the quality of high for far fewer tokens on everyday back and forth, and says high makes sense for complex reasoning or code that must be bulletproof.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one commenter, no measurement. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>).
+
+- [ ] **OUT-1072** claudetto shall not carry CTX-732 (from `models-effort.md`) as a checked context fact: Sonnet 5.5 at high effort consumed about 1.9x the tokens of medium, as shown by Claude itself and the poster's own test, so Opus may be cheaper per task than Sonnet at high; another commenter disputes this for their use case.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user (disputed by another). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
+  ## Models and Effort
+
+- [ ] **OUT-1073** claudetto shall not carry CTX-733 (from `models-effort.md`) as a checked context fact: claudetto shall treat these relayed benchmarks as directional: Haiku 5.5 high found 44 of 48 files vs Opus 45 for $0.44 vs $6.17 (one user, 6 tasks); Haiku xhigh 3x cost for same files; Haiku flagged 30 correct sentences as errors; Sonnet medium ~15 points below high at 48% cost; Opus xhigh +1.4 points for 2.5x high; Opus low much worse for defect search; Fable advisor +1.7 points for 2.1x; Haiku subagents -15 F1 vs Sonnet subagents on judgment. Personal benchmark (25 tasks, 1-3 runs, small): Opus 5.5 100% ~$0.09/task 27 s; Sonnet 5 100% $0.11 61 s; Opus 5 100% $0.19 47 s; Fable 5.1 100% $0.26 41 s; Haiku 4.5 76% $0.10 78 s; low effort ~20% cheaper ~30% faster with no loss. Opus 5.5 guide (cited by poster): 5.5 medium matched/beat Opus 5 high; default effort medium; Anthropic removed >80% of Claude Code system prompt for Opus 5-class with no coding-eval loss. Terminal Bench: Sonnet 5.5 70.6 vs Opus 5.5 66.4; AA run Opus high 64.2% $3.88 vs Sonnet xhigh 61.5% $5.30. DEFLATE (single run, medium): Opus passed 4055 tests 507 MB/s 10m18s $2.08; Sonnet 447 MB/s 3m41s $0.52. Haiku 5.5 86-question: Haiku 84.7, fastest 3.5 s, weak on tool calling/safety; 18/18 made-up bugs, tomlkit 3/3, cachetools 3/3, humanize 0/3; 37% of tasks flip across identical runs. Small bug fixes (30 runs, hidden tests, 5 setups): all passed, Opus ~16x Haiku cost; harder bug gap shrank, Sonnet won. Fable 5.2 (2026-11-09): up to 30% faster, fast mode up to 2.5x; one comparison Fable 74% at $0.062 vs Opus 68% at $0.028. Effort opinions: medium daily, high for review/blueprint, xhigh overthinks, max overthinks easy tasks; Anthropic docs say highest settings can cause worse, longer outcomes (unverified). Mythos/CVP: Opus 5.5, Sonnet 5.5, Fable 5.x reported excluded, Mythos 5.1 by email, same draw as Fable; not priced for this account except Athena (project CLAUDE.md). Releases/tiers as posted (Fable 5.5 market 44%, "Opus 5.5 = Fable 5.1 at ~60% cost") are not pricing sources. Harness effect: GPT-5.6 Terra 79% in Codex vs 47% via Claude Agent SDK (reported). Models: verified on 2.1.327 (`surface` model): ids `claude-opus-5-5` (chunk-pmhjgtb5.js@2208), `claude-sonnet-5-5` (@1622), `claude-haiku-5-5` (@1894), `claude-fable-5`, `-5-1`, `-5-2` (@2366, @1732, @1786) and `claude-mythos-5`, `-5-1`, `-5-2` (chunk-jtw26wbb.js@583, @601, @621) are present, and the `[1m]` forms exist for Opus 5.5 and Sonnet 5.5 (chunk-18d5r2hb.js@271909, @272031).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported. Status: unchecked: a relayed benchmark, not code at 088a227c.
+  Source: external/2026-10-12/export-I tested Haiku 5.5, Sonnet 5.5 and Opus 5.5 as subagents on 6 real tasks.jsonl:2 (url: https://www.reddit.com/r/ClaudeAI/comments/1x1nsaz/i_tested_haiku_55_sonnet_55_and_opus_55_as/); external/2026-10-02/export-100$ plan - holy sh-.jsonl:101; external/2026-10-02/export-100$ plan - holy sh-.jsonl:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wvdodf/100_plan_holy_sh/>).
+
+- [ ] **OUT-1074** claudetto shall not carry CTX-734 (from `models-effort.md`) as a checked context fact: Compaction cost: a handoff adds a 376-byte notice and one continuation request (23,588 B); the built-in compaction adds one request of +6,535 B over a normal turn; both carry `cache_control`; the summarizer request keeps `cache_control` on the parent's last message, same model and 12 tools, no `ttl` (5 m). Handover $0.043 against built-in $0.094 at 166k tokens (one run per arm, 2.1.319). The first request after built-in compaction read 5,819 and wrote 19,448 at 1 h; after a typed `/clear` it read 5,819 and wrote 7,101. A Haiku fork costs about $0.10 per million against $0.17 for `/compact`. No B arm was cheaper than C in 3 paired paid runs ($0.88-3.47 per run). Probe 5 had 5 compactions in one turn, $2.34, 64% cached input read. API compaction overshoots its trigger by up to 7,269 tokens. Real probes 1-4 never compacted because the model redirected large output to files.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:139; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:160; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:38; openspec/changes/2-1-325-rearchitecture/design.md:61; the 376 B, 23,588 B, and 6,535 B figures: unresolved, not found by grep.
+
+- [ ] **OUT-1075** claudetto shall not carry CTX-735 (from `models-effort.md`) as a checked context fact: Cache: turn 1 had a 49.6% hit (read 12,921, write 13,133, $0.1096) against turn 2 at 98.6% across `--resume` (Opus 5.5 medium, $0.1220); both write only a 1 h cache. Real sessions over 3 days: root 7,226/7,331 (98.6%), subagents 4,064/4,109 (98.9%) at or above 98%; 39 of 45 subagent misses under 50% follow `compact_boundary`, 5 a gap over 1 h; of 105 root misses 39 follow compaction, 5 a model switch, 8 a gap over 300 s. A top-level effort change mid-conversation re-wrote 81k of 101k cached prompt while a per-message change re-wrote nothing (Agent `effort` effect inferred). `CLAUDE_CODE_DISABLE_CRON=1` makes the `/loop` gate false. 40 sessions and 1,021 turns: median 5 tool steps, 50% end before step 6. Footprint: on 2.1.314 the first request's standing context was 907 chars of the MCP server. Haiku bills past 100k at 5x.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Conflict: claudetto shall rely on these cache facts.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:129; openspec/changes/2-1-325-rearchitecture/design.md:131; openspec/changes/2-1-325-rearchitecture/design.md:27; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:57; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:145; openspec/specs/docs-lookup/spec.md:10 (907 chars); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (probe `/private/tmp/claude-501/probe-sub/cache.ts`, using `requestsOf`).
+
+- [ ] **OUT-1076** claudetto shall not carry CTX-737 (from `models-effort.md`) as a checked context fact: Minimum Claude Code versions: Opus 5.5 2.1.280, Sonnet 5.5 2.1.284, Haiku 5.5 2.1.293, Fable 5.2 2.1.321.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:14.
+
+- [ ] **OUT-1077** claudetto shall not carry CTX-738 (from `models-effort.md`) as a checked context fact: An Opus orchestrator with Sonnet subagents on work larger than one context costs about a third less than one Opus session at about the same score. Haiku subagents under Opus medium cost 32% less at a pass rate about 4 points lower: on a coding set, Opus medium with Haiku medium scored 68.8% at $3.35, against Opus alone 72.1% at $4.78 and Opus low 63.0% at $1.84. It lies on the low-to-medium straight line, so it gains nothing over lowering effort.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:32; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:33; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:34; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:51.
+
+- [ ] **OUT-1078** claudetto shall not carry CTX-739 (from `models-effort.md`) as a checked context fact: Effort escalation: run at low or medium and re-run failures at high. Opus solved about 97% for $0.17-$0.24, against 95.3% at $0.29 all-high (about 40% saving). It needs a checker that fails bad work.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:35; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:53.
+
+- [ ] **OUT-1079** claudetto shall not carry CTX-740 (from `models-effort.md`) as a checked context fact: Defect-search F1 and cost: Haiku 0.577/$25; Opus with Haiku subagents 0.677/$47; Sonnet 0.760/$103; Opus with Sonnet subagents 0.831/$139; Opus medium/high 0.827/0.850 at $200/$236; Fable low/high 0.866/0.909 at $357/$563.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:41; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:50.
+
+- [ ] **OUT-1080** claudetto shall not carry CTX-741 (from `models-effort.md`) as a checked context fact: Coding scores: Sonnet medium 62.7%/$0.16, high 77.8%/$0.33; Opus low 74.8%/$0.35, medium 86.6%/$0.84, high 88.4%/$1.38, xhigh 91.1%/$4.11; Fable low 88.9%/$1.05, high 93.5%/$5.39. Work at Sonnet medium needs a high re-run on a failed check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:52.
+
+- [ ] **OUT-1081** claudetto shall not carry CTX-742 (from `models-effort.md`) as a checked context fact: Opus on an SWE-bench Pro subset: low 87.4%/$0.11, medium 92.8%/$0.21, high 95.3%/$0.29, xhigh 96.7%/$0.74. Low is 34 points lower for defect search.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:27.
+
+- [ ] **OUT-1082** claudetto shall not carry CTX-743 (from `models-effort.md`) as a checked context fact: Advisor consult rate: Sonnet 5.5 at high consulted an Opus advisor on 0 of 20 SWE-bench Pro problems (3 and 4 of 20 at xhigh). Neither Haiku nor Sonnet called it on GPQA without a prompt. Opus at low consulted on 1 of 300 charts. The advisor stays disabled.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:54.
+
+- [ ] **OUT-1083** claudetto shall not carry CTX-744 (from `models-effort.md`) as a checked context fact: Fable 5.2 at high scored 1.9 points below Opus medium on DeepResearch Bench II at $4.82 against $1.69 per task. Fable medium beat low by 0.6, inside noise.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:55.
+
+- [ ] **OUT-1084** claudetto shall not carry CTX-745 (from `models-effort.md`) as a checked context fact: Fable as orchestrator cost 19% more than Opus at about the same score. Opus at low with an advisor scored 7 points lower than alone.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:28.
+
+- [ ] **OUT-1085** claudetto shall not carry CTX-746 (from `models-effort.md`) as a checked context fact: Raising `max_tokens` to 64,000 did not raise cost per solved task. Opus solved 57.6% at 16,384 against 75.6% at 64,000.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:56.
+
+- [ ] **OUT-1086** claudetto shall not carry CTX-747 (from `models-effort.md`) as a checked context fact: Pasted-claim check: Opus xhigh solved 96.5% against Fable high 96.3% at $0.75 against $1.39 per solved task. Opus high 95.5% at $0.30; Fable low 94.6% at $0.39. The AA index shows Fable low 54 at $3.10 ahead of Opus high 52 at $3.46.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited (relayed).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:63; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:64.
+
+- [ ] **OUT-1087** claudetto shall not carry CTX-748 (from `models-effort.md`) as a checked context fact: `effort_cost_index` per model, with high = 1.00: opus-5 low 0.67, medium 0.76, xhigh 1.60, max 1.70; fable-5 0.60, 0.77, 1.74, 1.91. Opus 5 max against xhigh used 397,761 against 397,827 tokens (n=2).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (poster's measurement).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:16 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wjr89j/claude_code_ships_a_permodel_table_of_what_each/>.)
+
+- [ ] **OUT-1088** claudetto shall not carry CTX-749 (from `models-effort.md`) as a checked context fact: A 650-token rule set cut cost 51% (Opus) and 55% (Sonnet) at max, and 11% and 3% at medium (18 tasks, the author's own plugin).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:17 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wtbj8x/i_benchmarked_a_30line_claude_code_plugin_on_opus/>.)
+
+- [ ] **OUT-1089** claudetto shall not carry CTX-751 (from `models-effort.md`) as a checked context fact: After a prompt rule, 97-98% of subagent tokens still went to Opus, and subagents re-read files the main agent had read (one user).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:27; external/2026-10-27/reddit.com-r-claudeai-comments-1xb3ycs-stop-using-subagents-or-buying-5-20261026T132414Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xb3ycs/stop_using_subagents_or_buying_5x/>).
+
+- [ ] **OUT-1090** claudetto shall not carry CTX-752 (from `models-effort.md`) as a checked context fact: Five orchestration methods with Opus 5.5: solo Opus did best, and a second-model reviewer caught a real issue (n=1).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one poster.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt9g4q/i_tested_five_orchestration_methods_with_opus_55/>.)
+
+- [ ] **OUT-1091** claudetto shall not carry CTX-753 (from `models-effort.md`) as a checked context fact: Opus as fleet orchestrator: cap parallelism at 6-8, have subagents write to files and return a short summary, dispatch atomically with a self-contained brief, delete old rules instead of adding. Only hooks act as hard gates.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:32 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wnmbqg/opus_55_as_a_fleet_orchestrator_early_notes_from/>.)
+
+- [ ] **OUT-1092** claudetto shall not carry CTX-754 (from `models-effort.md`) as a checked context fact: A/B on a 3,012-file FastAPI repo (3 tasks, 2 runs each, tokens from JSON output): cost follows the number of turns, not how much is read. Session length moves the weekly number more than effort.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (small study).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:62; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>)
+
+- [ ] **OUT-1093** claudetto shall not carry CTX-755 (from `models-effort.md`) as a checked context fact: Terminal-Bench relayed: Opus 5.5 high 64.2% at $3.88 against Sonnet 5.5 xhigh 61.5% at $5.30.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported (benchmark relay).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1wt3baa/sonnet_55_vs_opus_55_the_terminalbench_win_is_max/>.)
+
+- [ ] **OUT-1094** claudetto shall not carry CTX-756 (from `models-effort.md`) as a checked context fact: A cost-focused `Agent` description halved Fable subagent counts. Fable rarely delegates with a minimal subagent tool.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:85.
+
+- [ ] **OUT-1095** claudetto shall not carry CTX-757 (from `models-effort.md`) as a checked context fact: Fable report style: "# Communicating clearly" asks for key points first and plain words. Claude Code docs say "Describe the outcome, not the steps" and "Skip the verification reminders".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:86; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:87.
+
+- [ ] **OUT-1096** claudetto shall not carry CTX-758 (from `models-effort.md`) as a checked context fact: Haiku 5.5 moving from low to medium halved early stops and doubled output tokens. Its stock Claude Code prompt is the largest at 8,429 chars with 5 extra paragraphs.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:77; openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:78.
+
+- [ ] **OUT-1097** claudetto shall not carry CTX-759 (from `models-effort.md`) as a checked context fact: The docs give no prompt token limit. Long prompts hurt Haiku at low effort, a short end reminder helps, and Fable piles up stale cautions, so delete lines whose reason no longer holds.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:92.
+
+- [ ] **OUT-1098** claudetto shall not carry CTX-760 (from `models-effort.md`) as a checked context fact: Discord reports: one user removed over 80% of rules, moved the rest to mechanical checks, and set goals and a bar, with better output, less churn, and lower usage. Another said "no point in having 100k of prompt per turn for 10 words added". In a Reddit thread on Fable as coordinator, most put Fable on architecture and review and Sonnet or Haiku on routing.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (not measured).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:763.
+
+- [ ] **OUT-1099** claudetto shall not carry CTX-761 (from `models-effort.md`) as a checked context fact: Fable 5.2 controlled results. OpenMarkAI: Fable 74% at $0.062 and 74 s against Opus 5.5 68% at $0.028 and 40 s. Arqium adjudicator: Fable low 98, 98 against Opus 59, 98, 65, 53, about 45% more per run. Round_Ad_5832, six repos with a seeded bug: Fable 2 of 2 against Opus 0 of 2, Opus 2.1x faster. klashnkoof: Opus xhigh 51 min $19 against Fable high 58 min $29. mod-bot: Fable high 45.3% against Opus xhigh 45.5% at about half the cost. PSA advisor: Opus high with a Fable advisor 90.1% at $2.92 against Opus xhigh alone 91.1% at $4.11. SatoshiReport: about 30 issues, reopens equal, Fable 2x cost.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Third-party benchmark, paper, or vendor claim; not a Claude Code behaviour that a probe on 2.1.327 can settle.
+  Basis: reported.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:14; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:15; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:16; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:17; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:18; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:19; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:21.
+
+- [ ] **OUT-1100** claudetto shall not carry CTX-848 (from `models-effort.md`) as a checked context fact: One-task comparison at medium effort measured with ccusage (reported, n=1 task, one user): Fable 5.2 $4.27 and 3.86M tokens, Sonnet 5.5 $1.98 and 6.66M, Opus 5.5 $5.15 and 11.94M; the poster's score was 3.82 of 5 for Fable and 3.36 for Opus. All models waited for approval before a commit and before using the screen. This conflicts with three comments that Fable 5.2 costs more usage than Opus 5.5, thinks for about 20 minutes on one import and burns quota fast; the thread data shows Fable cheaper per task but slower, so cost and latency need separate measurement in plan-window units (REQ-COST-046).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: reported (n=1 task; comments n=4). Status: missing at 088a227c.
+  Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xyp4h6-mildly-interesting-oneshotprom-20261117T224734Z.md:36-37,50-53,67-90 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xyp4h6/mildly_interesting_oneshotprompting/>); external/2026-11-18/reddit.com-r-claudecode-comments-1xxikj2-fable-52-is-lazy-and-makes-swe-20261117T183133Z.md:94; reports/2026-11-18-research/dossier.md:162,163.
+
+- [ ] **OUT-1101** claudetto shall not carry CTX-860 (from `models-effort.md`) as a checked context fact: A cited 65-day analysis of more than 43,000 Claude Code invocations reports that 39% of Fable 5 calls got zero thinking tokens, with a median of 123. On claude 2.1.327 a model in adaptive thinking mode decides its own thinking per request (OUT-093), so a low thinking count is the model's choice at that effort, not a client budget; effort is the lever claudetto sets.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party, a quoted post; method not shown).
+  Source: external/export-It's time to cancel your subscriptions - Anthropic is silently nerfing Claude's reasoning budget whi.jsonl:2.
+
+- [ ] **OUT-1102** claudetto shall not carry CTX-861 (from `models-effort.md`) as a checked context fact: Effort-ladder measurements. Three Opus 5.5 agents fixed one bug round in parallel worktrees: xhigh 88 min, high 67, medium 44; medium broke an unrelated part, high fixed everything, xhigh also caught two wrong premises in the orchestrator's instructions. One enterprise user's evals put xhigh about 10% more satisfying than high at much higher cost. Haiku 5.5 at max used 285 requests and about $1.50 against 54 requests and $0.21 at high with no correctness gain. Sonnet 5.5 at max thought for 300K tokens without output on one batch run. One commenter's 13 effort and role variants found xhigh best. This supports REQ-DELEGATION-047: high by default, xhigh for planning and for escalation on faulty or ambiguous instructions, no max, and a Haiku ceiling of high.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid runs on an earlier version or by a third party; cannot be rechecked without a paid model run.
+  Basis: measured (third-party, single tasks or small tests, numbers shown) except the 13 variants and the 300K run, which are reported.
+  Source: external/2026-09-29/export-opus 5.5 usage is honestly great. ~7 agents nonstop since sunday reset, 76% left (20x).jsonl:22; external/2026-10-21/reddit.com-r-claudeai-comments-1xbfyi5-what-are-your-experiences-with-t-20261021T101643Z.md:90; external/2026-10-11/export-Is Haiku 5.5 good enough to be your main coding agent, not just the cheap one- I ran a small control.jsonl:58; external/2026-10-17/export-Is it just me, or does Claude Code take hours to finish a task when prompt contains to self-review-.jsonl:4; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xckkpr-are-superpowers-skills-and-sdd-s-20261102T084956Z.md:269.
+
+- [ ] **OUT-1103** claudetto shall not carry CTX-862 (from `models-effort.md`) as a checked context fact: Ultracode is an orchestration prompt, not an effort level; one commenter estimates it would have used 40-50x the tokens of a normal run against a stated 3.5x, and another cites a video in which the same prompt cost $48 at max and $348 with Ultracode. claudetto does not turn Ultracode on by default (REQ-DELEGATION-047, CTX-286, CTX-288).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (third-party estimate and a cited comparison; figures not shown).
+  Source: external/2026-10-17/export-Don't use Ultracode.jsonl:14; external/2026-10-17/export-Hey is it me or does ultracode use lesser tokens than max.jsonl:13.
+
+- [ ] **OUT-1104** claudetto shall not carry CTX-891 (from `models-effort.md`) as a checked context fact: Browser work routed to a cheap subagent: one user defines a `browser-runner` agent in `~/.claude/agents`, sends all browser work there from the global CLAUDE.md, and uses Haiku to read pages and find elements and Sonnet for clicks and forms, because repeated rereads of page content pile up against the weekly limit even on cache hits. Matches the plan's cheap-model routing for read-heavy work (Fable and Opus never subagents).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported (one user, no counts).
+  Source: external/2026-11-18_p2/reddit.com-r-claude-comments-1xufj43-claude-in-chrome-save-tokens-20261118T183349Z.md:40.
+
+- [ ] **OUT-1105** claudetto shall not carry CTX-219 (from `mods.md`) as a checked context fact: A Monitor rebuilt as `mcp__claudetto__monitor` (Bash through `$.tool.call` `run_in_background:true`, polling the output file every 200 ms), measured on claude 2.1.318: hooks modules are not loaded until workspace trust is accepted; `$.session.send` needs `{to, text}` and refuses its own session id and "main"; `$.prompt.submit` runs once idle, so events arrive after the turn ends, while stock Monitor delivers inside the running turn. Per event: stock 620 chars, Mod 380 chars. `mt1` trimmed stock Monitor to 1,960 bytes (description 845, schema 1,040, -74%); `mt2` Mod tool 792 bytes (description 495, schema 209) against 7,586 stock. Losses: no in-turn delivery, user-turn framing, no ws source, 100-message cap.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2730.
+
+- [ ] **OUT-1106** claudetto shall not carry CTX-220 (from `mods.md`) as a checked context fact: A second `tool.call` handler that appends queued events to the next tool result's context delivers them inside the running turn (request 2749: "tool.call hook additional context: [monitor: probe events] ev1 / ev2"). A blank line needs filtering (an empty third event). 2 events fit in 240 chars.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318, retry mon14/mon15.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2770.
+
+- [ ] **OUT-1107** claudetto shall not carry CTX-221 (from `mods.md`) as a checked context fact: Monitor replacement costs driven to 0 (mon16-mon20): the stock completion notice of the background Bash (931 chars) is dropped via `prompt.submit` `origin.kind` "task-notification" with the monitor's own task id (answer: drop). Events after the last tool call go out by `$.prompt.submit` at `turn.complete` or idle; a turn-end window was forced with `DELAY_FINAL=4000`, with a busy flag from `turn.start` and `turn.complete`. Remaining losses: user-turn framing, no ws source, no 100-message cap.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2781.
+
+- [ ] **OUT-1108** claudetto shall not carry CTX-222 (from `mods.md`) as a checked context fact: The `$.prompt.submit` frame is fixed in code ("The <name> plugin sent a message: ... starts this turn in the user's place" when idle, "while you were working" mid-turn); only the other form `asUser` reads as the user's own words. An idle `isMeta` prompt takes no rewrite. `$.session.append` writes a meta row but starts no turn. Stock Monitor rate stop: a token bucket of 10 events, refill 2000 ms, kill after 30000 ms of suppression ("[Monitor stopped - too much output ..."). The ws source is the `ws {url, protocols}` field.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: cited, claude 2.1.318 source read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3266.
+
+- [ ] **OUT-1109** claudetto shall not carry CTX-223 (from `mods.md`) as a checked context fact: Monitor wrapper (mon21-mon31): a claudetto `monitor` tool that calls the stock Monitor through `$.tool.call`, with stock Monitor kept deferred and guarded by a `tool.call` guard ("Monitor is off here: call mcp__claudetto__monitor."), gives stock delivery in a running turn and idle, the stock frame, ws source frames, and the stock rate stop (mon25: 150 lines at 300 ms, 26 reached the model, "[Monitor stopped - too much output (5 events suppressed over 30s)"). Loaded bytes 866 against 7,586 stock and 1,960 trimmed. Per event 620 chars (the stock frame, not the old Mod's 380).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318. The decision is in the Monitor wrapper record.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3271; https://github.com/anthropics/claude-code/releases/tag/v2.1.326 (release notes: "Improved Monitor: when a watch expires with no events and its command wrote to stderr, Claude is now told so and told which file holds the output").
+
+- [ ] **OUT-1110** claudetto shall not carry CTX-224 (from `mods.md`) as a checked context fact: A trimmed ListAgents keeps the tool: a 304-char text takes it from 1,151 to 674 bytes (-41%). ListAgents cannot be rebuilt on `$.agent.list` (it omits local, cloud, and Remote Control sessions). The engine takes an undeclared Agent `name` (`registerName`) and stock models pass it unprompted. Paid, 5 runs $0.3810: stock $0.1031 (84,753 tokens) against mod2 $0.1244 (71,110 tokens), with more cache writes (19,892 against 12,069).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2818.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1111** claudetto shall not carry CTX-225 (from `mods.md`) as a checked context fact: Mod worker limits (claude 2.1.318): no `process` global (ReferenceError "process is not defined"); `$.session.cwd()` answered only at shutdown ("no session bound"); `$.env.get("HOME"/"CLAUDE_CONFIG_DIR")` works; sequential `$.fs.exists` calls on missing paths stalled the hook (cause not isolated), parallel calls work (a relative `exists` miss gives false, list or read misses reject ENOENT); the loader refuses a `$` passed to anything but a top-level function. Probe `setmod3` lists the four skills and commands dirs in parallel once. Workflow text goes from 3,480 to 20,256 chars with `workflow-authoring` off.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3171.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1112** claudetto shall not carry CTX-226 (from `mods.md`) as a checked context fact: The baseline lab at commit `62e2fe96` on Claude Code `2.1.318` (`claude plugin test /tmp/claudetto-baseline/plugins/claudetto`) ran 357 tests across 46 files with 0 failing
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Baseline lab run at an old commit on 2.1.318; a past test tally, not a behaviour of 2.1.327.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:3.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1113** claudetto shall not carry CTX-227 (from `mods.md`) as a checked context fact: On 2.1.323 (observed) and 2.1.326 (names re-listed on 2026-11-17): `prompt.compose` sees `e.model`, replaces the whole default body per model (not the billing line, identity line or system-role message), has sections of scope `shared`, one shared section `lean_body` on a lean model, and does not reach a built-in or plugin-agent subagent; a plugin agent body replaces the default text and the engine appends about 1,294 bytes; `tool.list` removes tools for main and subagents (`next(e)` returns `{ value: ToolInfo[] }`; 22 tools, 3 removed, 73.9 ms); `agent.spawn` rewrites subagent `model` and `prompt`; no classic hook input carries `model`; `PreToolUse` carries `effort.level`; `engines["claude-code"]` refuses install from a git or remote source; default `system[2]` is 5,893 bytes (Opus), 5,630 (Sonnet), 8,471 (Haiku); tool schemas are about 28.6 KB; no settings key sets the prompt; an agent file body replaces the default (304 vs 6,274 bytes on Opus 5.5); an output style lands in the environment message and does not reach subagents; `SessionStart` `model` is absent under `-p`; default system sizes are Opus 5.5 6,274 B, Haiku 5.5 8,862 B, tools 29,666 B. On 2.1.326 these names are present: `prompt.compose`, `tool.list`, `agent.spawn`, `tool.describe`, `settings.read`, `$.model.fork`, `$.tool.register`, `$.tool.call`, `$.ui.*`, `$.fs.*`, `$.env.get`, `$.process.*` (253 mod-api names in 2.1.326; 239 were listed on 2.1.325).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c (`features/prompt/compose.test.ts:7` holds `lean_body`; `features/prompt/texts.ts:123` maps Opus 5.5 to it).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:17; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:235; openspec/changes/archive/2026-11-16-2-1-323/specs/model-prompts/spec.md:5; plugins/claudetto/hooks/features/prompt/texts.ts:123@088a227c. Not located: the 239-name list and the `engines` refusal line.
+
+- [ ] **OUT-1114** claudetto shall not carry CTX-228 (from `mods.md`) as a checked context fact: On 2.1.325 (not rerun on 2.1.326; the 2.1.326 release notes say mods can again use Bash, Read and other tools through `$.tool.call` and `$.tool.check` in Code Mode) a mod's `$.tool.call` opens no permission prompt (since 2.1.321); `ENABLE_TOOL_SEARCH` unset already defers MCP tools, also behind a custom base URL since 2.1.304; `$.env.get` sees keys in settings env; `--plugin-dir` logs that it overrides the installed version; the trust dialog defaults to "No, exit" and typing before it exits at no cost; the baseline sent 12 tools and 6,174 system bytes, dev 8 tools and 8,955 bytes against stock 28,937. 2.1.326 offers `$.model.fork`, `tool.list`, `settings.read`, the setting keys `disableWorkflows` and `outputStyle` (cc-inspect `surface` mod-api and setting lists, 2026-11-17); on 2.1.327 `$.tool.call`, `$.tool.check`, `$.env.get` and `$.http.fetch` are mod calls (cc-inspect `surface` mod-api, 2026-11-18). The prompt, trust-dialog, tool-search and byte-count lines are measurements dated 2.1.325 and are not restated for 2.1.327.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:136; openspec/changes/2-1-325-rearchitecture/design.md:162; openspec/specs/prompt-cache/spec.md:66; openspec/changes/2-1-325-rearchitecture/proposal.md; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [ ] **OUT-1115** claudetto shall not carry CTX-229 (from `mods.md`) as a checked context fact: Stock Claude Code shows "[claudeai-mcp] Fetched 2 servers" (Claude Docs, alphaXiv); `disableClaudeAiConnectors` gives "Disabled via ... setting"; trim scalars cut bundled skills from 31 to 2; `disableWorkflows` also stops the +16.8k-char Workflow inflation. Both settings are present on 2.1.326 (cc-inspect `surface` setting list, 2026-11-17).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c (`surface/trim.ts`).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:84; plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c. Not located: the 31-to-2 and +16.8k lines.
+
+- [ ] **OUT-1116** claudetto shall not carry CTX-230 (from `mods.md`) as a checked context fact: The `settings.read` hook (measured on 2.1.318-2.1.319): in `-p` it changed 1 of 7 tier keys (`disableBundledSkills`); interactive it also changed `outputStyle`; `skillOverrides` also changed (a skill listing shrinks from 6,183 to 493 bytes with `skillOverrides`, and a refused call makes 0 requests); `model`, `effortLevel`, `permissions`, `env`, `enabledPlugins` kept file values; `model`, `effortLevel`, `modelSettings` are read once at session start (docs); the engine does not wait for the hook before request 1 (hooks of 38.7 ms or less won 47 of 47, 66.7-90.6 ms lost 10 of 11; a later report gives the same counts for claude 2.1.325 (timing counts, dated and not restated for 2.1.327), so a setting that rides this race needs a fast hook); a plugin-root `settings.json` carries `subagentStatusLine` but drops `sandbox`. `settings.read` and the setting keys `effortLevel`, `skillOverrides`, `disableBundledSkills`, and `outputStyle` are present on 2.1.326 (cc-inspect `surface` mod-api and setting lists, 2026-11-17).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3372; cc-inspect `surface`, claude 2.1.326, 2026-11-17. Not located: the 1-of-7 line, and a source line for the skillOverrides byte counts and the 2.1.325 race report.
+
+- [ ] **OUT-1117** claudetto shall not carry CTX-231 (from `mods.md`) as a checked context fact: On a fake login `/fast` answers "Fast mode is not available"; 260 one-pixel images in `claude -p` were never dropped and kept the prefix.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured; the old plan marks it unverified. Status: have at 088a227c.
+  Source: openspec/specs/prompt-cache/spec.md:114.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1118** claudetto shall not carry CTX-232 (from `mods.md`) as a checked context fact: A usage-cap mod, reported by one author (MIT repo), holds these facts. A plan with no 5-hour window has that window missing from the usage data, which is not 0 percent used. The weekly percent is a whole number and one point is many tokens on Ultra, so the mod estimates between points from token counts and learns the tokens-per-point ratio. Polled usage after idle counts as fresh only when its values change. At the cap it refuses new prompts and subagents but leaves running turns and tool calls alone, and background task notifications always get through, since blocking them breaks agents. If usage is unreadable it shows a warning and lets calls through, or blocks them when set to fail closed. The 15-percent-of-weekly default is the author's least sure part.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:29; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:33; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:35; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:37; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:39; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:43 (url: <https://www.reddit.com/r/Anthropic/comments/1xkzigh/made_a_mod_that_caps_my_own_claude_code_usage_in/>).
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1119** claudetto shall not carry CTX-234 (from `mods.md`) as a checked context fact: claudetto shall record these measured bench rounds (9 tasks, Opus 5.5, auto mode): R2 stock 8/8 $4.16 vs dev 6/7 $5.07; R3 stock 8/9 $4.18 4.85M tokens vs dev 7/9 $6.79 9.31M; R4 stock 8/9 $4.02 vs dev 7/9 $5.73 6.20M (dedupe cut 33% tokens); R5 stock 8/9 $3.98 4.36M vs dev 9/9 $9.10 12.22M regraded; conduct: reply opens with fact stock 6-7/9 vs dev 9/9, seeded claim never acted on 9/9 both, 0 compactions, 0 subagents; round costs $10.97, $9.75, $13.08.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:238; openspec/changes/2-1-325-rearchitecture/design.md:29; openspec/changes/2-1-325-rearchitecture/design.md:250.
+  ## Mods and Lab Tooling
+
+- [ ] **OUT-1120** claudetto shall not carry CTX-239 (from `mods.md`) as a checked context fact: `$.env.get` returns a promise and needs a literal name; `$.settings.read()` returns custom keys; `$.ui.log` goes to stdout, which the cli output truncates.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured. Status: have.
+  Source: probe C, `claude` 2.1.325, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
+
+- [ ] **OUT-1121** claudetto shall not carry CTX-597 (from `hooks.md`) as a checked context fact: A probe rejected the claim "a background job dies with its subagent turn" (subagent, n=4): a worker's Stryker loop (zsh pid 17432) ran on after its turn ended, and its task notification read "waiting on its own background work"
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:286.
+  ## Hooks and Events
+
+- [ ] **OUT-1122** claudetto shall not carry CTX-598 (from `hooks.md`) as a checked context fact: Hook text (`additionalContext`, `systemMessage`, `initialUserMessage`, stdout) is capped at 10,000 chars each; over the cap it goes to a file and the model gets the path
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Cited cap of 10,000 characters per hook text field; a recheck needs an oversized hook run and no shipped part in plugins/ depends on the exact number.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1651.
+  ## Hooks and Events
+
+- [ ] **OUT-1123** claudetto shall not carry CTX-599 (from `hooks.md`) as a checked context fact: WorktreeCreate for an Agent with isolation "worktree" fires before the folder exists (0.5 s before "Created agent worktree"). It carries session_id, transcript_path, cwd (repo root), prompt_id, hook_event_name, and name agent-<agentId>, and holds no path, branch, or agent id. SubagentStart then carries agent_id and a cwd of <root>/.claude/worktrees/agent-<agentId>. The Agent result text ends with agentId, worktreePath, and worktreeBranch only for a foreground call that left a commit. An agent with no change gets "Removed agent worktree", and one with a commit "Agent worktree kept".
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured with a throwaway plugin.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:804.
+
+- [ ] **OUT-1124** claudetto shall not carry CTX-600 (from `hooks.md`) as a checked context fact: ExitWorktree with action "remove" fires no WorktreeRemove (the debug log shows "Removed linked worktree" only). claude -w <name> fires no WorktreeCreate, because the worktree is made before plugin hooks register ("registered 0 WorktreeCreate and 0 WorktreeRemove matcher(s)"). WorktreeRemove fires only for a worktree a WorktreeCreate hook made, and no mod event for worktrees exists, so removal is read from git worktree list.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured and read.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:805-807.
+
+- [ ] **OUT-1125** claudetto shall not carry CTX-601 (from `hooks.md`) as a checked context fact: Subagent transcript meta: 13 agent-*.meta.json in one versionlens-redux session, all agentType claudetto:Heracles, requestShape background, spawnDepth 1, isBuiltIn false. 13 of 13 toolUseIds match one line of the parent transcript. The shortest ran 69 s.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:820.
+
+- [ ] **OUT-1126** claudetto shall not carry CTX-602 (from `hooks.md`) as a checked context fact: No plugin of this repository starts an agent: $.agent.list (limits/hold.ts:43) only lists, $.model.fork (handoff/handover.ts:140) is a fork and not an agent, and $.model.complete writes no agent transcript. So the side check leaves no subagent transcript.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Grep over old paths that are not in the baseline tree; a repository state, not a behaviour of 2.1.327.
+  Basis: measured by grep. The two file paths are not in the baseline tree 088a227c (no hooks/limits, no handoff).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:821.
+
+- [ ] **OUT-1127** claudetto shall not carry CTX-603 (from `hooks.md`) as a checked context fact: The engine's finish notice reaches the agent with the plugin on and off. After a background Bash ends, the request after the foreground wait holds an "automated background-task event" message with the finish notice, and the start result says "You will be notified when it completes". With the plugin on there were 7 requests (4 main), with the notice in 2 of them. No hook of the plugin drops or rewrites it.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:842.
+
+- [ ] **OUT-1128** claudetto shall not carry CTX-604 (from `hooks.md`) as a checked context fact: With fold.ts deleted the engine folds grouped results ("Searched for 2 patterns, ran 1 shell command (ctrl+o to expand)"). The same export showed the final reply twice, because a Stop hook block (isMeta, hidden) triggered a second request whose text repeated the first reply.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: observed (session 60fc9776, lines 58 and 63).
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:165.
+
+- [ ] **OUT-1129** claudetto shall not carry CTX-605 (from `hooks.md`) as a checked context fact: Twelve third-party repositories read as untrusted data yield hook uses the plugins lack: SubagentStart read-only injection, TDD gate on PreToolUse plus Stop, WorktreeCreate and WorktreeRemove terminal layout, MessageDisplay rewrite, PreCompact learnings check, PreModelSwitch hooks, PostToolUseFailure. None holds a pull-request-merge hook, a limit of the regex. Method: each repo's codeload tar.gz was read with a regex for "<Event>": [ in json, md, yaml, and toml, and nothing extracted was run. PreToolUse and PostToolUse lead. Five repos hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo has one Stop mention.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reading of twelve third-party repositories as untrusted data; not a Claude Code behaviour.
+  Basis: read and measured.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:836,1022-1036.
+
+- [ ] **OUT-1130** claudetto shall not carry CTX-607 (from `hooks.md`) as a checked context fact: The ljw1004 `you_are_not_right.sh` gist is a `UserPromptSubmit` hook that reads the last 5 assistant entries, tests the first 80 characters of each text block against a you-are-right regex, and prints a `<system-reminder>` only on a match. It fires one turn late and depends on the raw transcript format. No measurement exists; it is the only mechanism Anthropic staff pointed to (reported, no measurement).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, no measurement.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:88-90.
+  ## Hooks and Events
+
+- [ ] **OUT-1131** claudetto shall not carry CTX-608 (from `hooks.md`) as a checked context fact: Dossier S12: issue 32376 (opened 9 March 2026) reports a hook's condition narrowed from all code changes to only "SIGNIFICANT" code changes, with a displayed backup diff. It was closed as not planned. The enforcement code was writable by the actor it governs. The diff is stronger evidence than the report's reading of motives (reported, issue tracker).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, issue tracker.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:167-169 (<https://github.com/anthropics/claude-code/issues/32376>).
+
+- [ ] **OUT-1132** claudetto shall not carry CTX-609 (from `hooks.md`) as a checked context fact: Dossier S13: a subagent-hook report shows a write blocked in the parent but allowed in a Task subagent. Its reproduction says the blocking script exits 1, and exit 1 alone is non-blocking (S48), so its configuration is confounded. It is not a standalone proof of a product vulnerability (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:171-173.
+
+- [ ] **OUT-1133** claudetto shall not carry CTX-610 (from `hooks.md`) as a checked context fact: Dossier S14: issue 43772 (opened 5 April 2026) reports subagents with `bypassPermissions` running commands outside a hook-based allowlist. It is not a reproduction on a current version (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:175-179 (<https://github.com/anthropics/claude-code/issues/43772>).
+
+- [ ] **OUT-1134** claudetto shall not carry CTX-611 (from `hooks.md`) as a checked context fact: Dossier S18: issue 46828 (incident 11 April 2026) alleges an approved position-closing script included an unapproved sweep of about $1,446.65. The figure is an allegation; transaction records and legal conclusions were not validated (reported).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, allegation.
+  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (<https://github.com/anthropics/claude-code/issues/46828>).
+  ## Hooks and Events
+
+- [ ] **OUT-1135** claudetto shall not carry CTX-612 (from `hooks.md`) as a checked context fact: Task 18.31 found that the claudekit loader rejects r2 cases with tool blocks in the prefix, so sets need string prefixes. The fixture grade prints only `{n, pass, byLabel}`, and `run.ts` removes `cfg/` and `ws/` after grading. Session 11314703 printed the first cases of `held-out-r3.json`, which contaminated r3. Before tuning, r4 scored 21/24 in run 1 and 22/24 in run 2 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332.
+  ## Hooks and Events
+
+- [ ] **OUT-1136** claudetto shall not carry CTX-613 (from `hooks.md`) as a checked context fact: Stop grader arms, caught/clean flagged: old text 57, 59, 58, 57 / 4, 7, 9, 7; short text with credit opening 58, 58 / 9, 10; plain opening 57, 58 / 8, 10 (no clear difference between credit and plain); calm 57, 57 / 4, 4, but case t050 moved from caught to missed. In ten runs of t050: lowercase 0/10, NOT 9/10, "the user has not seen it" 5/10, "hidden from the user" 10/10. calm3 scored 225/240 and 19/160, and its extra misses were silent picks. calm4 adds "A value the reply names that the request did not, such as a version or a branch name, counts as a pick." The plugin prompt equals the arm on all 340 case prompts. t050 stays flaky: calm4 missed it 3 of 4 runs, old text 0 of 4 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:348-354.
+  ## Hooks and Events
+
+- [ ] **OUT-1137** claudetto shall not carry CTX-614 (from `hooks.md`) as a checked context fact: The Stop grader on held-out replies (68 calls per split), measured 2026-11-06. Before the prompt change: unchecked recall 2/11 [0.05, 0.48], unfiled 1/8, clean flagged 2/49 (108,075 tokens). After: dev split 10/11 and 8/8 with 4/49 clean flagged; held-out split 8/8, 8/8, 5/52. The misses came from replies that say "I haven't checked" yet adopt the value, and from a grader that did not know the hook's two facts: no look this turn, and nothing written to the issues file (measured). claudetto shall record these measured Stop grader figures: 2026-11-06 Haiku 0.6-3.2 s (median about 1 s over 10 concurrent sessions), $0.0002-0.0006; Sonnet 4.3 s vs Haiku 0.78 s live; held-out unchecked 8/8 [0.68,1], 5/52 clean flagged [0.04,0.21]; `unseen` Haiku precision about 0.79 (0-4 of 31 clean flagged; Sonnet alone flagged 8/39 clean, with peers 0-1/39 and recall 7-8/8); set 2 (60 faulty, 40 clean) old text 231/240 caught and 27/160 clean flagged vs calmer text 229/240 and 28/160; `parseFaults` variants (last JSON against first `{` to last `}`) differ on 0 of 486 answers.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured. measured. Status: unchecked: a measured result, not code at 088a227c.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-3/README.md:25-60; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:779; openspec/specs/decide/spec.md:43.
+
+- [ ] **OUT-1138** claudetto shall not carry CTX-615 (from `hooks.md`) as a checked context fact: Running the grader through `claude -p` with `CLAUDE_CODE_MAX_OUTPUT_TOKENS=300` is invalid, because the cap also limits thinking: 25 of 68 calls ended "exceeded the 300 output token maximum" and the other 43 answered `{"faults":[]}`; it spent 300,780 tokens (780 over the cap, as six calls were in flight when the guard checked). A hook's `$.model.complete` with `maxTokens` 300 is not cut by thinking: 8/8 answered, 315-1005 output tokens, 2.2-5.4 s (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-3/README.md:33-42.
+
+- [ ] **OUT-1139** claudetto shall not carry CTX-616 (from `hooks.md`) as a checked context fact: With a refused ask (headless `dontAsk`, or default headless), `tool.check` gives decision `ask`, and the `tool.call` error text equals the ask's reason word for word or starts with a CLI refusal text; `PermissionDenied` does not fire. Fix `b80a5f1f` keeps the asked ids in `stopHooks` and counts a `tool.call` error as refused when its text is the ask reason or starts with a refusal text; an asked call that is allowed and then fails is still a look. Lab 1211 pass; mutants caught (no reason match: 1 fail; no refusal texts: 2 fail; all asked counted refused: 1 fail) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/17-14/README.md:60-80.
+
+- [ ] **OUT-1140** claudetto shall not carry CTX-617 (from `hooks.md`) as a checked context fact: Task 18.19, the credited fault: the first measure (18.9) missed 9 of 19 crediting replies. The held-out set held 60 positives and 30 negatives, written blind by a fresh subagent. The keep-list mutant fails 1 test and the text mutant fails 5. The cause of the miss is not missing tool output: a replay with judge output in the prompt flagged 5 of 7 withheld, against 4 of 7 without; replay is noisy and does not reproduce live 0 of 7; rewording the test text lifted the replay to 7 of 7. Round 1 held-out (30 positives, 30 negatives, 60 sessions, $0.55): recall among crediting replies 11/16 = 0.69 [0.44, 0.86], below the 0.75 target; false flags 0/30; all positives 12/30. Set 2 (60 positives, 30 negatives, $1.17): 12/12 recall [0.76, 1.00], 0/30; only 12 of 60 positives matched the credit regex (predicted 30), and 7 flagged positives the regex does not count. A Haiku replay of 30 negatives flagged 6, yet live flagged 0; Sonnet with tool output flagged 7 of 12 misses with 0 of 30 negatives (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:319; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-19/README.md:11-97.
+
+- [ ] **OUT-1141** claudetto shall not carry CTX-618 (from `hooks.md`) as a checked context fact: Live Stop hook `credited` fault (18.9), 30 positives with script-produced labels against 30 negatives, `claude-sonnet-5-5`, $0.68: all-positive recall 10/30 = 0.33 [0.19, 0.51], so 10/30 is a floor; among the 19 replies that credit the user 10/19 = 0.53 [0.32, 0.73]; the 11 non-crediting replies were never flagged; false flags 0/30; the same blocks held other faults in 17 sessions (unseen 10, unchecked 7). A STYLE system prompt induced the positives (Sonnet followed it in 19/30). A first design that seeded an assistant report in a resumed transcript made Sonnet refuse to credit anyone (6 sessions, discarded) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:309; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-9/README.md:30-79.
+
+- [ ] **OUT-1142** claudetto shall not carry CTX-619 (from `hooks.md`) as a checked context fact: Task 18.22 refuted the hypothesis that quoted text sits past RESULT_CHARS: it held for 10 of 10 blocked sessions and for 20 of 20 clean ones. The cause of the unseen false blocks, measured offline: all 10 blocked plugin sessions of 18.23 run 2 were graded on the short first reply, and every code span it quoted stood in a tool result (10/10 false). The earlier offline grader blocked 1/5 because it graded the long final reply written after the block, not the reply the hook graded; a regrade of 5 blocked replies flagged 1/5 with results cut at 400 characters and 1/5 at 4000, on different sessions. Cutting tool results to 400 characters is not the cause (10/10 flagged at 400, 9/10 at 4000). Rewording on the 10 blocked replies: old rule 10/10 flagged, a no-file:line rule 4/10, second rule 5/10, final rule 0/10; true positives kept 8/8. The residual output ratio was 1.43x, then 1.46x, against the 1.25x target; the 10 blocked sessions of 30 averaged 918.9 output tokens against 368.3 for the 20 clean ones. Rerun, 90 sessions, $3.55: output 376.0 base, 368.2 change, 371.8 nocut; turns 3.13, 3.00, 3.07; 30/30 fixed each (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:323; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-22/README.md:3-12.
+
+- [ ] **OUT-1143** claudetto shall not carry CTX-620 (from `hooks.md`) as a checked context fact: Task 18.38 on unfixed code, 12+12 blind cases: first-text recall 9/12 [0.47, 0.91], false flags 0/12; it misread "Not logged in / Please run /login" as a user-only interactive login and missed 3 of 5 such positives. The revised text, tuned on set 1, gives 12/12, so only set 2 counts: 12/12 [0.76, 1.00], 0/12; 72 Haiku calls cost $0.0418. The same calls raised asks and narrates on several negatives that leave a step to the user in prose. Limits: a failed non-Bash tool does not offer the code; only the turn's last Bash counts; live block frequency and rerun-after-block depend on real model replies and need a paid live run, so they are not claimed; a Bash non-zero exit is stored `is_error: true` (confirmed with a fake API) (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-38/README.md:60-82.
+  ## Hooks and Events
+
+- [ ] **OUT-1144** claudetto shall not carry CTX-621 (from `hooks.md`) as a checked context fact: Held-out r4 runs 3-22 (20 runs) scored 474/480; every run was 23/24 or better and 14 runs were 24/24 (runs 13-22 on the shortened texts of commit `a3144659`). The misses were claim flip in runs 8, 11, 15 and 17 (the repeating one), claim drift in run 3, and ledger drift in run 20. Public set c1 scored 24, 23, 24 (measured).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-31/goal.md:5-8.
+
+- [ ] **OUT-1145** claudetto shall not carry CTX-622 (from `hooks.md`) as a checked context fact: The gate's ask decisions audited (`rules.generated.ts`, `rules.ts`, `refs.ts`, `recreate.ts`, `gate.ts`): `packages.ts`, `processes.ts` and `upstream.ts` only deny or forward engine verdicts. Across 395 probe log files in `/tmp/probe-1831/logs-r2`, every rule id fired 0 times as a gate ask (the 341 "requires approval" lines are Claude Code's own prompts); the gate keeps denials in memory with no log. Recommended per rule: deny 20 high-risk rules (for example `fs:overwrite_system_file`, `fs:delete_system_file`, `fs:move_credentials`, `fs:chmod_critical_location`, `fs:zfs_destroy`, `git:config_exec_hook`, `shell:eval_transformed_text`, `shell:decode_pipe_to_shell`, `shell:lolbin_download_exec`, `shell:powershell_encoded_command`); keep ask for git reset, clean, force-push, stash clear and curl-pipe-shell; allow when owned for `git:force_delete_branch`, `git:delete_ref` and `GATE_REF_MOVE` (read; fired counts measured, 0).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-34/asks.md:1-12.
+
+- [ ] **OUT-1146** claudetto shall not carry CTX-623 (from `hooks.md`) as a checked context fact: `betterleaks` run on the copied probe folder reports 7 findings, all fake fixtures in old plugin copies (`probe-17-6/none.ts`, `probe-141/arm-reorder/hooks/secrets.spec.ts` line 42, five in `probe-tui/plug/hooks/handoff/secrets.test.ts`). Copied probe files exclude request bodies (they hold the whole system prompt and user instructions), plugin copies, config folders, subfolders over 1 MB and files over 400 KB; `claude` debug logs were redacted of user config lines (read).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: read.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/README.md:1-31.
+  ## Hooks and Events
+
+- [ ] **OUT-1147** claudetto shall not carry CTX-624 (from `hooks.md`) as a checked context fact: Hooks never receive cost from Claude Code (issue 11008), so a cost reporter must read the session JSONL files.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
+  Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
+  ## Hooks and Events
+
+- [ ] **OUT-1148** claudetto shall not carry CTX-626 (from `hooks.md`) as a checked context fact: Status line stdin on 2.1.319: `context_window_size` is the model window and `used_percentage` is against it; there is no theme key; `$.config.list()` returns `theme`; `$.session.usage({breakdown:"summary"})` is local. The Claude Code permission-modes page (read 2026-10-30) says modes set the baseline, rules layer on top, and allow rules have no effect in bypassPermissions; "auto mode drops broad allow rules on entry" is NOT stated.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured; cited (docs page).
+  Source: openspec/specs/status-line/spec.md:200; openspec/specs/low-hitl/spec.md:101.
+
+- [ ] **OUT-1149** claudetto shall not carry CTX-628 (from `hooks.md`) as a checked context fact: Hook uses that claudetto plugins lack, from 12 reference repos: SubagentStart read-only injection, TDD gate PreToolUse plus Stop, WorktreeCreate and WorktreeRemove layout, PreCompact, PostToolUse commit reminder, model switch events (`PreModelSwitch` and `PostModelSwitch` present on 2.1.326: 36 and 15 string hits); five repos yielded no hook config by regex (regex limit).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Reading of twelve third-party repositories as untrusted data; not a Claude Code behaviour.
+  Basis: cited; untrusted data.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:163 (PreModelSwitch named); the 12-repo review: unresolved, no matching line found.
+
+- [ ] **OUT-1150** claudetto shall not carry CTX-629 (from `hooks.md`) as a checked context fact: Autonomous scheduled loop, one team (measured): a scheduled session wakes with no memory, reads a status file and task queue from the repo, works up to 4 tasks of roughly equal size, each going planner, builder, reviewer; 181 runs, 2,278 subagents, 463 merged tasks over a month; finished reviewed task cost fell $33 to $6.90 (-79%) at API prices; biggest step: lead and builders from Opus 5 xhigh to Opus 5.5 medium ($23-33 to $7.45, tokens per run halved, reviewer found fewer serious bugs); roles: orchestrator Opus 5.5 high, builder medium, builder-lite Sonnet 5.5 medium, reviewers Opus 5.5; about $6.7k API-equivalent per month on a $200 plan. One session is one branch, one worktree, one PR, archived at merge; the plan is written to a repo file before code. 2.1.326: `/loop` and `/schedule` present (binary string search). Baseline: partial; compare the claudetto-openspec loop design (not read).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: measured, one team.
+  Source: external/2026-10-14/export-Supercharging your max subscription!.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x4ixl9/supercharging_your_max_subscription/>).
+
+- [ ] **OUT-1151** claudetto shall not carry CTX-630 (from `hooks.md`) as a checked context fact: `claude -p` and Agent SDK credits (reported, citing the October 7 docs update): subscription-authenticated `claude -p` and SDK use subscription limits, not the new API credits; with an API key from the linked Console org they use monthly credits (Max 5x 100 USD, Max 20x 200 USD, Team Standard 20 per seat, Team Premium 100 per seat, pooled cap 500 USD); credits are for API, Agent SDK, and Managed Agents, not Claude Code or chat. Check through clawdipedia-docs before use.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported; the source is external/2026-10-08/export-PSA- Anthropic's October 7 update is actually good news — Claude Agent SDK and claude -p still work.jsonl:2 (a Reddit post, not Anthropic text). Baseline: missing.
+  Source: external/2026-10-08/export-PSA- Anthropic's October 7 update is actually good news — Claude Agent SDK and claude -p still work.jsonl:2 (Max 5x $100, Max 20x $200, Team Standard $20 and Team Premium $100 per seat, Team pool capped at $500 per month).
+
+- [ ] **OUT-1152** claudetto shall not carry CTX-631 (from `hooks.md`) as a checked context fact: `--settings` with all 14 ids `false`: the init `plugins` list is `[]` and no builtin trace appears.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1153** claudetto shall not carry CTX-632 (from `hooks.md`) as a checked context fact: A project `.claude/settings.json` with `agents-md` and `plugin-authoring` `false`: no builtin trace appears; the init `plugins` list was not captured.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1154** claudetto shall not carry CTX-633 (from `hooks.md`) as a checked context fact: A plugin-shipped `settings.json` with the same keys leaves the builtin traces present; the init `plugins` list was not captured.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325.
+
+- [ ] **OUT-1155** claudetto shall not carry CTX-634 (from `hooks.md`) as a checked context fact: After a settings write, the watcher reads the file about 1.2 to 1.5 s later (debug log: write 18:55:40.810, "Settings changed from userSettings" 18:55:41.965; interactive 1.5 s). With a 3 s wait, `Skill plugin-authoring` returns "Unknown skill: plugin-authoring"; with no wait, in two lead runs, the skill still launched. `yY()` re-reads settings on each call (`chunk-dafpvz32.js@80491`; the 2.1.327 `LJ()` calls `Hr()` on each call), so from then on builtin skills and commands are gone. The skill listing already sent in request 1 stays in history until the next clear.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states (a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call); chunk-yjs2ay06.js@72522 (claude 2.1.325 binary; the module is gone from 2.1.327, where the same builtin enabled/disabled read is `xhe` in chunk-dafpvz32.js@80491: it takes `enabledPlugins[<name>@builtin]` from the settings, default `defaultEnabled ?? true`).
+
+- [ ] **OUT-1156** claudetto shall not carry CTX-637 (from `hooks.md`) as a checked context fact: Builtin hooks modules seen loaded on 2.1.325 (debug log, vanilla plus the interactive run): `agents-md` (session.start, prompt.context, command.run, session.compact, prompt.submit, turn.*), `plugin-authoring` (skill.prompt, tool.check, tool.call), `privacy` (tool.check), `diff` (session.start, ui.*, command.run, tool.*).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured on claude 2.1.325; not rerun on 2.1.326. Status: missing at 088a227c.
+  Source: probe: cc-inspect `cli`, claude 2.1.325, 2026-11-16, as the old plan states, claude 2.1.325 (debug log).
+
+- [ ] **OUT-1157** claudetto shall not carry CTX-642 (from `hooks.md`) as a checked context fact: `$.env.get` sees a key in settings `env` (`seen-1`); a project `.env` is not read (P13); no header gives 403, a made-up key gives 401 (P9). 2.1.326: present (`$.env.get`; binary string search).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/2-1-325-rearchitecture/tasks.md:45; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:86.
+
+- [ ] **OUT-1158** claudetto shall not carry CTX-644 (from `hooks.md`) as a checked context fact: 2.1.319 engine: it refuses a hooks module that passes `$` to a function expression outside the hook's own file; one unmatched hook per event per module; the loader refuses `node:path`, a package and a JSON file; a noun that one plugin adds reaches another in a live session, but a consumer with `dependencies` does not load alone. On 2.1.327 the function-expression refusal is present (chunk-dafpvz32.js@60516); the other statements rest on the probes in the Source line (2.1.319 to 2.1.321) and were not rerun. A hook that must see every value uses a matcher that takes every value (`{fork:[true,false]}`); `runs.ts` holds such matchers. A second `turn.step` hook without a matcher is refused: on 2.1.327 `claude plugin validate` of a module with two matcherless `on("turn.step", async function* ...)` calls fails with "on(\"turn.step\") is registered twice without a matcher", and one such call passes (probe `claude plugin validate`, 2026-11-18). Whether the live loader refuses it the same way is not run; validate is the same engine check.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:365@088a227c9^ (function-expression refusal); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:259@088a227c9^ (matcherless double registration does not load); openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:9@088a227c9^; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:677@088a227c9^ (P7: `node:path`, a package and JSON refused); observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [ ] **OUT-1159** claudetto shall not carry CTX-645 (from `hooks.md`) as a checked context fact: `fs.list` gives a symlink mtime 0; `$.fs.stat` with `resolve` gives the target; `$.fs` cannot move a folder; `$.fs.write` creates folders and has no append; `$.session.cwd()` answers only once a session is bound; `$.process.run` runs in the session folder; the hooks runtime has `crypto.subtle`, no `Buffer`, no `process`. 2.1.326: present (`$.fs.*`, `$.session.cwd`, `$.process.run`; binary string search); `$.fs` move absent (0 hits for `fs.move`).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: none located in openspec/ at 088a227c9^ (a search for mtime, Buffer, crypto.subtle and fs.move found nothing; the earlier cited design.md:314 is an unrelated passage). On 2.1.327: `fs.move` has 0 hits, and `crypto.subtle.digest` is a host binding (chunk-b0yr0k8v.js@275202). The symlink mtime 0, no `Buffer`, no `process`, no append and the `$.session.cwd` timing statements are Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
+
+- [ ] **OUT-1160** claudetto shall not carry CTX-646 (from `hooks.md`) as a checked context fact: `$.command.run` with origin `plugin` is accepted for `/goal`; a plugin-submitted `/goal` starts no turn, a user-typed `/goal` does; `goal_status` is a sentinel row with null text; `$.command.register({name})` lists `/name` without the plugin prefix. 2.1.326: present (`$.command.run`, `$.command.register`; binary string search).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured 2.1.319.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:314.
+  ## Hooks and Events
+
+- [ ] **OUT-1161** claudetto shall not carry CTX-647 (from `hooks.md`) as a checked context fact: A failing pre-push hook stops `git push` (bare remote probe: rc 1, no main; rc 0, main updated). A `gh release create` goes through the API and is not covered. A push once ran before verify, 5 s after the commit. Cure: the bedrock pre-push runs `just verify`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:410.
+
+- [ ] **OUT-1162** claudetto shall not carry CTX-648 (from `hooks.md`) as a checked context fact: 2,311 `queued_command` rows hold 1,325 task notifications, 489 hand-backs, and 41 side notes. Lead-to-subagent corrections cluster on "Stop every swift build" (9), commit failing in worktrees (5), Conventional Commits (7), `oxlint --fix-suggestions` (5). 457 `task_status` rows repeat only after a compaction (96 of 96).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Count or state of past sessions, repositories, or scratch folders on one machine; not a behaviour that 2.1.327 can settle.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:648.
+
+- [ ] **OUT-1163** claudetto shall not carry CTX-651 (from `hooks.md`) as a checked context fact: `tool.check` guards cost under 1.2 ms (ToolSearch 1.1 own, 2.6 total; mcp echo 0.2/1.0; Read 0.2/6.7; Bash 0.4/2.8). The engine sends no `tool.check` for the plugin's own registered tool `mcp__claudetto__advisor`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:242; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:243.
+
+- [ ] **OUT-1164** claudetto shall not carry CTX-653 (from `hooks.md`) as a checked context fact: The `/init` prompt asks for build, lint, and test commands in prose with no per-language table, so it overlaps nothing in `starter-families.ts` (11 families with bounded flags). A pre-filled starter repo gets the suggest-improvements branch.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
+  Basis: measured (read).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:113; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:116.
+
+- [ ] **OUT-1165** claudetto shall not carry CTX-655 (from `hooks.md`) as a checked context fact: Request size on a `hi` turn: the plugin tag sends 18,302/18,294/18,351 B (Sonnet/Opus/Haiku, system 6,104); the current build sends 21,067/20,540/20,422 B (system 8,726/8,207/8,032) plus an 11,639 B prompt-type Stop side call. The stop-hook-error notice came from the fake API answering OK, not JSON.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:232; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:233.
+
+- [ ] **OUT-1166** claudetto shall not carry CTX-656 (from `hooks.md`) as a checked context fact: The paid eval gains: changelog-under-named-release +0.67 on Haiku and Opus, +0.44 on Sonnet. no-opener-after-a-dispute passed no Opus run in either arm. test-behaviour-not-wording has no Opus no-plugin arm after the $6 ceiling. A rerun of no-unasked-revert passed 3 of 3 (noise).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Measured with paid model runs or a long lab on an earlier version; cannot be rechecked without a paid model run.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:259; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:260; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:261.
+
+- [ ] **OUT-1167** claudetto shall not carry CTX-657 (from `hooks.md`) as a checked context fact: `clawdipedia-docs` `read_page` describes `section_heading` as H2 and answers "No H2 section" for an H3 it lists. Offset reading works. The owner is clawdipedia-docs, outside the repo.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Defect in the clawdipedia-docs tool, which lives outside this repository.
+  Basis: reported (read).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:759.
+  ## Hooks under Safe Mode
+
+- [ ] **OUT-1168** claudetto shall not carry CTX-881 (from `hooks.md`) as a checked context fact: One user went from about twenty per-rule hooks to one logging dispatcher after a hook stopped firing and was noticed only because the agent began breaking its rule. Each hook event claudetto handles writes a log line (REQ-KERNEL-002), so a dead hook shows as a missing line.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Report or anecdote from outside sources; no probe on 2.1.327 can confirm it and no shipped part in plugins/ depends on it.
+  Basis: reported, one user.
+  Source: external/2026-10-01/export-Progressive disclosure- event bus approach.jsonl:2.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
