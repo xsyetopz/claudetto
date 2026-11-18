@@ -64,7 +64,7 @@ export const RETIRED_REMINDER_TEXTS: readonly string[] = [
 ];
 
 /** Bumped when the defaults change, so a fill runs once per set and never undoes a user's later edit. */
-export const FILL_VERSION = 3;
+export const FILL_VERSION = 4;
 
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 

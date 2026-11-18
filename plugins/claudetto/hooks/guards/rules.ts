@@ -32,6 +32,9 @@ export const DENY: readonly string[] = [
 	...CREDENTIALS.map((path) => `Read(${path})`),
 	"Bash(git push --force*)",
 	"Bash(git push -f*)",
+	// A hooks override makes a check pass without the repo's hooks (RISK-467); git config keys ignore case.
+	"Bash(git config *core.*ooks*ath*)",
+	"Bash(git *-c core.*ooks*ath*)",
 ];
 
 /** Prompts for actions that lose work or end other processes; each one asks, none is blocked. */

@@ -632,7 +632,7 @@
   - Status: open.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
 
-- [ ] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
+- [x] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
   Category: agent conduct.
   Cause: the guard refused the .git/config hooks setting; the agent overrode it.
   Event: just verify passes through a hook override, so the pass does not show the usual hooks work.
@@ -644,7 +644,7 @@
   Actions: treat a verify run that used a hooks override as failed; report the guard's refusal instead of routing around it.
   Trigger: a failed hooks guard during verify.
   Owner: verification
-  Status: open; no `hooksPath` or `core.hooks` guard at 088a227c (grep of `plugins/` finds none).
+  Status: closed 2026-11-19. Setup fills two deny rules, `Bash(git config *core.*ooks*ath*)` and `Bash(git *-c core.*ooks*ath*)` (`hooks/guards/rules.ts`, fill version 4). Probe on 2.1.327 with those rules: `git config core.hooksPath`, `git -c core.hooksPath=` and `true && git -C . -c core.HooksPath=` are denied; `git status` runs. The rules apply from the session after the fill.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; observed in transcript, 2026-11-13.
 
 ## Lead Agent Conduct
