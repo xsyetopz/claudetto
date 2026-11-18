@@ -1,7 +1,7 @@
 /** Shared fixtures for the mounted-flow tests. */
 
 import type { On } from "claude-code";
-import { type Engine, mock } from "claude-code/testing";
+import { type Engine, mock, type MockClock } from "claude-code/testing";
 
 declare const setTimeout: (fn: () => void, ms: number) => unknown;
 
@@ -25,7 +25,22 @@ export const REPLY = "learn: Tests run in order.\ntag: You should know\nexplain:
 
 export const pause = (): Promise<void> => new Promise((resolve) => setTimeout(() => resolve(), 5));
 
-export type Box = { text: string; filled: string[]; toasts: string[]; forks: number };
+export type Box = {
+	text: string;
+	filled: string[];
+	toasts: string[];
+	forks: number;
+	/** The arguments of each fork, in order. */
+	args?: unknown[];
+	/** The mocked clock, set by `offered`. */
+	clock?: MockClock;
+	/** Prompt texts the plugin submitted itself. */
+	submitted?: string[];
+	/** Each prompt that reached the bottom of the chain, as the plugin passed it on. */
+	sent?: { text: string; context?: unknown }[];
+	/** Lines the plugin wrote with `ui.log`. */
+	logs?: string[];
+};
 
 export type Offer = {
 	readonly surface?: string;
@@ -33,18 +48,43 @@ export type Offer = {
 	readonly env?: Record<string, string>;
 	/** Fork replies in order; the last one repeats. The first answers the check. */
 	readonly replies?: readonly string[];
+	/** When given, the plugin's store lives in this map so a test can read what the plugin kept. */
+	readonly kept?: Map<string, unknown>;
+	/** Held until the test releases it: the fork waits on it before it answers. */
+	readonly hold?: Promise<void>;
+	/** The surfaces the session reports, read at each call so a test can change them. */
+	readonly surfaces?: string[];
+	/** True when the prompt box refuses a fill. The harness strips a cause a hook writes, so none is given. */
+	readonly refuse?: boolean;
+	/** False when the test expects the check to show nothing. */
+	readonly isOffer?: boolean;
 };
 
 export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => {
-	const { surface = "terminal", props = PROPS, env = {}, replies = [REPLY] } = opts;
+	const { surface = "terminal", props = PROPS, env = {}, replies = [REPLY], kept, hold, surfaces, refuse, isOffer = true } = opts;
 	let call = 0;
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
-	mock.clock(on, { now: 1000 });
-	mock.store(on);
+	box.clock = mock.clock(on, { now: 1000 });
+	if (kept === undefined) {
+		mock.store(on);
+	} else {
+		on("store.get", (_$, e) => ({ value: kept.get(e.key) }));
+		on("store.set", (_$, e) => {
+			kept.set(e.key, e.value);
+			return { value: undefined };
+		});
+		on("store.delete", (_$, e) => {
+			kept.delete(e.key);
+			return { value: undefined };
+		});
+	}
 	on("session.id", () => ({ value: "s1" }));
-	on("session.surfaces", () => ({ value: [surface] as never }));
+	on("session.surfaces", () => ({ value: (surfaces ?? [surface]) as never }));
 	on("prompt.read", () => ({ value: { text: box.text, cursor: box.text.length } }));
 	on("prompt.fill", (_$, e) => {
+		if (refuse === true) {
+			return { isFilled: false };
+		}
 		box.filled.push(e.text);
 		return { isFilled: true };
 	});
@@ -52,8 +92,19 @@ export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => 
 		box.toasts.push(e.text);
 		return { value: undefined };
 	});
-	on("model.fork", () => {
+	on("prompt.submit", (_$, e) => {
+		(box.submitted ??= []).push(e.text);
+		(box.sent ??= []).push({ text: e.text, context: (e as { context?: unknown }).context });
+		return { ...e } as never;
+	});
+	on("ui.log", (_$, e) => {
+		(box.logs ??= []).push(e.text);
+		return { value: undefined };
+	});
+	on("model.fork", async (_$, e) => {
 		box.forks++;
+		(box.args ??= []).push(e);
+		await hold;
 		return { value: { isAnswered: true as const, text: replies[Math.min(call++, replies.length - 1)] ?? "", usage: USAGE } };
 	});
 	on("turn.step", async function* (_$, e) {
@@ -66,7 +117,7 @@ export const offered = async ($: Engine, on: On, box: Box, opts: Offer = {}) => 
 			// drained so the step completes
 		}
 	}
-	for (let i = 0; i < 100 && (await band.find({ key: "Learn more" })) === undefined; i++) {
+	for (let i = 0; i < (isOffer ? 100 : 12) && (await band.find({ key: "Learn more" })) === undefined; i++) {
 		await pause();
 	}
 	return band;
