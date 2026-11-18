@@ -1,0 +1,15 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "claudetto-you-should-know",
+	"description": "A full recreation of the bundled you-should-know plugin: every few steps a side request names one thing from the session worth learning, and Learn more explains it in cards.",
+	"author": {
+		"name": "xsyetopz"
+	},
+	"repository": "https://github.com/xsyetopz/claudetto",
+	"homepage": "https://github.com/xsyetopz/claudetto",
+	"license": "MIT",
+	"engines": {
+		"claude-code": ">=2.1.327"
+	},
+	"keywords": ["learning", "tips"]
+}

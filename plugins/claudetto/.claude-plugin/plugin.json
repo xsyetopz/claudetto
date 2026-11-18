@@ -1,0 +1,15 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
+	"name": "claudetto",
+	"description": "Trims Claude Code 2.1.327 to what beats vanilla: disables the bundled builtin plugins at load, hands over context at task boundaries, and keeps prompt caching warm.",
+	"author": {
+		"name": "xsyetopz"
+	},
+	"repository": "https://github.com/xsyetopz/claudetto",
+	"homepage": "https://github.com/xsyetopz/claudetto",
+	"license": "MIT",
+	"engines": {
+		"claude-code": ">=2.1.327"
+	},
+	"keywords": ["context", "handover", "builtins"]
+}
