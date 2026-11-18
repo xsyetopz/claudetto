@@ -46,7 +46,6 @@ test("turning off fills the command and shows the off view", async ($, on) => {
 
 test("a typed disable takes the off view down", async ($, on) => {
 	// Arrange
-	on("prompt.submit", (_$, e) => ({ ...e }) as never);
 	const box = fresh();
 	const kept: Kept = new Map();
 	await armed($, on, box, kept);
@@ -61,7 +60,6 @@ test("a typed disable takes the off view down", async ($, on) => {
 
 test("the next ordinary prompt takes an unconfirmed off view down too", async ($, on) => {
 	// Arrange
-	on("prompt.submit", (_$, e) => ({ ...e }) as never);
 	const box = fresh();
 	const kept: Kept = new Map();
 	await armed($, on, box, kept);

@@ -18,7 +18,6 @@ const typed = async ($: Engine, kind: "composer" | "bridge" | "sdk", turn: strin
 
 test("an offer survives one typed prompt and clears on the second", async ($, on) => {
 	// Arrange
-	on("prompt.submit", (_$, e) => ({ ...e }) as never);
 	const band = await offered($, on, fresh());
 
 	// Act
@@ -34,7 +33,6 @@ test("an offer survives one typed prompt and clears on the second", async ($, on
 
 test("a prompt from the SDK leaves the offer counters alone", async ($, on) => {
 	// Arrange
-	on("prompt.submit", (_$, e) => ({ ...e }) as never);
 	const band = await offered($, on, fresh());
 
 	// Act
