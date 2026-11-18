@@ -1,7 +1,8 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 import { resetRenewal } from "./renewal";
 
-function world(on, tokens: number) {
+function world(on: On, tokens: number) {
 	const calls = { fork: 0, compact: 0 };
 	on("ui.log", () => ({ value: undefined }));
 	on("session.compact", () => {
@@ -14,7 +15,7 @@ function world(on, tokens: number) {
 		return { value: { isAnswered: true, text: "H", usage: { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } } };
 	});
 	on("session.usage", () => ({ value: { startedAt: 0, context: { tokens, window: 200000 }, rateLimits: [] } }));
-	on("process.run", () => ({ value: { exitCode: 0, stdout: "", stderr: "" } }));
+	on("process.run", () => ({ value: { exitCode: 0, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
 	on("turn.complete", (_$, e) => ({ text: e.answer }));
 	on("classic.TaskCreated", () => ({}));
 	on("classic.TaskCompleted", () => ({}));

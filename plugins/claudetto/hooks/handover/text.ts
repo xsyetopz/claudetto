@@ -41,7 +41,7 @@ export function compose(body: string, head: string, status: string): string {
 export function parseTokens(value: string | undefined): number | undefined {
 	const m = /^\s*(\d+(?:\.\d+)?)\s*([kKmM]?)\s*$/u.exec(value ?? "");
 	if (!m) return undefined;
-	const scale = { "": 1, k: 1e3, m: 1e6 }[m[2].toLowerCase() as "" | "k" | "m"];
+	const scale = { "": 1, k: 1e3, m: 1e6 }[(m[2] ?? "").toLowerCase() as "" | "k" | "m"];
 	return Math.round(Number(m[1]) * scale);
 }
 

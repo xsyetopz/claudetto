@@ -24,12 +24,12 @@ export function registerRenewal(on: On): void {
 	on("classic.TaskCreated", async (_$, e, next) => {
 		open.add(e.task_id);
 		return next(e);
-	});
+	}).catch(() => undefined);
 	on("classic.TaskCompleted", async (_$, e, next) => {
 		open.delete(e.task_id);
 		if (open.size === 0) boundary = true;
 		return next(e);
-	});
+	}).catch(() => undefined);
 	on("classic.PostToolUse", async (_$, e, next) => {
 		const input = e.tool_input as { command?: unknown } | undefined;
 		const response = e.tool_response as { interrupted?: unknown } | undefined;
@@ -37,12 +37,12 @@ export function registerRenewal(on: On): void {
 			boundary = true;
 		}
 		return next(e);
-	});
+	}).catch(() => undefined);
 	on("classic.Stop", async (_$, e, next) => {
 		background = e.background_tasks?.length ?? 0;
 		if (open.size === 0 && background === 0) boundary = true;
 		return next(e);
-	});
+	}).catch(() => undefined);
 	on("turn.complete", async ($, e, next) => {
 		const result = await next(e);
 		if (e.agentId !== undefined || e.reason !== "answer" || !boundary || background > 0) return result;

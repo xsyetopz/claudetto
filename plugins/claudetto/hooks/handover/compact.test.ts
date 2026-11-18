@@ -1,14 +1,15 @@
+import type { ModelForkResult, On, SessionCompacted } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 const USAGE = { input_tokens: 1, output_tokens: 2, cache_read_input_tokens: 3, cache_creation_input_tokens: 4 };
 
-function world(on, env: Record<string, string> = {}, fork: unknown = { isAnswered: true, text: "HANDOVER", usage: USAGE }) {
+function world(on: On, env: Record<string, string> = {}, fork: ModelForkResult = { isAnswered: true, text: "HANDOVER", usage: USAGE }) {
 	const seen: unknown[] = [];
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	on("model.fork", () => ({ value: fork }));
 	on("session.messages", () => ({ value: [{ role: "user", text: "fix the parser", toolUses: [] }] }));
 	on("session.usage", () => ({ value: { startedAt: 0, context: { tokens: 90000, window: 200000 }, rateLimits: [] } }));
-	on("process.run", (_$, e) => ({ value: { exitCode: 0, stdout: e.argv[1] === "rev-parse" ? "abc1234\n" : "", stderr: "" } }));
+	on("process.run", (_$, e) => ({ value: { exitCode: 0, stdout: e.argv[1] === "rev-parse" ? "abc1234\n" : "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
 	on("session.compact", (_$, e) => {
 		seen.push(e);
 		return { messages: [{ role: "user", text: "CORE", toolUses: [] }] };
@@ -21,17 +22,17 @@ describe("session.compact", () => {
 		const seen = world(on);
 		const r = await $.session.compact({ trigger: "auto", messages: [] });
 		expect(seen.length).toBe(0);
-		expect(r.messages?.[0].text).toContain("HANDOVER");
-		expect(r.messages?.[0].text).toContain("git HEAD: abc1234");
-		expect(r.tokensBefore).toBe(90000);
-		expect(r.usage).toEqual(USAGE);
+		expect(r.messages?.[0]?.text).toContain("HANDOVER");
+		expect(r.messages?.[0]?.text).toContain("git HEAD: abc1234");
+		expect((r as SessionCompacted).tokensBefore).toBe(90000);
+		expect((r as SessionCompacted).usage).toEqual(USAGE);
 	});
 	test("the prompt that opened the turn stays after the handover", async ($, on) => {
 		world(on);
 		const messages = [
-			{ role: "user", text: "old", toolUses: [] },
-			{ role: "assistant", text: "OK", toolUses: [] },
-			{ role: "user", text: "second one", toolUses: [] },
+			{ role: "user" as const, text: "old", toolUses: [] },
+			{ role: "assistant" as const, text: "OK", toolUses: [] },
+			{ role: "user" as const, text: "second one", toolUses: [] },
 		];
 		const r = await $.session.compact({ trigger: "auto", messages });
 		expect(r.messages?.map((m) => m.text).slice(1)).toEqual(["second one"]);
@@ -39,12 +40,12 @@ describe("session.compact", () => {
 	test("a failed fork falls back to the transcript extract", async ($, on) => {
 		world(on, {}, { isAnswered: false, reason: "nothing-to-fork" });
 		const r = await $.session.compact({ trigger: "plugin", messages: [] });
-		expect(r.messages?.[0].text).toContain("- fix the parser");
+		expect(r.messages?.[0]?.text).toContain("- fix the parser");
 	});
 	test("manual compaction keeps core and appends the keep line", async ($, on) => {
 		const seen = world(on);
 		const r = await $.session.compact({ trigger: "manual", instructions: "focus", messages: [{ role: "user", text: "hi", toolUses: [] }] });
-		expect(r.messages?.[0].text).toBe("CORE");
+		expect(r.messages?.[0]?.text).toBe("CORE");
 		expect((seen[0] as { instructions: string }).instructions).toContain("focus\nKeep the user's corrections");
 	});
 	test("a subagent compaction takes the core path", async ($, on) => {

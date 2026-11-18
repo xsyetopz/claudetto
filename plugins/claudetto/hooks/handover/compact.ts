@@ -29,5 +29,5 @@ export function registerCompact(on: On): void {
 			tokensAfter: Math.ceil(text.length / 4),
 			usage: usage ?? zero,
 		};
-	});
+	}).catch((_$, e, next) => next(e)); // A failed handover leaves the compaction to core.
 }

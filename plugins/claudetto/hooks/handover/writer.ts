@@ -1,4 +1,4 @@
-import type { ModelUsage } from "claude-code";
+import type { EngineInterface, ModelUsage } from "claude-code";
 import { compose, extract, FORK_PROMPT } from "./text";
 
 /** A written handover and, when a fork wrote it, what the fork cost. */
@@ -13,16 +13,16 @@ export async function isSet(value: Promise<string | undefined>): Promise<boolean
 }
 
 /** True when `CLAUDETTO_DISABLE_HANDOVER` turns every handover path off. */
-export async function isOff($): Promise<boolean> {
+export async function isOff($: EngineInterface): Promise<boolean> {
 	return isSet($.env.get("CLAUDETTO_DISABLE_HANDOVER"));
 }
 
 /** True when `CLAUDETTO_DISABLE_AUTO_HANDOVER` (or the full switch) turns the automatic paths off. */
-export async function isAutoOff($): Promise<boolean> {
+export async function isAutoOff($: EngineInterface): Promise<boolean> {
 	return (await isOff($)) || (await isSet($.env.get("CLAUDETTO_DISABLE_AUTO_HANDOVER")));
 }
 
-async function git($, argv: string[]): Promise<string> {
+async function git($: EngineInterface, argv: string[]): Promise<string> {
 	try {
 		const r = await $.process.run(["git", ...argv]);
 		return r.exitCode === 0 ? r.stdout.trim() : "";
@@ -35,7 +35,7 @@ async function git($, argv: string[]): Promise<string> {
  * Writes the handover with one low-effort fork over the cached prefix; on no
  * fork, an error or empty text it falls back to a free transcript extract.
  */
-export async function writeHandover($): Promise<Handover> {
+export async function writeHandover($: EngineInterface): Promise<Handover> {
 	let body = "";
 	let usage: ModelUsage | undefined;
 	try {

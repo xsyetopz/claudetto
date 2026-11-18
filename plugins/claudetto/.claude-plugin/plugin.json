@@ -11,5 +11,6 @@
 	"engines": {
 		"claude-code": ">=2.1.327"
 	},
-	"keywords": ["context", "handover", "builtins"]
+	"keywords": ["context", "handover", "builtins"],
+	"version": "0.1.0"
 }

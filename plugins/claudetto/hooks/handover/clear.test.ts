@@ -1,6 +1,7 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-function world(on, env: Record<string, string> = {}) {
+function world(on: On, env: Record<string, string> = {}) {
 	const store = new Map<string, unknown>();
 	const ran: string[] = [];
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
@@ -14,7 +15,7 @@ function world(on, env: Record<string, string> = {}) {
 		return { value: undefined };
 	});
 	on("model.fork", () => ({ value: { isAnswered: true, text: "HANDOVER", usage: { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } } }));
-	on("process.run", () => ({ value: { exitCode: 0, stdout: "", stderr: "" } }));
+	on("process.run", () => ({ value: { exitCode: 0, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
 	on("command.run", (_$, e) => {
 		ran.push(e.command);
 		return { text: "" };
@@ -23,7 +24,7 @@ function world(on, env: Record<string, string> = {}) {
 	return { store, ran };
 }
 
-const CLEAR = { command: "clear", args: "", origin: { kind: "composer" }, presentation: { isFullscreen: false } } as const;
+const CLEAR = { command: "clear", args: "", origin: { kind: "composer" }, presentation: { isFullscreen: false, columns: 80 } } as const;
 
 describe("manual clear", () => {
 	test("a typed /clear runs and its handover goes out once", async ($, on) => {

@@ -15,7 +15,7 @@ export function registerClear(on: On): void {
 		const { text } = await writeHandover($);
 		await $.store.set(PENDING, text);
 		return next(e);
-	});
+	}).catch((_$, e, next) => next(e));
 	on("session.end", async (_$, e, next) => {
 		if (e.reason === "clear") resetRenewal();
 		return next(e);
