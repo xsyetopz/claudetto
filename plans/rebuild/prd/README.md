@@ -8464,3 +8464,804 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Source: druthulu/projectarchitect at edcc2b00, project-architect-3.0/guard.py:676-725 and 803-850; reports/2026-11-18-research/repos.md:119-120; reports/2026-11-18-research/surface.md:45 (chunk-e38nza00.js@433, chunk-bpr7n093.js@12561, claude 2.1.327).
 
   Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
+
+#### Architecture Triage
+
+Building-block, quality, constraint, runtime, concept and glossary items from `arc42/` that plugins/ does not meet or ship, or that need a paid run or live TUI.
+
+- [x] **OUT-2500** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-010 in arc42/02_architecture_constraints/agent-terms-reinstatement.md): A cure under T9.1 is necessary for reinstatement but does not by itself reinstate the Agent; only the User reinstates. The licence rider `LICENSE-AGENTS` states the same cure-not-reinstate rule.
+  Basis: cited, source text.
+  Source: external/please-use-me-often/agent-terms/TERMS-AND-CONDITIONS.md:167; external/please-use-me-often/agent-terms/LICENSE-AGENTS:98-103.
+
+- [x] **OUT-2501** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-055 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): Evals and graders shall be designed with complexity and a hard pass; a grader shall never be loosened, and a task, scaffold, or grader shall never be edited after a run was seen, to make it pass.
+  Basis: user decision, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (user's rule on hard graders); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user calls post-run edits cheating).
+
+- [x] **OUT-2502** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-056 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): The task, scaffold, graders, and criteria of each eval shall be fixed before its first run; a failing run is a result; a criteria change makes a new version reported apart.
+  Basis: user decision, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (framework the user pasted, relayed in the handoff); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424.
+
+- [x] **OUT-2503** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-057 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): The agent under test shall be unable to write graders, hidden tests, the holdout set, or results.
+  Basis: user decision, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889.
+
+- [x] **OUT-2504** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-058 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): A grader shall be trusted only after it rejects known-bad runs.
+  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889.
+
+- [x] **OUT-2505** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-059 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): Tuning shall use a dev set, and the final score shall be taken once on an unseen holdout.
+  Basis: user decision, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357); user answer through AskUserQuestion, 2026-11-16 15:44 UTC, a script picks the holdout tasks blind (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:775). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889.
+
+- [x] **OUT-2506** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-060 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): A doc the agent wrote shall be a claim, never evidence; a fact shall be checked against git, tool calls, tests, and the user's instructions.
+  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889.
+
+- [x] **OUT-2507** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-064 in arc42/02_architecture_constraints/facts-and-limits-found-in-the-2-1-325-rearchitecture.md): Mod tests shall run only through `just lab` on the whole `plugins/claudetto` folder, outside the sandbox, because a run on a subfolder fails with "no hooks module" and the sandbox blocks a PTY.
+  Basis: observed in transcript, 2026-11-16. Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, Decisions; "Failed to open PTY" in `claude-tty.test.ts`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (mod tests only through `just lab`).
+
+- [x] **OUT-2508** Out (describes a part that plugins/ does not ship: the oxlint config is repo tooling; plugins/claudetto-you-should-know/hooks/rows.ts has 391 lines, over max-lines 300; moved from CON-065 in arc42/02_architecture_constraints/facts-and-limits-found-in-the-2-1-325-rearchitecture.md): Lint limits are `max-lines` 300 and `max-dependencies` 10; a mod shall not use `$` as a value such as a WeakMap key.
+  Basis: observed in transcript, 2026-11-14. Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, Facts: a WeakMap keyed by `$` caused 311 lab failures).
+
+- [x] **OUT-2509** Out (past-session or machine-state count: machine and sandbox facts of older versions; moved from CON-054 in arc42/02_architecture_constraints/machine.md): The sandbox blocks `$.store` writes under `~/.claude/plugins` (EPERM), `ps`, tmux, git worktree work and nested Seatbelt.
+  Basis: measured. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11).
+
+- [x] **OUT-2510** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-063 in arc42/02_architecture_constraints/outside-limits-met-by-the-rebuild-work.md): `claude plugin eval` shall run outside the macOS sandbox, because inside it the eval's own sandbox fails with EPERM on its socket; `just check` shall also run outside it, because its PTY test needs that.
+  Basis: observed in transcript, 2026-11-16. Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (handoff, Decisions: "Sandbox is required but failed to initialize: EPERM ... srt-mux sock"); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:3402 (`just check` outside the sandbox); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+
+- [x] **OUT-2511** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-051 in arc42/02_architecture_constraints/plan-form.md): The rebuild plan shall use arc42 9.1 sections, ISO/IEC/IEEE 29148 for the PRD, MADR 4.0.0 for ADRs, and ISO 31000 fields for the risk register, one file per concern.
+  Basis: user decision. Status: missing at 088a227c (`git ls-tree --name-only 088a227c plans` prints nothing: no plan file exists).
+  Source: user answer through AskUserQuestion, 2026-11-16 21:45 UTC, plan layout and old file (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9103).
+
+- [x] **OUT-2512** Out (plugins/ non-test sources hold 151 lines over 100 characters; no small change closes it; moved from CON-050 in arc42/02_architecture_constraints/readability-limits.md): claudetto code shall stay readable for readers from CEFR A1 to C2: a function at most 30 NLOC, cognitive complexity at most 10, nesting at most 2, parameters at most 4, a line at most 100 characters.
+  Basis: reported (user dossier; the CEFR basis and ten agent faults: local optimization, over- or under-abstraction, hiding uncertainty, terminology drift, churn, passing tests as proof, imitating bad code, comments as understanding). The plan line holds the limits NLOC, 10, 8, 2, 4 and not the 100-character line.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:29-36 (limits table at `user-dossier.md:30`).
+
+- [x] **OUT-2513** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-026 in arc42/02_architecture_constraints/rebuild.md): The rebuild goal prompt shall point the agent at the `external/` dossier often and tell it to follow the dossier where it fits; it shall not tell the agent to reuse existing files or to break software engineering practice.
+  Basis: reported, user. Status: unchecked: the goal text is not in the baseline tree.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:163, reported, user, 2026-11-16.
+
+- [x] **OUT-2514** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-027 in arc42/02_architecture_constraints/rebuild.md): The goal prompt shall keep mutation testing named (Stryker, mutmut) so the agent knows it.
+  Basis: reported, user. Status: unchecked: the goal text is not in the baseline tree.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:265, reported, user, 2026-11-16.
+
+- [x] **OUT-2515** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-028 in arc42/02_architecture_constraints/rebuild.md): Any outdated `openspec/` part shall be curated and wiped, so no stale data stays.
+  Basis: reported, user. Status: unchecked: `openspec/` was deleted in 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302, reported, user, 2026-11-16.
+
+- [x] **OUT-2516** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-029 in arc42/02_architecture_constraints/rebuild.md): The rebuild goal prompt shall point the agent at the `external/` dossier often and tell it to follow the dossier where it fits; it shall not tell the agent to reuse existing files or to break software engineering practice.
+  Basis: reported, user. Status: unchecked: the goal text is not in the baseline tree.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:163, reported, user, 2026-11-16.
+
+- [x] **OUT-2517** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-030 in arc42/02_architecture_constraints/rebuild.md): The goal prompt shall keep mutation testing named (Stryker, mutmut) so the agent knows it.
+  Basis: reported, user. Status: unchecked: the goal text is not in the baseline tree.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:265, reported, user, 2026-11-16.
+
+- [x] **OUT-2518** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-031 in arc42/02_architecture_constraints/rebuild.md): Any outdated `openspec/` part shall be curated and wiped, so no stale data stays.
+  Basis: reported, user. Status: unchecked: `openspec/` was deleted in 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302, reported, user, 2026-11-16.
+
+- [x] **OUT-2519** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-032 in arc42/02_architecture_constraints/rebuild.md): The agent shall work the rebuild session in this order: check git and the baseline, take one item from the JSON pass/fail list, build, run `just check`, commit, run `just dogfood`, mark the item, and log each login or sudo step in the list.
+  Basis: user goal set through `/goal`, 2026-11-16 15:28 UTC, dogfood and push after each green commit (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13). Status: missing at 088a227c (a working order, not a code part).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Session); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (the user still names the list: "stuck at 21/22").
+
+- [x] **OUT-2520** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-033 in arc42/02_architecture_constraints/rebuild.md): The user's orders shall beat queued steps and easier paths, and the goal text shall outrank a handoff.
+  Basis: user decision, 2026-11-16 15:17 UTC, the handoff is stale; the goal outranks it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); user decision, 2026-11-16 15:17 UTC, do not trust the handoff as authoritative (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8206); user decision, 2026-11-16 17:40 UTC, do what the user asked, nothing else (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, first paragraph and Handoff line); reaffirmed at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057.
+
+- [x] **OUT-2521** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-034 in arc42/02_architecture_constraints/rebuild.md): Each prompt, hook, or agent change shall be rerun, and a change that does not beat the last run shall not stay.
+  Basis: user decision, 2026-11-16. Status: missing at 088a227c.
+  Source: user's standing goal, text in `openspec/changes/2-1-325-rearchitecture/goal-overnight.txt` as quoted in ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl turn at line 2677 (handoff, section User's Words); the same goal lines repeat at lines 3402, 4092, 4910, 5630, 6480.
+
+- [x] **OUT-2522** Out (the item conflicts with the you-should-know port, whose model-facing prompts keep builtin wording with "never"; moved from CON-035 in arc42/02_architecture_constraints/rebuild.md): Prompts and scorers shall name only the wanted behaviour, never the unwanted words; this holds for workers, skill descriptions and bodies, hooks, and each reply to a human or another agent.
+  Basis: user goal set through `/goal`, 2026-11-16 15:28 UTC, prompts name only the wanted behaviour (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13). Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/compose.test.ts:78` lists unwanted phrases for a test).
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (standing goal lines); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints; the user calls the habit the Pink Elephant problem and a cheat of the plugin); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets).
+
+- [x] **OUT-2523** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-036 in arc42/02_architecture_constraints/rebuild.md): Each claim shall be judged on real projects, not on fixtures the agent writes; a green `just check` proves that code runs, not that claudetto works.
+  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (standing goal lines).
+
+- [x] **OUT-2524** Out (the item conflicts with a rule: this rebuild never pushes; moved from CON-037 in arc42/02_architecture_constraints/rebuild.md): Work shall run `just dogfood` after each commit and `just dogfood-dir` for uncommitted code, and shall push to origin `feat/2.1.325-rearchitecture` after each green `just check`, never with force.
+  Basis: user goal set through `/goal`, 2026-11-16 15:28 UTC, dogfood and push after each green commit (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:13). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (standing goal lines); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules).
+
+- [x] **OUT-2525** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-038 in arc42/02_architecture_constraints/rebuild.md): The agent shall make product choices and deletes itself and shall log a login or sudo step in `tasks.md`.
+  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC, the agent makes product choices and deletes itself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (standing goal lines); refined by [ADR-0053](../../adr/0053-agent-decides-in-scope-choices.md).
+
+- [x] **OUT-2526** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-039 in arc42/02_architecture_constraints/rebuild.md): The agent shall respect Anthropic's Terms of Use as the user cites them: no eval cheating, no invention, no lying, no falsified fact presented as authoritative, no laziness, no uncooperation; it shall not look the Terms up.
+  Basis: user decision, 2026-11-16 15:00 UTC, decide by what the industry and verified data say (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (user's second-to-last prompt, as relayed in the handoff); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (user's note that cheating or gaming the system is against Anthropic's terms).
+
+- [x] **OUT-2527** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-041 in arc42/02_architecture_constraints/rebuild.md): Each question to the user shall go through the `AskUserQuestion` tool.
+  Basis: user decision, 2026-11-14 14:19 UTC, ask each question through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36420); user decision, 2026-11-16 15:27 UTC, questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's Words and Standing rules); [ADR-0053](../../adr/0053-agent-decides-in-scope-choices.md) limits when to ask.
+
+- [x] **OUT-2528** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-042 in arc42/02_architecture_constraints/rebuild.md): Tests shall not check the wording of implementation prose.
+  Basis: reported, user, 2026-11-14 02:47 UTC, tests check no implementation prose (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31431). Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints).
+
+- [x] **OUT-2529** Out (the item conflicts with shipped behaviour: plugins/claudetto/hooks/settings/start.ts writes the user settings file by design (ADR-0057); moved from CON-043 in arc42/02_architecture_constraints/rebuild.md): The agent shall read the external dossier, repos, and papers before it designs, and shall edit no user settings file the user did not name.
+  Basis: reported, user, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints).
+
+- [x] **OUT-2530** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-045 in arc42/02_architecture_constraints/rebuild.md): An agent shall do each step itself and defer to the user only for an interactive login; a plugin shall handle these steps for the user.
+  Basis: reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, Ruled out and User's words).
+
+- [x] **OUT-2531** Out (the item conflicts with shipped sources: plugins/ comments cite REQ and ADR ids; moved from CON-046 in arc42/02_architecture_constraints/rebuild.md): Claudetto's own sources shall hold no internal IDs, and each commit shall follow Conventional Commits with `Co-Authored-By: Claude <noreply@anthropic.com>` and lines up to 100 characters.
+  Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
+
+- [x] **OUT-2532** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-047 in arc42/02_architecture_constraints/rebuild.md): An agent shall stop a process only by its recorded pid with `kill <pid>` or by TaskStop, never by `pkill` or `killall`; it shall never patch the Claude Code binary; each run outside the sandbox shall use `/tmp/claude-501`.
+  Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
+
+- [x] **OUT-2533** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-048 in arc42/02_architecture_constraints/rebuild.md): An agent shall ask before a destructive action and before a paid run, shall report cost and weekly share after a paid run, and shall delete its own temp folders and build output without asking.
+  Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: unchecked.
+  Source: user decision, 2026-11-14 14:17 UTC, deleting temp folders never needs approval (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (standing rules).
+
+- [x] **OUT-2534** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-049 in arc42/02_architecture_constraints/rebuild.md): Only the lead shall run `just lab`, once, after the Heracles agents end; a worker may use another LLM reviewer through `codex` in headless mode on `gpt-6.1-sol`.
+  Basis: user decision, 2026-11-14 03:10 UTC, codex headless on gpt-6.1-sol may review (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32155). Status: unchecked.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing and constraints).
+
+- [x] **OUT-2535** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-061 in arc42/02_architecture_constraints/reference-sources.md): The rebuild work shall link these sources in its goal file: developers.openai.com evaluation best practices, swebench.com SWE-bench FAQ, arxiv.org/abs/2502.01534, Anthropic "Demystifying evals for AI agents", Anthropic PDF ...
+  Basis: user decision, 2026-11-16 15:10 UTC, other sources serve as reference and are listed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7783). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (the user's required-links list, relayed in the handoff).
+
+- [x] **OUT-2536** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-062 in arc42/02_architecture_constraints/reference-sources.md): The agent may use these as reference, study, or to test ideas in less code, listed as one `https://github.com/{...}` array: ccplugins/awesome-claude-code-plugins, karanb192/awesome-claude-code-mods, shanraisshan/claude-code-best-practice, ...
+  Basis: user decision, 2026-11-16 15:10 UTC, other sources serve as reference and are listed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7783). Status: missing at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (the user's last prompt, relayed in the handoff).
+
+- [x] **OUT-2537** Out (third-party report with no probe; moved from CON-023 in arc42/02_architecture_constraints/runtime-limits.md): MCP servers are not sandboxed; in `claude -p` and SDK runs, project MCP servers from `.mcp.json` load without asking (the poster says docs); pinning a version does not help if the bump is approved without a diff (the postmark-mcp bad line ...
+  Basis: cited.
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xaqse6-the-agent-was-almost-never-the-w-20261022T012322Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xaqse6/the_agent_was_almost_never_the_way_in_i_went/>); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:58.
+
+- [x] **OUT-2538** Out (past-session or machine-state count: machine and sandbox facts of older versions; moved from CON-001 in arc42/02_architecture_constraints/sandbox-limits.md): claudetto shall treat these sandbox facts as fixed (CC 2.1.322 and earlier, fake API, macOS): a `denyWrite` path write fails "operation not permitted" with no prompt; `allowWrite ["~/"]` covers any new folder under home; `allowMachLookup ...
+  Basis: measured; `ps`, `top` and `sysctl` re-measured on 2.1.327 (cc-inspect cli, fake API, `sandbox.enabled` true, Bash call: "operation not permitted: ps" exit 127, "operation not permitted: top" exit 127, "sysctl: ... Operation not permitted" exit 1); all other facts re-measured on 2.1.327 the same way (probe cc-inspect cli 2.1.327, 2026-11-18, fake API, `sandbox.enabled` true, `autoAllowBashIfSandboxed` true): `mkdir` of a denied path exits 1 while `mkdir -p` under an `allowWrite` path exits 0; with `allowMachLookup ["*"]` `scutil --dns`, `pbpaste` and `diskutil list` exit 0 and `pgrep -x launchd` runs (exit 1, no match, not 3); `python3 -c 'import pty;pty.openpty()'` exits 1; `git init` of a denied path with `excludedCommands ["git *"]` still fails "fatal: cannot mkdir ...: Operation not permitted" (exit 128). Status: have at 088a227c (`sandbox` setup group).
+  Source: openspec/specs/sandbox/spec.md:15; openspec/specs/sandbox/spec.md:16; openspec/specs/sandbox/spec.md:58.
+
+- [x] **OUT-2539** Out (past-session or machine-state count: machine and sandbox facts of older versions; moved from CON-002 in arc42/02_architecture_constraints/sandbox-limits.md): claudetto shall treat these sandbox limits as fixed (measured on 2.1.323): the sandbox refuses `kill` of an outside process and `git worktree remove` of another session's worktree (it half-removes: the folder goes and the `.git/worktrees` ...
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:101-107@088a227c9^ (section 8: `kill` fails "operation not permitted"; `git worktree remove --force` fails "failed to delete '.git/worktrees/...': Operation not permitted" with the folder already gone and the worktree then `prunable`; only with the sandbox on and a sandboxed command).
+
+- [x] **OUT-2540** Out (past-session or machine-state count: machine and sandbox facts of older versions; moved from CON-003 in arc42/02_architecture_constraints/sandbox-limits.md): The macOS sandbox refuses writes to `.git/hooks`, `.git/index.lock`, `.git/config`, a worktree folder inside `.git`, `.vscode`, and `/opt/homebrew`, and blocks the keychain that `gh` needs; `gh` works when `GH_TOKEN` is set.
+  Basis: reported. Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (Claude Code 2.1.319); the `/sandbox` command edits the write list.
+
+- [x] **OUT-2541** Out (needs a live TUI; a pty cannot open in this sandbox; moved from CON-004 in arc42/02_architecture_constraints/sandbox-limits.md): A pty or tmux cannot open inside the session sandbox (tmux EPERM on the socket, `script: openpty` EPERM, `Bun.spawn` terminal fails), and auto mode denied the unsandboxed run. TUI render checks stay cited, not observed.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:166.
+
+- [x] **OUT-2542** Out (past-session or machine-state count: machine and sandbox facts of older versions; moved from CON-005 in arc42/02_architecture_constraints/sandbox-limits.md): claudetto shall not expect `ssh` to reach `github.com:22` under the shipped sandbox: `git ls-remote` over `git@github.com` returned rc=128 in all three runs.
+  Basis: measured (2.1.319 evidence; a successful login was not measured). With `allowedDomains ["*"]` the call passes the proxy and fails with "Host key verification failed" (no `known_hosts` on this machine); with `["example.org"]` the proxy answers "sandbox proxy: github.com:22: 403 user denied" and `<sandbox_violations>` shows `deny network-outbound github.com:22`. The sandbox logs a denial and writes no line for an allow.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-10/README.md:5-38 (results at lines 19-36).
+
+- [x] **OUT-2543** Out (describes a part that plugins/ does not ship: claudetto-openspec ships only plugin.json; moved from CON-006 in arc42/02_architecture_constraints/upstream-openspec-size.md): claudetto-openspec shall ship only after a measurement shows lower skill bytes and fewer code lines than upstream `@fission-ai/openspec` (core profile 95,443 skill bytes plus 92,122 command bytes at 1.16.0 init; near-duplicate commands; 57 ...
+  Basis: measured. Status: have at 088a227c (`plugins/claudetto-openspec`).
+  Source: openspec/specs/lean-openspec/spec.md:129.
+
+- [x] **OUT-2544** Out (plugins/claudetto-you-should-know still holds hyphenated names (session-rows, view-actions, view-row, propose-text, card-draw.test) and some are files the user holds uncommitted; moved from CON-011 in arc42/02_architecture_constraints/user-rules.md): claudetto shall use real directories and no hyphenated file families, and shall delete each old path when its replacement lands.
+  Basis: cited. Status: missing at 088a227c (79 hyphenated source files, probe: `find plugins tools -name '*-*.ts'` on the 088a227c tree, 2026-11-17).
+  Source: user decision, 2026-11-16 (old plan, What We Can Do); plugins at 088a227c; user decision, 2026-11-16 17:36 UTC, files-as-directories is unacceptable; no file families (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949).
+
+- [x] **OUT-2545** Out (describes a part that plugins/ does not ship: a build-order rule for the rebuild work; moved from STR-001 in arc42/04_solution_strategy.md): claudetto shall be rebuilt top down: `plugin.json` and the hook entry, then hooks, scripts, statusline, rules, agents, output style, commands, and skills; then `claudetto-you-should-know`, the other plugins, `tools/`, and `tests/`.
+  Basis: cited. Status: missing at 088a227c.
+  Source: user decision, 2026-11-16 (old plan, What We Can Do).
+
+- [x] **OUT-2546** Out (the rebuilt handover (plugins/claudetto/hooks/handover/text.ts) has six sections written fresh and does not derive from samzilverberg/claude-handoff or who96/claude-code-context-handoff, so no credit line is added; describes a part that plugins/ does not ship; moved from BB-001 in arc42/05_building_block_view.md): The nine handoff sections cite samzilverberg/claude-handoff (MIT) as their origin, and the code-built fallback cites who96/claude-code-context-handoff (MIT).
+  Basis: cited. Status: missing at 088a227c (`git grep -il 'samzilverberg\|who96' 088a227c` finds nothing over the baseline tree; the rebuild shall carry both credits).
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/session-handoff/spec.md:170,174.
+
+- [x] **OUT-2547** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-002 in arc42/05_building_block_view.md): Feature `compaction` (`session.compact`, `model.fork`, `turn.complete`) writes its own handoff in place of the core summary. It compacts by session age since session start or since the last compaction (`handoff.ts:67-83`), which the cache ...
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/compaction/handoff.ts:48@088a227c; plugins/claudetto/hooks/features/compaction/handoff.ts:74@088a227c; plugins/claudetto/hooks/features/compaction/handoff.ts:87@088a227c; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031).
+
+- [x] **OUT-2548** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-003 in arc42/05_building_block_view.md): Feature `memory` (`tool.check`, `agent.spawn`, `session.usage`) holds a call under memory pressure, plus a session tree.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/memory/hold.ts:245@088a227c; plugins/claudetto/hooks/features/memory/session-tree.ts:72@088a227c.
+
+- [x] **OUT-2549** Out (past-session or machine-state count; moved from BB-004 in arc42/05_building_block_view.md): Inventory at 2.1.322 (measured, inferred): 12 `userConfig` options, about 30 mods, status line about 1,240 lines, hygiene CLI about 1,250, `useSetup` about 2,040, Bash gate about 2,616 + vendored shellfirm rules (1,063) + fixtures (about ...
+  Basis: measured. Status: have at 088a227c (inventory of the baseline; counts not re-run).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:9; openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:37.
+
+- [x] **OUT-2550** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-005 in arc42/05_building_block_view.md): claudetto-openspec is an OpenSpec MCP tool plus skills that replace upstream openspec: ONE registered `openspec` deferred tool from `$.tool.register` answering status, validate, and archive in-process, with no executable, node shim, PATH, ...
+  Basis: measured. Status: have at 088a227c (plugins/claudetto-openspec/hooks: openspec.ts, status.ts, validate/, spec/; `git ls-tree` of skills lists 7 folders). `$.tool.register` is present in claude 2.1.326 (`grep -c -a -F tool.register ~/.local/share/claude/versions/2.1.326`: 21 lines). The upstream issue numbers were not located in a source line.
+  Source: openspec/specs/lean-openspec/spec.md:129; openspec/specs/lean-openspec/spec.md:8; openspec/specs/lean-openspec/spec.md:90; openspec/specs/lean-openspec/spec.md:290; openspec/specs/lean-openspec/spec.md:292; openspec/specs/lean-openspec/spec.md:127; plugins/claudetto-openspec@088a227c; plugins/claudetto-openspec/hooks/register.ts:15@088a227c; plugins/claudetto-openspec/skills (7 folders)@088a227c.
+
+- [x] **OUT-2551** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-006 in arc42/05_building_block_view.md): claudetto-openspec ships about 3,300 lines of spec model, validator, and archive code, with 6 skills of 11-22 lines.
+  Basis: measured (counted). Status: have at 2.1.323 inventory; at 088a227c the skills folder holds 7 folders.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:10.
+
+- [x] **OUT-2552** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-007 in arc42/05_building_block_view.md): claudetto-openspec holds the presets epic (prd, architecture, proposal, specs, design, tasks, review), story (proposal, specs, design, tasks, review) and task (proposal, tasks only; refuses behavior changes: "needs story preset, tell user ...
+  Basis: cited. Status: missing at 088a227c (`git grep -il epic 088a227c -- plugins/claudetto-openspec` finds nothing; openspec uses upstream spec-driven).
+  Source: openspec/specs/lean-openspec/spec.md:74.
+
+- [x] **OUT-2553** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-008 in arc42/05_building_block_view.md): claudetto-openspec refuses an archive for an unticked task (no override; upstream #2006, #1652; the refusal names the task and leaves the tree unchanged), a folder holding changes but not a change (`not_a_change`, #1846), ...
+  Basis: cited. Status: have at 088a227c (validate/archive.ts:80, archive-merge.ts:14,90).
+  Source: openspec/specs/lean-openspec/spec.md:63; openspec/specs/lean-openspec/spec.md:54; openspec/specs/lean-openspec/spec.md:81; plugins/claudetto-openspec/hooks/validate/archive.ts:80@088a227c.
+
+- [x] **OUT-2554** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-009 in arc42/05_building_block_view.md): claudetto-openspec validate runs the SAME merge as archive (RENAMED, REMOVED, MODIFIED, ADDED) so a delta archive would refuse fails (#1112 reports INFO and passes); it allows only `specs/<cap>/spec.md` and ADDED/MODIFIED/REMOVED/RENAMED ...
+  Basis: measured. Status: have at 088a227c (plugins/claudetto-openspec/hooks/validate/validate*.ts, openspec-grow.test.ts).
+  Source: openspec/specs/lean-openspec/spec.md:22; openspec/specs/lean-openspec/spec.md:36; openspec/specs/lean-openspec/spec.md:276; openspec/specs/lean-openspec/spec.md:136.
+
+- [x] **OUT-2555** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-010 in arc42/05_building_block_view.md): The hook entry `plugins/claudetto/hooks/hooks.json`: `SessionStart` runs renice and caps build jobs and memory (`CARGO_BUILD_JOBS`, `GOMAXPROCS`, `GOMEMLIMIT`), then runs `scripts/session-start.ts`. `UserPromptSubmit` blocks ...
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/hooks.json:5@088a227c; plugins/claudetto/hooks/hooks.json:19@088a227c; plugins/claudetto/hooks/hooks.json:29@088a227c.
+
+- [x] **OUT-2556** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-011 in arc42/05_building_block_view.md): `hooks/register.ts` is a mod that chains features through `kernel/chain.ts`. The price step is registered outermost, so it bounds what every later hook adds.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/register.ts:46@088a227c.
+
+- [x] **OUT-2557** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-012 in arc42/05_building_block_view.md): `kernel/` holds `chain`, `decider` (with `jev`), `shell/` (`shell-words`, `program-at`, `readonly`, `verdict`, `shell-state`), `secrets`, `settings`, `tools`, `note`, `heartbeat`, `absent`, `texts`.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/kernel/chain.ts:1@088a227c; plugins/claudetto/hooks/kernel/decider/jev.ts:1@088a227c; plugins/claudetto/hooks/kernel/shell/shell-state.ts:1@088a227c.
+
+- [x] **OUT-2558** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-013 in arc42/05_building_block_view.md): Feature `hygiene` (`settings.read`, `env.get`) runs `bin/claudetto-hygiene` (temp, branch, and trash sweep), capped at 10 minutes per run.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/hygiene/hygiene.ts:6@088a227c (`SWEEP_TIMEOUT_MS = 600_000`).
+
+- [x] **OUT-2559** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-014 in arc42/05_building_block_view.md): Feature `line-file` (`session.measure`) writes the compaction window and theme for the status line. The status line reads `hooks/limits/line-file.ts` (`.claude/claudetto/statusline/<session>.json`, written on `session.measure`) with ...
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/line-file/line-file.ts:5@088a227c; plugins/claudetto/hooks/register.ts:60@088a227c; observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11).
+
+- [x] **OUT-2560** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-015 in arc42/05_building_block_view.md): Feature `protected` (`tool.check`) denies writes the sandbox would refuse in a project folder. The list was measured on 2.1.323.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/protected/protected.ts:11@088a227c; plugins/claudetto/hooks/register.ts:106@088a227c.
+
+- [x] **OUT-2561** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-016 in arc42/05_building_block_view.md): Feature `repeat` (`process.run`, `session.end`) points back to an earlier long output in place of sending it again.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/repeat/repeat.ts:58@088a227c; plugins/claudetto/hooks/features/repeat/repeat.ts:180@088a227c.
+
+- [x] **OUT-2562** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-017 in arc42/05_building_block_view.md): Feature `secrets` (`session.cwd`, `session.root`) is a secret scan.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/secrets/scan.ts:1@088a227c.
+
+- [x] **OUT-2563** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-018 in arc42/05_building_block_view.md): Feature `temp-cleanup` (`session.end`) removes the session's temp files.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/temp-cleanup/cleanup.ts:49@088a227c.
+
+- [x] **OUT-2564** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-019 in arc42/05_building_block_view.md): Feature `web` (`process.run`) is a `web_fetch` tool.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/web/texts.ts:7@088a227c.
+
+- [x] **OUT-2565** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-020 in arc42/05_building_block_view.md): Feature `agent-model` (`agent.spawn`) sets the model from the agent file.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/agent-model/model.ts:5@088a227c.
+
+- [x] **OUT-2566** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-021 in arc42/05_building_block_view.md): Feature `delegation` (`agent.offer`, `tool.describe`, `tool.call`, `tool.register`) holds agent routing texts and caps.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/delegation/delegation.ts:7@088a227c; plugins/claudetto/hooks/features/delegation/delegation.ts:11@088a227c.
+
+- [x] **OUT-2567** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-022 in arc42/05_building_block_view.md): Agents at 088a227c: `Artemis` (search; `claude-haiku-5-5`, effort high), `Athena` (review; `claude-sonnet-5-5`, effort medium), `Heracles` (edit; `claude-sonnet-5-5`, effort medium), `Metis` (plan; `claude-sonnet-5-5`, effort medium). Open ...
+  Basis: measured. Status: have at 088a227c.
+  Source: plugins/claudetto/agents/Artemis.md:4@088a227c; plugins/claudetto/agents/Athena.md:4@088a227c; plugins/claudetto/agents/Heracles.md:4@088a227c; plugins/claudetto/agents/Metis.md:4@088a227c.
+
+- [x] **OUT-2568** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-023 in arc42/05_building_block_view.md): Feature `prompt` (`prompt.compose`) is the root prompt; Haiku gets no delegation block.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/prompt/compose.ts:8@088a227c; plugins/claudetto/hooks/features/prompt/texts.ts:35@088a227c.
+
+- [x] **OUT-2569** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-024 in arc42/05_building_block_view.md): Feature `reply` (`command.run`, `ui.selection`, `prompt.fill`): `/reply` quotes part of a reply.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/reply/reply.ts:39@088a227c.
+
+- [x] **OUT-2570** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-026 in arc42/05_building_block_view.md): The `Concise` output style.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/output-styles/Concise.md:1@088a227c.
+
+- [x] **OUT-2571** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-027 in arc42/05_building_block_view.md): 11 rule files are copied to `~/.claude/rules/claudetto/`: `commentOnlyWhy`, `findFactsByExperiment`, `guardOnlyTrustBoundaries`, `lookForClone`, `scopeEditsToGoal`, `useBlockLanguage`, `useEdgeCaseReport`, `useHeadlineseNames`, ...
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/rules/commentOnlyWhy.md:1@088a227c (`git ls-tree`: 11 files).
+
+- [x] **OUT-2572** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-028 in arc42/05_building_block_view.md): Feature `budget` (`prompt.submit`, `session.messages`) holds context and weekly budget notes.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/budget/budget-run.ts:73@088a227c.
+
+- [x] **OUT-2573** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-029 in arc42/05_building_block_view.md): Feature `decide` (`model.complete`, `http.fetch`) is an MCP `decide` tool that asks a model for a choice; questions are keyed by index.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/decide/decide.ts:1@088a227c; plugins/claudetto/hooks/register.ts:120@088a227c.
+
+- [x] **OUT-2574** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-030 in arc42/05_building_block_view.md): Feature `price-step` (`turn.step`) bounds a Haiku request below its 5x price tier.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/price-step/price-step.ts:15@088a227c; plugins/claudetto/hooks/features/price-step/price-step.ts:102@088a227c.
+
+- [x] **OUT-2575** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-031 in arc42/05_building_block_view.md): The status line (`statusline/`, `bin/claudetto-statusline`) draws rows, segments, limits, and colour; colour is off under `NO_COLOR`.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/statusline/color.ts:82@088a227c; plugins/claudetto/statusline/rows.ts:1@088a227c.
+
+- [x] **OUT-2576** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-032 in arc42/05_building_block_view.md): Feature `setup` (`command.run`, `skill.prompt`, `tool.register`): `/claudetto:setup` writes settings, starters, ignore blocks, rules, and auto-mode rules.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/setup/setup.ts:214@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:102@088a227c.
+
+- [x] **OUT-2577** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-033 in arc42/05_building_block_view.md): Feature `surface` (`tool.describe`, `tool.list`, `prompt.attachment`) trims tool descriptions and defers tools; `Read`, `Write`, and `ListAgents` stay loaded.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/surface/surface.ts:9@088a227c.
+
+- [x] **OUT-2578** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-034 in arc42/05_building_block_view.md): The `/claudetto:setup` command.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/commands/setup.md:1@088a227c.
+
+- [x] **OUT-2579** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-035 in arc42/05_building_block_view.md): Repo state at 088a227c: setup groups write `promptCacheTtl` and `subagentPromptCacheTtl` "1h", `bashOutputMaxChars` 8000, `MAX_MCP_OUTPUT_TOKENS` "10000", `CLAUDE_CODE_SUBAGENT_MODEL` Sonnet, the model pins, ...
+  Basis: measured. Status: have at 088a227c.
+  Source: plugins/claudetto/hooks/features/setup/settings.ts:117@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:167@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:202@088a227c.
+
+- [x] **OUT-2580** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-036 in arc42/05_building_block_view.md): `surface.ts` hides 27 commands and 18 skills and rewrites 21 tool descriptions. Setup turns off 11 `cc-plugin` builtins and about 28 feature keys. `PIN_NOTE` is sent per prompt; `SILENT_TURN_REMINDER` text is about 170 chars.
+  Basis: measured (counted; the 170 chars is an estimate).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:31; openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:48; openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:49; openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:54; openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:58; plugins/claudetto/hooks/features/surface/surface.ts@088a227c.
+
+- [x] **OUT-2581** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-038 in arc42/05_building_block_view.md): `claudetto-you-should-know` is about 1,100 lines.
+  Basis: measured (counted).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:11.
+
+- [x] **OUT-2582** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-039 in arc42/05_building_block_view.md): `tools/` holds bench, fake-api, claim-check-*, mutate-command, prompt-bytes, release-version, and assorted repo tests. A `handover-probe` tool is not in the `088a227c` tree: only `CHANGELOG.md` and `budget-run.test.ts` name it.
+  Basis: cited. Status: have at 088a227c.
+  Source: tools/bench/run.ts:1@088a227c; tools/fake-api/fake.ts:1@088a227c; tools/mutate-command.ts:1@088a227c; tools/prompt-bytes.ts:1@088a227c; tools/release-version.ts:1@088a227c; CHANGELOG.md (`git grep handover-probe 088a227c`).
+
+- [x] **OUT-2583** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-040 in arc42/05_building_block_view.md): `tests/claudetto` and `tests/claudetto-openspec` hold the end-to-end specs.
+  Basis: cited. Status: have at 088a227c.
+  Source: tests/claudetto/secrets.spec.ts:1@088a227c; tests/claudetto-openspec/upstream.spec.ts:1@088a227c.
+
+- [x] **OUT-2584** Out (past-session or machine-state count; moved from BB-041 in arc42/05_building_block_view.md): claudetto holds these measured baseline figures: Stryker `just mutate` at 6eb97120 68.00% (2,422/3,562), per-folder delegation 100, prompt 94.74, hygiene 16.28, web 30.77, later hygiene 96.12, web 98.08, protected 94.62, surface 80.72; ...
+  Basis: measured. Status: have at 088a227c (tools/mutate-command.ts).
+  Source: openspec/changes/2-1-325-rearchitecture/items.json:106; openspec/changes/2-1-325-rearchitecture/design.md:183; openspec/changes/2-1-325-rearchitecture/items.json:114; openspec/changes/2-1-325-rearchitecture/goal-overnight.txt:17.
+
+- [x] **OUT-2585** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-042 in arc42/05_building_block_view.md): The `docs` skill.
+  Basis: cited. Status: have at 088a227c.
+  Source: plugins/claudetto/skills/docs/SKILL.md:1@088a227c.
+
+- [x] **OUT-2586** Out (past-session or machine-state count; moved from BB-043 in arc42/05_building_block_view.md): 79 hyphenated source files exist (`find plugins tools -name '*-*.ts'`), which the rebuild turns into real directories.
+  Basis: cited. Status: have at 088a227c.
+  Source: probe: `find plugins tools -name "*-*.ts" | wc -l` on the `088a227c` tree printed 79 (2026-11-17).
+
+- [x] **OUT-2587** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-044 in arc42/05_building_block_view.md): The mods that stay at D323: Decider and the `decide` tool, `price-step`, `/reply`, the memory hold, the slim surface, the line file, the Budget line, `sandbox-git.ts` (retest on 2.1.323), the `claudetto-openspec` tool, and ...
+  Basis: reported. Status: have at 088a227c (hooks/features/*; `sandbox-git.ts` is not in the tree).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:198; openspec/changes/archive/2026-11-16-2-1-323/design.md:204.
+
+- [x] **OUT-2588** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-045 in arc42/05_building_block_view.md): Components are placed by lifecycle: one owner per failure at one lifecycle point; a component imports only `kernel/`; guards run in one chain per event and each answers or passes; classic shell hooks only where a mod cannot act. The layout ...
+  Basis: reported. Status: have at 088a227c (hooks/kernel, hooks/features).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:107.
+
+- [x] **OUT-2589** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-046 in arc42/05_building_block_view.md): The rebuild shape: handoff by `$.model.fork`; `claudetto-you-should-know` ported from the 2.1.325 built-in on `turn.step`, never blocking; one Decider (Jev) with a configurable model fallback (`claude-haiku-5-5`, high; `deciderModel`, ...
+  Basis: reported. Status: have at 088a227c (hooks/kernel, hooks/features, kernel/settings.ts `deciderModel`, rules/useTestPatterns.md).
+  Source: openspec/changes/2-1-325-rearchitecture/proposal.md:12; openspec/changes/2-1-325-rearchitecture/design.md:107.
+
+- [x] **OUT-2590** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-047 in arc42/05_building_block_view.md): At baseline `settings.ts:146` writes `minimumVersion`, not `requiredMinimumVersion`; `settings.ts:114` sets Haiku `autoCompactWindow` to 100000; `settings.ts:178` handles the advisor.
+  Basis: observed in transcript. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+
+- [x] **OUT-2591** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-048 in arc42/05_building_block_view.md): At baseline `hooks/runs.ts` writes the run log and reuses `isRecord`, `lineOf`, `pathOf` and `WRITING_TOOLS` from `handoff/transcript.ts`.
+  Basis: observed in transcript. Status: have.
+  Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [x] **OUT-2592** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-049 in arc42/05_building_block_view.md): At baseline `Concise.md` says to ask through the popup before assuming anything the request leaves open, which conflicts with `texts.ts:16`; a manifest test pins the older line.
+  Basis: observed in transcript. Status: have.
+  Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [x] **OUT-2593** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-050 in arc42/05_building_block_view.md): At baseline the root prompt names the opener it forbids (`hooks/features/prompt/texts.ts:15`) and the reply judge `SHIPPED_REGISTER` in `decider/questions.ts` is unwired since `16ecb31b`.
+  Basis: observed in transcript. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+
+- [x] **OUT-2594** Out (describes a part that plugins/ does not ship: hooks/delegation/offer.ts hides built-in agents but no tool.describe or tool.call rewrite ships; moved from RT-001 in arc42/06_runtime_view/agent-mod-recipe.md): The agents Mod cuts the Agent tool and sends every Agent call to a claudetto agent (second revision of the Agent decision).
+  Basis: cited, user decision of 2026-11-05 on the Mod route; probes k0-k12 give the sizes.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2122; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2090.
+
+- [x] **OUT-2595** Out (describes a part that plugins/ does not ship: hooks/delegation/offer.ts hides built-in agents but no tool.describe or tool.call rewrite ships; moved from RT-002 in arc42/06_runtime_view/agent-mod-recipe.md): The mod pipeline for the Agent tool runs in four hooks: `tool.describe` for `Agent` drops "(general-purpose by default)" and says `name` addresses the agent (SendMessage reaches it); `agent.offer` withholds built-ins (a plugin agent never ...
+  Basis: measured (probe, 2.1.319). The mod API names are present and Documented on 2.1.327 (see RT-001); the pipeline was not run end to end on 2.1.327. Status: partial at 088a227c (`plugins/claudetto/hooks/features/delegation/`; `git grep -l agent_listing_delta 088a227c -- plugins` finds nothing).
+  Source: openspec/specs/surface-trim/spec.md:51; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:131; plugins/claudetto/hooks/features/delegation/@088a227c; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
+
+- [x] **OUT-2596** Out (describes a part that plugins/ does not ship; moved from RT-003 in arc42/06_runtime_view/compact-table-return.md): The decision server reads files itself so contents never enter Claude's context, screens every item, sends them in parallel with back-off, and returns a compact table of accept, look, and decide rows plus totals and a cost line; Claude ...
+  Basis: measured, one author.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:85 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+
+- [x] **OUT-2597** Out (needs a paid model run or a benchmark; moved from RT-038 in arc42/06_runtime_view/conflicts-with-settled-decisions.md): The root decides who runs a slice by this algorithm: if the slice is smaller than one file read or about 5 requests, the root does it (a fresh Artemis writes about 5k and Heracles about 11k tokens before work; 6 runs on 2026-11-09); if it ...
+  Basis: measured. Status: partial at 088a227c (`plugins/claudetto/hooks/features/delegation/texts.ts`).
+  Source: plugins/claudetto/hooks/features/delegation/texts.ts@088a227c.
+
+- [x] **OUT-2598** Out (describes a part that plugins/ does not ship; moved from RT-039 in arc42/06_runtime_view/conflicts-with-settled-decisions.md): claudetto shall run a weekly holistic review: a per-project improvement-plan.md holds the instructions; the model reads it, reviews codebase diffs since the last review date, and writes findings sorted by criticality (high to low) and ...
+  Basis: reported, 1 author.
+  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:130; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:132; external/2026-11-13/reddit.com-r-claudeai-comments-1xta14a-examples-of-fable-doing-things-m-20261111T233719Z.md:144 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xta14a/examples_of_fable_doing_things_much_better_than/>).
+
+- [x] **OUT-2599** Out (third-party report with no probe; moved from RT-032 in arc42/06_runtime_view/dead-code-removal-by-symbol.md): Dead-code removal runs by symbol where hunks will not compile alone. A new property and every line that touches it are removed together; a group that still will not build without it is skipped, which is a sign it is still wired in. For ...
+  Basis: reported, one commenter. Status: missing at 088a227c.
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:145; external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:179 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
+
+- [x] **OUT-2600** Out (describes a part that plugins/ does not ship; moved from RT-018 in arc42/06_runtime_view/decider-transport.md): The Decider shall settle in this order: with no key, a failed scan, or redacted state over 120,000 chars, call `claude-haiku-5-5` at `high` directly; otherwise send one request bundling every question to model `jev-1.14.0` with a 5,000 ms ...
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/specs/decider/spec.md:38; openspec/changes/2-1-325-rearchitecture/tasks.md:45 (8.5); plugins/claudetto/hooks/kernel/decider/jev.ts@088a227c; plugins/claudetto/hooks/features/setup/key.ts:24-25@088a227c.
+
+- [x] **OUT-2601** Out (describes a part that plugins/ does not ship; moved from RT-019 in arc42/06_runtime_view/decider-transport.md): claudetto shall return a decider pick only if `probabilities[choice] >= 0.75` (or the fallback names it), the approval Noul answers no, the question is single-select, and the pick names one option; otherwise it hands the question back to ...
+  Basis: measured. Status: have at 088a227c.
+  Source: openspec/specs/decide/spec.md:110; openspec/changes/2-1-325-rearchitecture/design.md:71; plugins/claudetto/hooks/kernel/decider/decider.ts:191@088a227c.
+
+- [x] **OUT-2602** Out (describes a part that plugins/ does not ship; moved from RT-028 in arc42/06_runtime_view/deterministic-task-queue.md): claudetto shall hand a task to a worker as a strict JSON spec (target files, acceptance tests, max retries) in a queue; the worker takes it in an isolated worktree, a test and linter gate decides pass or fail, and the main agent wakes only ...
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:150 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/>).
+
+- [x] **OUT-2603** Out (needs a live TUI or driver run to observe request order; no free probe; moved from RT-025 in arc42/06_runtime_view/handover.md): Renewal splits by mode ([ADR-0184](../../adr/0184-headless-renewal-by-driver.md)). Interactive: the mod calls `$.session.compact({instructions})` between turns, and the `session.compact` hook returns the handover as the new messages. ...
+  Basis: measured on claude 2.1.327 for `-p` (plugin clear discarded by `clearCommandQueue`, chunk-m14bt1pz.js@740648; `$.session.compact` rejected in headless, chunk-rap1tzf6.js@763945); the interactive path is probed: `$.session.compact` from `turn.complete` is accepted, the hook gets trigger `plugin`, and the handover becomes the first message (CTX-843). The 2.1.325 pass-through by `e.origin.kind === "plugin"` is refuted under `-p`. Status: missing at 088a227c.
+  Source: handover probes A and F, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with a repo plugin dir, stream-json prompts (reports/2026-11-18-research/handover-probes/probe-f/probe.log; reports/2026-11-18-research/handover.md Q2); handover probe H, claude 2.1.327, 2026-11-18, interactive TUI in tmux (reports/2026-11-18-research/handover-probes/probe-h/probe.log, run3/); session-cycle probe, claude 2.1.325, 2026-11-16 (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-2604** Out (needs a live TUI or driver run to observe request order; no free probe; moved from RT-022 in arc42/06_runtime_view/headless-session-cycle.md): After a driver-sent `/clear`, the first user message of the new conversation holds, in order: the `prompt.context` handover block (`<system-reminder>\n# handover\n…`), the attribution reminder, the `/clear` caveat and command record, then ...
+  Basis: measured on claude 2.1.327 in two runs (the block is stored in `$.store` at `turn.complete`, read once in `prompt.context` after the clear, and the cache breakpoint sits at `messages[1].content[0]`). The 2.1.325 order, with the `/clear` record in front of a `$.prompt.submit` handoff, is refuted for the `prompt.context` path. Status: missing (no clear cycle at 088a227c) at 088a227c.
+  Source: handover probe J, claude 2.1.327, 2026-11-18, cc-inspect `code cli` on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (reports/2026-11-18-research/handover-probes/probe-j/, probe.log lines 1-12); session-cycle probe, claude 2.1.325, 2026-11-16 (recorded in plans/rebuild-curation.md at commit dc499712).
+
+- [x] **OUT-2605** Out (needs a live TUI or driver run to observe request order; no free probe; moved from RT-023 in arc42/06_runtime_view/interactive-session-cycle.md): In the interactive TUI the cycle calls `$.session.compact()` and a `session.compact` hook answers `{messages:[handoff]}` for trigger `plugin`; this keeps the session id and sends no summary request, passes the user's own `/clear` through ...
+  Basis: measured on claude 2.1.325 (verified on 2.1.327 in the program: the `session.compact` event takes `trigger` and `agentId` and a hook may answer `{skip}` or messages, chunk-b0yr0k8v.js@204780 and @78086; `$.session.compact(input?)` sends event `session.compact` with trigger `plugin`, chunk-b0yr0k8v.js@305933, Documented at https://clawdipedia.cc/extend/mod-api/calls/session; the TUI order was not re-run). Status: partial (handoff.ts:74-100 calls $.session.compact() and answers trigger plugin; the trigger is session age) at 088a227c.
+  Source: session-cycle probe, claude 2.1.325, 2026-11-16, interactive TUI on a fake API stub (recorded in plans/rebuild-curation.md at commit dc499712); plugins/claudetto/hooks/features/compaction/handoff.ts:74-100@088a227c; probe, `claude` 2.1.325, tmux plus a Bun stub, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).
+
+- [x] **OUT-2606** Out (describes a part that plugins/ does not ship: no measurement script ships in plugins/; moved from RT-034 in arc42/06_runtime_view/measurement-scripts.md): To measure the peak memory of a command, poll `ps -axo pid,ppid,rss` every 30 ms, sum RSS over the whole child process tree, and report peak MB, maximum process count, time and exit code.
+  Basis: measured (script in the repo research; the tsgolint finding needs it).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/scripts/peak.ts:1.
+
+- [x] **OUT-2607** Out (describes a part that plugins/ does not ship: no measurement script ships in plugins/; moved from RT-035 in arc42/06_runtime_view/measurement-scripts.md): To recover files after a destructive repo action, replay a project's transcript Write and Edit tool uses in time order onto a target tree, skip errored uses, and report applied and missed counts (an Edit is missed when its `old_string` is ...
+  Basis: measured (script in the repo research).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/scripts/replay.ts:1.
+
+- [x] **OUT-2608** Out (describes a part that plugins/ does not ship: no measurement script ships in plugins/; moved from RT-036 in arc42/06_runtime_view/measurement-scripts.md): To list the heavy commands a session ran, scan transcript Bash `tool_use` entries for `claude plugin test`, `just check`, `just lab`, `just verify`, `oxlint` and `bun test` between two timestamps, and print the time and 110 characters of ...
+  Basis: measured (script in the repo research; low impact).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/scripts/cmds.ts:1.
+
+- [x] **OUT-2609** Out (describes a part that plugins/ does not ship: no measurement script ships in plugins/; moved from RT-037 in arc42/06_runtime_view/measurement-scripts.md): The fixture harness dedupes `fixtures-*.ts` commands (expect-block when any row names a rule id) into batches of 40 Bash `tool_use` blocks for a stub API, and classifies each outcome from the hook log plus debug `tool_dispatch_start` ...
+  Basis: measured (scripts in the repo research).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/scripts/fixture-steps.ts:1; openspec/changes/archive/2026-11-16-2-1-323/research/scripts/fixture-outcomes.ts:1.
+
+- [x] **OUT-2610** Out (needs a paid model run or a benchmark; moved from RT-004 in arc42/06_runtime_view/model-side-calls-per-turn.md): The model side calls per turn, measured by fake-API capture: a plain typed prompt makes 2 (Decider haiku, Stop grade haiku); a one-Bash turn makes 3 (adds grade sonnet); a force-delete of a foreign branch makes 5 (three Decider calls plus ...
+  Basis: measured for the first three rows; read from code for the rest. The AskUserQuestion, TYPESAFE_API_KEY escalation, you-should-know, setup, and Stop-block rows are read from code, not run: the model-call count run did not reach AskUserQuestion (the ask-fix Decider did not fire in -p), the you-should-know side check, the setup advice, or the Jev escalation, so those counts have no run behind them. Their check is a fake-API capture that reaches each path; a billed run is not used. The Stop-grade and pin-ledger calls describe the 2.1.321 design; ADR-0104 and the dropped constraint ledger remove both from the rebuild, so the rebuild's count is the Decider and escalation rows only until the capture is rerun. The pin-ledger, gate, and decider paths are not in the baseline tree 088a227c.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:915-922; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:832,911-920.
+
+- [x] **OUT-2611** Out (third-party report with no probe; moved from RT-030 in arc42/06_runtime_view/plan-strong-execute-cheap-review-strong.md): claudetto shall support a cross-session flow: brainstorm with Opus until the plan is solid, write the issue, start a Sonnet session on the implementation prompt, and have the Opus session (compacted, state saved) monitor the Sonnet session ...
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:77 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
+
+- [x] **OUT-2612** Out (describes a part that plugins/ does not ship; moved from RT-033 in arc42/06_runtime_view/repeat-guard.md): claudetto shall match a repeated call by outcome (the same call input for texts under 80 chars), with a test per known-bad case from a real transcript, on read-only calls only (the guard once withheld the output of WRITE commands). A Bash ...
+  Basis: reported. Status: partial at 088a227c (features/repeat exists).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3267; plugins/claudetto/hooks/features/repeat/texts.ts@088a227c.
+
+- [x] **OUT-2613** Out (past-session or machine-state count; moved from RT-031 in arc42/06_runtime_view/secret-flag-triage-funnel.md): A triage funnel runs in three stages. Rules clear the obvious flags. Sonnet subagents do a second pass on the ambiguous flags. A person confirms every real leak by hand. One audit went from 2,179 secret-rule flags to 69 critical; a ...
+  Basis: reported, one author. Status: missing at 088a227c.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:36; external/2026-10-30/reddit.com-r-claudeai-comments-1xhmtya-i-used-claude-code-to-audit-21k-20261029T124002Z.md:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhmtya/i_used_claude_code_to_audit_21k_product_hunt/>).
+
+- [x] **OUT-2614** Out (describes a part that plugins/ does not ship; moved from RT-029 in arc42/06_runtime_view/wave-end-handoff.md): claudetto shall have an orchestrator that works in waves of concurrent batches, fenced by file ownership, clear its own context at the end of each wave at a safe boundary and hand off to a new iteration of itself.
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:156 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/>).
+
+- [x] **OUT-2615** Out (past-session or machine-state count: state of a past change; moved from DEP-001 in arc42/07_deployment_view.md): Change `2-1-325-rearchitecture`: created 2026-11-15, schema spec-driven; all tasks 1.1-8.5 done, 9.2 open ("Publish the branch to the `xsyetopz` marketplace; it serves the base commit `6f81c479`, so the branch work is active only through ...
+  Basis: cited. Status: partial at 088a227c (the change's tasks as deleted with the OpenSpec).
+  Source: openspec/changes/2-1-325-rearchitecture/.openspec.yaml:2; openspec/changes/2-1-325-rearchitecture/tasks.md:50.
+
+- [x] **OUT-2616** Out (describes a part that plugins/ does not ship: just dogfood is repo tooling; moved from DEP-002 in arc42/07_deployment_view.md): claudetto shall export HEAD to `~/.claudetto-dev` and run `claude plugin update` in `just dogfood`, because Claude Code copies a directory marketplace into `~/.claude/plugins/cache/<marketplace>/<plugin>/unknown` and a plain re-export ...
+  Basis: cited (`project.just:51-60@088a227c`: `dogfood` rebuilds `~/.claudetto-dev` from `git archive HEAD` and runs `claude plugin update`; the comment at line 51 gives the cache reason; `dogfood-dir` at :64 uses `--plugin-dir`). Status: have at 088a227c (`project.just`).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:101.
+
+- [x] **OUT-2617** Out (third-party report with no probe; moved from CC-030 in arc42/08_concepts/architecture-ladder.md): The design escalates from a single call to a workflow, an agent loop, and multi-agent only on measured need, uses deterministic code for deterministic steps, and treats a same-session subagent as the cheap handoff. The Anthropic guide ...
+  Basis: cited (via a thread). Status: partial at 088a227c (in the design only).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:72; openspec/changes/archive/2026-11-16-2-1-323/design.md:1.
+
+- [x] **OUT-2618** Out (third-party report with no probe; moved from CC-052 in arc42/08_concepts/authority-isolation-test.md): claudetto shall test a sandbox by asking: if the model is fully compromised by prompt injection, can it still read a secret or use it against a destination not approved? Isolating the process is not isolating authority (a container does ...
+  Basis: reported (several commenters). Status: missing at 088a227c.
+  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:578,625,655-661 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
+
+- [x] **OUT-2619** Out (third-party report with no probe; moved from CC-050 in arc42/08_concepts/bans-over-instructions.md): claudetto shall write a rule as a ban when it can: a ban is pass/fail ('do not use bullet points'), while 'write concisely' is not. Anything a machine can verify moves out of the skill into a hook or linter, so the skill carries only the ...
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xlfe2l-i-tested-my-agent-skills-with-an-20261102T140719Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlfe2l/i_tested_my_agent_skills_with_and_without_the_one/>).
+
+- [x] **OUT-2620** Out (third-party report with no probe; moved from CC-015 in arc42/08_concepts/capability-removal.md): Capability-removal rule: a work mailbox MCP deliberately has no send or delete verb; "the safest permission is a capability that doesn't exist".
+  Basis: reported design.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:129 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+
+- [x] **OUT-2621** Out (third-party report with no probe; moved from CC-021 in arc42/08_concepts/checking-between-turns.md): Check what the agent touched (files, whether tests changed) between turns, not once at the end. Delegation compresses what the reviewer sees into a summary, so the half-fail shape recurs one level down. Detection without an owner is a log ...
+  Basis: reported, vendor claim (a hook-recorder co-founder), no data shown.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:81; external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:41; external/2026-10-25/reddit.com-r-claudeai-comments-1xcnaru-we-measured-how-60-engineers-dir-20261024T061824Z.md:75 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcnaru/we_measured_how_60_engineers_direct_ai_coding/>).
+
+- [x] **OUT-2622** Out (third-party report with no probe; moved from CC-055 in arc42/08_concepts/checks-at-fixed-points.md): claudetto shall run a code-health score at three points (before a risky edit, before commit, before the PR), not per keystroke, and treat the PR check as the winner on disagreement; AGENTS.md is a note agents skip, not a gate.
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>).
+
+- [x] **OUT-2623** Out (third-party report with no probe; moved from CC-045 in arc42/08_concepts/confidence-cascade.md): claudetto shall gate a cascade on the cheap judge's confidence only after checking its calibration on its own hard cases: a calibrated judge sends more cases up as data gets harder, an overconfident one keeps guessing, and a task-type gate ...
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrnt9w-cheap-judge-opus-only-on-the-unc-20261110T094216Z.md:41; external/2026-11-10/reddit.com-r-claudeai-comments-1xrnt9w-cheap-judge-opus-only-on-the-unc-20261110T094216Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrnt9w/cheap_judge_opus_only_on_the_uncertain_cases_988/>).
+
+- [x] **OUT-2624** Out (third-party report with no probe; moved from CC-025 in arc42/08_concepts/consent.md): claudetto shall treat autonomy and consent as one dial.
+  Basis: cited (the dossier's inference: harness prompts guarding over-deferral or overreach generalise; capability is underestimated and "can't" is never probed; the agent swung between both within one session, session 1213c32c). No research measures deferral of executable work. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts`).
+  Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:56; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:72.
+
+- [x] **OUT-2625** Out (third-party report with no probe; moved from CC-026 in arc42/08_concepts/consent.md): claudetto shall treat bounds and person-authored things as the user's.
+  Basis: reported. Status: partial at 088a227c: `plugins/claudetto-you-should-know/hooks/texts.ts:4` names `git commit --no-verify`; `plugins/claudetto` holds no such rule.
+  Source: openspec/specs/agent-conduct/spec.md:105; openspec/specs/agent-conduct/spec.md:119; plugins/claudetto-you-should-know/hooks/texts.ts:4@088a227c.
+
+- [x] **OUT-2626** Out (third-party report with no probe; moved from CC-056 in arc42/08_concepts/conventions-and-decisions.md): claudetto shall keep only timeless conventions in the rules file and put each decision (for example "we chose X over Y", "do not touch Z until migration lands") in one issue per open question, with its rationale and plan, which the agent ...
+  Basis: reported, one commenter (discloses a related open-source project). Status: missing at 088a227c.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:75 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/>).
+
+- [x] **OUT-2627** Out (third-party report with no probe; moved from CC-049 in arc42/08_concepts/coordinator-context.md): claudetto shall reduce coordinator context before it raises effort: raising the coordinator to xhigh may be a net negative since it thinks itself into more context; do with scripts what a script can do, use headed and sectioned files, keep ...
+  Basis: reported, one commenter.
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
+
+- [x] **OUT-2628** Out (third-party report with no probe; moved from CC-031 in arc42/08_concepts/crash-safe-long-agent-loops.md): A long agent loop records an idempotency key before each side-effecting tool call, holds a monotonic fencing token on leases, and keeps a spec-driven `tasks.md` checklist with status files so that a rerun does not restart; a crash ...
+  Basis: reported. Status: missing at 088a227c.
+  Source: external/2026-10-12_p3/export-For those running long Claude agent loops in production- how do you handle crashes mid-run-.jsonl:3 (spec-driven Tasks.md checklist with run status files, safe to rerun), :5 (idempotency key carried by the effect, taken from the plan step), :6 (monotonic fencing token; the store rejects a lower token).
+
+- [x] **OUT-2629** Out (third-party report with no probe; moved from CC-054 in arc42/08_concepts/dated-notes-with-source-links.md): claudetto shall keep raw exports untouched and extract each call into a dated note (decisions, open questions, contradictions) with each item linking its source; flag conflicts instead of resolving silently; mark replaced decisions as ...
+  Basis: reported. Status: partial at 088a227c (dated and superseded markers for context files only, not checked in code; `git ls-tree 088a227c openspec` is empty, so the deleted OpenSpec is not at that commit; `plugins/claudetto/rules/` exists).
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:86-88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:64.
+
+- [x] **OUT-2630** Out (third-party report with no probe; moved from CC-051 in arc42/08_concepts/definition-of-done-and-stop-condition.md): claudetto shall define 'done', 'planned' and 'filed' in terms an agent cannot redefine mid-session: 'done' is a checkable artifact, each goal has a predicate written at commit time, spend or send waits on an approval file only the user ...
+  Basis: reported (one commenter). Status: missing at 088a227c (a stop-condition text appears only in plugins/claudetto-openspec/skills/apply/SKILL.md).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xlujwl-claude-codes-docs-say-claudemd-i-20261102T140430Z.md:101,105 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlujwl/claude_codes_docs_say_claudemd_is_context_not/>).
+
+- [x] **OUT-2631** Out (third-party report with no probe; moved from CC-037 in arc42/08_concepts/delegation-economics.md): A delegated edit carries its check command, and the root runs it on return before building (a failure means fix, or re-send with the failure text). Delegate only if it saves tokens (when the prompt would be the code, do it yourself); two ...
+  Basis: reported. Status: have at 088a227c (`plugins/claudetto/agents/Heracles.md`).
+  Source: plugins/claudetto/agents/Heracles.md@088a227c.
+
+- [x] **OUT-2632** Out (third-party report with no probe; moved from CC-081 in arc42/08_concepts/design-law.md): claudetto writes its root prompt, tool and agent descriptions, and hook texts in block language; replies, docs, and the changelog keep full articles.
+  Basis: reported. Status: partial at 088a227c (rules/useBlockLanguage.md).
+  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1757).
+
+- [x] **OUT-2633** Out (third-party report with no probe; moved from CC-010 in arc42/08_concepts/enforcement-over-prose.md): claudetto shall move each rule up the enforcement ladder `prose < memory or rules file < per-turn reinjection < hooks or gates < sandbox, permissions or architecture < training`: a rule that a machine can check is held by a hook, gate, ...
+  Basis: cited; reported, consensus of several commenters; inferred. Status: partial at 088a227c (`git show 088a227c:plugins/claudetto/hooks/hooks.json` holds SessionStart, a UserPromptSubmit block for `/claudetto:setup` only, and PreCompact; re-injection, the event-log bus, and the dependency gate are missing). Claude 2.1.327: PreToolUse, PostToolUse, UserPromptSubmit, Stop, SessionStart, PreCompact, InstructionsLoaded, PostToolBatch, SubagentStart, TaskCompleted are hook events (`code` search, chunk-ja5z738t.js@5486, chunk-ja5z738t.js@5607, chunk-ja5z738t.js@5776, chunk-ja5z738t.js@5875) and `$.telemetry.log` is present (chunk-dafpvz32.js@4220).
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:121 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/2026-10-28/reddit.com-r-claudeai-comments-1xfqg0c-how-do-you-keep-a-skill-active-a-20261028T060802Z.md:183 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfqg0c/how_do_you_keep_a_skill_active_after_context/>); external/2026-11-03/reddit.com-r-claudeai-comments-1xlujwl-claude-codes-docs-say-claudemd-i-20261102T140430Z.md:33,71,75,95 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlujwl/claude_codes_docs_say_claudemd_is_context_not/>); external/2026-10-12/export-Made Claude Code follow the rules I keep telling it, and catch its own stale memories (Jev + dreamin.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x26t6z/>); external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:12; external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19; external/agent-terms/03-safety-and-trust-boundaries.md:122; plugins/claudetto/hooks/hooks.json (`PreCompact`)@088a227c; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:978; openspec/changes/archive/2026-11-16-2-1-323/design.md:56; openspec/changes/archive/2026-11-16-2-1-323/design.md:67.
+
+- [x] **OUT-2634** Out (third-party report with no probe; moved from CC-022 in arc42/08_concepts/evidence-over-claims.md): claudetto shall accept a claim only as tool output, an exit code, a diff, or rendered state, and trace every artifact, claim, test result, and decision to its source and authority.
+  Basis: cited ([2310.01798], [2609.20812]); reported (one user, 2026-11-10; one user, 2026-11-16). Status: partial at 088a227c (`git show 088a227c:plugins/claudetto/hooks/features/prompt/texts.ts` holds in `EVIDENCE`: "Probe each claim, an agent's too, before you report it").
+  Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:52; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:55; plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493).
+
+- [x] **OUT-2635** Out (third-party report with no probe; moved from CC-062 in arc42/08_concepts/fact-rules.md): claudetto shall source facts in this order: the project first (code, tests, git history, logs, the running program), then primary external sources (versioned docs, specs, upstream source, issue trackers); cite each source beside its claim; ...
+  Basis: reported. Status: partial at 088a227c.
+  Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
+
+- [x] **OUT-2636** Out (third-party report with no probe; moved from CC-063 in arc42/08_concepts/fact-rules.md): Every artifact, claim, test result, and decision traces to its source and authority; an agent's self-report is checked against git changes, tool records, and the user's instructions, and an agent note never becomes evidence by repetition.
+  Basis: reported. Status: missing at 088a227c.
+  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493).
+
+- [x] **OUT-2637** Out (third-party report with no probe; moved from CC-047 in arc42/08_concepts/failure-to-check-map.md): claudetto shall map each failure to a check: hollow tests to test modules named for what they pin with a script that refuses others; silently skipped tests to recorded data in the repo, flaky test as sev-1, no live cluster; hand-written ...
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:29; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:31 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
+
+- [x] **OUT-2638** Out (third-party report with no probe; moved from CC-044 in arc42/08_concepts/fault-catalog.md): claudetto shall record each issue that holds the agent back as one concise entry in a datestamped catalog, entries one after another, with no long verbose catalog; an old catalog goes away once its content sits where the agent can read it.
+  Basis: user decision. Status: missing at 088a227c.
+  Source: user decision, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:736; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:799.
+
+- [x] **OUT-2639** Out (third-party report with no probe; moved from CC-029 in arc42/08_concepts/field-lessons.md): claudetto shall be built on five field lessons.
+  Basis: reported (session-log corpus). Status: have as design input. The compaction-off figure (about a quarter) was not located by grep.
+  Source: external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:72; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:76.
+
+- [x] **OUT-2640** Out (third-party report with no probe; moved from CC-007 in arc42/08_concepts/fresh-thread-generation.md): Split generation across threads: produce the raw material in one thread, then in a fresh thread ask to compose from it; one-thread composition leaks more. Rewrite the prompt and re-run rather than steering by follow-up chat turns; save the ...
+  Basis: reported workflow.
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:457; external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:226 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
+
+- [x] **OUT-2641** Out (third-party report with no probe; moved from CC-048 in arc42/08_concepts/hypothesis-falsification.md): claudetto shall make each hypothesis survive an attack before ranking: ask for the falsification test first (what result would kill it), since most die there; start from collected failures (look at about 100 failure cases, group them, ...
+  Basis: reported.
+  Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsh2n6-do-you-just-prompt-as-much-as-yo-20261110T185109Z.md:67; external/2026-11-11/reddit.com-r-claudeai-comments-1xsh2n6-do-you-just-prompt-as-much-as-yo-20261110T185109Z.md:45 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsh2n6/do_you_just_prompt_as_much_as_you_can_for_unique/>).
+
+- [x] **OUT-2642** Out (third-party report with no probe; moved from CC-039 in arc42/08_concepts/instruction-files.md): claudetto shall keep in an instruction file only facts the model cannot guess (which site is staging, what not to touch, business rules the code does not show) and the user's own preferences, with codebase-specific traps; a line is added ...
+  Basis: reported, four commenters, no measurement given; measured (author, small). Status: partial at 088a227c (the rationale-on-disk skill is missing; `git grep omitClaudeMd 088a227c` finds nothing).
+  Source: external/2026-10-02/export-I tested whether a custom system prompt for Claude Code makes a difference. 456 API calls later - he.jsonl:1; external/2026-10-02/export-I tested whether a custom system prompt for Claude Code makes a difference. 456 API calls later - he.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1shogc4/i_tested_whether_a_custom_system_prompt_for/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xmhy1d-the-karpathy-claudemd-clearly-20261105T173154Z.md:117,190-194,248 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xmhy1d/the_karpathy_claudemd_clearly_changed_claude/>).
+
+- [x] **OUT-2643** Out (third-party report with no probe; moved from CC-041 in arc42/08_concepts/instruction-files.md): claudetto shall treat instruction files as advice and keep them small by progressive disclosure. Keep all rules to about one A4 page and CLAUDE.md to suggestions (where to look), not "do X"; the longer the rules, the less obeyed. Cap the ...
+  Basis: reported; cited memory docs and secondhand. Status: partial at 088a227c (`plugins/claudetto/hooks/features/line-file/` and `plugins/claudetto/hooks/features/hygiene/` exist per `git ls-tree -r 088a227c`; INDEX and budget pre-commit hooks missing). Claude 2.1.327: `InstructionsLoaded` is a hook event (chunk-ja5z738t.js@5875); `@` imports verified on 2.1.327 from https://clawdipedia.cc/configure/memory-and-rules (Documented): `@path/to/file` imports at launch, relative to the importing file, at most four hops, skipped in code spans and fenced blocks; an import outside the working directory asks once per project, and user-scope files skip the dialog.
+  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:81; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:307 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:39; external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:42 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjcfjs/how_to_build_a_harness_that_actually_improves/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xrpkdt-what-even-is-the-point-of-workin-20261110T094812Z.md:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrpkdt/what_even_is_the_point_of_working_rules_lol/>); external/2026-10-12_p3/export-Are generated CLAUDE.md files good or bad practice-.jsonl:18; external/2026-10-12_p3/export-Claude Code keeps suggesting outdated Expo steps- Expo's own docs list the corrections, plus an offi.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x3r2ly/>); external/please-use-me-often/agent-failure-dossier/judged/spec.jsonl:40 (2m13s, 169 turns); external/2026-10-07_p2/export-To those tho -threw away all their markdown files (literally or partially), what did you actually ga.jsonl:21 (5,488 words).
+
+- [x] **OUT-2644** Out (third-party report with no probe; moved from CC-033 in arc42/08_concepts/instrument-rules-for-delegates.md): Delegates follow these rules. Acceptance is by first action: when a clause cannot be met, the delegate names it and the reason first. Only the user amends; a Correction binds delegates through the brief, and PreCompact keeps corrections ...
+  Basis: reported (spec-level). Status: missing at 088a227c.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:1.
+
+- [x] **OUT-2645** Out (third-party report with no probe; moved from CC-073 in arc42/08_concepts/loading-and-environment.md): claudetto shall load about 1,000 tokens of core terms each session (`.claude/rules/agent-terms.md`), load `paths:`-scoped rules on touching tests, shipped source, or own config, keep the full text (27-31K tokens) opt-in, and give a routing ...
+  Basis: reported. Status: partial at 088a227c (`tools/rules.test.ts` exists per `git ls-tree -r 088a227c`).
+  Source: external/please-use-me-often/agent-terms/AGENTS.snippet.md:3.
+
+- [x] **OUT-2646** Out (third-party report with no probe; moved from CC-074 in arc42/08_concepts/loading-and-environment.md): claudetto shall record environment quirks once in a session-start file (grep is ugrep, `.env` deny, BSD userland, zsh globbing), fix at the root (`bunfig.toml` `env = false`), skip dot-entries in tests that list folders, make a silent tool ...
+  Basis: reported. Status: partial at 088a227c (`bunfig.toml` and `plugins/claudetto/scripts/session-start.ts` exist per `git ls-tree -r 088a227c`).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:14.
+
+- [x] **OUT-2647** Out (third-party report with no probe; moved from CC-024 in arc42/08_concepts/measurement.md): claudetto shall measure the right thing in each eval and probe.
+  Basis: measured. Status: have as practice in the deleted OpenSpec; not a plugin feature.
+  Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:45; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:162; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:63. Not located: the source of the 1/10 scorer and the 17-command Stryker cost.
+
+- [x] **OUT-2648** Out (third-party report with no probe; moved from CC-066 in arc42/08_concepts/project-state-and-surfaces.md): claudetto shall treat project state as read where the agent reads it, derived by script where possible. When a rules file contradicts observable state, the agent stops the affected step, reports with evidence, proposes corrected wording ...
+  Basis: reported. Status: partial at 088a227c (root prompt).
+  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:102; external/please-use-me-often/agent-terms/TERMS-AND-CONDITIONS.md:80.
+
+- [x] **OUT-2649** Out (third-party report with no probe; moved from CC-068 in arc42/08_concepts/project-state-and-surfaces.md): claudetto shall treat an absent path as an answer: ENOENT from `$.fs.stat` or `$.fs.exists` means absent, with no log; resolve only the operands a command takes as paths (`grep -v "/\.git/" list.txt` logs no "was not resolved"); mocks ...
+  Basis: reported, reproduced. Status: have at 088a227c (hygiene/roots.ts, kernel/absent.ts). Claude 2.1.327: `fs.stat` and `fs.exists` mod events present (chunk-dafpvz32.js@3462).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:141; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:755.
+
+- [x] **OUT-2650** Out (third-party report with no probe; moved from CC-070 in arc42/08_concepts/project-state-and-surfaces.md): claudetto shall use the lead only for `claude plugin test`, once per round, because one run of the `claudetto` mod takes 3.4 GB in 19 processes; before a removal, ask the user (the D321 lesson: do not delete popup, monitor, handoff, ...
+  Basis: measured; reported. Status: have at 088a227c (process rule).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:35; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:517; openspec/specs/permission-policy/spec.md:264.
+
+- [x] **OUT-2651** Out (third-party report with no probe; moved from CC-001 in arc42/08_concepts/prompt-text.md): Workarounds for unwanted echo of notes: let the model dump the info first in a labeled author's-note paragraph; tag small notes "do not make this explicit, it is only to inform"; pack notes into precise single words. Block rules ...
+  Basis: reported.
+  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:351; external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:363 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
+
+- [x] **OUT-2652** Out (third-party report with no probe; moved from CC-002 in arc42/08_concepts/prompt-text.md): Every prompt text shall use no hard word limit in a concise or sentence-style rule: Fable 5.2 turns prose choppy under "one instruction per sentence, in 20 words or fewer"; the you-should-know "at most 20 words" cap is a risk only on Fable.
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:32.
+
+- [x] **OUT-2653** Out (third-party report with no probe; moved from CC-003 in arc42/08_concepts/prompt-text.md): A JSON-only request on Sonnet 5.5 skips working-out at low and medium effort; a prompt that asks for JSON shall use structured outputs, parse the last JSON value, or add "Think the problem through before you answer." This applies to the ...
+  Basis: cited.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:35.
+
+- [x] **OUT-2654** Out (third-party report with no probe; moved from CC-004 in arc42/08_concepts/prompt-text.md): A style rule shall tell the model what to cut (restating the question, recaps, hedging) and not a length, and shall scope the short rule to replies and not to docs or code the model writes.
+  Basis: reported (anecdote).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:186.
+
+- [x] **OUT-2655** Out (third-party report with no probe; moved from CC-005 in arc42/08_concepts/prompt-text.md): Each skill shall state a shared paragraph once and reference it: the propose and update skills repeat the delta-format paragraph (about 560 characters), "Never edits code" is said once in update, and the apply skill gets "Work every ...
+  Basis: observed in transcript (read in the audit).
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:241; openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:244.
+
+- [x] **OUT-2656** Out (third-party report with no probe; moved from CC-057 in arc42/08_concepts/pruning-test.md): claudetto shall delete a rules line that never changed what the model did: if a line would not change the output, cut it.
+  Basis: reported, one commenter. Status: missing at 088a227c.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xalih0-for-those-running-claude-code-on-20261102T084737Z.md:114 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xalih0/for_those_running_claude_code_on_large_monorepos/>).
+
+- [x] **OUT-2657** Out (third-party report with no probe; moved from CC-008 in arc42/08_concepts/review-depth.md): claudetto shall read every word of what goes out under the user's name or cannot be undone, and skim summaries of internal drafts; review depth follows risk. When the same mistake recurs twice, add a check to the skill or CLAUDE.md instead ...
+  Basis: reported. Status: partial at 088a227c.
+  Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbl19s-how-do-you-manage-reading-fatigu-20261021T201944Z.md:112 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbl19s/how_do_you_manage_reading_fatigue/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhl3zz-what-finally-stopped-claude-code-20261029T115922Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhl3zz/what_finally_stopped_claude_code_from_undoing_my/>).
+
+- [x] **OUT-2658** Out (third-party report with no probe; moved from CC-011 in arc42/08_concepts/rule-reasons-and-incidents.md): Each memory rule or lesson carries a one-or-two sentence reason ("Why:" and "How to apply:" lines; inline form ends with what the mistake cost). A bare rule is followed loosely or applied too literally or dropped when a case differs; a ...
+  Basis: reported, 2 posters.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:203 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/2026-10-22/reddit.com-r-claudecode-comments-1xbnwcw-a-month-of-my-claude-code-agen-20261022T044334Z.md:62 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbnwcw/a_month_of_my_claude_code_agents_writing_down/>).
+
+- [x] **OUT-2659** Out (third-party report with no probe; moved from CC-012 in arc42/08_concepts/rule-reasons-and-incidents.md): Briefing another agent with source paths, scope, and a test worked first try after two rounds of step-list prompts failed. Each rule in CLAUDE.md carries a date and an incident, since a rule with a why survives and a generic "follow the ...
+  Basis: reported, one commenter.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbyxeo-how-do-i-structure-my-monorepo-20261022T010218Z.md:87 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbyxeo/how_do_i_structure_my_monorepo_and_workflow_to/>).
+
+- [x] **OUT-2660** Out (third-party report with no probe; moved from CC-013 in arc42/08_concepts/rule-reasons-and-incidents.md): claudetto shall give each rule an incident, a date, and a review condition, keep each rule that guards a rare, expensive failure tied to the incident that created it, and promote checkable rules to hooks: `failure -> one-line rule with ...
+  Basis: reported; cited second-hand for the harness digest. Status: partial at 088a227c (`plugins/claudetto/hooks/hooks.json`, `plugins/claudetto/hooks/register.ts`; `git grep -niE "incident|because" 088a227c -- plugins/claudetto/rules` shows rule files carry a "because" reason and no incident dates; rule-pruning protocol missing).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:62; external/export-I analyzed 246 repos and 57 papers on agent harnesses. Here's what actually works.jsonl:16; external/please-use-me-often/agent-failure-dossier/judged/spec.jsonl:41; external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:41; external/2026-10-30/reddit.com-r-claudeai-comments-1xjcfjs-how-to-build-a-harness-that-actu-20261030T165702Z.md:99 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjcfjs/how_to_build_a_harness_that_actually_improves/>).
+
+- [x] **OUT-2661** Out (third-party report with no probe; moved from CC-009 in arc42/08_concepts/scaffolding-weight.md): Opinion: subagent-driven development is out of date; newer models need less scaffolding, and goals plus verification-based prompts replace it. Use subagents for large dynamic pieces and context shedding.
+  Basis: reported opinion.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:236 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
+
+- [x] **OUT-2662** Out (third-party report with no probe; moved from CC-075 in arc42/08_concepts/scope-and-simplicity.md): claudetto shall hunt defects and hold scope: run existing tests before and after a change (a regression shows as its own); look for siblings in the same code and the same pattern elsewhere; investigate surprising state (empty data, a ...
+  Basis: reported. Status: partial at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:36; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:23.
+
+- [x] **OUT-2663** Out (third-party report with no probe; moved from CC-076 in arc42/08_concepts/scope-and-simplicity.md): claudetto shall ask for the smallest diff that satisfies the task and a list of what was not added; review with "what does this generality buy today?" and abstract on the third repetition; give jscpd, radon, and ESLint complexity as ...
+  Basis: reported. Status: partial at 088a227c (`.jscpd.json` and the jscpd rule in `AGENTS.md:38` exist; no PostToolUse feedback, per `git grep -n PostToolUse 088a227c -- plugins/claudetto` finding nothing).
+  Source: external/please-use-me-often/swe-best-practices.md:26.
+
+- [x] **OUT-2664** Out (third-party report with no probe; moved from CC-077 in arc42/08_concepts/scope-and-simplicity.md): claudetto shall keep one path per job and no own formats or copies: an own eval harness (`case.json`, hidden oracle folders, tamper hashes, `runs.json`) was later banned by the owner (never use or invent proprietary schemas or formats); ...
+  Basis: reported. Status: partial at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:37.
+
+- [x] **OUT-2665** Out (third-party report with no probe; moved from CC-078 in arc42/08_concepts/scope-and-simplicity.md): The agent invents no file, format, schema, order, priority, or wording that the user did not give, and finishes the named task before anything else.
+  Basis: reported. Status: missing at 088a227c.
+  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8179).
+
+- [x] **OUT-2666** Out (third-party report with no probe; moved from CC-058 in arc42/08_concepts/scopes-of-forgetting.md): claudetto shall diagnose "Claude forgot" by asking which scope it happened in: mid-session (a rule set early stops shaping replies), between sessions, or between projects. Only the first is a window problem, so a bigger window does not fix ...
+  Basis: reported, one write-up (opencraftai), not a study. Status: missing at 088a227c.
+  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:31; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xkv0oo-the-3-kinds-of-claude-forgot-onl-20261102T083407Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkv0oo/the_3_kinds_of_claude_forgot_only_the_first_is_a/>).
+
+- [x] **OUT-2667** Out (third-party report with no probe; moved from CC-071 in arc42/08_concepts/settings-and-limits.md): claudetto shall read window, heavy-call cap, and fail limits from `userConfig`; start, depth, and time caps are Claude Code env keys that setup writes, not `userConfig`. `userConfig` keys are camelCase (`...Enabled`, `...PeriodDays`, ...
+  Basis: reported. Status: have at 088a227c (features/setup).
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:99.
+
+- [x] **OUT-2668** Out (third-party report with no probe; moved from CC-072 in arc42/08_concepts/settings-and-limits.md): claudetto shall audit each mechanism by three tests in order: (1) Native: a documented Claude Code key, file, or event does the job, so setup writes the key and the code goes (a built-in tool is rebuilt only when a mod, hook, or skill ...
+  Basis: reported. Status: partial at 088a227c (`keptTools` is in `plugins/claudetto/.claude-plugin/plugin.json:91`, per `git grep -n keptTools 088a227c -- plugins`).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:602-608@088a227c9^ ("The Three Tests"); plans/rebuild-curation.md:1295@8ef531151.
+
+- [x] **OUT-2669** Out (third-party report with no probe; moved from CC-046 in arc42/08_concepts/show-the-parse.md): claudetto shall add a display of what the parser saw before a smarter heuristic: every clever text heuristic added was a bug, and every display caught one (six defects found by display, none by a smarter parser).
+  Basis: reported.
+  Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>).
+
+- [x] **OUT-2670** Out (third-party report with no probe; moved from CC-018 in arc42/08_concepts/single-owner.md): claudetto shall keep one global file that holds the key rules as short numbered sections, and every other agent file points back to it; two files saying slightly different things is the real bug, because the agent follows whichever it read ...
+  Basis: reported (one commenter). Status: missing at 088a227c.
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xlujwl-claude-codes-docs-say-claudemd-i-20261102T140430Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlujwl/claude_codes_docs_say_claudemd_is_context_not/>).
+
+- [x] **OUT-2671** Out (third-party report with no probe; moved from CC-036 in arc42/08_concepts/skills-and-instructions.md): When a tool has a CLI, a short SKILL.md teaches it (`jq` for structured output, small example outputs) in place of an MCP schema paid every turn; MCP stays for deeply structured data or auth plumbing; deterministic work is mechanical and ...
+  Basis: reported by several, with one unquantified comparison. Status: have at 088a227c (`plugins/claudetto/skills/docs` uses a CLI).
+  Source: external/2026-10-07_p2/export-Skills + CLI is just better than MCP, right-.jsonl:7 (a skill that says to use the CLI, with 3 examples and a pipe through jq; MCP kept for typed or auth cases), :18 (small example outputs plus jq); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:93.
+
+- [x] **OUT-2672** Out (third-party report with no probe; moved from CC-032 in arc42/08_concepts/status-against-coverage.md): Execution status is mechanical and coverage is its own field (N of M checked, missing, findings that fail validation). Missing optional evidence gives a partial report with the gap on top; missing required evidence fails the run. A run can ...
+  Basis: cited. Status: partial at 088a227c (verification hooks, unconfirmed).
+  Source: external/2026-10-13/export-Claude Managed Agents completed status can still include failed work.jsonl:2 (post) and :5 (the agent no longer sets its own done bit; parent completion is the AND of the child results); plans/rebuild-curation.md:472@8ef531151.
+
+- [x] **OUT-2673** Out (third-party report with no probe; moved from CC-053 in arc42/08_concepts/subagent-description-excludes-lookups.md): claudetto shall word a reasoning subagent's description to exclude mechanical lookups, or it runs its whole essay on a grep. A structured-thinker subagent (restate question; three interpretations naming the critical assumption, the user's ...
+  Basis: reported, one user. Status: missing at 088a227c.
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xmhy1d-the-karpathy-claudemd-clearly-20261105T173154Z.md:63-67,93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xmhy1d/the_karpathy_claudemd_clearly_changed_claude/>).
+
+- [x] **OUT-2674** Out (third-party report with no probe; moved from CC-027 in arc42/08_concepts/tool-text-and-surface.md): claudetto shall keep tool and hook texts neutral and factual, and put validation gates in code.
+  Basis: reported (one user, 2026-10-21). Status: missing at 088a227c (the audit of hook messages is not done).
+  Source: external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:33; external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never/>).
+
+- [x] **OUT-2675** Out (third-party report with no probe; moved from CC-028 in arc42/08_concepts/tool-text-and-surface.md): claudetto shall keep few, well-scoped tools: typed params with examples, actionable errors "X failed because Y; try Z", idempotent retry-safe tools with 3-5 bounded retries, backoff, jitter, and circuit breakers; tests cover timeout, ...
+  Basis: reported. Status: partial at 088a227c.
+  Source: external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:4.
+
+- [x] **OUT-2676** Out (third-party report with no probe; moved from CC-014 in arc42/08_concepts/work-packets.md): An implementation agent need not carry the strategy conversation: compress the why into a user story or ticket; PR-sized, human-reviewable work packets traced to epic and decision numbers keep detail out of the chat.
+  Basis: reported opinion.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:324 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>).
+
+- [x] **OUT-2677** Out (third-party report with no probe; moved from CC-016 in arc42/08_concepts/zero-token-ticket-picker.md): The next-ticket picker costs zero model tokens: a shell script walks GitHub sub-issue order (reordering sets priority). One session working small tickets in sequence is cheaper than a fresh subagent per issue, since each subagent reloads ...
+  Basis: reported, one commenter.
+  Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:326 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
+
+- [x] **OUT-2678** Out (describes a part that plugins/ does not ship: tool.describe size trims are not shipped; the figures are 2.1.318 measurements; moved from QS-001 in arc42/10_quality_requirements.md): One agents Mod (`agent.offer` false for built-ins except fork, `tool.describe` Agent 503 chars, no `tool.call` rewrite) cuts the Agent tool plus listing in `-p`. The 2.1.318 Mod measured here also mapped Explore, Plan, general-purpose, ...
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2625.
+
+- [x] **OUT-2679** Out (describes a part that plugins/ does not ship: tool.describe size trims are not shipped; the figures are 2.1.318 measurements; moved from QS-002 in arc42/10_quality_requirements.md): The same Mod in the TUI cuts the Agent tool plus listing.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2641.
+
+- [x] **OUT-2680** Out (describes a part that plugins/ does not ship: tool.describe size trims are not shipped; the figures are 2.1.318 measurements; moved from QS-003 in arc42/10_quality_requirements.md): `tool.describe` trims cut the 20 tool schemas from 53,780 to 39,418 bytes.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2660.
+
+- [x] **OUT-2681** Out (needs a paid model run or a benchmark; moved from QS-004 in arc42/10_quality_requirements.md): Each trimmed tool keeps its effect and costs fewer input tokens than stock.
+  Basis: measured, one run per row.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2693.
+
+- [x] **OUT-2682** Out (needs a paid model run or a benchmark; moved from QS-005 in arc42/10_quality_requirements.md): The public c1 grader shall pass at least 23 of 24 cases per run. Runs of 2026-11-07: rerun 1 17 of 24, rerun 2 20 of 24 (1,772,635 tokens, $2.38), rerun 3 23 of 24 (1,606,629 tokens, $2.42); the r4 runs 3-12 gave 237 of 240. A judge once ...
+  Basis: measured. Status: unchecked (the c1 and r4 runs are not in the baseline tree; the grader prompt was not compared).
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:335,336,339,343,356.
+
+- [x] **OUT-2683** Out (needs a paid model run or a benchmark; moved from QS-006 in arc42/10_quality_requirements.md): The shortened stop-grader text shall match the old text. Tuning arms: the old text caught 231 of 240 and flagged 27 of 160; the short arms without all caps caught 225-228 of 240 and flagged 19-27 of 160; dropping the asks line lost case ...
+  Basis: measured. Status: unchecked.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:348-353.
+
+- [x] **OUT-2684** Out (needs a paid model run or a benchmark; moved from QS-007 in arc42/10_quality_requirements.md): Reply-register scoring on 24 stored replies through Jev (P239) gave an exact match of 9 of 24. Precision and recall per check: apologizes_or_agrees 80 and 80 (4 true positives, 1 false positive, 1 false negative); states_feeling_or_praise ...
+  Basis: measured. Status: partial at 088a227c (the reply rules exist; the scoring was not rerun).
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:865.
+
+- [x] **OUT-2685** Out (describes a part that plugins/ does not ship: no secret scan ships; moved from QS-008 in arc42/10_quality_requirements.md): The secret scan on the hot path shall take about 7.23 ms, down from 36.97 ms; the heartbeat runs every 30 s; the free-memory shared reading is refreshed every 5 s.
+  Source: openspec/changes/2-1-325-rearchitecture/design.md:148; openspec/specs/run-limits/spec.md:276 (heartbeat).
+
+- [x] **OUT-2686** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-009 in arc42/10_quality_requirements.md): claudetto shall pass `just check` (lint, type check, tests, plugin validation, hook labs, no generated-wiki step; a dangling wiki reference fails the build) and stay inside footprint budgets: a byte budget per piece (root prompt, Concise ...
+  Basis: measured. Status: partial at 088a227c.
+  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:103.
+
+- [x] **OUT-2687** Out (needs a paid model run or a benchmark; moved from QS-010 in arc42/10_quality_requirements.md): After turn 1, 98 to 99 percent of requests, root and subagents, hit the cache.
+  Basis: user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). Status: have.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (measure); user decision, 2026-11-16 05:57 UTC, keep the cache hit rate consistent (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408). The benchmark runner that scored it is out of scope; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Next 7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (Decisions: cache hit means prefix reuse); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, State: cache probe).
+
+- [x] **OUT-2688** Out (needs a paid model run or a benchmark; moved from QS-011 in arc42/10_quality_requirements.md): Sessions renew at task boundaries, never on a clock ([ADR-0178](../adr/0178-renewal-at-task-boundaries.md)); the share of main-loop cache writes that re-create content already written falls below the 2026-11-18 baseline of 20.7%.
+  Basis: measured baseline, claude 2.1.327, 11 main sessions (main-loop hit p50 0.987, p10 0.952; 99 of 104 breaks after auto compaction; 460 compactions at a median of 140.6k tokens). The earlier targets (zero compactions, no session of 59 minutes or more, subagent handoff within 300 s) are dropped: the 1h TTL refreshes on each request, a clock clear discards live context, and a renewal at a task boundary pays back within the median task (35 requests) above about 70k tokens (sessions-scripts/renewal.py), so sessions run as short bursts, one task or a few, not as long sessions cut by a clock. Status: partial at 088a227c.
+  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:272); reports/2026-11-18-research/sessions.md; reports/2026-11-18-research/handover.md:34-54; earlier target ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets).
+
+- [x] **OUT-2689** Out (needs a paid model run or a benchmark; moved from QS-012 in arc42/10_quality_requirements.md): The agent rereads no unchanged file.
+  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (round 6 row).
+
+- [x] **OUT-2690** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-013 in arc42/10_quality_requirements.md): Tests are checked by mutation as a kill check, never as a score ([ADR-0180](../adr/0180-behavioural-and-mutation-tests.md)): every surviving mutant of the hook code (Stryker for TypeScript, mutmut for Python) leads to a test or to deleting ...
+  Basis: user goal set through `/goal`, 2026-11-16 06:24 UTC (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11) and 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); old-tree scores (Stryker 68.00%, mutmut 74 killed, 7 survived) are history, not targets. Status: partial at 088a227c.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (scores and jscpd figures); reports/2026-11-18-research/papers.md P8.
+
+- [x] **OUT-2691** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-014 in arc42/10_quality_requirements.md): claudetto shall keep each prompt byte count under its target in `just prompt-bytes`, and the CORE prompt under 3,500 characters; the custom system prompt stays at or under the stock lean prompt of 5,832 characters, each agent or tool ...
+  Basis: observed in transcript. Status: partial at 088a227c (`compose.test.ts:60-69@088a227c` tests 5,832, not 3,500).
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031); 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (handoff, Done: length targets verified); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (goal).
+
+- [x] **OUT-2692** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-015 in arc42/10_quality_requirements.md): The CORE prompt of claudetto shall stay under 3,500 characters.
+  Basis: observed in transcript. Status: partial at 088a227c (`compose.test.ts:60-69@088a227c` tests a limit of 5,832 characters, not 3,500).
+  Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+
+- [x] **OUT-2693** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-016 in arc42/10_quality_requirements.md): claudetto shall carry no clone `jscpd` finds beyond the baseline (21 or 22 clones at the time) and state no instruction twice in runtime text.
+  Basis: user decision. Status: partial at 088a227c (`.jscpd-baseline.json` holds 21 fingerprints and `AGENTS.md:38` holds the jscpd rule; no runtime repeat check).
+  Source: user goal set through `/goal`, 2026-11-16 06:24 UTC, tests proven by mutation, least code by jscpd (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11); observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/60a81b6a-7024-4fb4-9f19-6d79c0fd6d65.jsonl:11); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
+
+- [x] **OUT-2694** Out (describes a part that plugins/ does not ship: just check, mutation, prompt-bytes, jscpd and size budgets are repo tooling or old-tree parts; moved from QS-017 in arc42/10_quality_requirements.md): The code size of claudetto shall not grow while features stay.
+  Basis: measured, 2026-11-16. Status: partial.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (handoff, Done).
+
+- [x] **OUT-2695** Out (describes a part that plugins/ does not ship: the Issue Codes, levers, medical-error record and repeat guard are not in plugins/; moved from TERM-001 in arc42/12_glossary.md): **Issue Codes** map symptom to issue: guessed version or stack I01; ignores CLAUDE.md I02; long-session drop I03 (also "Prompt is too long" with compaction off); false done I04; test edits I05; caves or asks too much I06; unrequested edits ...
+  Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:28.
+
+- [x] **OUT-2696** Out (describes a part that plugins/ does not ship: the Issue Codes, levers, medical-error record and repeat guard are not in plugins/; moved from TERM-002 in arc42/12_glossary.md): **Levers by Issue** (Appendix A): I01 Edit stale-read refusal, `InstructionsLoaded`, auto-memory; I02 CLAUDE.md, rules, managed `claudeMd`; I03 `autoCompactWindow`, `idleCompaction`, sleep compaction, PreCompact and PostCompact, `/rewind`; ...
+  Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:28.
+
+- [x] **OUT-2697** Out (describes a part that plugins/ does not ship: the Issue Codes, levers, medical-error record and repeat guard are not in plugins/; moved from TERM-003 in arc42/12_glossary.md): Medical error: a fault of the agent or product, such as sycophancy, recorded with its diagnosis, mechanism, and cure.
+  Basis: user decision. Status: missing at 088a227c (`git grep -n -i 'medical error' 088a227c` finds nothing).
+  Source: user goal set through `/goal`, 2026-11-16 17:53 UTC, flag faults as medical errors (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4481).
+
+- [x] **OUT-2698** Out (describes a part that plugins/ does not ship: the status line shows cache reads over all prompt tokens of one turn, a different measure; moved from TERM-006 in arc42/12_glossary.md): Prefix reuse: the cache hit measure, the cached read of request n over the read and creation tokens of request n-1, capped at 1.
+  Basis: measured. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
+
+- [x] **OUT-2699** Out (describes a part that plugins/ does not ship: the Issue Codes, levers, medical-error record and repeat guard are not in plugins/; moved from TERM-007 in arc42/12_glossary.md): Withheld Read: a Read the repeat guard answers with a notice instead of the file; the file still counts as read for `Edit` and `Write`.
+  Basis: measured. Status: have.
+  Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
