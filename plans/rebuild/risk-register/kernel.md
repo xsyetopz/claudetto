@@ -20,7 +20,7 @@
 
 ## Verification and Honesty
 
-- [ ] **RISK-002** Training-prior default: the agent asserts the commonest answer over repo state.
+- [x] **RISK-002** Training-prior default: the agent asserts the commonest answer over repo state.
   - Category: Agent behaviour.
   - Cause: Pattern completion from training data (stale `expo eject`); no grounded state in context; a recalled fact treated as measured; the model follows the commonest answer in its training data.
   - Event: The agent asserts a default from memory over repo state: the [Unreleased] changelog, a branch or version stated from the changelog (branch dotclaude-0-28-0, repeated next day), Prettier in a Biome repo, cleanupPeriodDays 365 vs bundle 30, GNU head -z and unquoted globs on macOS zsh; the wrong target fixed when two similar files exist; one sibling fixed and the identical other left (zod-6553 $ZodCheckNumberFormat vs $ZodCheckBigIntFormat); the orchestrator relays a subagent claim unchecked; the same hosting stack (Fly.io or Hetzner) for every app (1ws94i6); "doesn't read existing code, despite being told again and again" (1wp1yht); a real new `/design` feature dismissed as an injection because of the knowledge cutoff (1ub7lxv); catalog analogues: pre-1.0 changelog ceremony, mature-code normalization, popularity-as-correctness, about 55 grounding records.
@@ -32,7 +32,8 @@
   - Actions: Derive state by hook (SessionStart or UserPromptSubmit prints git branch --show-current, git describe --tags --abbrev=0, package version); a PreToolUse deny on CHANGELOG.md edits that take the version from [Unreleased]; fix the source rule; search code for the pattern you changed and fix each copy; the delegate brief says to read repo config before naming a tool; a Stop check rejects a relayed subagent claim with no command or path:line evidence; a cc-inspect surface check for settings; add the three cases; read code before a change. Research the plan lacks: confirmation bias when evidence partly matches the prior (2305.13300); opinion-based prompts plus counterfactual demonstrations raise context faithfulness (2303.11315); knowledge-conflict probes detect conflicts up to 80.65% (2510.19116); RepoGraph (2410.14684) and the SWE-agent interface (2405.15793) as navigation levers.
   - Trigger: A reply states a branch, version, or tool the repo does not show; an answer that matches the commonest stack with no look at the repo.
   - Owner: kernel
-  - Status: open.
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19,36,40,41; openspec/changes/2-1-325-rearchitecture/design.md:195,224; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:26-33; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:48; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:59-62 (threads 1ws94i6, 1wp1yht, 1ub7lxv).
 
 ## Kernel
@@ -201,7 +202,7 @@
 
 ## Long Run Stops on Error
 
-- [ ] **RISK-491** A response cut mid-stream stops an interactive turn until the user types "continue".
+- [x] **RISK-491** A response cut mid-stream stops an interactive turn until the user types "continue".
   - Category: Defect
   - Cause: core resumes a truncated response only for a subagent or a `-p` main loop (`H_`, chunk-8g2nr9dn.js@203426, 2.1.327); an interactive main loop ends the turn with an API-error message whose text ends "The response above may be incomplete." (chunk-m14bt1pz.js@3366150).
   - Event: an interactive 2.1.327 session in auto mode stopped on "API Error: Connection lost mid-response. The response above may be incomplete." and resumed only after the user typed "continue" (user screenshot, 2026-11-19).
@@ -210,7 +211,7 @@
   - Impact: 3
   - Existing controls: `plugins/claudetto/hooks/notice/stop.ts` marks the cut at `classic.StopFailure` and, at the `turn.complete` with reason `error` that follows, submits one plugin-framed continuation when a surface draws the session; at most two resumes per ten minutes, then the error notice. The host refuses `$.prompt.submit` from a StopFailure hook ("submit from a later event (turn.complete)"), which sets the two-event shape.
   - Response: mitigate.
-  - Actions: tests "a cut mid-response in a drawn session submits one continuation instead of a notice", "a third cut in a row notifies, so a dead link never loops" and "a cut in a -p run is left to core's own recovery" in `plugins/claudetto/hooks/notice/stop.test.ts` (54 of 54 pass, 2026-11-19). Open: a live cut in a dogfood session, to confirm on the real engine that StopFailure reaches the hook before `turn.complete`.
+  - Actions: tests "a cut mid-response in a drawn session submits one continuation instead of a notice", "a third cut in a row notifies, so a dead link never loops" and "a cut in a -p run is left to core's own recovery" in `plugins/claudetto/hooks/notice/stop.test.ts` (54 of 54 pass, 2026-11-19). Done 2026-11-19: an interactive 2.1.327 session against a local stub API that cut the first stream after one finished block showed "API Error: Connection lost mid-response", then `classic.StopFailure` (23:25:49.541), one `$.prompt.submit` from claudetto and the resumed answer, with no typed "continue" (debug log and screen in `$TMPDIR/cut`, local).
   - Trigger: a dogfood transcript where a cut is followed by the error notice instead of the continuation, or by a typed "continue".
   - Owner: kernel
 
@@ -251,7 +252,7 @@
 
 ## Conduct and Product Risks from Chunk c05
 
-- [ ] **RISK-022** The agent does work it was not tasked to do, and investigates a user remark instead of answering it.
+- [x] **RISK-022** The agent does work it was not tasked to do, and investigates a user remark instead of answering it.
   - Category: Conduct
   - Cause: The agent reads a user remark or a diagnostic request as a work order; The agent follows its own curiosity, such as what vanished from the tree.
   - Event: The agent restored two deleted AGENTS.md sections without proof that a command removed them, then began to find who made the claim; it also ran `bun install` when asked only to read a verify output; The agent looks into an unasked question.
@@ -263,7 +264,8 @@
   - Actions: The agent answers from the session in text, and acts only on what the user tasked. The agent shows proof before it blames a command for a change; State in the kernel text that the agent works on the request only.
   - Trigger: The agent edits or installs after a question or a remark; The agent reads or probes outside the request.
   - Owner: kernel
-  - Status: open.
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
 - [x] **RISK-023** The pin hook writes a constraint the user never stated.
@@ -298,7 +300,7 @@
   - Status: open (Existing controls: partial at 088a227c).
   - Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
 
-- [ ] **RISK-025** The agent removes or restructures files unasked.
+- [x] **RISK-025** The agent removes or restructures files unasked.
   - Category: conduct.
   - Cause: 'Cleanup' read broadly (the orphan branch dropped .gitignore and other useful files); probe logs deleted on a note in a handoff.
   - Event: Files vanish.
@@ -310,10 +312,11 @@
   - Actions: Delete only what the user names; keep probe leftovers until asked.
   - Trigger: A cleanup request or a note that says keep nothing.
   - Owner: kernel
-  - Status: open (Existing controls: have at 088a227c).
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738).
 
-- [ ] **RISK-026** The agent labels an agent artifact as the plan.
+- [x] **RISK-026** The agent labels an agent artifact as the plan.
   - Category: conduct.
   - Cause: The agent names its own working file with authority.
   - Event: The agent calls a 2,418-line file the plan.
@@ -325,10 +328,11 @@
   - Actions: Call a file the plan only when the user does.
   - Trigger: The agent names a file the plan.
   - Owner: kernel
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
-- [ ] **RISK-027** The agent gets the user's instruction wrong or accepts a false user claim.
+- [x] **RISK-027** The agent gets the user's instruction wrong or accepts a false user claim.
   - Category: conduct.
   - Cause: Taking the user's word without a probe.
   - Event: An unverified claim enters the plan.
@@ -340,7 +344,8 @@
   - Actions: Verify each user claim against the repo or a probe.
   - Trigger: A user states a fact about the code or the tool.
   - Owner: kernel
-  - Status: open (Existing controls: missing at 088a227c).
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: user decision, 2026-11-16 17:42 UTC, check a user claim before relying on it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177).
 
 ## Ungrouped

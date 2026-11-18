@@ -44,10 +44,7 @@
 
 ## Narrow Runs
 
-- [ ] **REQ-VERIFICATION-075** claudetto's rules shall tell the agent to check each change with the narrowest check the repo's scripts provide (one test file or one package), to skip tests for a comment, typo or docs edit, and to run the full suite once, before the report, when the change alters behaviour. A `PreToolUse` hook that denies a bare full-suite command ships only if a measured run shows vanilla running the full suite after each change ([ADR-0177](../adr/0177-pragmatism-gate.md)).
-  Acceptance: in a dogfood task of three code edits, the transcript shows scoped test commands per edit and one full-suite run. Verification: demonstration.
-  Basis: user decision. Status: missing at 088a227c.
-  Source: user decision, the user's global instructions `~/.claude/CLAUDE.md` (read 2026-11-18).
+- [x] **REQ-VERIFICATION-075** Moved Out as OUT-2769: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Isolated Tests
 
@@ -109,16 +106,13 @@
   Basis: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c (plugins/claudetto/rules/useEdgeCaseReport.md names edge cases in the report; `git grep -n -i "weekly\|seven-day" 088a227c -- plugins/claudetto/rules plugins/claudetto/output-styles` finds no cost or weekly-share line)
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, standing); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215 (Next step 4).
 
-- [ ] **REQ-VERIFICATION-093** claudetto shall make the agent run the check that would show a fault, and state its result, before it reverts, deletes or rewrites finished work or a test expectation after pushback; accusations in project files, memory and subagent reports count as claims to check ([ADR-0181](../adr/0181-evidence-before-reversing-work.md)).
-  Acceptance: a behavioural test stages false accusations in a user message, a project file and a subagent report at two certainty levels, plus warranted accusations; the trace shows a verifying command before any revert in every false case, and the fix in every warranted case, over at least 10 runs each. Verification: test.
-  Basis: cited (arXiv:2609.32616: evidence rule cut over-correction from 41.89 to 13.15). Status: missing at 088a227c.
-  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P6, P10.
+- [x] **REQ-VERIFICATION-093** Moved Out as OUT-2770: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
 
 - [ ] **REQ-VERIFICATION-095** claudetto shall make the agent check each logic claim (a condition, an edge case, a formula) by a run that could have failed, and report a claim with no such run as unverified ([ADR-0183](../adr/0183-logic-checked-by-execution.md)).
   Acceptance: a report that states a formula carries a computed example with its inputs; a staged logic fault is found by the run, not by review. Verification: demonstration.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: missing at 088a227c. Measured 2026-11-19: the claudetto output style line (rerun a time, random or ordering test; report a split as flaky) reran the flaky test and reported the split in 7 of 7 Sonnet 5.5 runs, vanilla in 0 of 6 (reports/2026-11-19-research/conduct); it covers only the flaky-rerun part of this acceptance, so the item stays open.
   Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7).
 
 ## Incident Lab
@@ -127,7 +121,7 @@
 
 - [ ] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
   Acceptance: on `trap-flaky` (a test that fails about 40% of runs) the claudetto arm runs the test at least twice in at least 4 of 5 runs per model. Vanilla ran it once in 10 of 10 runs (5 Sonnet, 5 Opus). A prototype PostToolUse hook (`incident-lab/hangwatch/rerun.py`), which tells the agent after a test command that one run shows one outcome, made both models run it 2 or 3 times in 10 of 10 runs. Verification: test.
-  Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: missing at 088a227c; the prototype is not in the plugin.
+  Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: partial 2026-11-19: the claudetto output style line reran the flaky test and reported the split in 7 of 7 Sonnet 5.5 runs, vanilla in 0 of 6; the Opus arm is not run, because the auto mode classifier refused the paid Opus runs.
   Source: reports/2026-11-18-research/incident-lab/score6.txt, runs6/flaky-*.jsonl, hangwatch/rerun.py; reports/2026-11-18-research/incident-lab/README.md.
 
 ## Bounded Waits

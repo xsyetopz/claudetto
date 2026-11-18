@@ -121,7 +121,7 @@
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:343 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
   Status: closed. Cause (benchmark-report files) is out of scope: no benchmarks (OUT-001). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
 
-- [ ] **RISK-166** Subagent report falsification: the lead trusts a report that is false, incomplete, or unverified.
+- [x] **RISK-166** Subagent report falsification: the lead trusts a report that is false, incomplete, or unverified.
   Category: delegation.
   Cause: the lead trusts the report; no visibility into the subagent's calls; the orchestrator trusts a delegate's summary instead of the artifacts.
   Event: a cheap subagent returns a falsified, incomplete, or unverified report; names a file never written; does not report everything it touched (Haiku); Sonnet-as-subagent left bugs; Haiku asked to commit some of 30 files committed all; Haiku ignored read-only prose and wrote files; subagents hit turn limits at 116k-266k tokens with no report; the lead relays unchecked; delegate bodies drop "report outcomes faithfully"; a delegate reported done with Prettier assumed in a Biome repo, a shim, 161 against 159 tasks, and "validates the same" with 5 new warnings, and orchestrator re-verification caught most of them.
@@ -131,7 +131,8 @@
   Response: mitigate.
   Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (verified on 2.1.327: the `tools` key is an allowlist, https://clawdipedia.cc/extend/subagents/frontmatter [Documented]; the `--agents` schema describes it as an array of allowed tool names, chunk-rj3e7agr.js@296443); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
   Trigger: a subagent report that names a path the lead has not checked.
-  Owner: delegation. Status: open.
+  Owner: delegation. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
   Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
 
@@ -609,7 +610,7 @@
 
 ## Delegation and Worker Reports
 
-- [ ] **RISK-198** A worker's report says a command was refused while the reflog shows it ran.
+- [x] **RISK-198** A worker's report says a command was refused while the reflog shows it ran.
   - Category: delegation.
   - Cause: the lead takes the worker's report as the state of the branch.
   - Event: a worker's reset dropped another worker's lobby work; the report said the reset was refused.
@@ -621,7 +622,8 @@
   - Actions: claudetto shall make the lead check each worker's claim against the repository (reflog, status, diff) before it merges or reports.
   - Trigger: a worker report that touches history or another worker's files.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
 - [x] **RISK-199** Delegated agent stops at its turn limit before it reports.
@@ -756,7 +758,7 @@
   Basis: reported, n=1.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
-- [ ] **RISK-208** Verifier Inherits Reasoning.
+- [x] **RISK-208** Verifier Inherits Reasoning.
   Category: Agent behaviour.
   Cause: A verifier gets the finding with its reasoning.
   Event: The verifier inherits the reasoning and agrees. A broad question also inherits the premise baked into it.
@@ -767,7 +769,8 @@
   Actions: Give a verifier only the bare claim plus the file, endpoint or query to check against, one agent for the batch. Open with the premise as one checkable claim plus the one call that would falsify it.
   Trigger: A verifier prompt that carries the finder's reasoning.
   Owner: delegation.
-  Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   Basis: reported, confirmed by the poster.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -851,7 +854,7 @@
   - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10317; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10632.
 
-- [ ] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
+- [x] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
   - Category: agent conduct.
   - Cause: after a context reset the lead took two running slices (gap-02, gap-06) for unlaunched ones, launched duplicate half-slices, then deleted the folders and inputs of gap-02a and gap-02b without a diff against gap-02.
   - Event: worker output is removed while its only copy may hold items the counterpart lacks.
@@ -863,7 +866,8 @@
   - Actions: before a launch after a reset, list running agents (`ListAgents`) and existing stage folders; before a delete, diff the output against its counterpart and list what the delete removes.
   - Trigger: a launch or delete of worker output right after a context reset.
   - Owner: delegation
-  - Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 
 ## Agent Swarm from Wording

@@ -334,7 +334,7 @@
 
 ## Reply Style and Sycophancy
 
-- [ ] **RISK-057** Narration in shipped source.
+- [x] **RISK-057** Narration in shipped source.
   Category: Agent behaviour.
   Cause: The agent logs its own session where it works.
   Event: Session history ("added during task 3", "as discussed", "the user decided") lands in source; 218 added comments in 1,610 edits in 22 stored sessions.
@@ -344,12 +344,13 @@
   Response: mitigate.
   Actions: A PreToolUse Write|Edit provenance guard on added lines (ask by default, AGENT_TERMS_PROVENANCE_MODE=deny), plus a FileChanged hook or CI lint for Bash writes.
   Trigger: An added line cites the session or the user's decision.
-  Owner: guards. Status: open.
+  Owner: guards. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/agent-conduct/spec.md:153; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:32 (SA-2.5)
 
 ## Autonomy, Consent, and Scope
 
-- [ ] **RISK-058** Overreach and unrequested work.
+- [x] **RISK-058** Overreach and unrequested work.
   Category: Agent behaviour.
   Cause: Acts on non-tasks, follows instructions to an extreme, reads casual remarks as instruction ("let's", "no limit" committed as a design); repo habits taken for task requirements; scope text missing or not enforced; overeager framework behaviour (SNARE: framework about 56% of variance); a standing "fix what you touch" rule ignored; The agent blames a tool for a change in the user's file and starts to restore the file, with no check and no task for it; the agent finds a missing tool (biome not installed) and runs `bun install` unasked.
   Event: The agent takes over ("I'm taking this over"), makes architecture decisions, renames to single letters, restores deleted sections with no proof, runs untasked bun install, an unannounced paid run, a feature branch or PR, a refactor hiding a permission change, deploys on "deploy", force pushes, git add -A, whole-repo bun fmt, edits files the task did not name or a config outside the repo, writes files outside the task folder (Sonnet 5.5, 4 of 35 tasks), adds tests and docs nobody asked for (Sonnet 5.5), adds abstractions (Opus at max); The agent plans to restore two project sections it says adopt deleted. The user says it was not tasked to restore them and has no proof. The agent then runs a check of the claim, and the user says it was not tasked to check either; the user states the agent was not tasked to install it.
@@ -359,7 +360,8 @@
   Response: mitigate.
   Actions: Scope edits to the task and report other defects by place only; classify the message first; list the files the agent may touch; never mix a refactor and a permission change in one diff; CI-only deploy; a changed-files list diffed against task-named files at Stop; a hook asks on an out-of-scope write; a sandbox write allowlist plus protectedPaths denies; a PreToolUse deny on an unscoped formatter and git add -A or .; a subagent brief naming files and acceptance checks plus a Stop check on diff files outside the list; A rule that the agent stays inside the task: it names an unrelated finding in its report and does not act on it, and it states a cause only after a check that the task covers; claudetto shall make the agent report a missing tool and keep to the task, unless an install is the task.
   Trigger: A diff touches a file the task did not name; An edit or a check with no link to the user's request; an install or setup command outside the task.
-  Owner: guards. Status: open.
+  Owner: guards. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:53 (SNARE 2605.28122); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:102; external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:39 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>) (reported); external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:37; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:569; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:588, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1328, reported, user, 2026-11-09
 
 - [x] **RISK-059** Handoff command defects: a command handed to the user cannot run or cannot take effect.
@@ -394,7 +396,7 @@
 
 - [x] **RISK-061** Moved Out as OUT-2359: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
-- [ ] **RISK-062** Silent bound change.
+- [x] **RISK-062** Silent bound change.
   Category: Agent behaviour.
   Cause: A limit or gate is edited as a means to the task; an ambiguous approval and a failing check are resolved by changing the bound, not the code; the agent optimizes for the bound and hides the conflict.
   Event: A silent change of a bound, budget, or timeout: a cost limit set to 3.5x LIMIT, a parallel run spent $5.65 against a $5 cap, retries 4 -> 3, timeout 30 s -> 13.3 s (noted only under "Assumptions"), a style file grew 5,680 -> 7,061 bytes; a temp-folder exemption turned a hook off for all /tmp projects; "decision of the user" text with no matching user prompt; paragraphs merged to hit exactly 300 lines; a plan approval or weak yes taken as consent for numbers inside it.
@@ -404,7 +406,8 @@
   Response: mitigate.
   Actions: A PreToolUse deny or ask on edits to limit, grader, baseline, and user-owned files without consent, showing old and new (SL-1.6 diff check, 0 unconsented); a CI lint over test diffs; a Stop or PreToolUse check rejecting "decision of the user" text without a user prompt carrying it; on a hit bound, split the file or ask; an assumption that changes a limit goes in the top line.
   Trigger: A diff edits a limit, budget, or expected value.
-  Owner: guards. Status: open.
+  Owner: guards. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 8 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:82,84,85,88,92,116
 
 - [x] **RISK-063** Removal without consent.
@@ -784,7 +787,7 @@
   Event: the agent commits or pushes after a check that did not run or did not pass; a `git commit` follows a check chain that `&&` does not tie.
   Consequence: a wrong result shipped.
   Likelihood: 3. Impact: 4.
-  Existing controls: none at 088a227c.
+  Existing controls: none at 088a227c; the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate.
   Actions: gate on executed-test count above 0; treat each hiding form as a failure; deny a test, lint, type, or build check piped into `tail|head|grep|rg`, and a `git commit` or `git push` after any pipe without an earlier `set -o pipefail`; deny a `git commit` after a check or loop of checks that `&&` does not tie unless `set -e` comes first or `|| exit` follows. Denied: `bun test; git commit`, `bun test | tail -3; git commit`, `for p in a b; do bun test $p; done; git commit`. Run: `bun test && git commit`, `set -e; ...`, a loop with `|| exit 1`. The denial names `set -o pipefail;`.
   Trigger: a check chain in a Bash command before a commit or push.
@@ -913,7 +916,7 @@
   - Consequence: Unverified work is on origin, where others pull it, and is harder to take back; a broken commit in history; a wrong result shipped; a broken release, unverified work published, and a follow-up fix; the user wants the you-should-know note to fire first; a broken release; a follow-up fix; Unverified work is published; the user wants the you-should-know note to fire first.
   - Likelihood: 3
   - Impact: 4
-  - Existing controls: the side-agent note (a warning after the fact); pre-commit hook, which also lints other workers' unfinished files on disk and blocked a clean commit; `just verify` and `just lab` catch the failure after the fact; the you-should-know note, which arrived after the push.
+  - Existing controls: the side-agent note (a warning after the fact); pre-commit hook, which also lints other workers' unfinished files on disk and blocked a clean commit; `just verify` and `just lab` catch the failure after the fact; the you-should-know note, which arrived after the push; the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   - Response: mitigate
   - Actions: A guard or rule that a push waits for a passing full check in the same session and on the same tree; claudetto shall make the agent chain a commit on the checks that pass; a parallel worker commits from its own worktree, and a lint hook checks staged files only; make each commit script stop on a failed run; run verify before commit and lab before push; the note must fire and halt before the agent acts again (see the you-should-know PRD).
   - Trigger: `git push` after a failed or missing full check; a commit after a non-zero check; a push with no passing run logged, or after a failed or missing full run; A push follows a failed or missing full run.

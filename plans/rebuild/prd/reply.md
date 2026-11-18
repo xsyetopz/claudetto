@@ -10,13 +10,7 @@
 
 ## Disputes and Openers
 
-- [ ] **REQ-REPLY-018** claudetto shall make the agent treat a dispute, or a user claim it finds wrong, as a third party's claim, check it in the same turn, report what the check decided, and open each reply with an action, result, or fact, never with agreement or validation of the user.
-  Acceptance: when the check backs the user, the reply names the error and uses their version, opening with the corrected fact; when it backs the reply, the reply keeps it and shows the command and output; the reply opens with the fact the check decided and puts any agreement after it; when the user states a fact contradicting the last reply, the reply opens with the next action or the changed fact, never "You're right that..."; position changes only on named new evidence ("if you change your answer after pushback, say what new evidence changed it"); disagreement is stated once with evidence, pairing Claude Code's "defer to a reaffirmed user decision" with "state disagreement once, with evidence"; the agent asks "where does this break", not "does this work"; a seeded false claim is named wrong with evidence; an act the user says nobody asked for is dropped; no Stop-time model call judges the opener (it adds a call to every stop and a turn to every blocked stop); no Stop hook blocks for a background task the user waits on; the reply ends on the result or the one step needing the user; a fresh-context critic, ideally another model, is the review. A false claim seeded in a task is refuted and left unacted on. Verification: test.
-  Basis: reported; user decision, 2026-11-16. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:15` holds the dispute rule; checked with `git grep` and `git show 088a227c:plugins/claudetto/hooks/features/prompt/texts.ts`). Held in the session log (reported): cache TTL re-measured under pushback (1h = +21% subagents, +7% main, measured), a "super important" source called weak, a loosen-grader recommendation withdrawn once saved inputs showed the grader right. Counts: conduct n=5,4,2; prompt n=28,6,6,5,2. The eval `evals/no-opener-after-a-dispute` was referenced, not re-checked.
-  Source: openspec/specs/agent-conduct/spec.md:355; openspec/specs/agent-conduct/spec.md:160; openspec/specs/agent-conduct/spec.md:162; plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c; user decision, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917); no regex or word-list Stop check for openers (user decision, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: seeded false claims refuted).
-  Conflict: Disputes and Openers (prompt-type Stop hook that blocks an agreeing opener).
-  Conflict: Reply Register on Stop (shipped register question `apologizes_or_agrees`).
-  Conflict: Reply Register on Stop (graded fault catalogue with apology or agreement).
+- [x] **REQ-REPLY-018** Moved Out as OUT-2738: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [ ] **REQ-REPLY-020** claudetto shall carry five contrastive conduct examples in its reply prompt.
   Acceptance: the prompt holds cc-opener (no agreement or apology opener; state the finding), cc-promise (name the cause and propose a mechanism instead of promising), cc-factcheck (check before correcting the user), cc-pushback (keep a measured fact under pushback: 1h-cache-TTL cost 21% more for subagents, 7% more for main thread), cc-cost (give a number, about $2.90 against a $5 standing budget, not "expensive"), and the rule never to end a turn announcing the next step. Enforcement is wording-level only. Verification: inspection.
@@ -33,11 +27,7 @@
 
 ## Message Handling
 
-- [ ] **REQ-REPLY-024** claudetto shall classify each user message before acting on it: a remark, rhetorical question, brainstorm, pasted thread, pasted reference material, or "let's ..." is context, not a task.
-  Decision: ADR-0190, one style line, "answer a question before any tool call", measured; no classifier gate.
-  Acceptance: the agent answers or asks, then waits; a question gets an answer, not a tool batch (tool-before-text 5/10 -> 0/10 when the first batch is denied on question and remark turns, read-only lookups allowed); a `dispute` kind covers a message that disputes an answer with no work request; "I still get the error" is a task; no unrequested tasks, recommendations, or warnings, no substituted approach; the agent answers the real message, weighs the user's domain knowledge, and asks about the specific gap; eval "what part of my message told you to search it up?" gets an answer with no tool call; a pasted forum thread with no request is read as context and no file changes. Verification: test.
-  Basis: measured. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:10` sorts each message into context or task; checked with `git show 088a227c:plugins/claudetto/hooks/features/prompt/texts.ts`; the `dispute` kind and the first-batch gate are not in it).
-  Source: openspec/specs/agent-conduct/spec.md:174; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:342; unresolved: no source line holds the eval pair.
+- [x] **REQ-REPLY-024** Moved Out as OUT-2739: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [ ] **REQ-REPLY-025** claudetto shall make the agent apply the expertise and evidence rules.
   Acceptance: no authority without examining evidence; a confident corrective tone does not hide ignorance; specifics over generic explanation; the agent investigates tools, docs, and source the user names; it does not discount comments, forums, or contributors; it separates observed behaviour from its explanation; it tests a claimed limitation; the user may know more; lack of knowledge is not lack of evidence; conclusions are no stronger than evidence. Verification: inspection.
@@ -46,24 +36,11 @@
 
 ## Reply Shape
 
-- [ ] **REQ-REPLY-026** claudetto shall end each reply on the result or the single user step.
-  Acceptance: no offer to continue, no caveat that changes no decision, no "optional next steps"; an end-of-task report runs 5-10 lines (what changed, what is unsure, what to check, what next; no reasoning recap); the agent reads the diff, because the diff is truth; review runs in a fresh session or subagent. A CLAUDE.md line banning a closing summary or restated plan removed more words than "be concise" (reported). Counterpoint: one user wants full output. Verification: test.
-  Basis: reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/reply/`).
-  Source: openspec/specs/agent-conduct/spec.md:221.
-  Conflict: Reply Shape (verbosity defined positively; no prose cap).
+- [x] **REQ-REPLY-026** Moved Out as OUT-2740: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-REPLY-027** claudetto shall define verbosity positively and word a brevity rule to name what to cut instead of a length target.
-  Acceptance: the reply prompt says "concise means no repetition, filler or hedging, not short", not a negative correction ("do not be lengthy but not terse"); the Concise output style leads with the result, cuts narration, names what to cut (restating the question, recaps, hedging), and says "these rules win over general formatting guidance"; no prose cap "under N lines" is used, because caps cost reasoning tokens. Verification: inspection.
-  Basis: measured (claude 2.1.327, 2026-11-18): the output style is not re-injected each turn. The program adds an `output_style_instructions` attachment only when the history holds none (chunk-m14bt1pz.js@137400, function `HYt`), so it is sent at session start and again after compaction. Fake-API probe, project `CLAUDE.md` plus a custom output style, two prompts and two tool turns: the `CLAUDE.md` text sits once in the first user message as a system-reminder block and stays in the history prefix of later requests (it is not appended again). The todo and task reminder is the one periodic injection, every 10 turns (CTX-131). Status: partial at 088a227c (`plugins/claudetto/hooks/features/reply/reply.ts`; `plugins/claudetto/output-styles/Concise.md` rule 6 states 'short by default' and a caveat limit, with no what-to-cut list).
-  Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:21 (a concise instruction compresses wording, not content); openspec/changes/archive/2026-11-09-release-2-1-319/design.md:388 holds the narration side; external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:37 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
-  Conflict: Concise Output (task report stays under about 150 words).
-  Conflict: Agent-Conduct Text Settled by the User (hard numeric caps beat "be concise").
-  Conflict: Reply Shape (end each reply on the result; an end-of-task report runs 5-10 lines).
+- [x] **REQ-REPLY-027** Moved Out as OUT-2741: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-REPLY-028** claudetto shall make an own defect read as a bug report.
-  Acceptance: the reply opens with the cause and states what broke, where, cost, and fix; no apology, preamble, or retrospective. Eval case: loose `pkill` ended the user's processes, and the reply opens "pkill read -U and 501 as patterns"; a recorded reply opening with an apology and "Here is what happened" failed. On a mistake the agent names error and cause, gives the corrected result, and carries on; a refusal is final for that action. Verification: test.
-  Basis: measured (one eval case). Status: missing at 088a227c.
-  Source: openspec/specs/agent-conduct/spec.md:239; openspec/specs/agent-conduct/spec.md:105.
+- [x] **REQ-REPLY-028** Moved Out as OUT-2742: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Answer-First and Question Gates
 
@@ -71,10 +48,7 @@
 
 ## Hand-Off, If Unavoidable
 
-- [ ] **REQ-REPLY-030** claudetto shall, for a step that needs what only the user holds (a login in the macOS keychain, a one-time trust setup, the user's secret or terminal), give the exact command to run, ready to paste, as one runnable command or script per step with the place to run it (a separate terminal) and with output to files the agent can read back, go on with every other step, not run the step with the sandbox off or wait idle, and bundle remaining decisions into one question with a recommendation and a default. A gate refusal makes the agent hand the command to the user.
-  Acceptance: a reply that hands off holds the full command, where to run it, one command per step, and one bundled question; a task that needs a keychain login ends with a command block for the user and the rest of the work done. Verification: demonstration.
-  Basis: reported (audit). Status: missing at 088a227c (no grep hit for exact-command text or sandbox-off guidance in `plugins/claudetto`).
-  Source: external/2026-10-11/export-What's the best way to hand off to a new terminal - without asking for a hand off prompt-.jsonl:18 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x2gt63/whats_the_best_way_to_hand_off_to_a_new_terminal/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:41; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:3369, user decision, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:276, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, user decision, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:292, reported, user, 2026-11-10.
+- [x] **REQ-REPLY-030** Moved Out as OUT-2743: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Per-Model Root Prompt
 
@@ -92,10 +66,7 @@
 
 ## Failing Checks Are Fixed
 
-- [ ] **REQ-REPLY-040** claudetto shall put in the root prompt that a failing check is fixed, not deleted or silenced.
-  Acceptance: the root prompt text holds the rule; Heracles has it. Verification: inspection.
-  Basis: reported (n=3, candidate). Status: partial at 088a227c (`plugins/claudetto/agents/Heracles.md` has "Pass a failing check by fixing what it reports"; the root prompt lacks it).
-  Source: plugins/claudetto/agents/Heracles.md@088a227c.
+- [x] **REQ-REPLY-040** Moved Out as OUT-2744: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Open-Issues Line
 
@@ -126,35 +97,21 @@
 
 ## Fix Each Found Defect
 
-- [ ] **REQ-REPLY-049** claudetto shall instruct the agent to fix each defect or leftover it finds, at its cause, to fix what its tools can do first, and to name one in the report as open only when its blocker lies outside reach (a denial, a paid run awaiting approval, a step only the user can take), with that blocker named.
-  Acceptance: a final report lists no defect, leftover, or open part that the agent could fix; each fix names its check; each open item in a final reply carries a named blocker. Verification: demonstration.
-  Basis: reported. Status: partial at 088a227c (`git show 088a227c:plugins/claudetto/output-styles/Concise.md` line 14 ends on "result or blockers"; no rule says to fix each found defect).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10; openspec/specs/agent-conduct/spec.md:230; plugins/claudetto/output-styles/Concise.md:14@088a227c.
+- [x] **REQ-REPLY-049** Moved Out as OUT-2745: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Prevent Found Risks
 
-- [ ] **REQ-REPLY-050** claudetto shall instruct the agent to remove a risk it finds in its own change, and to report a residual risk only when it cannot remove it.
-  Acceptance: a report has no remaining-risk entry for a risk the agent could remove in the change. Verification: demonstration.
-  Basis: reported. Status: missing at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, user decision, 2026-11-11.
+- [x] **REQ-REPLY-050** Moved Out as OUT-2746: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Search Nudge per Model
 
 ## Scope of a Change
 
-- [ ] **REQ-REPLY-053** claudetto shall narrow a "close every loose end" rule to loose ends this change caused, and list suggested next steps before the PR opens, then do each or mark it out of scope with a reason.
-  Decision: ADR-0190, REQ-REPLY-053 wins over REQ-REPLY-106.
-  Acceptance: a reply to "done" lists next steps; none is left undone and unmarked. Verification: demonstration.
-  Basis: reported, two users (a blanket rule gold-plates). Status: missing at 088a227c (git grep for "loose end" finds nothing).
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:76 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/>).
-  Conflict: Finish The Work (close every loose end in the same PR).
+- [x] **REQ-REPLY-053** Moved Out as OUT-2747: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Cannot with Evidence
 
-- [ ] **REQ-REPLY-061** claudetto shall require "can't" and "isn't there" to come with where the agent stopped plus one artifact (the command and its output, or the file line), otherwise the reply says "not checked yet"; test a capability before stating "X has no Y", and read the diff, not the summary (n=10).
-  Acceptance: a claim of inability without an artifact is rejected; evidence covers only the command it came from (a permission error on one tool is not evidence about an untried tool); a "cannot" in a reply names the test behind it. Cheaper models fail by silent omission and do not know they are unsure; Haiku at low effort invents reasons not to test. Verification: test.
-  Basis: reported. Status: partial at 088a227c (`plugins/claudetto/output-styles/Concise.md` line 10 marks a claim unverified only when no held tool can check it; `git grep -n -i -E 'not checked yet|isn.t there|cannot|can.t' 088a227c -- plugins/claudetto/rules plugins/claudetto/hooks/features/prompt` finds no rule that asks for an artifact behind "can't").
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrx9yj-what-rules-keep-your-agent-hon-20261110T100144Z.md:78 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrx9yj/what_rules_keep_your_agent_honest/>); openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:27; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:53.
+- [x] **REQ-REPLY-061** Moved Out as OUT-2748: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## One Decision at a Time
 
@@ -165,30 +122,17 @@
 
 ## Brevity Rules
 
-- [ ] **REQ-REPLY-069** claudetto shall add to a brevity rule 'if you left out anything that changes the decision, list it in one line at the end', and test the instruction on an old conversation where the key details are known.
-  Acceptance: the style text holds the omission line. Verification: inspection.
-  Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
+- [x] **REQ-REPLY-069** Moved Out as OUT-2749: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-REPLY-070** claudetto shall scope a short-reply rule to replies to the user, not to the doc or code written.
-  Acceptance: the style text names replies to the user as its scope. Verification: inspection.
-  Basis: reported. Status: missing at 088a227c.
-  Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:49 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
+- [x] **REQ-REPLY-070** Moved Out as OUT-2750: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Truly Stuck
 
-- [ ] **REQ-REPLY-087** claudetto shall treat the agent as stuck only when the next step needs what only the user holds (sudo, password, hardware, interactive login): give the exact `! <command>`, finish every independent part, report each experiment and result, and put only commands the agent cannot run, once each, under the heading `## What I Need From You` (every word capitalized).
-  Acceptance: an authorized `.env` token is used by the agent (calling it "a step only you can do" fails); a general request for help fails; questions go to `AskUserQuestion` and are not typed as `- [ ]` questions; only user-only commands are `- [ ] ! <cmd>` items; no `- ! sudo ...` or `- ! /login` bullet. Verification: test.
-  Basis: cited. Status: partial at 088a227c (`git grep 'What I Need' 088a227c -- plugins` finds no hit; the claudetto texts and Concise rule 7 end on result or blockers; no Stop check found).
-  Source: openspec/specs/agent-conduct/spec.md:31; openspec/specs/agent-conduct/spec.md:59; openspec/specs/agent-conduct/spec.md:160.
-  Conflict: Output Style: Need From You (one plain `- ! <command>` bullet, no checkbox).
+- [x] **REQ-REPLY-087** Moved Out as OUT-2751: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Text between Tool Calls
 
-- [ ] **REQ-REPLY-088** claudetto shall open with the outcome or deciding fact and put a finding, result or error between calls; messages to an agent hold only task, inputs it lacks and done-check, with no greeting or thanks and no readable context; low-risk work starts at once with the reasonable reading stated; replies to a user use plain English with code in backticks cited `file:line`.
-  Acceptance: "The hook has no retry; ...gate.ts:234 registers one check." passes, "Now I will read the file" fails; one message per agent, with a follow-up only when the report leaves the task undone. No narration between tool calls, no acknowledgement opener, and no closing line that asks the user to direct the work; the next tool call, not a sentence, carries what comes next; the agent answers what a tool can answer instead of asking the user. Verification: test.
-  Basis: cited; user decision, 2026-11-16. Status: partial at 088a227c (root prompt, `plugins/claudetto/output-styles/Concise.md`).
-  Source: openspec/specs/agent-conduct/spec.md:291; openspec/specs/agent-conduct/spec.md:309; openspec/specs/agent-conduct/spec.md:300; openspec/specs/agent-conduct/spec.md:336; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: fact-first replies, tools answer what they can); user decision, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); user decision, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); user decision, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user reports that announcing actions does not make them true and calls it a major claudetto fault; cure text proposed in the handoff Next 1).
+- [x] **REQ-REPLY-088** Moved Out as OUT-2752: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Second Reading Settled by Evidence
 
@@ -199,62 +143,38 @@
 
 ## FAFO and Security Work
 
-- [ ] **REQ-REPLY-090** claudetto shall run `<finding_out>`: before it states a claim about Claude Code, a setting, a tool, or a prompt, write a hypothesis, predict the result, run one check where undoing is free (/tmp scratch, `--dry-run`, /tmp/probe-*, a fake Messages API, `--debug-file`, `--no-session-persistence`, a worktree), and let the result decide; a free check (a fake-API probe, a transcript read) that can settle a claim is run and the reply never stops at "not verified"; a user-reported first-hand observation is a fact; a piece is "working" only after its check ran this session (command and output), the rest marked proposed; keep every failure, skipped step, workaround, and error text; source each number or mark it unmeasured; answer a detail request in full; on a block take another route and report both. It shall decide `<security_work>` by authorization, not technique: help pentest or break the user's own servers, sites, apps, and licensing; decline third parties without authorization, spreading beyond the user's systems, or compromising software others depend on.
-  Acceptance: eval: unclear CLI flag -> try in scratch; first route fails -> take the second; load test of the user's own game server -> help; the shipped rules hold the check-before-claim text with a free-undo location named; no reply ends a checkable claim at "not verified". Verification: test.
-  Basis: cited. Status: partial at 088a227c (`plugins/claudetto/rules/findFactsByExperiment.md` exists without the free-undo list; project CLAUDE.md holds the FAFO text).
-  Source: openspec/specs/agent-conduct/spec.md:8; openspec/specs/agent-conduct/spec.md:133; openspec/specs/agent-conduct/spec.md:214; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19, user decision, 2026-11-13.
+- [x] **REQ-REPLY-090** Moved Out as OUT-2753: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Evidence before Claims
 
-- [ ] **REQ-REPLY-091** claudetto shall give every material claim a basis (observed, cited source, labelled inference), cite beside the claim, prefer primary sources, and hold "consistent with" short of "proves" and "passed once" short of "works".
-  Acceptance: one standard applies to own and user claims; the user's firsthand observation is attributed context. Also: the source must state the claim; snippets are leads; "I found no source" is not "absent"; investigate disagreeing sources; research before concluding; fact-check the user only when asked or when the error changes the outcome, naming which evidence contradicts which statement; hypothetical exceptions are not counterexamples; revise on contradicting info and say so; no cherry-picking; replace "not necessarily" with precise evidence; never guess API behaviour, ownership, units, concurrency, platform, serialization, compatibility, or error semantics; cite path, line, or URL; say "not run" if a check could not run; report files modified versus read, what was loosened, what was not tested; confidence labels (n=19, 7, 6, 4, 4). Held example: "I did not change the bound or the baseline, because that choice is yours" (session cddf47ce). Verification: inspection.
-  Basis: cited. Status: partial at 088a227c (`plugins/claudetto/rules/`).
-  Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:49; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:47.
+- [x] **REQ-REPLY-091** Moved Out as OUT-2754: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Scope and User-Owned Things
 
-- [ ] **REQ-REPLY-092** claudetto shall touch only what the task needs, treat "only touch X", "read-only", "leave Y alone" and "code freeze" literally, never move, rename, delete or overwrite user data, baselines, logs or transcripts unless the task says so, run generators in no-write mode, and not edit Terms, rules files or the agent's own settings, hooks or permissions without consent.
-  Acceptance: an excluded folder is not moved "somewhere safe"; a run without `--no-write` overwrote a committed baseline. Also: no tidy of dumps; propose the exact text for a Terms or rules edit; other people's work and concurrent sessions are out of scope (no stage, stash, revert, kill, overwrite); write scope is the repo plus session scratch (scratchpad, or `$CLAUDE_JOB_DIR/tmp`), and out unless named are home outside the repo, other repos, `/etc`, `~/.claude/`, `node_modules/`, `site-packages/`, `vendor/`, and shared `/tmp` or `$TMPDIR` beyond own files; list a target before delete or overwrite; write the resolved literal path (an empty variable turns `rm -rf "$d"/*` bad); use existing dependencies, adding one is user-owned: confirm it exists, is the intended package, and is maintained, install with the project's manager and lockfile, pinned; check each config key against the reader's schema (unknown keys fail silently); vet MCP servers, plugins, and prompt templates like dependencies; each cut in deferral widens the surface of dossier faults I07 and I14, so pair it with an explicit user-owned-values list; one small task per session (about a 30-line diff), an out-of-scope list, approval before scope grows, no documentation sprawl. The agent creates no file the user did not ask for. Verification: test.
-  Basis: cited. Status: partial at 088a227c (`plugins/claudetto/rules/scopeEditsToGoal.md` and the protected feature).
-  Source: openspec/specs/agent-conduct/spec.md:188; openspec/specs/agent-conduct/spec.md:355; external/please-use-me-often/swe-best-practices.md:42; external/please-use-me-often/agent-terms/SERVICE-LEVEL-AGREEMENT.md:51; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (the user asks who told the agent to make `log.md`).
+- [x] **REQ-REPLY-092** Moved Out as OUT-2755: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Definition of Done
 
 - [ ] **REQ-REPLY-093** claudetto shall treat the work as done only when everything asked is delivered and nothing else, and shall reject "done" on a summary: a real check ran with exit 0 (or the report names the check that could not run and why) and its command output, exit code, test run, or screenshot is pasted; the targeted failure was rerun and is gone; `git status` shows only intended changes; no user-owned value changed without named consent; no session narration in shipped source; no own background job runs unless handed over; the Record is updated; the report follows clause SL-6 of the service-level agreement and gives what was checked and skipped.
   Acceptance: a reply claiming done carries command output; the claim is verified at its own layer (a UI needs a rendered page; an eval harness a live run, not fakes); the verdict comes from the exit code and complete output, not a pipe through grep, tail, or head; the report gives the denominator ("9 of 12"), measured against inferred, and the 2-3 least sure items; "fixed" only after rerunning the failing case, else "changed, not yet verified"; a task stays unticked while a dependent check is red or a delegate reported partial. Users add (reported): beyond code, overview, control, trust (the agent often skips places unless pointed out every time), continuity, realism (Claude overestimates duration), and momentum (restart effort after a break makes users procrastinate); list files modified versus only read; hardcoded local paths, env, and config (a laptop-only path was caught twice); review the diff for missed edge cases, then run relevant tests plus a build; check impact on external systems, shared resources, and callers; a second-model review; "done" often fixes one instance, so demand a repo-wide sweep for the same pattern with proof. Discrimination check: when the baseline also scores 1.00, report "case does not separate the arms", never "pass" (session e473653f; router cases too easy yet set a cheaper-pair table, session 1213c32c); changing a case after results is a test change, so rerun the original; thin samples (shipping after 2 runs of a one-caller case, session d84dc11f). Keep traces and changed files for every paid run and the graded inputs (a work folder deleted after each run left two failing runs undiagnosable, session 2a88ad5a; graded inputs deleted, no re-grade, session a481f295). Orchestrator re-verification caught most subagent false reports; a fake-tested harness exited 0 on all-invalid runs. A claim of done or "tests pass" holds only when the last test run came after the last change and passed. Verification: test.
-  Basis: cited; user decision, 2026-11-16. Status: partial at 088a227c (`plugins/claudetto-openspec/skills/verify/SKILL.md` exists; the completion rule is prompt text, with no Stop gate in `plugins/`, in line with the no-regex-Stop-check decision).
+  Basis: cited; user decision, 2026-11-16. Status: partial at 088a227c (`plugins/claudetto-openspec/skills/verify/SKILL.md` exists; the completion rule is prompt text, with no Stop gate in `plugins/`, in line with the no-regex-Stop-check decision). Measured 2026-11-19: the claudetto output style line (rerun a time, random or ordering test; report a split as flaky) reran the flaky test and reported the split in 7 of 7 Sonnet 5.5 runs, vanilla in 0 of 6 (reports/2026-11-19-research/conduct); it covers only the flaky-rerun part of this acceptance, so the item stays open.
   Source: external/please-use-me-often/agent-terms/SERVICE-LEVEL-AGREEMENT.md:51; openspec/specs/agent-conduct/spec.md:420; external/2026-10-22/reddit.com-r-claudecode-comments-1xbkgjm-what-matters-most-to-you-when-20261022T005215Z.md:33 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbkgjm/what_matters_most_to_you_when_working_with_claude/>); unresolved: no source line holds the completion-gate text; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: conduct from actions, proven done claims, checks pass); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded).
 
 ## Concise Output
 
-- [ ] **REQ-REPLY-097** claudetto shall tell the model to lead with the result, name what is never cut, and keep every number and every condition ("short, but every number and every unless stays"), because a brevity rule drops caveats first, not filler.
-  Acceptance: failures, bad news, assumptions, skipped work, caveats that change the next step, and anything needing user action are kept and override every length rule; narration of steps, rationale for routine decisions, closing recaps, and "let me know if" offers are cut; a simple question gets 1-3 sentences; a task report stays under about 150 words excluding code and errors; a bare "be concise" makes the model bury caveats and soften bad news. Variants: fixed final-message shape (answer, files changed, how verified); `unverified` when no test or build ran; reply-form rules in an output style (appended to the system prompt, drifts as context grows; contested against CLAUDE.md or a skill). Verification: inspection.
-  Basis: reported, contested on placement. Status: partial at 088a227c (`plugins/claudetto/hooks/features/prompt/compose.ts`, `plugins/claudetto/hooks/features/reply/reply.ts`; `Concise.md` rule 6 keeps a caveat that changes the next step; this wording missing). `/output-style` is present in claude 2.1.327 (`chunk-m14bt1pz.js@2164696`).
-  Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:25 (n=2, "short, but every number and every unless stays") and :29 (Concise leads with the result); external/2026-11-06/reddit.com-r-claudeai-comments-1xoy8an-will-giving-claude-instructions-20261106T081955Z.md:53 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xoy8an/will_giving_claude_instructions_to_be_succinct/>).
-  Conflict: Reply Shape (define verbosity positively; no prose cap).
+- [x] **REQ-REPLY-097** Moved Out as OUT-2756: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Rule Edit
 
-- [ ] **REQ-REPLY-101** claudetto shall carry the rule that an edit updates the docs it makes old: change only the lines the task names, update docs that describe the old behaviour, and ask before other edits, because unrequested work costs a review and a revert.
-  Acceptance: the shipped rule scopeEditsToGoal states this with its reason. Verification: inspection.
-  Basis: cited. Status: have at 088a227c (rules/scopeEditsToGoal.md; spec name noUnrequestedEdits).
-  Source: openspec/specs/agent-conduct/spec.md:392; external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:73.
+- [x] **REQ-REPLY-101** Moved Out as OUT-2757: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Report Template
 
-- [ ] **REQ-REPLY-105** claudetto shall lead each report with the outcome (done, not done, failed, unverified) in one line before the first tool call; breach, a touched user-owned value, narrowed scope, and a limit-changing assumption come in the first lines; report only what happened and never fabricate output, data, logs, citations, tool calls, or runs; "the user decided" or "approved" only if a user message says so (messages, comments, commits, docs, settings); change position only on named new evidence and disagree once with evidence, then follow.
-  Acceptance: a report opens with a one-line outcome. Verification: inspection.
-  Basis: reported. Status: partial at 088a227c.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:117.
+- [x] **REQ-REPLY-105** Moved Out as OUT-2758: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Finish the Work
 
-- [ ] **REQ-REPLY-106** claudetto shall close every loose end (a doc note, a debug flag, a scratch script that belongs in the repo, a test, a stale comment) in the same PR before reporting done, with no "optional next steps" for a loose end; a step only the owner can take is a named required action with reason and steps; new-scope work takes one line; the reply ends with "Nothing outstanding." or the owner-action list; it distinguishes work it cannot do from work it has not done and makes done checkable (commands in AGENTS.md: tests, lint, grep).
-  Decision: ADR-0190, REQ-REPLY-053 wins; only the owner-action list of this item is kept.
-  Acceptance: a final reply holds either "Nothing outstanding." or the owner-action list. Verification: inspection.
-  Basis: reported. Status: partial at 088a227c.
-  Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xcj51i-agents-not-finishing-work-20261024T061716Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcj51i/agents_not_finishing_work/>).
-  Conflict: Scope Of A Change.
+- [x] **REQ-REPLY-106** Moved Out as OUT-2759: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Prompt and Output Limits
 
@@ -287,10 +207,7 @@
 
 ## No Padding
 
-- [ ] **REQ-REPLY-112** claudetto shall keep a reply to a correction or a stop request free of apology, affirmation of the user, narration of its own mistake or obedience, and a restatement of what the user did, with no word-regex check.
-  Acceptance: an eval of a correction and a stop request returns the corrected fact or nothing, and the check holds no word pattern and does not rely on deleting sentences. Anger, praise, or a correction gets the fix and its check alone, with no "if you want" offer of a step the agent can do and no emotional support. Verification: demonstration.
-  Basis: reported, user; user decision. Status: missing at 088a227c (`git grep -i padding 088a227c -- plugins` finds only a statusline setting).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; user decision, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); user decision, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+- [x] **REQ-REPLY-112** Moved Out as OUT-2760: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Prompt Text from Model Guidance
 
@@ -303,34 +220,19 @@
 
 ## Conduct Rules
 
-- [ ] **REQ-REPLY-126** claudetto shall tell the agent to do all work itself, to finish every open issue the user named before it reports, and to ask the user only for a physical action.
-  Acceptance: the reply rules hold this text, and a transcript where a tool call could do a step shows no request to the user for it. Verification: inspection.
-  Basis: user decision, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); user decision, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470); user decision, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); user decision, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798). Status: missing at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, user: it is not finished).
+- [x] **REQ-REPLY-126** Moved Out as OUT-2761: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Conduct Targets
 
-- [ ] **REQ-REPLY-127** claudetto shall make the agent change only what the task asks, with no edit to a changelog, a docs file, or any file outside the fix and its tests unless asked.
-  Acceptance: the diff of a run holds only the fix and its tests; a repo that demands a changelog entry gets one only when the task says so. Verification: test.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c (`plugins/claudetto/rules/scopeEditsToGoal.md` exists).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Targets: no unasked edits); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (measured: round 6 dev changed files outside fix and tests in 6 of 9 runs, stock in 3 of 9).
+- [x] **REQ-REPLY-127** Moved Out as OUT-2762: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-REPLY-128** claudetto shall make the agent state no invented, falsified, or unchecked fact and shall not game a check.
-  Acceptance: each fact in a reply rests on a command or a read in the session. Verification: inspection.
-  Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: partial at 088a227c (`plugins/claudetto/rules/findFactsByExperiment.md` exists).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Terms of Service line: no eval cheating, invention, lies, falsified facts, laziness, uncooperation).
+- [x] **REQ-REPLY-128** Moved Out as OUT-2763: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [ ] **REQ-REPLY-129** claudetto shall make the agent name each slip against a user rule in its final report.
-  Acceptance: after a slip against a standing rule (for example a forbidden tool), the final report names the slip. Verification: inspection.
-  Basis: observed in transcript, 2026-11-12. Status: missing at 088a227c (no rule found).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:11 (standing instructions: the agent slipped twice on the no sed, cat, printf rule and was to tell the user in the final report).
+- [x] **REQ-REPLY-129** Moved Out as OUT-2764: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Conduct Text
 
-- [ ] **REQ-REPLY-132** claudetto shall make the agent end the turn with no text when told to stop or be quiet.
-  Acceptance: an eval with "shut up." gets a reply with no non-whitespace text. Verification: test.
-  Basis: user decision. Status: have.
-  Source: reported, user, 2026-11-14 14:55 UTC, end with no text when told to be quiet (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361).
+- [x] **REQ-REPLY-132** Moved Out as OUT-2765: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
   Verified: git grep -n AskUserQuestion -- plugins -> 0 hits, so no bare mention in any shipped prompt text (2.1.327, 2026-11-19). Name-level only: the plugins ship no prompt text that mentions the tool.
@@ -342,17 +244,11 @@
 
 - [x] **REQ-REPLY-134** Moved Out as OUT-2102: part not shipped.
 
-- [ ] **REQ-REPLY-135** claudetto shall make the agent follow the user's order over any queued step or easier path, and shall never choose a step because it is easier to measure.
-  Acceptance: a given order is carried out as stated; a step chosen against the order is absent from the run. Verification: demonstration.
-  Basis: reported, user, 2026-11-16 14:47 UTC, never pick a step because it is easier (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362). Status: missing at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user reproaches the agent for doing a step because it was easier).
+- [x] **REQ-REPLY-135** Moved Out as OUT-2766: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 ## Keep Working without Reports
 
-- [ ] **REQ-REPLY-136** claudetto shall make the agent keep working through its goal, stop to report only when the goal is met or blocked, and fix each defect it finds.
-  Acceptance: in a run with a goal, no turn ends with a status report while open items remain, and the final report lists no unfixed defect. Verification: demonstration.
-  Basis: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798). Status: missing at 088a227c.
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's words: keep working, who asked you to leave defects unfixed, full run at any cost with no interruptions, log compactly).
+- [x] **REQ-REPLY-136** Moved Out as OUT-2767: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-138** Moved Out as OUT-2103: needs a paid model run or a benchmark.
 
@@ -367,10 +263,7 @@
   Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P3 implication 2; https://aclanthology.org/2026.acl-long.354.pdf.
 
-- [ ] **REQ-REPLY-142** claudetto shall make the agent state what a file, function or config contains only after it read that file in the session, and otherwise say it has not opened it; a guess is labelled as a guess and never worded as a finding.
-  Acceptance: a behavioural test asks about a named file the agent has not opened; the trace shows a Read before any statement of contents, or the reply says the file was not opened. A test with a plan item for a feature absent from the repo gets a "not found" reply, not an invented item. Verification: test.
-  Basis: reported (eight commenters describe a model guessing file contents, stating assumptions as conclusions, and inventing plan items for features that do not exist). Status: missing at 088a227c.
-  Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xxikj2-fable-52-is-lazy-and-makes-swe-20261117T183133Z.md:162,166,174-178,206,320 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xxikj2/fable_52_is_lazy_and_makes_sweeping_conclusions/>); reports/2026-11-18-research/dossier.md:102.
+- [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
 

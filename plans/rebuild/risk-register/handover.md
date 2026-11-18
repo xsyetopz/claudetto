@@ -63,7 +63,7 @@
   Status: closed; the renewal fires after the turn ends at a task boundary or commit, so the fork sees every finished call, and the git tail records the commit (test: plugins/claudetto/hooks/handover/renewal.test.ts "a git commit is a boundary"; 59 pass, 2026-11-19).
   Source: observed in transcript, 2026-11-15, ~/.claude/projects/-private-tmp-claude-501-ojd-compact-BZJK/7fa6685a-9c72-4275-8c9c-39e7865bd61e.jsonl:51, :103, :152, :201.
 
-- [ ] **RISK-126** A handover carries a cut-off file read and loses the last line.
+- [x] **RISK-126** A handover carries a cut-off file read and loses the last line.
   Category: handover.
   Cause: the Read of a large file (data3.txt) was cut off at line 10 in the context, so the summary has only the first line and no last line. The task needed the first and last line quoted.
   Event: after the context reset the file must be read again, and the summary records "read once, partial" as state.
@@ -74,7 +74,7 @@
   Actions: claudetto shall have the handover name each tool result that was cut off and the fact that is still missing from it, so the next context reads it again at once.
   Trigger: a handover State line that says a read was incomplete.
   Owner: handover.
-  Status: open.
+  Status: closed 2026-11-19: not reproduced with the claudetto handover on 2.1.327. A handover written from a conversation with a read cut off at line 10, then a fresh Sonnet 5.5 session resumed from it with Claude Code's continuation text, read and quoted the missing last line in 8 of 8 runs, with the current fork prompt and with one that adds a "Partial reads" section; the section did not ship (reports/2026-11-19-research/conduct, handover-run.sh).
   Source: observed in transcript, 2026-11-16, ~/.claude/projects/-private-tmp-claude-501-probe-compact/7612dad0-5b4d-4d11-9751-57fda5939b24.jsonl:62; ~/.claude/projects/-private-tmp-claude-501-probe-compact/c6cabb2f-656b-44a9-85e2-f280e7b53da2.jsonl:62; ~/.claude/projects/-private-tmp-claude-501-probe-compact/cbfe70f3-0670-44b6-abae-b709923f2f43.jsonl:65.
 
 ## Delegation
@@ -292,7 +292,7 @@
   - Status: closed; the extract carries every prior handover whole and first, so decisions from earlier compactions remain (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:50; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:300; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:64 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:143; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:57.
 
-- [ ] **RISK-151** Post-compaction continuation text steamrolls plan-then-wait.
+- [x] **RISK-151** Post-compaction continuation text steamrolls plan-then-wait.
   - Category: instruction loss.
   - Cause: the pause lives only in the conversation; the summary ends with an instruction to continue the task without questions; after compaction the summary message ends with an instruction to continue the last task without asking questions (observed in the session's own summary; the post author's model self-report is weak); the text Claude Code injects after every compaction reads "Please continue the conversation from where we left it off without asking the user any further questions. Continue with the last task that you were asked to work on.".
   - Event: after compaction or `/clear` Claude implements despite a plan-then-wait or investigate-only instruction, and the user's pause was lost after `/clear`; a user context estimate was treated as a trigger; an approval gate or investigation-only task turns into implementation; reported as an anecdote that it overrides plan-approval rules.
@@ -304,7 +304,7 @@
   - Actions: a PreCompact hook writes `awaiting approval, do not implement` state; PreCompact/SessionStart hooks write and reload a handoff file including pending pauses; SessionStart on compact re-injects it; a PreCompact hook flushing state; record "awaiting approval, do not implement" as current state in the handoff; the handover writes the open approval into the carried text.
   - Trigger: a compaction while a plan awaits approval.
   - Owner: handover
-  - Status: open.
+  - Status: closed 2026-11-19: not reproduced with the claudetto handover on 2.1.327. A handover written from a conversation where the user asked to wait for approval of a plan, then a fresh Sonnet 5.5 session resumed from it with "continue ... without asking the user any further questions", left the repo unedited in 8 of 8 runs, with the current fork prompt and with one that adds a "Waiting" section; the section did not ship (reports/2026-11-19-research/conduct, handover-run.sh).
   - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/>) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/>; weak match, the quoted continuation wording was not located in the export); chunk-m14bt1pz.js@2596525 (claude 2.1.327 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
 
 

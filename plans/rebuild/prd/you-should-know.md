@@ -425,9 +425,9 @@
 
 ## Timing
 
-- [ ] **REQ-YOU-SHOULD-KNOW-061** claudetto shall show its you-should-know reminder before the work it concerns; the user reported that it almost always arrives too late. It shall be compared with the builtin and the latest binary's code, and its timing fixed against real sessions.
+- [x] **REQ-YOU-SHOULD-KNOW-061** claudetto shall show its you-should-know reminder before the work it concerns; the user reported that it almost always arrives too late. It shall be compared with the builtin and the latest binary's code, and its timing fixed against real sessions.
   Acceptance: in a real session the reminder arrives before the work it concerns. Verification: probe.
-  Basis: reported. Status: partial at 088a227c.
+  Basis: reported. Status: done 2026-11-19: in an interactive dogfood session on 2.1.327 the note "Heads up · retry.test.js times its own busy-wait loop and never calls any retry code, so a seeded, always-green version would prove nothing." showed at 23:20:42 while the agent was still probing seeds, before its edit and commit of retry.test.js (1 of 1 sessions; debug log `$.model.fork` 6572 ms, then `ui.render` above-prompt).
   Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
   Decision: ADR-0190, an earlier first check at step 3, then every 6th step; the prompt and note texts stay verbatim. Open until a dogfood session shows the note before the work.
 
