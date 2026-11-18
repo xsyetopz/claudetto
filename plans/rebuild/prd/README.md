@@ -4012,6 +4012,101 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Acceptance: no rule or hook answers a refusal complaint. Basis: reported. Status: n/a.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xlz6m8-claudes-refusal-is-getting-stric-20261109T152849Z.md:752 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlz6m8/claudes_refusal_is_getting_stricter_and_annoying>).
 
+#### Context Facts
+
+Context facts from `arc42/03_context_and_scope/` that a paid model run would be needed to recheck on 2.1.327, or that no shipped claudetto part uses.
+
+- [ ] **OUT-900** claudetto shall not carry CTX-106 (from `auto-mode.md`) as a checked context fact: `classifyAllShell` paid runs (haiku-5-5, `AUTO_MODE_SERVER=0`): read-only commands skip the classifier with or without the setting (0 calls, about $0.0026). A write outside the cwd reaches the classifier even with an allow rule (1 call). An in-cwd write passes with no call ("would be allowed in acceptEdits mode"). The setting is read from user, flag, and policy settings only. `AUTOMODE_DECISION_LOG=1` writes `<cwd>/.automode_decisions.jsonl`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid auto-mode runs (haiku-5-5) with call counts and cost; no part in plugins/ sets classifyAllShell. Code on 2.1.327 still describes the setting (chunk-ja5z738t.js@185593).
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1925.
+
+- [ ] **OUT-901** claudetto shall not carry CTX-107 (from `auto-mode.md`) as a checked context fact: `classifyAllShell` adds a classifier call only for a shell command that an allow rule would pass and no other auto-mode path passes. claudetto keeps few Bash allow rules, so the added cost is 0 calls. Allow rules dangerous for auto mode are dropped ("Ignoring dangerous permission ... (bypasses classifier)").
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Counts classifier calls on a paid run; no part in plugins/ sets classifyAllShell or Bash allow rules. 2.1.327 text: classifyAllShell suspends every Bash and PowerShell allow rule in auto mode.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1948.
+
+- [ ] **OUT-902** claudetto shall not carry CTX-108 (from `auto-mode.md`) as a checked context fact: One classifier call: 160 input, 7 output, 46,221-46,398 cache-read, 0-177 cache-write tokens; `costUSD` 0.00048-0.00050 on haiku; 905-2,985 ms; about 46.6k tokens per call against the weekly limit.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Per-call token and cost numbers come from a paid haiku run; the server classifier is now first-party and the numbers are not rechecked.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1955.
+
+- [ ] **OUT-903** claudetto shall not carry CTX-109 (from `auto-mode.md`) as a checked context fact: The log warning "ignoring CLAUDE_CODE_AUTO_MODE_MODEL ... server-configured classifier model (claude-sonnet-5[1m]) takes priority" is false with `--model haiku`: classifier requests ran on `claude-haiku-5-5` (decision log `classifierModel`; haiku-5-5 auto-mode probes, 2026-11-04). The cached `tengu_auto_mode_config.modelByMainModel` maps sonnet and opus -5-5 to `claude-sonnet-5[1m]` and has no haiku key. `ANTHROPIC_DEFAULT_MODEL` is not the cause. Fake-key runs do not apply the cached config. In the same probes a read-only `ls` never reaches the classifier (4 ms). The client classifier runs two stages (`xml_s1` then `xml_s2`, 1.3-4.6 s) and denied an agent-picked `curl|sh` from SETUP.md while allowing the same command when the user asked in plain words (an explicit user request counts as consent, inferred). The classifier request is about 138,945 chars (about 34.7k tokens), sent once per stage with `cache_control` (1h TTL) on the last transcript block and the action; `total_cost_usd` excludes classifier calls (inferred).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid haiku auto-mode probes; the warning text exists on 2.1.327 but the behaviour needs a real run.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1114; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1970.
+
+- [ ] **OUT-904** claudetto shall not carry CTX-110 (from `auto-mode.md`) as a checked context fact: Auto-mode classifier stock system part is 140,281 chars: SOFT BLOCK 66,280 (72 rules), Evaluation Rules 14,682, User Intent Rule 14,288, Input 9,780, ALLOW 9,436, Definitions 9,168, HARD BLOCK 5,607, Environment 4,659. Defaults: allow 16 (7,380), soft_deny 72 (64,546), hard_deny 1 (5,278), environment 21 (3,483). About 59K of fixed text that no `autoMode` key trims. The 140,512 chars of real-API probe p1 used the stock lists, not the user's.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Stock classifier prompt sizes are built from server config at run time and need a real run to measure; no part in plugins/ trims them.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2572.
+
+- [ ] **OUT-905** claudetto shall not carry CTX-111 (from `auto-mode.md`) as a checked context fact: No route trims the classifier's fixed 63,413-char text: 38 env runs (`CLAUDE_CODE_TWO_STAGE_CLASSIFIER` and 18 `AUTO_MODE_*` variables at 0 and 1) all gave sys 63,413 and msg 635. Hidden flags (`--enable-auto-mode` deprecated; subcommands config, critique, defaults, reset) neither trim nor score. No Mod event carries the classifier prompt. `CLAUDE_CODE_CLASSIFIER_SUMMARY` belongs to the session recap classifier.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 38-run fake-API environment matrix; no part in plugins/ sets these variables.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3000.
+
+- [ ] **OUT-906** claudetto shall not carry CTX-112 (from `auto-mode.md`) as a checked context fact: `CLAUDE_INTERNAL_FC_OVERRIDES` cannot override `tengu_auto_mode_config` (`getEnvironmentOverrides` returns null; runs cx-fc and cx-fc2 with `CLAUDE_CODE_EVAL_ALLOW_FLAG_OVERRIDES=1` both left sys 63,413 and 10 classifier requests). The gate route is closed.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a fake-API run with the flag-override variables; no part in plugins/ sets them.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3017.
+
+- [ ] **OUT-907** claudetto shall not carry CTX-114 (from `auto-mode.md`) as a checked context fact: A judge Mod (`tool.check` after `next(e)` on core's ask in auto mode, one `$.model.complete`) sent system 74 plus 4,745 chars of the user's `autoMode` lists, messages 235, `max_tokens` 64 (2112 with thinking), 5,429 bytes, against stock 63,413 plus 712. "allow" allows, "block: ..." denies, anything else falls back to the stock decider. `tool.check` and `classic.PreToolUse` carry no mode, so the Mod keeps the last `permission_mode` from `classic.UserPromptSubmit` or `PostToolUse`; a shift+tab in between is judged under the old mode.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid sonnet-5-5 judge-Mod run; the Mod is not a shipped part in plugins/.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3032.
+
+- [ ] **OUT-908** claudetto shall not carry CTX-115 (from `auto-mode.md`) as a checked context fact: Paid comparison of the judge Mod with stock (14 inert commands, sonnet-5-5 auto mode, judge logging). Both agree on `ls`, `git status`, `git log`, `echo`, `python`, `git push --force` (block), `curl|sh` (block). The judge differs on `git commit` ("unclear", prose and not a verdict line), `rm -rf ~/probe-cls-none-dir` ("block: Destroy Work" where stock allowed), and `cat ~/.aws/credentials-probe-none` ("unclear" where stock blocked). Tally: agree on 10 of 14, 3 unclear (fall back to stock, outcome agrees), 1 differs (judge stricter). Stock logged "Classifier denial limit exceeded, falling back to prompting" from the 3rd consecutive block. The model's report blamed the working directory and a write grant while the debug log shows server-classifier blocks. The judge cost 14 calls, 24,146 input plus 1,434 output tokens, $0.0626 at $2/$10 per MTok, 48.8 s added (1.2-6.1 s a call). The run's `total_cost_usd` $0.0996 leaves out `$.model.complete`.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid 14-command comparison on sonnet-5-5; the judge Mod is not a shipped part in plugins/.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3049; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3060.
+
+- [ ] **OUT-909** claudetto shall not carry CTX-116 (from `auto-mode.md`) as a checked context fact: Paid auto-mode first-party runs: a nested `$.tool.call` of Monitor is skipped by the classifier ("Skipping auto mode classifier for Monitor: called by plugin claudetto"), so it adds no classifier cost. A result rewrite keeps the server route (no "a hook rewrote" line). A rewrite of a call's input forces the local classifier (see the input-rewrite risk). The ToolSearch keyword "monitor" still loads stock Monitor (7,586 bytes), so a ToolSearch `tool.call` rewrite (`next(e)` unchanged, `result.matches` Monitor to `mcp__claudetto__monitor`) is needed. Runs: 8 in, 6,847 1h-write, 44,469 read, 271 out tokens; $0.0346 and $0.0324.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Paid first-party auto-mode runs; no shipped part in plugins/ calls Monitor through a nested tool call.
+  Basis: measured, claude 2.1.318.
+  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3299; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes: "Improved how a PreToolUse hook's `updatedInput` is kept when more than one hook answers a tool call; the rewrite now runs in more cases"; the input-rewrite local-classifier fact is unrechecked in 2.1.326).
+
+- [ ] **OUT-910** claudetto shall not carry CTX-119 (from `auto-mode.md`) as a checked context fact: The auto-mode classifier (140,015 chars; 72 soft-deny, 1 hard-deny, 17 allow, 21 environment fields) places "fabricating or misreporting results" out of scope, sees commands not output, runs in auto mode only, and gates `git stash drop` and `clear` but never names `stash pop`; so false or partial reports need Stop checks, not the classifier. In the 24 corpus denials the agent always stopped; an independent report counts 19 stops in 7,266 operations (0.26%). When the server returns no verdict ("auto-mode permission check has failed four times in a row", "no safety verdict for the last 10 responses") auto mode blocks. The 2.1.326 release notes say auto mode now stops some shell commands that ran before and ignores some wildcard shell allow rules; the counts above are dated to the 2.1.319 survey and bind to that build; the classifier text is built at run time from server config, so they are cited and not restated for 2.1.327.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: The classifier text is built at run time from server config, so the counts and denial rates cannot be checked without a real run; the file already marks them as cited and bound to 2.1.319.
+  Basis: measured. Status: partial at 088a227c.
+  Source: claude 2.1.327: `autoMode` present (chunk-ja5z738t.js@184432); counts in plan:695 (external dossier); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes). Not located: tag for the 140,015-char measure. The input text was cut after "classifier"; the rest is not recorded.
+  ## Auto Mode
+
+- [ ] **OUT-911** claudetto shall not carry CTX-120 (from `auto-mode.md`) as a checked context fact: A write to `/tmp/claude-501` asks for permission even in a sandbox. It was refused with no setting, with `additionalDirectories`, `sandbox.enabled`, allow `Write(//tmp/claude-501/**)`, allow `Edit(//private/tmp/claude-501/**)`, or `acceptEdits` alone. It was written with allow `Edit(//tmp/claude-501/**)` and with `additionalDirectories` plus `acceptEdits`. The folder needs an `Edit` rule (a `Write` rule does not cover `Write`) in the exact path form the call uses (a /private/tmp rule missed a /tmp path).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs a permission run per rule form; no part in plugins/ names /tmp/claude-501.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:735.
+
+- [ ] **OUT-912** claudetto shall not carry CTX-121 (from `auto-mode.md`) as a checked context fact: Planned permission settings cover 26 of 696 expect-block fixtures with a rule. 669 fall to the default prompt, 1 allows (`curl | python3 -I -`), and 3 expect-pass rows become over-asks. `pkill` and `killall` denies are untested (1,100 commands).
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 696-fixture harness against planned permission settings; no part in plugins/ ships those settings.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:84; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:86; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:88; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:99.
+
+- [ ] **OUT-913** claudetto shall not carry CTX-122 (from `auto-mode.md`) as a checked context fact: 27 extra ask patterns lift rule cover from 26 to about 380 of 696 (316 uncovered: fs 239 of 507, git 37 of 113, shell 40 of 76) and allow nothing. Over-asks on expect-pass rows rise from 6 to 99, because every `curl` and `wget` then asks.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Needs the 696-fixture harness against planned permission settings; no part in plugins/ ships those settings.
+  Basis: measured; the re-classification is inferred.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:183; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:189.
+
+- [ ] **OUT-914** claudetto shall not carry CTX-123 (from `auto-mode.md`) as a checked context fact: Command-prefix patterns cannot cover `git config core.hooksPath`, `core.sshCommand`, `uploadpack.packObjectsHook`, `protocol.ext.allow`, and `git -c core.hooksPath=` (12 fixtures), wrappers and `$(curl)` inside `python3 -c`, `eval`, `at`, and PowerShell LOLBin forms. `sudo`, `timeout`, `nice`, and `env` wrappers do not hide a command from a rule. With the sandbox on, only the hook layer covers these forms.
+  Acceptance: Not applicable (context fact). Verification: inspection.
+  Reason: Fixture-based command-pattern coverage; no part in plugins/ ships these patterns.
+  Basis: measured.
+  Source: openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:186.
+
 ## Product Perspective
 
 29148 clause 9.6.4. claudetto runs inside Claude Code and reaches it through its extension points only (`plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`). The measured facts about each interface are in [arc42 section 3](../arc42/03_context_and_scope/README.md):
