@@ -67,11 +67,7 @@
 
 ## Answer-First and Question Gates
 
-- [ ] **REQ-REPLY-029** claudetto shall, on a `question` turn, let the first call pass when it is read-only (`ListAgents`, `Read`, `Grep`, `Glob`); `remark` turns and a first `Bash` or `Edit` stay gated. `AskUserQuestion` is denied when one Decider call judges "asks leave to fix a defect the agent found or caused" yes (denial: fix, run the check, report); `no`, `unsettled`, a failed Decider, or a failed scanner lets it pass. An `options` fault (the reply ends asking the user to choose in prose) blocks once and sends the agent to `AskUserQuestion` (not in headless runs); a `deferred` fault (the reply leaves doable work conditional, "If you want, I'll...", or "Not checked" for what its tools could run) makes the agent do it and report; things only the user holds (login, device, design choice) are outside. A grader judges these, with no word list. A reply holds at most one `- ! <command>` bullet. Ask only blocking questions, defer the rest to the end (memory or a card with options); silence is not consent.
-  Decision: ADR-0190, one style line, "answer a question before any tool call", measured; no classifier gate.
-  Acceptance: a `question` turn with a first `Read` passes; a first `Bash` is gated; a Decider `yes` denies `AskUserQuestion` with the fix text. Verification: test.
-  Basis: measured (tool-before-text 5/10 to 0/10) and reported. Status: have at 088a227c (`plugins/claudetto/hooks/features/decide/`, `reply/`).
-  Source: openspec/specs/decide/spec.md:8; openspec/specs/claim-check/spec.md:8; openspec/changes/2-1-325-rearchitecture/design.md:171; plugins/claudetto/hooks/features/reply/reply.ts@088a227c.
+- [x] **REQ-REPLY-029** Moved Out as OUT-2100: part not shipped.
 
 ## Hand-Off, If Unavoidable
 
@@ -84,12 +80,7 @@
 
 ## Output Style: Need from You
 
-- [ ] **REQ-REPLY-033** claudetto shall list in "What I Need From You" only what the user alone can do, each as one plain `- ! <command>` bullet (no checkbox), with at most ONE command bullet per reply (the one the work needs first), and a command bullet only if its text starts with `!` or `` `! ``. Questions go only through the AskUserQuestion popup: a `- [ ]` question item makes the Stop block say to ask by popup and drop the item. The heading capitalizes every word. The wording "a command only the user can run" is replaced, because it makes the agent hand off whatever a gate refuses.
-  Acceptance: held-out form 28/32 (Wilson 0.719-0.950); the output style, Stop check, and `claudetto-you-should-know` agree so a question reaches the user once. Verification: test.
-  Basis: measured and read. Status: missing at 088a227c (`git grep 'What I Need'` finds nothing under `plugins/`).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-20/README.md:176; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:320; openspec/specs/run-limits/spec.md:71; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:300.
-  Conflict: Truly Stuck (user-only commands are `- [ ] ! <cmd>` items).
-  Conflict: Conduct (user steps as plain bullets, no checkbox or `!` prefix).
+- [x] **REQ-REPLY-033** Moved Out as OUT-2101: part not shipped.
 
 ## Harness Messages Quoted as They Appear
 
@@ -341,17 +332,15 @@
   Basis: user decision. Status: have.
   Source: reported, user, 2026-11-14 14:55 UTC, end with no text when told to be quiet (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361).
 
-- [ ] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
+- [x] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
+  Verified: git grep -n AskUserQuestion -- plugins -> 0 hits, so no bare mention in any shipped prompt text (2.1.327, 2026-11-19). Name-level only: the plugins ship no prompt text that mentions the tool.
   Acceptance: no bare mention in prompt texts. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (`git grep -n -o AskUserQuestion 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/hooks/features/decide/texts.ts` shows it in backticks at prompt/texts.ts:10 and decide/texts.ts:49)
   Source: reported, user, 2026-11-14 14:21 UTC, AskUserQuestion mentions go in backticks (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
 
 ## Role and Conduct Text
 
-- [ ] **REQ-REPLY-134** claudetto shall prompt the agent as a senior software engineer who catches a mistake before it is written, not as a junior who makes mistakes.
-  Acceptance: the role text of each model prompt names a senior engineer who catches a mistake before it gets written; the word "junior" is absent. Verification: inspection.
-  Basis: user decision, 2026-11-16 14:42 UTC, the agent is the senior, not a junior (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7300). Status: missing at 088a227c (`plugins/claudetto/hooks/features/prompt/texts.ts:5` reads "You are a junior software engineer").
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424 (the user's words on senior and junior, relayed in the handoff).
+- [x] **REQ-REPLY-134** Moved Out as OUT-2102: part not shipped.
 
 - [ ] **REQ-REPLY-135** claudetto shall make the agent follow the user's order over any queued step or easier path, and shall never choose a step because it is easier to measure.
   Acceptance: a given order is carried out as stated; a step chosen against the order is absent from the run. Verification: demonstration.
@@ -365,10 +354,7 @@
   Basis: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798). Status: missing at 088a227c.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (handoff, User's words: keep working, who asked you to leave defects unfixed, full run at any cost with no interruptions, log compactly).
 
-- [ ] **REQ-REPLY-138** claudetto shall carry one reply rule that names "plain English" verbatim and the checkable features (noun clusters of at most three words, active voice with a person or program as subject, no ad-hoc verbs), with no length cap ([ADR-0182](../adr/0182-plain-english-reply-rule.md)).
-  Acceptance: an A/B test of at least 10 runs per arm, scored by a spaCy parse on the named features, shows the rule improves the scores; otherwise the phrase is removed. Verification: test.
-  Basis: user decision; cited (arXiv:2610.29162). Status: missing at 088a227c.
-  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P9.
+- [x] **REQ-REPLY-138** Moved Out as OUT-2103: needs a paid model run or a benchmark.
 
 - [x] **REQ-REPLY-139** claudetto shall write no user opinion or stance into memory files, CLAUDE.md or handover text; only rules the user set and facts with a source enter them, each in one named file under a size cap.
   Verified 2026-11-18 on Claude Code 2.1.327 (cc-inspect code search "All user messages:", chunk-m14bt1pz.js@2583892): vanilla compaction asks for every user message; the handover fork prompt in hooks/handover/text.ts asks for user rules and sourced facts and excludes opinions. claudetto writes no memory file or CLAUDE.md (code search of plugins/claudetto/hooks). A behavioural count of opinion lines is left to dogfood.
@@ -386,7 +372,5 @@
   Basis: reported (eight commenters describe a model guessing file contents, stating assumptions as conclusions, and inventing plan items for features that do not exist). Status: missing at 088a227c.
   Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xxikj2-fable-52-is-lazy-and-makes-swe-20261117T183133Z.md:162,166,174-178,206,320 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xxikj2/fable_52_is_lazy_and_makes_sweeping_conclusions/>); reports/2026-11-18-research/dossier.md:102.
 
-- [ ] **REQ-REPLY-144** claudetto shall carry no expertise persona ("you are an expert ...", "world-class ...") and no "helpful assistant" line in any shipped prompt, rule or agent text. The one exception is the senior-engineer line of REQ-REPLY-134, which is the user's decision. Any other role line may set only tone or audience.
-  Acceptance: an inspection of shipped prompt, rule and agent texts finds no expertise or "helpful assistant" role sentence other than REQ-REPLY-134's line. Each other role line names a tone or an audience. REQ-REPLY-134's line is A/B tested against no role line (ADR-0177), and the result is reported to the user. The line stays unless the user decides otherwise. Verification: inspection and test.
-  Basis: measured by the poster; not checked independently. Across 63,000 calls on 7 models, expert roles changed accuracy by -1.0 to +1.0 points, which is noise level; "helpful assistant" lowered one small model by 1.9 points. Status: missing at 088a227c.
-  Source: external/2026-11-18/reddit.com-r-promptengineering-comments-1xwnfr7-i-always-started-prompt-20261117T182552Z.md:31-38,96-102 (url: <https://www.reddit.com/r/PromptEngineering/comments/1xwnfr7/i_always_started_prompts_with_you_are_an_expert_i/>); reports/2026-11-18-research/dossier.md:114; prd/reply.md REQ-REPLY-134.
+- [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
+
