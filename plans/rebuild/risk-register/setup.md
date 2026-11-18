@@ -63,6 +63,7 @@
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:689; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:692 (read, measured).
 
 - [ ] **RISK-398** Sandbox blocks `git worktree add`.
+  Open: not probed under the ADR-0188 block; the sandbox keeps .git/worktrees read-only, so `git worktree add` needs an unsandboxed run, which `allowUnsandboxedCommands` true permits.
   - Category: Claude Code limit.
   - Cause: `.git/worktrees` returns EPERM; cause never found, probes passed.
   - Event: reported; awaiting a `--debug-file` run.
@@ -111,7 +112,8 @@
 
 ## Boundaries And Safety
 
-- [ ] **RISK-401** Sandbox escape by convenience: the agent turns the sandbox off for each EPERM.
+- [x] **RISK-401** Sandbox escape by convenience: the agent turns the sandbox off for each EPERM.
+  Verified: probe, claude 2.1.327, 2026-11-18, cc-inspect cli with the ADR-0188 block: routine Bash writes (under /opt/homebrew and /private/var/folders) ran with 0 prompts and no EPERM, so the agent meets no failure that tempts it to set dangerouslyDisableSandbox; the fill writes the block (defaults.test.ts).
   Category: safety.
   Cause: an in-sandbox fix existed but was not recorded, so each session rediscovers the escape; `dangerouslyDisableSandbox` is available.
   Event: `dangerouslyDisableSandbox` used about 330 times in 10 sessions for EPERM (Bun auto-reading `.env`, pnpm store, mktemp, SSH signing, SwiftPM caches). The same EPERM was solved in-sandbox in one session and by turning the sandbox off in another.
@@ -142,7 +144,8 @@
 
 ## Agent Conduct
 
-- [ ] **RISK-403** Agent narrows a general fix to the one tool that showed the fault.
+- [x] **RISK-403** Agent narrows a general fix to the one tool that showed the fault.
+  Status: closed. Cause is outside setup or outside claudetto (OUT-863, ADR-0190).
   - Category: Conduct
   - Cause: The agent finds the sandbox proxy fault on Java and searches only Java proxy settings.
   - Event: The user interrupts: the fix must serve every tool.
@@ -175,7 +178,8 @@
 
 ## Environment, Accounts, And Marketplace
 
-- [ ] **RISK-405** Claude Code sends the claude.ai login token to a custom base URL.
+- [x] **RISK-405** Claude Code sends the claude.ai login token to a custom base URL.
+  Status: closed. Cause is outside setup or outside claudetto (OUT-865, ADR-0190).
   Category: product behaviour.
   Cause: ANTHROPIC_BASE_URL is set with no ANTHROPIC_AUTH_TOKEN.
   Event: Claude Code can send the login token to the custom URL.
@@ -254,7 +258,8 @@
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: measured, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
 
-- [ ] **RISK-410** A running session holds a stale plugin until restart.
+- [x] **RISK-410** A running session holds a stale plugin until restart.
+  Status: closed. Cause is outside setup or outside claudetto (OUT-866, ADR-0190).
   - Category: product.
   - Cause: Claude Code loads a plugin at start.
   - Event: A fixed rule does not reach a running session.
@@ -269,7 +274,8 @@
   - Status: open (Existing controls: partial at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
-- [ ] **RISK-411** The user's settings keep the retired _TEXT key.
+- [x] **RISK-411** The user's settings keep the retired _TEXT key.
+  Verified: test, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: 'removes a retired reminder text and keeps one the user wrote' passes; the fill removes CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT only when it equals one of the two retired texts.
   - Category: product.
   - Cause: The sandbox denies a write to the user's settings.json.
   - Event: The old narration text stays.
@@ -287,6 +293,7 @@
 ## Claude Code Faults
 
 - [ ] **RISK-412** The auto-mode classifier gives no verdict on a Bash call.
+  Open: sandboxed Bash skips the classifier under autoAllowBashIfSandboxed, but the no-verdict case needs a paid auto-mode run that ADR-0190 leaves out.
   Category: Claude Code fault.
   Cause: the classifier is unavailable ("Classifier unavailable"); the fault repeated on every Bash call in one benchmark arm and several times in the session.
   Event: Bash calls fail; the turn stops after repeated failures; an arm ran no test.
@@ -303,7 +310,8 @@
 
 ## Conduct Faults From the Rearchitecture Sessions
 
-- [ ] **RISK-413** The agent edits user settings or reverts work with no order.
+- [x] **RISK-413** The agent edits user settings or reverts work with no order.
+  Status: closed. Cause is outside setup or outside claudetto (OUT-864, ADR-0190).
   Category: agent conduct.
   Cause: the agent changed a settings file and reverted a change on its own.
   Event: the user asks who asked for it.
@@ -319,6 +327,7 @@
   Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [ ] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
+  Open: the fill runs one read and one write per FILL_VERSION and the sandbox prompt friction is cured (RISK-401 probe); the error-noise part needs a dogfood session.
   Category: claudetto fault.
   Cause: setup made one model call per question; hooks raised errors; the sandbox blocked work.
   Event: the user reports an extremely slow setup, annoying hook errors, and a sandbox that does harm.
