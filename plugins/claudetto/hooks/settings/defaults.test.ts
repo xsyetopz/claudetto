@@ -29,7 +29,7 @@ describe("defaults fill", () => {
 		expect(next.sandbox.network.allowAllUnixSockets).toBe(true);
 		expect(next.sandbox.filesystem.allowWrite).toEqual(expect.arrayContaining(["/opt/homebrew", "/private/var/folders"]));
 		expect(next.sandbox.filesystem.denyWrite).toContain("/private/var/folders/**/xcrun_db*");
-		expect(next.permissions.allow).toEqual(["Bash(claude -p *)"]);
+		expect(next.permissions.allow).toEqual(["Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
 	});
 
 	test("keeps every value the user set and adds only what is missing", () => {
@@ -50,7 +50,7 @@ describe("defaults fill", () => {
 		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("8");
 		expect(next.env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe("1");
 		expect(next.worktree).toEqual({ baseRef: "fresh", symlinkDirectories: ["node_modules"] });
-		expect(next.permissions.allow).toEqual(["Read", "Bash(claude -p *)"]);
+		expect(next.permissions.allow).toEqual(["Read", "Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
 		expect(next.permissions.deny.filter((d: string) => d === "Workflow").length).toBe(1);
 		expect(next.permissions.deny).toContain("Bash(rm *)");
 		expect(next.sandbox.enabled).toBe(false);
