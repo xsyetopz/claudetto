@@ -533,6 +533,23 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported. Status: have at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:12; external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:18.
 
+#### OpenSpec
+
+- [x] **OUT-179** Out (REQ-OPENSPEC-001, ADR-0189): the user chose not to build the openspec block over vanilla 2.1.327. claudetto-openspec shall match openspec@latest in core profile only, lighter than openspec, with Claude 5.5 optimised prompts, selective XML tags where they fit, and fixes for what SDD and TDD complaints in external/ show it does wrong.
+  Acceptance: behaviour matches openspec@latest core profile; each complaint has a fix or a recorded reason. Verification: demonstration.
+  Basis: reported. Status: partial at 088a227c.
+  Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
+
+- [x] **OUT-180** Out (REQ-OPENSPEC-002, ADR-0189): the user chose not to build the openspec block over vanilla 2.1.327. claudetto-openspec shall initialise OpenSpec on a new project with core parity to upstream OpenSpec, in a lighter form.
+  Acceptance: a new project gets the OpenSpec layout that upstream's init writes, with fewer files and less text. Verification: demonstration.
+  Basis: reported. Status: have at 088a227c (plugins/claudetto-openspec/hooks/layout.ts:14 `init` writes the layout; openspec.test.ts:185 "Empty Project: init writes the layout, and validate then passes", :198 "Existing Layout: init changes no file"; parity with upstream's init file set is not compared)
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
+
+- [x] **OUT-181** Out (REQ-OPENSPEC-003, ADR-0189): the user chose not to build the openspec block over vanilla 2.1.327. claudetto-openspec shall carry fixes for upstream OpenSpec issues and PRs.
+  Acceptance: each upstream issue or PR the plan names has a fix or a recorded reason. Verification: inspection.
+  Basis: reported. Status: partial at 088a227c (plugins/claudetto-openspec/hooks/openspec.test.ts:133,144 keep upstream verdicts on MODIFIED; no list of upstream issues or PRs in plugins; the list was not read)
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
+
 #### Claude Code Behaviour With No Plugin Fix
 
 - [ ] **OUT-108** claudetto shall not fix these, because no plugin seam reaches them: garbled characters (renderer), the "· summary" label (`tool_use_summary`), 2.1.319 rewriting `Agent` input and causing auto-mode "changed after review", and the extra `claudetto:Heracles` agent (the model's own delegation).
@@ -571,7 +588,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 | [`cost`](cost.md) | 43 |
 | [`setup`](setup.md) | 64 |
 | [`edit`](edit.md) | 2 |
-| [`openspec`](openspec.md) | 3 |
+| [`openspec`](openspec.md) | 0 (out, ADR-0189) |
 | [`you-should-know`](you-should-know.md) | 75 |
 | [`verification`](verification.md) | 92 |
 

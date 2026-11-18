@@ -192,3 +192,4 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0186](../adr/0186-slice-commits-as-boundaries.md) | Slice Commits Are the Context Boundaries | accepted | 2026-11-18 |
 | [ADR-0187](../adr/0187-local-incident-lab.md) | A Local Incident Lab Reproduces Agent Failures | accepted | 2026-11-18 |
 | [ADR-0188](../adr/0188-minimal-sandbox-free-pass.md) | Minimal Sandbox: Non-Destructive Commands Run Without a Prompt | accepted | 2026-11-18 |
+| [ADR-0189](../adr/0189-block-scope-over-vanilla.md) | Build Ten Blocks Over Vanilla 2.1.327; OpenSpec Stays Out | accepted | 2026-11-18 |
