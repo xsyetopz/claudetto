@@ -26,24 +26,15 @@
 
 ## Paid Runs
 
-- [ ] **REQ-VERIFICATION-067** claudetto shall bill every paid run to the subscription: every paid tool in `tools/` deletes `ANTHROPIC_API_KEY` from the child env, passes only `CLAUDE_CODE_OAUTH_TOKEN`, raises an error naming that token when it is missing, and fails its arm check unless init `apiKeySource` is "none"; no text tells the user to set `ANTHROPIC_API_KEY`.
-  Acceptance: a run with an API key beside the token ends with `apiKeySource` "none". An API key beside the token wins and bills the API. Verification: test.
-  Basis: measured. Status: partial at 088a227c (tools/subscription.ts holds `subscriptionEnv`, which drops `ANTHROPIC_API_KEY`, and `hasSubscriptionLogin`, which checks `CLAUDE_CODE_OAUTH_TOKEN`; the `apiKeySource` check and the error naming the token are not found).
-  Source: openspec/specs/claim-check/spec.md:150; tools/subscription.ts@088a227c.
+- [x] **REQ-VERIFICATION-067** Moved Out as OUT-2400: the part is not in plugins/.
 
 ## Probe Launcher Cap
 
-- [ ] **REQ-VERIFICATION-068** claudetto shall cap a probe launch: sum assistant usage by message id, kill the recorded pid past 300,000 tokens, and record "capped"; a launch with no fake base URL in a non-streaming mode throws before spawning.
-  Acceptance: a probe past 300,000 tokens is killed and recorded "capped". Verification: test.
-  Basis: reported. Status: missing at 088a227c (`capped` is in no file under plugins/; tools/ not matched).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:286@088a227c9^ (task 17.5, stop a run live past 300,000 tokens).
+- [x] **REQ-VERIFICATION-068** Moved Out as OUT-2401: the part is not in plugins/.
 
 ## Test Practice
 
-- [ ] **REQ-VERIFICATION-072** claudetto shall assert the arm and environment, not only the score: for every probe or eval record settings, plugins loaded, sandbox on or off, tools per arm, tool versions, and the model that actually served (`modelUsage`, a captured `model`, `resolvedModel` and `modelsUsed` from each Agent result), and fail the run on a mismatch. When baseline equals treatment the report says "does not separate the arms"; a scenario the no-plugin arm always passes is non-discriminating; symmetric rules are fixed in advance; a small sample is reported as small; claim bases are five: verified, documented, user-reported, inferred, unknown.
-  Acceptance: a run whose served model differs from the arm's is failed. Reported failures: every eval ran the plugin arm without a settings profile; a relative `--plugin-dir` made `just sandbox` load 0 plugins; an API key was never passed into containers; a new case wrote its own log and flagged itself tampered; the sandbox dropped any `--model` not in `availableModels` and silently ran Sonnet 5.5. Verification: test.
-  Basis: reported. Status: missing at 088a227c (`resolvedModel` is in no file under plugins/).
-  Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:62.
+- [x] **REQ-VERIFICATION-072** Moved Out as OUT-2402: the part is not in plugins/.
 
 - [x] **REQ-VERIFICATION-073** claudetto shall measure always-on tokens added by skills, agents, and CLAUDE.md with `plugin details` per Claude Code release, compare real invocations to eval cases to find tested-but-never-used skills, and treat a tool the agent never calls as dead weight.
   Verified: `claude plugin details --help`, claude 2.1.327, 2026-11-18: "Show a plugin's component inventory and projected token cost" exists in vanilla, so no claudetto code is needed (it resolves installed plugins only; a path gave "not found"). plugins/claudetto has no skills, agents or rules, so it adds no always-on text beyond its manifest.
@@ -123,10 +114,7 @@
   Basis: cited (arXiv:2609.32616: evidence rule cut over-correction from 41.89 to 13.15). Status: missing at 088a227c.
   Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P6, P10.
 
-- [ ] **REQ-VERIFICATION-094** claudetto shall give each behaviour rule a trace test and at least one mutant (rule deleted or inverted) that the test kills, run each test at least 10 times per arm with varied phrasing, and re-run the set on each new model or Claude Code version ([ADR-0180](../adr/0180-behavioural-and-mutation-tests.md)).
-  Acceptance: for each rule the unmutated rule passes and the mutant fails in the majority of 10 runs; a rule whose mutant passes is removed. Each rule is run on at least 5 phrasings of the same trigger, and the result counts a rule as passing only when all phrasings pass. Pushback tests vary how certain the user sounds ("I think" against "I am sure") and whether the claim is stated as the user's own view. Tests assert on the trace and the reply, never on the model's stated reasons. No score is reported. Verification: test.
-  Basis: cited (arXiv:2603.08806; arXiv:2605.15184; arXiv:2610.29162; ACL 2026.acl-long.354: accuracy fell by 18.3 to 61.8% from one prompt to all 10 phrasings; arXiv:2602.23971: stated certainty raised agreement; arXiv:2406.10162: the model's reasoning justified flattery; arXiv:2611.18856: a harness tuned on one model scored below the untuned harness on another in 4 of 4 domains). Raises the 2 to 4 runs per arm of the earlier plan to 10. Status: missing at 088a227c.
-  Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P1 implication 1, P2 implication 3, P3 implication 1, P7, P8, P9, P10 implication 3.
+- [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
 
 - [ ] **REQ-VERIFICATION-095** claudetto shall make the agent check each logic claim (a condition, an edge case, a formula) by a run that could have failed, and report a claim with no such run as unverified ([ADR-0183](../adr/0183-logic-checked-by-execution.md)).
   Acceptance: a report that states a formula carries a computed example with its inputs; a staged logic fault is found by the run, not by review. Verification: demonstration.
@@ -135,10 +123,7 @@
 
 ## Incident Lab
 
-- [ ] **REQ-VERIFICATION-100** claudetto shall keep a local incident lab of trap repositories, each built from a cited incident in the user's sessions, and shall admit a component that targets a trap's failure only when it beats vanilla Claude Code on that trap (ADR-0187, ADR-0177).
-  Acceptance: each trap holds a fixed prompt, a measured outcome, and the transcript line of its incident; vanilla fails it in at least 1 of 5 runs; each arm runs 5 times on Sonnet 5.5 and Opus 5.5, headless and through `tmux`, from outside any agent sandbox; a component ships only when its arm's failure count is lower than vanilla's. Verification: test.
-  Basis: measured (vanilla and a hook prototype, 2.1.327, Sonnet 5.5 and Opus 5.5, 5 headless runs per trap, model and arm, 70 runs, $4.19, 2026-11-18): `trap-hang` and `trap-flaky` admitted; `trap-flag`, `trap-prompt` and `trap-lock` failed 0 of 10 on vanilla and are not admitted until a harder arm makes them fire. A second batch of 40 runs ($5.09) admitted `trap-hang2` (vanilla's hung test lived 126–142 s in 9 of 10 runs and 722 s in one) and the mutant measure of `trap-loop` (vanilla's suite hung in 10 of 10), and rejected `trap-loop`'s loop measure (0 of 10 vanilla failures). The `tmux` arm ran `trap-hang` 30 times ($4.13, runs-tmux/, driven by tmuxrun.py, which accepts the folder trust dialog with Down and then Enter, because "No, exit" is preselected). Vanilla lost 335 s on Sonnet and 346 s on Opus with no leak. The hook arm without a prompt rule lost 192 s and 194 s, again with no leak. The arm with the "bound every wait" rule leaked twice, once by `pkill` and once by a perl alarm orphan, so a prompt rule can add a failure that the hook arm does not have. Status: missing at 088a227c.
-  Source: reports/2026-11-18-research/incident-lab/README.md, score6.txt, runs6/, score7.txt, runs7/; ADR-0187.
+- [x] **REQ-VERIFICATION-100** Moved Out as OUT-2404: needs a paid model run or a benchmark.
 
 - [ ] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
   Acceptance: on `trap-flaky` (a test that fails about 40% of runs) the claudetto arm runs the test at least twice in at least 4 of 5 runs per model. Vanilla ran it once in 10 of 10 runs (5 Sonnet, 5 Opus). A prototype PostToolUse hook (`incident-lab/hangwatch/rerun.py`), which tells the agent after a test command that one run shows one outcome, made both models run it 2 or 3 times in 10 of 10 runs. Verification: test.
