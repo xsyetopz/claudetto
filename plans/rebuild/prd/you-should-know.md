@@ -40,7 +40,7 @@
   Do not repeat it; rewrite it.
   [end]
   ${explainFormat(EXPLANATION_LENGTHS[prev?.direction ?? "first"])}
-  Write the title and the explanation in the language the session’s Language instruction names; if there is none, in the language the user has been writing in.
+  Write the title and the explanation in the language the sessionâs Language instruction names; if there is none, in the language the user has been writing in.
   Output only the explanation.
   ~~~~
 
@@ -55,7 +55,7 @@
   Source: chunk-nvx1z6pc.js@37955 (claude 2.1.327 binary).
   Verified: byte comparison of the plugin's ASKED_WAYS map against the text extracted from the 2.1.327 binary (bun probe), claude 2.1.327, 2026-11-18, bun /tmp/claude-501/probe/cmp2.ts: equal.
 
-- [x] **REQ-YOU-SHOULD-KNOW-004** claudetto shall give each explanation prompt this format text, verbatim, with `${lengthLine}` set to the line for the direction. The source concatenates `'\nShape:\n1. A title line: ...'` after the length line; `→` is `\u2192`, `\xD7` is `×`, `…` is `\u2026`.
+- [x] **REQ-YOU-SHOULD-KNOW-004** claudetto shall give each explanation prompt this format text, verbatim, with `${lengthLine}` set to the line for the direction. The source concatenates `'\nShape:\n1. A title line: ...'` after the length line; `â` is `\u2192`, `\xD7` is `Ã`, `â¦` is `\u2026`.
   Superseded: 2026-11-19 user ruling (ADR-0190 Prompt text): the port keeps the builtin's behaviour and interface; this text is now claudetto's own, so byte equality is no longer the acceptance. Behaviour pinned by hooks/prompt.test.ts, claude 2.1.327, 2026-11-19, claude plugin test plugins/claudetto-you-should-know: pass. Size explainFormat (first) 1414 -> 1810 bytes.
 
   ~~~~text
@@ -63,7 +63,7 @@
   Shape:
   1. A title line: `**` two to six plain words that state the point `**`.
   2. First sentence: what the thing IS, in everyday words, with a tiny example of what it does or produces (e.g. "a health check is a step that asks each server one question on a timer and saves the answer, like "are you still up? yes/no""). Never open with a name they have not used; never assume they know what it is.
-  3. Then the before/after or the two options as two short lines, using their own numbers and names ("list it once at the top → asked 1× … inside each job → asked 3×"). If, and only if, a small ASCII sketch shows this better than two lines of text, put one in a ``` fenced block, at most 60 characters wide and 6 lines tall; otherwise no sketch.
+  3. Then the before/after or the two options as two short lines, using their own numbers and names ("list it once at the top â asked 1Ã â¦ inside each job â asked 3Ã"). If, and only if, a small ASCII sketch shows this better than two lines of text, put one in a ``` fenced block, at most 60 characters wide and 6 lines tall; otherwise no sketch.
   4. Then the concrete consequence in their terms (a count, a cost, a wrong number they would have reported) and, last, the choice they are making, in one sentence.
   No analogy unless it is genuinely clearer than the example, and never both. Any code name appears only after its everyday description, in backticks. Never coin a term or nickname. No headings other than the title, no bullets, no "in summary". Short words, short sentences.
   ~~~~
@@ -97,14 +97,14 @@
   Source: chunk-nvx1z6pc.js@76017 (claude 2.1.327 binary).
   Verified: byte comparison of the plugin's autoSentNote against the text extracted from the 2.1.327 binary (bun probe), claude 2.1.327, 2026-11-18, bun /tmp/claude-501/probe/cmp2.ts: equal.
 
-- [x] **REQ-YOU-SHOULD-KNOW-007** claudetto shall build the draft for "Chat in main session" as `cleanForDraft("Here is a note offered by a side agent:\n\n" + quoted)`, where `quoted = [`${tag} · ${line cut to 240}`, ...cards.map(cardText)].join("\n\n").split("\n").map(l => l==="" ? ">" : "> "+l).join("\n")` and `cardText(card) = [title ? "**"+title+"**" : "", lead, sketch.length ? "```\n"+sketch.join("\n")+"\n```" : "", caption].filter(nonEmpty).join("\n")`.
+- [x] **REQ-YOU-SHOULD-KNOW-007** claudetto shall build the draft for "Chat in main session" as `cleanForDraft("Here is a note offered by a side agent:\n\n" + quoted)`, where `quoted = [`${tag} Â· ${line cut to 240}`, ...cards.map(cardText)].join("\n\n").split("\n").map(l => l==="" ? ">" : "> "+l).join("\n")` and `cardText(card) = [title ? "**"+title+"**" : "", lead, sketch.length ? "```\n"+sketch.join("\n")+"\n```" : "", caption].filter(nonEmpty).join("\n")`.
   Acceptance: the draft opens with the lead line, quotes each line with `>` (empty lines with `>`), and holds the title, lead, sketch fence and caption of each card. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/texts.ts:61@088a227c; chunk-nvx1z6pc.js@76193 (claude 2.1.327 binary); chunk-nvx1z6pc.js@37008 (claude 2.1.327 binary).
   Verified: byte comparison of the plugin's respondDraft against the text extracted from the 2.1.327 binary (bun probe), claude 2.1.327, 2026-11-18, bun /tmp/claude-501/probe/cmp2.ts: equal.
   Superseded: 2026-11-19 user ruling (ADR-0190 Prompt text): the port keeps the builtin's behaviour and interface; this text is now claudetto's own, so byte equality is no longer the acceptance. Behaviour pinned by hooks/prompt.test.ts, claude 2.1.327, 2026-11-19, claude plugin test plugins/claudetto-you-should-know: pass. Size respondDraft header 47 -> 230 bytes.
 
-- [x] **REQ-YOU-SHOULD-KNOW-008** claudetto shall run `cleanForDraft` on every draft: replace lone surrogates with U+FFFD; strip default-ignorable code points (keep U+FE0E and U+FE0F only when attached to a pictographic or keycap); turn `@` after start, whitespace or `。、？！` and not before whitespace into fullwidth `＠`; give `[Pasted text #N`, `[Image #N`, `[...Truncated text #N` and `[✦ Team setup guide #N` (optional `+N lines`, trailing dots, then `]`) a leading fullwidth `［`; rewrite `(ultra)(code|plan|review|think)` (case-insensitive) to `$1-$2`. Purpose: stop the draft from triggering prompt-box mentions, placeholders or ultra keywords. The repo `INVISIBLE` regex differs from the builtin's; its `AT_MENTION` has the same idea.
+- [x] **REQ-YOU-SHOULD-KNOW-008** claudetto shall run `cleanForDraft` on every draft: replace lone surrogates with U+FFFD; strip default-ignorable code points (keep U+FE0E and U+FE0F only when attached to a pictographic or keycap); turn `@` after start, whitespace or `ããï¼ï¼` and not before whitespace into fullwidth `ï¼ `; give `[Pasted text #N`, `[Image #N`, `[...Truncated text #N` and `[â¦ Team setup guide #N` (optional `+N lines`, trailing dots, then `]`) a leading fullwidth `ï¼»`; rewrite `(ultra)(code|plan|review|think)` (case-insensitive) to `$1-$2`. Purpose: stop the draft from triggering prompt-box mentions, placeholders or ultra keywords. The repo `INVISIBLE` regex differs from the builtin's; its `AT_MENTION` has the same idea.
   Acceptance: a draft with each trigger shows it defused; a plain draft passes unchanged. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/note.ts:178-189@088a227c; chunk-nvx1z6pc.js@37176-37925 (claude 2.1.327 binary).
@@ -119,18 +119,18 @@
 
 ## Toasts, Row Text, and Copy
 
-- [x] **REQ-YOU-SHOULD-KNOW-010** claudetto shall use these toast texts, verbatim, one per refusal: `OFF_BOX_BUSY` (turn off with text in the box), `RESPOND_BLOCKED` (dialog open), `RESPOND_BOX_BUSY` (text in the box), `RESPOND_NOT_FILLED` (the box did not take the note). The apostrophe in `Couldn’t` is the curly one (U+2019).
+- [x] **REQ-YOU-SHOULD-KNOW-010** claudetto shall use these toast texts, verbatim, one per refusal: `OFF_BOX_BUSY` (turn off with text in the box), `RESPOND_BLOCKED` (dialog open), `RESPOND_BOX_BUSY` (text in the box), `RESPOND_NOT_FILLED` (the box did not take the note). The apostrophe in `Couldnât` is the curly one (U+2019).
   - `OFF_BOX_BUSY`: `Your prompt box has text in it. Send or clear it, then press again to turn suggestions off.`
   - `RESPOND_BLOCKED`: `A dialog is open. Answer or close it, then try again.`
   - `RESPOND_BOX_BUSY`: `Your prompt box has text in it. Send or clear it, then try again.`
-  - `RESPOND_NOT_FILLED`: `Couldn’t add the note. If the box has text, send or clear it, then try again.`
+  - `RESPOND_NOT_FILLED`: `Couldnât add the note. If the box has text, send or clear it, then try again.`
   Acceptance: each refusal shows its own text byte for byte; no text says "press 2 again". Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/texts.ts:65-72@088a227c; chunk-nvx1z6pc.js@76495-76734 (claude 2.1.327 binary).
   Verified: byte comparison of the plugin's toast texts against the text extracted from the 2.1.327 binary (bun probe), claude 2.1.327, 2026-11-18, bun /tmp/claude-501/probe/cmp2.ts: equal.
 
-- [x] **REQ-YOU-SHOULD-KNOW-011** claudetto shall lead each row with `${tag} ·` where `tag` is `You should know` or `Heads up`, and a star glyph `✦`.
-  - Tag lead: `${tag} ·` with `tag` = `You should know` or `Heads up`; star glyph `✦`.
+- [x] **REQ-YOU-SHOULD-KNOW-011** claudetto shall lead each row with `${tag} Â·` where `tag` is `You should know` or `Heads up`, and a star glyph `â¦`.
+  - Tag lead: `${tag} Â·` with `tag` = `You should know` or `Heads up`; star glyph `â¦`.
   Acceptance: a row for each tag shows the star, the tag and a middle dot. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:63@088a227c; chunk-nvx1z6pc.js@17707 (claude 2.1.327 binary); chunk-nvx1z6pc.js@25418 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27451 (claude 2.1.327 binary).
@@ -161,13 +161,13 @@
   Source: plugins/claudetto-you-should-know/hooks/view.ts:132-137@088a227c; chunk-nvx1z6pc.js@27593 (claude 2.1.327 binary).
   Verified: desktop, vscode and mobile draw click-only buttons without Disable or star column (hooks/surfaces.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
-- [x] **REQ-YOU-SHOULD-KNOW-015** claudetto shall draw the lead as `Text ["✦", " ${tag} · "]` with a star column of width `STAR_CELLS=2` (`Box width 2, flexShrink 0`). Inks: terminal, mobile, vscode: star `color:"suggestion"`, tag `dimColor`; desktop: star and tag `color:"subtle"`. The repo draws `*` for the star; the cards draw as `Code` and prose, not plain `Text`; hotkeys show on terminal only.
-  Acceptance: each surface draws the lead with its inks; the star is `✦`. Verification: test.
+- [x] **REQ-YOU-SHOULD-KNOW-015** claudetto shall draw the lead as `Text ["â¦", " ${tag} Â· "]` with a star column of width `STAR_CELLS=2` (`Box width 2, flexShrink 0`). Inks: terminal, mobile, vscode: star `color:"suggestion"`, tag `dimColor`; desktop: star and tag `color:"subtle"`. The repo draws `*` for the star; the cards draw as `Code` and prose, not plain `Text`; hotkeys show on terminal only.
+  Acceptance: each surface draws the lead with its inks; the star is `â¦`. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:108-118@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:110@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-nvx1z6pc.js@17698 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27451-27503 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27885 (claude 2.1.327 binary).
   Verified: star lead Text, width-2 flexShrink-0 column, dim tag (hooks/surfaces.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
-- [x] **REQ-YOU-SHOULD-KNOW-016** claudetto shall draw the offer row as `Box column marginTop 1` (`OFFER_MARGIN_ROWS=1`) holding the line `✦ ${tag} · ${line}`. On terminal the star sits in its own 2-cell column with the text beside it and wrapping reserves `WRAP_RESERVE_CELLS=1`. On desktop it is a row with the star and lead in a `flexShrink 0` left cell that carries a hover card, then the body text.
+- [x] **REQ-YOU-SHOULD-KNOW-016** claudetto shall draw the offer row as `Box column marginTop 1` (`OFFER_MARGIN_ROWS=1`) holding the line `â¦ ${tag} Â· ${line}`. On terminal the star sits in its own 2-cell column with the text beside it and wrapping reserves `WRAP_RESERVE_CELLS=1`. On desktop it is a row with the star and lead in a `flexShrink 0` left cell that carries a hover card, then the body text.
   Acceptance: the terminal row shows a star column and a wrapped body; the desktop row shows a left cell and a body. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:108-128@088a227c; chunk-nvx1z6pc.js@32847 (claude 2.1.327 binary); chunk-nvx1z6pc.js@17689 (claude 2.1.327 binary); chunk-nvx1z6pc.js@17310 (claude 2.1.327 binary).
@@ -185,8 +185,8 @@
   Source: plugins/claudetto-you-should-know/hooks/view.ts:56-67@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:125-140@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:63-66@088a227c; chunk-nvx1z6pc.js@16161 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29097 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32745 (claude 2.1.327 binary); chunk-nvx1z6pc.js@18405 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88478 (claude 2.1.327 binary).
   Verified: choices row buttons, keys, hotkeys and plain flags per surface (hooks/surfaces.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
-- [x] **REQ-YOU-SHOULD-KNOW-019** claudetto shall draw the explained row as `Box column marginTop 1`: the head `✦ ${tag} · ${line}` with `marginBottom 1`; then per card from `fitCards(cards, bodyColumns)` a `Box column marginBottom 1 marginLeft 2` (`CARD_INSET=2`) holding the title (bold, markdown-escaped) and lead as one markdown prose block, a `Code` with `source` = sketch lines joined by `\n` (an empty line becomes a single space), `language:"text"`, `wrap truncate-end` when the card has a sketch, and the caption as markdown prose. `fitCards` truncates title and sketch lines to `columns-2` display cells with `…` (`FALLBACK_COLUMNS=80` when unknown). Then the choices `1 Understood`, `2 Chat in main session`, `0 Dismiss` (omitted when the survey slot is up).
-  Acceptance: a card with a sketch draws a `Code` block; a line wider than `columns-2` ends in `…`; with the survey up the card shows without buttons. Verification: test.
+- [x] **REQ-YOU-SHOULD-KNOW-019** claudetto shall draw the explained row as `Box column marginTop 1`: the head `â¦ ${tag} Â· ${line}` with `marginBottom 1`; then per card from `fitCards(cards, bodyColumns)` a `Box column marginBottom 1 marginLeft 2` (`CARD_INSET=2`) holding the title (bold, markdown-escaped) and lead as one markdown prose block, a `Code` with `source` = sketch lines joined by `\n` (an empty line becomes a single space), `language:"text"`, `wrap truncate-end` when the card has a sketch, and the caption as markdown prose. `fitCards` truncates title and sketch lines to `columns-2` display cells with `â¦` (`FALLBACK_COLUMNS=80` when unknown). Then the choices `1 Understood`, `2 Chat in main session`, `0 Dismiss` (omitted when the survey slot is up).
+  Acceptance: a card with a sketch draws a `Code` block; a line wider than `columns-2` ends in `â¦`; with the survey up the card shows without buttons. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:60-90@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; chunk-nvx1z6pc.js@30711 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32499 (claude 2.1.327 binary); chunk-nvx1z6pc.js@31926 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
   Verified: behaviour test through the test kit (card-draw.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
@@ -297,21 +297,21 @@
   Source: plugins/claudetto-you-should-know/hooks/note.ts:67-176@088a227c; chunk-nvx1z6pc.js@23618 (claude 2.1.327 binary); chunk-nvx1z6pc.js@23803 (claude 2.1.327 binary).
   Verified: behaviour test through the test kit (rules.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
 
-- [x] **REQ-YOU-SHOULD-KNOW-038** claudetto shall parse cards with word-boundary truncation ending in `…` (the repo `clipAtWord` cuts without ellipsis), flush on a new fence, and clean prose lines through `proseOf`, dropping empty lines.
-  Acceptance: a title over its limit ends in `…` at a word boundary; a new fence starts a new card. Verification: test.
+- [x] **REQ-YOU-SHOULD-KNOW-038** claudetto shall parse cards with word-boundary truncation ending in `â¦` (the repo `clipAtWord` cuts without ellipsis), flush on a new fence, and clean prose lines through `proseOf`, dropping empty lines.
+  Acceptance: a title over its limit ends in `â¦` at a word boundary; a new fence starts a new card. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/note.ts:99-106@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:137-167@088a227c; chunk-nvx1z6pc.js@23321 (claude 2.1.327 binary); chunk-nvx1z6pc.js@23900 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24057 (claude 2.1.327 binary); chunk-nvx1z6pc.js@24868 (claude 2.1.327 binary).
   Verified: behaviour test through the test kit (rules.test.ts and cards.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
 
 ## Note Views and Buttons
 
-- [x] **REQ-YOU-SHOULD-KNOW-039** claudetto shall on Learn more show the explanation that came with the offer, or run an explain fork when none came; it shall show the `explaining` view (`One moment…`) and the `failed` view with `OK`. The repo shows only the shipped explanation and hides the button when none.
+- [x] **REQ-YOU-SHOULD-KNOW-039** claudetto shall on Learn more show the explanation that came with the offer, or run an explain fork when none came; it shall show the `explaining` view (`One momentâ¦`) and the `failed` view with `OK`. The repo shows only the shipped explanation and hides the button when none.
   Acceptance: Learn more with no shipped explanation runs a fork and shows the result; the button is never hidden. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:64@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:66-69@088a227c; chunk-nvx1z6pc.js@85378-85978 (claude 2.1.327 binary); chunk-nvx1z6pc.js@22091 (claude 2.1.327 binary).
   Verified: Learn more shows the shipped explanation with one fork in total (hooks/flow.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
-- [x] **REQ-YOU-SHOULD-KNOW-040** claudetto shall treat presses so: `Knew this already` marks known and clears without a toast; `That was helpful` marks known; `Not relevant` and `Couldn’t understand` do not; `Understood` is handled (the repo matches except `Understood` handling).
+- [x] **REQ-YOU-SHOULD-KNOW-040** claudetto shall treat presses so: `Knew this already` marks known and clears without a toast; `That was helpful` marks known; `Not relevant` and `Couldnât understand` do not; `Understood` is handled (the repo matches except `Understood` handling).
   Acceptance: each press marks or leaves the known list as stated. Verification: test.
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/press.ts:73-76@088a227c; chunk-nvx1z6pc.js@87304-88778 (claude 2.1.327 binary).
@@ -329,15 +329,15 @@
   Source: plugins/claudetto-you-should-know/hooks/view.ts:48-49@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:48-50@088a227c; chunk-nvx1z6pc.js@30711 (claude 2.1.327 binary); chunk-nvx1z6pc.js@87304-88423 (claude 2.1.327 binary).
   Verified: behaviour test through the test kit (surfaces.test.ts and card-draw.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
 
-- [x] **REQ-YOU-SHOULD-KNOW-043** claudetto shall show the `asked` view for 20 s after `Dismiss` or `Not now`, with one-shot buttons that cancel the timer: without `iteration`, helpful (answer `helpful`, remember the line, clear), not relevant (`not_relevant`, clear), couldn't understand (`not_understood`, clear), `Turn off suggestions` (only when the surface has no own composer, i.e. the terminal; off flow with via `"row"`), and `Dismiss` (clear); with `iteration` (from an explained card), `explained_helpful` (and remember), `explained_not_understood`, and `Dismiss`. Both rows show the dim line `Dismissed.` and last `ASKED_MS=20000` ms. The explained-asked row (Dismiss on an explained card) has `1 That was helpful`, `2 Didn’t understand`, `0 Dismiss`; the asked row has `1 That was helpful`, `2 Not relevant`, `3 Couldn’t understand`, `4 Turn off suggestions` (only when the off handler is passed), `0 Dismiss`.
+- [x] **REQ-YOU-SHOULD-KNOW-043** claudetto shall show the `asked` view for 20 s after `Dismiss` or `Not now`, with one-shot buttons that cancel the timer: without `iteration`, helpful (answer `helpful`, remember the line, clear), not relevant (`not_relevant`, clear), couldn't understand (`not_understood`, clear), `Turn off suggestions` (only when the surface has no own composer, i.e. the terminal; off flow with via `"row"`), and `Dismiss` (clear); with `iteration` (from an explained card), `explained_helpful` (and remember), `explained_not_understood`, and `Dismiss`. Both rows show the dim line `Dismissed.` and last `ASKED_MS=20000` ms. The explained-asked row (Dismiss on an explained card) has `1 That was helpful`, `2 Didnât understand`, `0 Dismiss`; the asked row has `1 That was helpful`, `2 Not relevant`, `3 Couldnât understand`, `4 Turn off suggestions` (only when the off handler is passed), `0 Dismiss`.
   Acceptance: after 20 s with no press the view clears; each press answers once. Button 4 is absent without the off handler; Dismiss on an explained card shows the three-button row. Verification: test.
-  Basis: cited. Status: partial at 088a227c (`git grep -n -E "understand|Didn" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only the `Couldn’t understand` asked-row label at view.ts:43, so the explained-asked row is missing; the asked row exists).
+  Basis: cited. Status: partial at 088a227c (`git grep -n -E "understand|Didn" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only the `Couldnât understand` asked-row label at view.ts:43, so the explained-asked row is missing; the asked row exists).
   Source: plugins/claudetto-you-should-know/hooks/view.ts:38-43@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:41-44@088a227c; plugins/claudetto-you-should-know/hooks/texts.ts:74@088a227c; plugins/claudetto-you-should-know/hooks/view.ts:40-45@088a227c; plugins/claudetto-you-should-know/hooks/press.ts:50-58@088a227c; plugins/claudetto-you-should-know/hooks/note.ts:12@088a227c; chunk-nvx1z6pc.js@28209 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28630 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28941 (claude 2.1.327 binary); chunk-nvx1z6pc.js@27580 (claude 2.1.327 binary).
   Verified: behaviour test through the test kit (presses.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
 
-- [x] **REQ-YOU-SHOULD-KNOW-044** claudetto shall show `One moment…` for the `explaining` view, a `failedRow` with an `OK` button that clears the view for `failed{reason}`, and nothing for the `off` view. The learning-page views `making` and `ready{url}` are residue in the module; claudetto need not implement them. The failed row is the lead, the message and a dim `·`, with button `0 OK`; its messages are `publish` -> `Couldn’t publish that page`, `blocked` -> `Not published (blocked by a permission setting)`, `explain` -> `Couldn’t write that explanation`, `turn_off` -> `Couldn’t turn suggestions off here. Use /plugin.`, any other -> `Couldn’t write that page`. The `explaining`, `making`, `ready` and `failed` rows are `marginTop 1` with lead and text; the `off` view draws nothing; `One moment…` shows while an explanation is written.
-  Acceptance: each view draws as stated. Pressing Learn more with no shipped explanation shows `One moment…` until the explanation or the failure arrives; each failure kind shows its message and `0 OK`. Verification: demonstration.
-  Basis: cited. Status: partial at 088a227c (`git grep -n -E "One moment|Couldn|failed" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only `Couldn’t understand` at view.ts:43, so `One moment…` and the failed row are missing; the asked row exists at view.ts:84-88).
+- [x] **REQ-YOU-SHOULD-KNOW-044** claudetto shall show `One momentâ¦` for the `explaining` view, a `failedRow` with an `OK` button that clears the view for `failed{reason}`, and nothing for the `off` view. The learning-page views `making` and `ready{url}` are residue in the module; claudetto need not implement them. The failed row is the lead, the message and a dim `Â·`, with button `0 OK`; its messages are `publish` -> `Couldnât publish that page`, `blocked` -> `Not published (blocked by a permission setting)`, `explain` -> `Couldnât write that explanation`, `turn_off` -> `Couldnât turn suggestions off here. Use /plugin.`, any other -> `Couldnât write that page`. The `explaining`, `making`, `ready` and `failed` rows are `marginTop 1` with lead and text; the `off` view draws nothing; `One momentâ¦` shows while an explanation is written.
+  Acceptance: each view draws as stated. Pressing Learn more with no shipped explanation shows `One momentâ¦` until the explanation or the failure arrives; each failure kind shows its message and `0 OK`. Verification: demonstration.
+  Basis: cited. Status: partial at 088a227c (`git grep -n -E "One moment|Couldn|failed" 088a227c -- plugins/claudetto-you-should-know/hooks/view.ts hooks/texts.ts` finds only `Couldnât understand` at view.ts:43, so `One momentâ¦` and the failed row are missing; the asked row exists at view.ts:84-88).
   Source: plugins/claudetto-you-should-know/hooks/view.ts:84-88@088a227c; chunk-nvx1z6pc.js@31434-31471 (claude 2.1.327 binary); chunk-nvx1z6pc.js@28630-28941 (claude 2.1.327 binary); chunk-nvx1z6pc.js@32658 (claude 2.1.327 binary); chunk-nvx1z6pc.js@33353 (claude 2.1.327 binary).
   Verified: empty explanation shows the failed row with OK (hooks/surfaces.test.ts), claude 2.1.327, 2026-11-18, claude plugin test plugins/claudetto-you-should-know: pass.
 
@@ -368,7 +368,7 @@
   Source: chunk-nvx1z6pc.js@77457 (claude 2.1.327 binary).
   Verified: behaviour.test.ts mayBeDriven for each variable and the CLAUDECODE plus history skip pair, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto-you-should-know`: pass.
 
-- [x] **REQ-YOU-SHOULD-KNOW-052** claudetto shall, with `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` on, record each check on `turn.step` (`number`, `step`, `outcome`, `latencyMs`, `at`) and draw the last 3 (`CHECKS_KEPT=3`) above the note on `ui.render`, one row each, only when no survey is up. Each row is `✦` then, dim and `truncate-end`, `debug · check ${N} · step ${S} · ${outcome} · ${latency in s, 1 decimal}s · ${HH:MM:SS}`.
+- [x] **REQ-YOU-SHOULD-KNOW-052** claudetto shall, with `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` on, record each check on `turn.step` (`number`, `step`, `outcome`, `latencyMs`, `at`) and draw the last 3 (`CHECKS_KEPT=3`) above the note on `ui.render`, one row each, only when no survey is up. Each row is `â¦` then, dim and `truncate-end`, `debug Â· check ${N} Â· step ${S} Â· ${outcome} Â· ${latency in s, 1 decimal}s Â· ${HH:MM:SS}`.
   Acceptance: with DEBUG on and 5 checks kept, 3 rows show above the node; with DEBUG off, or with a survey up, none show. Verification: test.
   Basis: cited. Status: missing at 088a227c.
   Source: chunk-nvx1z6pc.js@22722 (claude 2.1.327 binary); chunk-nvx1z6pc.js@29190 (claude 2.1.327 binary); chunk-nvx1z6pc.js@88967 (claude 2.1.327 binary); chunk-nvx1z6pc.js@22914 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
@@ -482,3 +482,4 @@
   Acceptance: the plugin reproduces the builtin's triggers, algorithm, texts, and view. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (plugins/claudetto-you-should-know/ exists with register.ts; plugins/claudetto/hooks/features/setup/settings.ts:65-70 lists `cc-plugin-you-should-know@builtin` in `BUILTIN_PLUGINS_OFF`); whether it recreates every behaviour of the builtin is not compared
   Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
+  Compared 2026-11-19 (builtin chunk-nvx1z6pc.js, 2.1.327, read 6900-90500): hooks, check cadence, backoff, all 26 constants, store keys, session rows, parsers, presses, auto-send note, debug rows, view labels, about copy and failure texts match at HEAD. Open: the working tree holds uncommitted user edits that turn the curly apostrophes of "Didn’t read" (rows.ts:388) and "Couldn’t add the note" (draft.ts:15) straight; the box waits on those edits. Not ported (agent decision): telemetry, which is not user-visible, and the spinner tip, which no mod call can show (no tip surface in types/claude-code/index.d.ts).
