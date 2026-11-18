@@ -27,3 +27,7 @@ A manual `/compact` keeps Claude Code's summary and asks it to keep the user's c
 ### Headless Runs
 
 Under `claude -p` a plugin cannot start a compaction, so the task-end renewal does not run. Automatic compaction still runs there and still gets the handover. To renew near 70,000 tokens, the script that starts `claude -p` sets `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` on a 200,000-token window: Claude Code then compacts at the lower of that percent and the window minus 13,000 tokens. The renewal then happens mid-task at the threshold, not at a task end. Alternatively, the script sends `/clear` as a prompt between tasks, and claudetto writes the handover first.
+
+## Shell Commands
+
+claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin reader ends at once instead of waiting for the 120-second timeout. Each command also runs under a wall-time limit, set by the `bashTimeLimitMinutes` option (30 by default, 0 turns it off). When the limit is reached, claudetto stops the command and its child processes, also when the command runs in the background, and tells the model why.

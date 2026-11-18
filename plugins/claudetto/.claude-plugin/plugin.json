@@ -33,6 +33,13 @@
 			"description": "Below this share of free memory, a new command or subagent is refused until runs end. 0 turns it off.",
 			"default": 20,
 			"min": 0
+		},
+		"bashTimeLimitMinutes": {
+			"type": "number",
+			"title": "Time limit for a shell command",
+			"description": "A shell command still running after this many minutes is stopped with its child processes, also when it runs in the background. 0 turns it off.",
+			"default": 30,
+			"min": 0
 		}
 	}
 }

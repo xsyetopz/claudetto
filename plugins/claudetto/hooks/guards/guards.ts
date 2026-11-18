@@ -1,5 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
+import { registerLimit } from "./limit";
 import { registerMemory } from "./memory";
 import { registerStdin } from "./stdin";
 
@@ -7,4 +8,5 @@ import { registerStdin } from "./stdin";
 export const registerGuards = (on: On, options: PluginOptions = {}): void => {
 	registerMemory(on, options);
 	registerStdin(on);
+	registerLimit(on, options);
 };
