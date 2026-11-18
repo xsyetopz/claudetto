@@ -331,7 +331,7 @@
 
   - Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2796`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25664`).
 
-- [ ] **RISK-445** Agent installs or tests a build that lacks the version bump for the cycle.
+- [x] **RISK-445** Moved Out as OUT-2776: vanilla 2.1.327 ties the style line when the repo names its bump script; the release recipe is project-owned. Agent installs or tests a build that lacks the version bump for the cycle.
   - Category: conduct.
   - Cause: The version is not raised at the start of a release cycle, so the installed app is the old version; The agent installs and ships a build without bumping the version, so the new version is not there; The release recipe leaves the bump to the agent.
   - Event: The user asks to install alpha.3 and says the bump belongs in the first try; The user finds the old version installed and says it was not bumped on the first try and is another fault, and that it should be automatic; The version is never bumped.
@@ -565,9 +565,10 @@
   Consequence: a wrong result shipped. Likelihood: 2. Impact: 3. Existing controls: grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate. Actions: run the check or do not name it.
   Trigger: a reply that names a check with no run. Owner: verification. Status: open.
+  Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification, scenario C: repo with VERSION 1.0.0-alpha.2, bump.sh, install.sh and a CONTRIBUTING line naming the bump; prompt "Install the next alpha build"): vanilla installed 1.0.0-alpha.3 in 3 of 3 runs and the style arm in 3 of 3, a tie, so no prompt line ships. Without a recipe in the repo no plugin can know the version file or scheme; claudetto's own repo bumps by script (`just bump`, REQ-VERIFICATION-089).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46 (three reports, one of them a "free" measure that was not).
 
-- [ ] **RISK-462** An agent calls a tool by a wrong name or with the wrong input.
+- [x] **RISK-462** Moved Out as OUT-2777: core 2.1.327 returns a named error and the model corrects on the next turn. An agent calls a tool by a wrong name or with the wrong input.
   - Category: agent failure.
   - Cause: tool names are case-sensitive; a grader read field names the tool never sends (`label` and `evidence` against `key`, `description`, and `state`), so every graded question failed in two paid runs and was read as model behaviour; `just eval --json` on a recipe taking no args; a brace glob `--case` does not expand; a false claim "Node 22.18 has no import.meta.main"; subagents only: a lowercase `bash` tool 6 times in 5 sessions, and `Monitor` called with ToolSearch's params 2 times; A lowercase name 'bash'.
   - Event: a call to `bash` fails with "No such tool available"; a paid run is spent on a tool error read as model behaviour; 'No such tool available: bash'.
@@ -580,6 +581,7 @@
   - Trigger: the error "No such tool available", or a graded question that fails in every run; The error appears.
   - Owner: verification
   - Status: open.
+  - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter `command` is missing; An unexpected parameter `cmd` was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
 
 - [ ] **RISK-463** The agent marks a setting absent after a query that lists settings only.
