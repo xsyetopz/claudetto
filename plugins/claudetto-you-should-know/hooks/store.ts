@@ -4,7 +4,7 @@ import type { EngineInterface } from "claude-code";
 
 import { SEEN_MAX } from "./constants";
 import { withKnown } from "./parse";
-import { fault, swallow } from "./fault";
+import { fault } from "./fault";
 
 export const stringLines = (value: unknown): string[] =>
 	Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];

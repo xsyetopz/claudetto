@@ -125,13 +125,13 @@ export function rowFor(args: RowArgs): unknown {
 					props.hasSurvey
 						? null
 						: {
-								gotIt: mk("got_it", () => actions.know(line)),
-								respond: once(() => {
-									ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
-									return actions.respond(line, cards, tag);
-								}),
-								dismiss: mk("dismiss", () => actions.ask({ line, ...(iteration === undefined ? {} : { iteration }) })),
-							},
+							gotIt: mk("got_it", () => actions.know(line)),
+							respond: once(() => {
+								ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
+								return actions.respond(line, cards, tag);
+							}),
+							dismiss: mk("dismiss", () => actions.ask({ line, ...(iteration === undefined ? {} : { iteration }) })),
+						},
 					tag,
 				);
 			}
@@ -150,9 +150,9 @@ export function rowFor(args: RowArgs): unknown {
 					off: noOff
 						? undefined
 						: once(() => {
-								ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
-								return actions.armOff(view);
-							}),
+							ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
+							return actions.armOff(view);
+						}),
 					later: mk("not_now", () => actions.ask({ line })),
 				},
 				view.isOffArmed === true,

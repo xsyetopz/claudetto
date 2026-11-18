@@ -4,7 +4,7 @@ import type { EngineInterface } from "claude-code";
 
 import { EARLIER_NAMES, OFF_COMMAND, PLUGIN_NAME } from "./constants";
 import { rowOf, withRow } from "./session-rows";
-import { fault, swallow } from "./fault";
+import { fault } from "./fault";
 
 export type OffState = {
 	readonly clearing: Map<string, Promise<void>>;

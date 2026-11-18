@@ -6,9 +6,9 @@ export type Direction = "first" | "simpler_words" | "less_detail" | "more_detail
 export type Redo = Exclude<Direction, "first">;
 
 export const ASKED_WAYS = {
-  simpler_words: "in simpler words",
-  less_detail: "with less detail",
-  more_detail: "in more detail",
+	simpler_words: "in simpler words",
+	less_detail: "with less detail",
+	more_detail: "in more detail",
 };
 
 /** The explanation's shape: the parser reads a bold title, a lead, an optional fenced sketch, then a caption. */
@@ -36,13 +36,13 @@ Each extra run costs about 40 seconds, so you would wait 80 seconds more per bui
 </example>`;
 export const FIRST_EXPLANATION_LENGTH = "Use at most 100 words, fewer when the thing needs no introduction.";
 export const EXPLANATION_LENGTHS: Readonly<Record<Direction, string>> = {
-  first: FIRST_EXPLANATION_LENGTH,
-  simpler_words:
-    "Say the same content more plainly: shorter sentences, everyday words, and no symbols, arrows, or technical terms. Use at most 100 words.",
-  less_detail:
-    "Keep only the single most important point: what the thing is in one clause, then the one consequence and the choice. Leave out technical terms and the sketch. Use at most 45 words.",
-  more_detail:
-    "Name the real parts now: the actual config keys, file, or function involved, each introduced in everyday words and then named in backticks, plus one edge case that would surprise them. Keep writing for a reader with no context and keep to terms from the conversation. Use at most 160 words; a sketch of the real structure helps here.",
+	first: FIRST_EXPLANATION_LENGTH,
+	simpler_words:
+		"Say the same content more plainly: shorter sentences, everyday words, and no symbols, arrows, or technical terms. Use at most 100 words.",
+	less_detail:
+		"Keep only the single most important point: what the thing is in one clause, then the one consequence and the choice. Leave out technical terms and the sketch. Use at most 45 words.",
+	more_detail:
+		"Name the real parts now: the actual config keys, file, or function involved, each introduced in everyday words and then named in backticks, plus one edge case that would surprise them. Keep writing for a reader with no context and keep to terms from the conversation. Use at most 160 words; a sketch of the real structure helps here.",
 };
 export const SIDE_REQUEST_FRAME = `<side_request>
 The person using Claude Code asked for this through the "You should know" feature. You are a separate, lightweight copy of the assistant that answers this one request while the main agent keeps working undisturbed, so write as a fresh helper and not as an agent that was interrupted.

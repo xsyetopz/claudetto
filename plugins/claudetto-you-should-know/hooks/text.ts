@@ -8,10 +8,10 @@ export const CHOICE_GAP = 3;
 export const ansiSequence = (): RegExp =>
 	new RegExp(
 		String.raw`[\u001B\u009B][[\]()#;?]*` +
-			String.raw`(?:(?:(?:(?:;[-a-zA-Z\d/#&.:=?%@~_]+)*` +
-			String.raw`|[a-zA-Z\d]+(?:;[-a-zA-Z\d/#&.:=?%@~_]*)*)?` +
-			String.raw`(?:\u0007|\u001B\u005C|\u009C))` +
-			String.raw`|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))`,
+		String.raw`(?:(?:(?:(?:;[-a-zA-Z\d/#&.:=?%@~_]+)*` +
+		String.raw`|[a-zA-Z\d]+(?:;[-a-zA-Z\d/#&.:=?%@~_]*)*)?` +
+		String.raw`(?:\u0007|\u001B\u005C|\u009C))` +
+		String.raw`|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))`,
 		"g",
 	);
 

@@ -33,8 +33,8 @@ const VIEW_KINDS: readonly string[] = ["offer", "explaining", "explained", "aske
 
 export const viewOf = (value: unknown): View | null =>
 	typeof value === "object" &&
-	value !== null &&
-	VIEW_KINDS.includes((value as { kind?: unknown }).kind as string)
+		value !== null &&
+		VIEW_KINDS.includes((value as { kind?: unknown }).kind as string)
 		? (value as View)
 		: null;
 

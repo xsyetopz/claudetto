@@ -10,7 +10,7 @@ import { clearOffLine, isOffCommand, ranOffCommand } from "./off";
 import { tagOf } from "./parse";
 import { isNoteRead, isOpenView, rowOf, type Watched, withViewCleared } from "./session-rows";
 import { markKnown } from "./store";
-import { fault, swallow } from "./fault";
+import { fault } from "./fault";
 
 export function registerSubmit(on: On, ctx: Ctx): void {
 	// Fail open: a throwing hook must not block the prompt or the command; pass the event on unchanged.

@@ -10,7 +10,7 @@ import { lineKey, parseProposedLine } from "./parse";
 import { proposePrompt } from "./prompt";
 import { isOfferDue, type Row, rowOf, withRow } from "./session-rows";
 import { stringLines } from "./store";
-import { fault, swallow } from "./fault";
+import { fault } from "./fault";
 
 export type CheckAt = { readonly id: string; readonly turnId: string; readonly index: number };
 

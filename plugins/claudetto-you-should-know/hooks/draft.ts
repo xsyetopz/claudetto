@@ -12,7 +12,7 @@ export const RESPOND_BLOCKED = "A dialog is open. Answer or close it, then try a
 export const RESPOND_BOX_BUSY =
 	"Your prompt box has text in it. Send or clear it, then try again.";
 export const RESPOND_NOT_FILLED =
-	"Couldn’t add the note. If the box has text, send or clear it, then try again.";
+	"Couldn't add the note. If the box has text, send or clear it, then try again.";
 
 export function cardText(card: Card): string {
 	const sketch = card.sketch.length > 0 ? ["```", ...card.sketch, "```"].join("\n") : "";

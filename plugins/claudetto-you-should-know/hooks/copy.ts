@@ -65,7 +65,7 @@ export const ABOUT_THIS = plainText(TERMINAL_COPY);
 export const ABOUT_CLOSED: About = {
 	isOpen: false,
 	surface: "terminal",
-	onPress: () => {},
+	onPress: () => { },
 	copy: TERMINAL_COPY,
 	budget: "scrolls",
 };
@@ -169,10 +169,10 @@ export function aboutFit(
 	const copy = scrolls
 		? about.copy
 		: fittedCopy({
-				...budget,
-				copy: about.copy,
-				labels: [...row.before, open, ...row.after].map((c) => c.label),
-			});
+			...budget,
+			copy: about.copy,
+			labels: [...row.before, open, ...row.after].map((c) => c.label),
+		});
 	const closedRow = aboutChoice({ ...about, isOpen: false });
 	const closedFits =
 		scrolls ||

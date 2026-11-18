@@ -225,10 +225,10 @@ export function explainedRow(
 				prose(table, card.lead, card.title),
 				card.sketch.length > 0
 					? el(Code, {
-							source: card.sketch.map((s) => (s === "" ? " " : s)).join("\n"),
-							language: "text",
-							wrap: "truncate-end",
-						})
+						source: card.sketch.map((s) => (s === "" ? " " : s)).join("\n"),
+						language: "text",
+						wrap: "truncate-end",
+					})
 					: "",
 				prose(table, card.caption, ""),
 			),
@@ -236,10 +236,10 @@ export function explainedRow(
 		on === null
 			? ""
 			: choicesRow(table, [
-					{ hotkey: "1", label: "Understood", onPress: on.gotIt },
-					{ hotkey: "2", label: "Chat in main session", onPress: on.respond },
-					{ hotkey: "0", label: "Dismiss", onPress: on.dismiss, role: "dismiss" },
-				]),
+				{ hotkey: "1", label: "Understood", onPress: on.gotIt },
+				{ hotkey: "2", label: "Chat in main session", onPress: on.respond },
+				{ hotkey: "0", label: "Dismiss", onPress: on.dismiss, role: "dismiss" },
+			]),
 	);
 }
 
@@ -291,13 +291,13 @@ export const wayOutChoices = (
 	off === undefined
 		? []
 		: [
-				{
-					hotkey: "4",
-					label: isArmed ? "Press again to disable" : OFFER_LABELS.off,
-					onPress: off,
-					isDim: true,
-				},
-			];
+			{
+				hotkey: "4",
+				label: isArmed ? "Press again to disable" : OFFER_LABELS.off,
+				onPress: off,
+				isDim: true,
+			},
+		];
 
 export type OfferHandlers = {
 	readonly explain?: (() => void) | undefined;
@@ -356,11 +356,11 @@ export function offerRow(
 		isTerminal
 			? starred(table, shown.tag, shown.body)
 			: offerHead(table, {
-					lead: lead(table, shown.tag),
-					body: shown.body,
-					surface: about.surface,
-					copy: about.copy,
-				}),
+				lead: lead(table, shown.tag),
+				body: shown.body,
+				surface: about.surface,
+				copy: about.copy,
+			}),
 		choicesRow(table, [...before, ...fit.choices, ...after]),
 	);
 }
@@ -385,7 +385,7 @@ export function readyRow(table: Table, text: string, on: ReadyHandlers): Node {
 		choicesRow(table, [
 			{ hotkey: "1", label: "Helpful", onPress: on.helpful },
 			{ hotkey: "2", label: "Not helpful", onPress: on.notHelpful },
-			{ hotkey: "3", label: "Didn’t read", onPress: on.unread },
+			{ hotkey: "3", label: "Didn't read", onPress: on.unread },
 		]),
 	);
 }

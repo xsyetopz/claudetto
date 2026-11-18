@@ -9,11 +9,11 @@ export type Proposed =
 	| { readonly kind: "none" }
 	| { readonly kind: "unparsable" }
 	| {
-			readonly kind: "line";
-			readonly line: string;
-			readonly tag: Tag;
-			readonly explanation: string | undefined;
-	  };
+		readonly kind: "line";
+		readonly line: string;
+		readonly tag: Tag;
+		readonly explanation: string | undefined;
+	};
 
 export const LEARN_LABEL = /^learn\s*:\s*/i;
 export const EXPLAIN_LABEL = /^explain:\s*/i;
