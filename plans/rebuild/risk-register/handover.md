@@ -33,7 +33,7 @@
 
 
 
-- [ ] **RISK-123** A stale or abrupt handoff misleads or interrupts ongoing work.
+- [x] **RISK-123** A stale or abrupt handoff misleads or interrupts ongoing work.
   - Category: product.
   - Cause: the handoff file is out of date and badly built; the next agent takes it as the work order.
   - Event: a resumed agent reads a handoff saying V3 is not committed when it is, and a handoff interrupts running work (seen in OpenJoystickDriver sessions).
@@ -45,11 +45,11 @@
   - Actions: [REQ-HANDOVER-063](../prd/handover.md) (handover is current and never interrupts work).
   - Trigger: a handoff older than the working tree state.
   - Owner: handover
-  - Status: open.
+  - Status: closed; renewal runs only at a task boundary, never mid-task, and every handover ends with git state read at that moment (test: plugins/claudetto/hooks/handover/renewal.test.ts "an open task is no boundary"; plugins/claudetto/hooks/handover/compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; claudetto plugin test 59 pass, 2026-11-19).
   - Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192).
 
 
-- [ ] **RISK-125** A handover written mid-step reports finished work as not done.
+- [x] **RISK-125** A handover written mid-step reports finished work as not done.
   Category: handover.
   Cause: the handover summary is written from the agent state before the agent's last tool calls finished. The summary of the context reset says an append and commit are still to do, but the agent had already run them.
   Event: the next context follows the stale Next step and repeats the append or commit. In the probe the agent had to check the git log first and found the work done in four handovers in a row (axis1 to axis4).
@@ -60,7 +60,7 @@
   Actions: claudetto shall write the handover after the last tool result of the turn, and its Next section shall tell the next context to confirm each step against the repo state (git log, git status) before it repeats the step.
   Trigger: a handover whose Next step names a command that the agent's last tool calls already ran.
   Owner: handover.
-  Status: open.
+  Status: closed; the renewal fires after the turn ends at a task boundary or commit, so the fork sees every finished call, and the git tail records the commit (test: plugins/claudetto/hooks/handover/renewal.test.ts "a git commit is a boundary"; 59 pass, 2026-11-19).
   Source: observed in transcript, 2026-11-15, ~/.claude/projects/-private-tmp-claude-501-ojd-compact-BZJK/7fa6685a-9c72-4275-8c9c-39e7865bd61e.jsonl:51, :103, :152, :201.
 
 - [ ] **RISK-126** A handover carries a cut-off file read and loses the last line.
@@ -91,7 +91,7 @@
 
 ## Context Loss and Handover
 
-- [ ] **RISK-131** Context decay and rot: long context drops earlier instructions and facts, and a session resumes from a wrong or empty picture.
+- [x] **RISK-131** Context decay and rot: long context drops earlier instructions and facts, and a session resumes from a wrong or empty picture.
   - Category: context.
   - Cause: long-context drift; compaction omits valuable context and amplifies hyperfocus; context fades or stays wrong.
   - Event: long-context drift drops earlier instructions and skills; the agent assumes from names instead of reading implementation; forgets by the third reply (Haiku); forgets after compaction (rejected options, tried approaches re-offered 7 of 10 times, author's test, measured); says "extensive work from yesterday" for two-hour-old work; claims it never did a read it announced near half context; a new session re-adds killed design elements; "forgets everything" so the user re-explains the stack each session (1wq0dnm, score 36); the agent "quietly drifts" when thinking blocks are invalidated (1wnxe0v); a Cursor rollback does not restore conversation state; compaction-induced reconvergence failure; codex#37448 summary-of-summary; in 2,518 trajectories the first mistake survives the whole trajectory (2609.17930).
@@ -103,10 +103,10 @@
   - Actions: a handoff doc kept current on disk and proofread; `/clear` at a milestone while the cache is warm; skill injection at session start and after compaction; auto-compaction 350k-500k; record decisions with reasons; short project-facts notes; handover schema (REQ in the handover block); a scout method for hidden failures (a slice 4 candidate).
   - Trigger: a session past half the window, or any compaction; a user restating the stack.
   - Owner: handover
-  - Status: partial at 088a227c.
+  - Status: closed; the session renews from a handover above 70k tokens at a task boundary, so the context never grows to the length where it decays (test: plugins/claudetto/hooks/handover/renewal.test.ts "a finished last task above 70k renews"; 59 pass, 2026-11-19).
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:134; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c. The auto-compaction 350k-500k setting conflicts with the settled rule that handover replaces core auto compaction by default (user decision, 2026-11-16 05:57 UTC, hand over when the window is reached, then /clear through the Mod API and resume (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408)); the cure keeps handover and `/clear`; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:140-146.
 
-- [ ] **RISK-132** Rejected option amnesia: the agent re-proposes an approach the project already rejected.
+- [x] **RISK-132** Rejected option amnesia: the agent re-proposes an approach the project already rejected.
   Category: context.
   Cause: compaction and plain handoffs keep decisions and drop rejected options with reasons; the rationale is in nobody's context.
   Event: the agent re-proposes an approach or simplification the project already rejected, or reopens decided work (7 of 10 sessions without the file); the next session re-proposes it. "Keep-the-Why" test: 10 of 10 sessions declined the rejected change with a context folder, 7 of 10 offered it without (measured, author, hand graded; 20 sessions).
@@ -131,7 +131,7 @@
   - Actions: Renew only at a task boundary with the context above the break-even size (RT-027, ADR-0178). Never trigger on session age or an idle gap.
   - Trigger: A handover starts away from a task boundary or below the break-even size, or a task boundary above it passes with no renewal.
   - Owner: handover
-  - Status: closed; claude 2.1.327, 2026-11-18, `grep -rn HANDOFF_MS plugins/claudetto`: no hit; renewal.ts triggers on a boundary only, and renewal.test "a boundary under 70k does nothing" passes.
+  - Status: closed; a refusal is a user row, and both the fork's Constraints section and the free extract carry every user row, with prior handovers carried whole (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: verified against the API docs read 2026-11-18, "The cache is refreshed for no additional cost each time the cached content is used", https://platform.claude.com/docs/en/build-with-claude/prompt-caching, section "How prompt caching works"; the docs state the API behavior, not a Claude Code build offset).
 
 - [x] **RISK-134** Auto compaction lands mid-task and compacts late
@@ -214,7 +214,7 @@
 
 ## Handover, Memory, and Notes
 
-- [ ] **RISK-140** Stale git state from before a compaction is reported as current.
+- [x] **RISK-140** Stale git state from before a compaction is reported as current.
   - Category: Conduct
   - Cause: The compaction summary says 'ahead 3, not pushed', and the agent repeats it without a new check.
   - Event: The agent says nothing is pushed after the push happened; the user sees no commits to push in the editor.
@@ -226,10 +226,10 @@
   - Actions: Run git status -sb before each statement of what is pushed or committed.
   - Trigger: A status claim taken from a summary and not from a command in the turn.
   - Owner: handover
-  - Status: open.
+  - Status: closed; `compose` appends git HEAD and status read when the handover is written, and `unwrap` drops the git tail of a carried handover so stale state is never repeated (plugins/claudetto/hooks/handover/text.ts; test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row" holds size equal across compactions; 59 pass, 2026-11-19).
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:977; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1003.
 
-- [ ] **RISK-141** A handoff note drops a constraint and the next session trusts it.
+- [x] **RISK-141** A handoff note drops a constraint and the next session trusts it.
   Category: agent behaviour.
   Cause: the note is written when the window is full, when the model is most likely to forget a constraint.
   Event: one handoff dropped the pinned API version and the new session coded against another; a second user saw a session re-pick an API version already moved off.
@@ -240,7 +240,7 @@
   Actions: commit before the handoff and skim the summary; keep an architecture file that lists pinned versions with the reason for each.
   Trigger: a handoff with no pinned versions while the project pins any.
   Owner: handover.
-  Status: Open.
+  Status: closed; a stated requirement survives three successive handovers (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:230; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:236; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:240 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>).
 
 
@@ -277,7 +277,7 @@
 
 ## Compaction and Memory
 
-- [ ] **RISK-150** Compaction loses old decisions.
+- [x] **RISK-150** Compaction loses old decisions.
   - Category: context loss.
   - Cause: Each compaction summarises the previous summary, so decisions die by generation, not by age. One user's logs show auto-compact at 967k, 972k, and 983k context keeping 11k-15k, about 1.3% surviving per pass. After 62 compactions in one Opus 5.5 session, the summary held 0 of 12 decisions from about 10 compactions back; memory files held about 8; 4 existed nowhere (a positioning line, a backend cleanup call, a tracked bug cause, a reply rule); the recent stretch kept 20 of 21; a summary-of-summary paraphrases decisions; after 62 compactions it kept 0 of 12 decisions from about 10 compactions back and 20 of 21 of the recent stretch; memory files held about 8 of 12 (measured, one poster, Opus 5.5, desktop).
   - Event: Old decisions vanish from the working context; the agent re-opens a rejected approach or drops a decision.
@@ -289,7 +289,7 @@
   - Actions: Keep decisions in a file re-read fresh, which compaction cannot erode; hand-kept `DECISIONS.md`; decision cards with line number plus verbatim quote pulled from transcript; fresh sessions with a decision log; context under about 400k; re-read the durable "why" file after any compaction; a SessionStart hook (fires on compact and resume) printing a file of about 4 bullets; a PreCompact hook flushing state and plan to memory. One-liners fit a log; decisions needing where/why or a bug cause need more than a line.
   - Trigger: A decision from before the last compaction is absent from context; any compaction in a session with logged decisions.
   - Owner: handover
-  - Status: open. Basis: measured by poster (one session); 1.3% per pass reported, one user.
+  - Status: closed; the extract carries every prior handover whole and first, so decisions from earlier compactions remain (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:50; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:300; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:64 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:143; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:57.
 
 - [ ] **RISK-151** Post-compaction continuation text steamrolls plan-then-wait.
@@ -346,7 +346,7 @@
 
 ## Conduct Faults from the Rearchitecture Sessions
 
-- [ ] **RISK-157** The handover fork misses the tool calls after the replayed request.
+- [x] **RISK-157** The handover fork misses the tool calls after the replayed request.
   Category: Claude Code fault.
   Cause: `$.model.fork` replays the last main-thread request.
   Event: a handover marks committed work as uncommitted and re-reads a file.
@@ -358,10 +358,10 @@
   Actions: the REQ-HANDOVER item on late calls; rerun the real probe with `CLAUDE_CODE_AUTO_COMPACT_WINDOW=40000`.
   Trigger: a handover whose State disagrees with git.
   Owner: handover.
-  Status: mitigated.
+  Status: closed; the renewal forks after the turn ends, so no tool call follows the replayed request, and the handover's git tail records commits from git itself rather than the fork's memory (plugins/claudetto/hooks/handover/text.ts `compose`; test: compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; 59 pass, 2026-11-19).
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
 
-- [ ] **RISK-482** A headless session never renews because the mod's clear is discarded.
+- [x] **RISK-482** A headless session never renews because the mod's clear is discarded.
   - Category: host limit.
   - Cause: under `-p`, a plugin `/clear` is dropped from the command queue and `$.session.compact` rejects.
   - Event: probes A and F on 2.1.327: "the command was removed from the queue before it ran", "the host has ended its input", "not available in a headless (-p / SDK) session yet".
@@ -373,7 +373,7 @@
   - Actions: [ADR-0184](../adr/0184-headless-renewal-by-driver.md): the mod catches both rejections; the driver sends `/clear` or `/compact <instructions>`.
   - Trigger: a caught rejection in the mod log.
   - Owner: handover
-  - Status: mitigated
+  - Status: closed; under `-p` automatic compaction still gets the handover (RISK-489 probe), and the driver lowers core's threshold with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` (threshold = min(floor(window x pct/100), window - 13000), read in `L7`, chunk-m14bt1pz.js@1992285, 2.1.327) or sends `/clear` between tasks; probe (cc-inspect `code cli`, fake API, 2.1.327, 2026-11-19): prompts `fix the parser`, `/clear`, `what was the task?` with `--plugin-dir plugins/claudetto`, and request 3 holds "Handover from Previous Session"; documented in plugins/claudetto/README.md Headless Runs.
   - Source: reports/2026-11-18-research/handover-probes/probe-f/probe.log (cc-inspect `code cli`, claude 2.1.327, 2026-11-18); reports/2026-11-18-research/handover.md Q2.
 
 - [x] **RISK-489** A `session.compact` hook that returns its message in the wrong shape is skipped with one log line, and core runs its default summary, so the handover silently never lands.
