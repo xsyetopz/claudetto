@@ -43,7 +43,8 @@ export const formatLine = (f: Figures): string => {
  * lead's. The figures live in this closure because a hook instance is per session.
  * Claude Code 2.1.327 draws every pinned plugin status as "⚠ claudetto: …" in
  * its warning colour (chunk-cfxefa64.js, the pinned-notice renderer), so the
- * glyph is the engine's frame and not a fault this line reports.
+ * glyph is the engine's frame and not a fault this line reports. `$.ui.status`
+ * takes only the text (index.d.ts), so a plugin cannot pick another frame.
  */
 export function registerStatusline(on: On): void {
 	let figures: Figures = {};
