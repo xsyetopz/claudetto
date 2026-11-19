@@ -378,3 +378,18 @@
   Trigger: core's 2000-character warning on a claudetto notice.
   Owner: setup.
   Status: closed, verified 2026-11-19 (see Verified).
+
+- [x] **RISK-498** A changed default or guard rule never reaches a user who already ran the fill.
+  Verified: dogfood, claude 2.1.327, 2026-11-19: after 5c6c9e9b4 added the `git -C` rules, a fresh start left them out of the dogfood settings.json (grep count 0), because the store held the unchanged hand-bumped FILL_VERSION 6. After 5d697cca2 a restart wrote all four new rules (grep count 4); `claude plugin test plugins/claudetto`: 89 pass, 0 fail.
+  Category: Defect.
+  Cause: the fill ran once per FILL_VERSION, a number a change had to bump by hand (#41).
+  Event: a release ships a new deny or ask rule that existing installs never receive.
+  Consequence: the user runs without a guard the release notes promise.
+  Likelihood: 4 before the control, 1 after it.
+  Impact: 4.
+  Existing controls: FILL_VERSION is an FNV-1a hash of the filled text of empty settings (`hooks/settings/defaults.ts`), so any change to the defaults starts one new fill.
+  Response: mitigate.
+  Actions: none open.
+  Trigger: a fill notice missing after a release that changes a default.
+  Owner: setup.
+  Status: closed, verified 2026-11-19 (see Verified).
