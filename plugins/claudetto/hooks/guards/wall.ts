@@ -57,7 +57,7 @@ const segmentPattern = (glob: string): RegExp => {
 		} else if (end > 0) {
 			source += `[${glob.slice(i + 1, end).replace(/^!/u, "^").replace(/\\/gu, "\\\\")}]`;
 			i = end;
-		} else source += c.replace(/[.+^${}()|\\\]]/gu, "\\$&");
+		} else source += c.replace(/[.+^${}()|\\[\]]/gu, "\\$&"); // An unclosed `[` is a literal, as the shell reads it.
 	}
 	return new RegExp(`^${source}$`, "u");
 };
@@ -122,7 +122,24 @@ export const expandStatic = (command: string): string => {
 	return text;
 };
 
-const escapeRegExp = (text: string): string => text.replace(/[$^{}.*+?()[\]|\\/]/gu, "\\$&");
+/**
+ * The command with `/./`, `//` and `name/../` folded out of its paths, so
+ * `~/./x`, `~//x` and `~/src/../x` read as `~/x`, which is where the shell
+ * lands. A `..` segment is never folded into another `..`.
+ */
+export const foldPaths = (text: string): string => {
+	let out = text;
+	for (let prev = ""; prev !== out; ) {
+		prev = out;
+		out = out
+			.replace(/\/(?:\.\/)+/gu, "/")
+			.replace(/\/{2,}/gu, "/")
+			.replace(/\/(?!\.\.\/)[^/\s"';&|()<>]+\/\.\.(?=\/)/gu, "");
+	}
+	return out;
+};
+
+const escapeRegExp =(text: string): string => text.replace(/[$^{}.*+?()[\]|\\/]/gu, "\\$&");
 
 /**
  * Whether the wall's folder is built at run time, so its name cannot be read
@@ -157,7 +174,7 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 		if (e.tool !== "Bash") return next(e);
 		// A spelled wall ends in its last part; only a glob, a variable or a substitution can name a wall without it.
 		const command = e.command;
-		const text = expandStatic(command);
+		const text = foldPaths(expandStatic(command));
 		const words = globWords(text);
 		const named = walls.some((wall) => text.includes(wall.replace(/^.*\//u, "")) || command.includes(wall.replace(/^.*\//u, "")));
 		if (words.length === 0 && !named && !/[$`]/u.test(text)) return next(e);

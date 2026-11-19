@@ -283,6 +283,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/levers-review.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; plugins/claudetto/.claude-plugin/plugin.json:84@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:131@088a227c.
   Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. The holdout wall is in deny, denyRead and denyWrite by default; the holdout path itself was not probed.
   Status: mitigated 2026-11-18: the sandbox and the Read deny rules refuse every shell channel probed (Verified line).
+  Status: mitigated 2026-11-19, with a gap closed: the dogfood agent showed ~/./, ~// and ~/x/.. spellings and an unclosed [ (which threw and failed the guard open) passed the wall guard for a sandbox-off call (#42). The guard now folds those paths and escapes [; wall.test.ts covers all four, and each half of the fix fails it when reverted (claude plugin test plugins/claudetto: 91 pass, 0 fail).
 
 - [x] **RISK-054** Moved Out as OUT-2322: the item describes a part that plugins/ does not ship.
 

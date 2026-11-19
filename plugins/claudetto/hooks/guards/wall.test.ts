@@ -28,6 +28,29 @@ describe("wall guard", () => {
 		for (const r of results) expect(JSON.stringify(r)).toContain("walled off");
 	});
 
+	test("a path padded with ./, // or x/.. that reaches the holdout is refused, and an unclosed [ does not open the wall", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({ value: FREE }));
+		on("env.get", (_$, e) => ({ value: e.name === "HOME" ? "/Users/u" : undefined }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+		const spellings = ["cat ~/./.claudetto-holdout/t", "cat ~//.claudetto-holdout/t", "cat ~/src/../.claudetto-holdout/t", "ls ~/[ ~/$x"];
+
+		// Act
+		const results = [];
+		for (const command of spellings) {
+			results.push(await $.tool.call({ tool: "Bash", command, dangerouslyDisableSandbox: true }).catch((error: unknown) => error));
+		}
+
+		// Assert
+		expect(ran).toEqual([]);
+		for (const r of results) expect(JSON.stringify(r)).toContain("walled off");
+	});
+
 	test("a Bash call that names no wall runs", async ($, on) => {
 		// Arrange
 		on("process.run", () => ({ value: FREE }));
