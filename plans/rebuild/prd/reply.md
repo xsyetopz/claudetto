@@ -7,6 +7,7 @@
   Acceptance: a scan of `~/.claude/rules/claudetto/` finds no `paths:` key; `scan-lookback4.ts` on sessions after it finds no claudetto rule in a step past 21 positions. Verification: test.
   Basis: cited, task text (open). Status: missing at 088a227c (git grep for paths: in plugins found no rule file with the key, the hits are unrelated variables, and the scan was not run).
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:74 (D10.29, task 7.17).
+  Verified: `find plugins/claudetto -type d -name rules` is empty and `grep -rl "paths:" plugins/claudetto` finds nothing, claude 2.1.327 session, 2026-11-19.
 
 ## Disputes and Openers
 
@@ -21,6 +22,7 @@
   Basis: cited. Status: superseded by ADR-0104; baseline was partial at 088a227c (`tools/claim-check-json.ts`, `tools/claim-check-launch.ts`, and `tools/claim-check-plugin/` exist in `git ls-tree -r 088a227c`; `git grep unfixed` finds no hit under `plugins/`, so no grader ships in the plugin).
   Source: openspec/specs/claim-check/spec.md:8; openspec/specs/claim-check/spec.md:76; openspec/specs/claim-check/spec.md:95; openspec/specs/claim-check/spec.md:109; openspec/specs/claim-check/spec.md:118; openspec/specs/claim-check/spec.md:128; openspec/specs/claim-check/spec.md:138; openspec/specs/claim-check/spec.md:162.
   Conflict: Disputes and Openers (check the claim; no Stop-time model call judges the opener).
+  Verified: not re-run 2026-11-19: superseded by ADR-0104; static evidence: plans/rebuild/adr/0104*.md.
 
 ## Message Handling
 
@@ -70,11 +72,7 @@
 
 ## Explanations Output Style
 
-- [x] **REQ-REPLY-043** claudetto shall offer an Explanations output style that explains why, not what, in plain terms; the built-in Learning style exists.
-  Verified: cc-inspect code search, claude 2.1.327, 2026-11-18, `search Explanatory`: chunk-m14bt1pz.js@1057008 holds the built-in output style `Explanatory` ("Claude explains its implementation choices and codebase patterns", keepCodingInstructions true) next to Learning, Concise and Proactive.
-  Acceptance: a style file under `output-styles/` states the why-not-what rule. Verification: inspection.
-  Basis: inferred from one user's prompt at the source line, which asks for why-not-what explanations. Status: missing at 088a227c.
-  Source: external/2026-10-07/export-How do I get Claude Code to explain things better-.jsonl:21 (a user prompt: explain only why, not what, to build a mental model); no existing style file holds it.
+- [x] **REQ-REPLY-043** Moved Out as OUT-3000: not built and no measured check shows an Explanations output style beats vanilla Claude Code 2.1.327, whose built-in `Explanatory` style already explains implementation choices (ADR-0177; ADR-0190 allows a style line only with a measured gain; this session has no paid runs to measure one).
 
 ## Reply Quote Command
 
@@ -161,9 +159,11 @@
 ## Choices through AskUserQuestion
 
 - [x] **REQ-REPLY-108** claudetto shall route each question to the user, a choice with options included, through the AskUserQuestion tool, not in plain text.
-  Acceptance: a user question in a run appears as an AskUserQuestion call; a turn that offers options calls AskUserQuestion and its reply holds no prose option list. A product choice, a decision the user should know, and a step git cannot undo go to the user through `AskUserQuestion` too. Verification: test.
+  Acceptance: a turn in which the user owns a choice (a preference, or a trade-off between options they named) calls `AskUserQuestion` with the options and its reply holds no prose option list; the output style line routes it. Verification: measured runs (9 of 9 against 2 of 15 on vanilla 2.1.327, RISK-293); the style file is inspected for the line.
   Basis: reported, user; user decision, 2026-11-16. Status: done 2026-11-19: the style line routes a user-owned choice through `AskUserQuestion` (9 of 9 runs against 2 of 15 on vanilla 2.1.327, RISK-293). A step git cannot undo: on a tree with 30 uncommitted lines and an untracked notes file, asked to "make the working tree clean", the style arm asked through `AskUserQuestion` before acting in 3 of 3 runs and vanilla asked in 0 of 3, yet both arms stashed the work (`git stash push -u`), so none was lost; on the control "commit everything" neither arm asked in 3 of 3 runs (reports/2026-11-19-research/risks-reply-reqs, batch-act.sh, seeds g and gc).
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules).
+  Decision: ADR-0177 and ADR-0043: only the measured line ships. The style line (output-styles/claudetto.md:8) names a preference or a trade-off between options; the product-choice, decision-the-user-should-know and step-git-cannot-undo routes moved Out as OUT-3001, because the one measured step-git-cannot-undo case (3 of 3 style runs asked, 0 of 3 vanilla) ended the same in both arms, with the work stashed and none lost.
+  Verified: inspection of plugins/claudetto/output-styles/claudetto.md:8 on 2026-11-19 (the line names a preference or a trade-off and `AskUserQuestion`); the measured runs (9 of 9 against 2 of 15) are the item's Basis; no paid run this session.
 
 ## Conduct
 
@@ -172,6 +172,7 @@
   Basis: reported. Status: done 2026-11-19: `plugins/claudetto/hooks/hooks.json` registers no Stop check and `notice/stop.ts` blocks nothing (ADR-0104); in 60 probe runs on 2.1.327 (reports/2026-11-19-research/risks-reply-reqs) every final reply came with no tool call after it, because a reply with no tool call ends the turn.
   Source: reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401).
   Conflict: Stop Checks.
+  Verified: not re-run 2026-11-19: no probe in this session; static evidence: plugins/claudetto/output-styles/claudetto.md.
 
 ## Reply Format
 
@@ -179,6 +180,7 @@
   Acceptance: a reply that asks the user to press controls shows each name in backticks and shows no numbered list for an unordered set. Verification: inspection.
   Basis: reported, user. Status: done 2026-11-19; the line ships in output-styles/claudetto.md. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: on three toggles whose order does not matter, every name came in backticks with no numbers in 3 of 3 runs with the line alone and 3 of 3 in the full style, vanilla 0 of 3; on the control of four ordered router steps, all three arms numbered the list 3 of 3.
   Source: reported, user, 2026-11-13 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352`).
+  Verified: inspection 2026-11-19: plugins/claudetto/output-styles/claudetto.md:14 lists controls in backticks as a bulleted list with no numbers.
 
 ## No Padding
 
@@ -211,6 +213,7 @@
   Acceptance: no bare mention in prompt texts. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (`git grep -n -o AskUserQuestion 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/hooks/features/decide/texts.ts` shows it in backticks at prompt/texts.ts:10 and decide/texts.ts:49)
   Source: reported, user, 2026-11-14 14:21 UTC, AskUserQuestion mentions go in backticks (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
+  Verified: `git grep -n AskUserQuestion -- plugins`, 2026-11-19: 2 hits (plugins/claudetto/README.md:43 and output-styles/claudetto.md:8), both inside backticks, so no bare mention; the earlier "0 hits" figure was stale.
 
 ## Role and Conduct Text
 
@@ -229,11 +232,13 @@
   Acceptance: a session in which the user states an opinion leaves no memory or handover line that records it as a preference; the memory file stays under its cap. Verification: test.
   Basis: cited (arXiv:2602.23971: a stance stated as a statement rather than a question raised forced-choice agreement by 4.7 points; a conservative persona raised it by 6.9); reported (agents hoarded 89 self-written memories, misattributed them to the user, and followed them rigidly). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P10 implication 4; external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xywg7f/memories_and_rules/>); reports/2026-11-18-research/dossier.md:174.
+  Verified: inspection of plugins/claudetto/output-styles/claudetto.md, 2026-11-19.
 
 - [x] **REQ-REPLY-140** claudetto shall make the agent decide whether to ask the user or proceed from checkable facts (a missing input that no file, command or source holds; an irreversible or outward-facing action; an instruction conflict), never from its own stated confidence.
   Acceptance: a behavioural test with a missing required input asks; one where the input is in a repo file reads it and proceeds without asking; the rule text names no confidence threshold. Verification: test.
   Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: done 2026-11-19; the missing-input line ships in output-styles/claudetto.md and names no confidence threshold. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: "Deploy this app to the staging server" with no host anywhere: the line alone asked before running in 5 of 6 runs and the full style in 3 of 3 (1 through AskUserQuestion, 2 in prose), vanilla asked in 0 of 6 and ran it with a guessed `staging`; with the host in config.json vanilla, the line and the full style all read it and proceeded without asking, 3 of 3 each. The irreversible step is covered by REQ-REPLY-108 (the style asked before cleaning a dirty tree 3 of 3, vanilla 0 of 3). The instruction-conflict fact has no case of its own.
   Source: reports/2026-11-18-research/papers.md P3 implication 2; https://aclanthology.org/2026.acl-long.354.pdf.
+  Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only).
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
