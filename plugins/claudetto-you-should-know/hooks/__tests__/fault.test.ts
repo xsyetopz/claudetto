@@ -1,8 +1,8 @@
 import { expect, mock, test } from "claude-code/testing";
 
-import { PLUGIN, PROPS, pause } from "./testkit";
+import { PLUGIN, PROPS, pause, MOUNT } from "./testkit";
 
-test("a check fork that fails leaves one debug line and no offer", async ($, on) => {
+test("a check fork that fails leaves one debug line and no offer", MOUNT, async ($, on) => {
 	// Arrange
 	mock.clock(on, { now: 1000 });
 	mock.store(on);

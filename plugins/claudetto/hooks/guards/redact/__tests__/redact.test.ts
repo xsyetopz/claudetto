@@ -121,12 +121,17 @@ describe("tool-result redaction", () => {
 		const values = envValues(ENV);
 		const text = "line of ordinary output\n".repeat(420);
 		for (let i = 0; i < 50; i++) redact(text, values, true);
-		const start = performance.now();
+		// The fastest of three samples, so one stall on a loaded machine does not fail the budget.
+		const sample = (): number => {
+			const start = performance.now();
+			for (let i = 0; i < 1000; i++) redact(text, values, true);
+			return performance.now() - start;
+		};
 
 		// Act
-		for (let i = 0; i < 1000; i++) redact(text, values, true);
+		const fastest = Math.min(sample(), sample(), sample());
 
 		// Assert
-		expect(performance.now() - start).toBeLessThan(500);
+		expect(fastest).toBeLessThan(500);
 	});
 });

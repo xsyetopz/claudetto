@@ -924,3 +924,18 @@
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: reports/2026-11-18-research/papers.md P6; https://arxiv.org/pdf/2609.32616.
+
+- [x] **RISK-504** A plugin test passes or fails on the machine's load, because it measures real time against a fixed limit.
+  - Category: verification.
+  - Cause: a wait built from counted 5 ms timers, a test that mounts the band near the kit's 5 s default, and a speed budget checked on one sample; each holds on an idle machine and breaks when timers fire late.
+  - Event: on 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know` failed "an offer idle for less than two seconds sends no note" on two runs in a row: its `later(1000)` waited 2308 ms (probe: `Date.now()` around the wait), past the 2 s idle clock. A later run timed out "vscode: buttons are click-only" at 5000 ms; `$.ui.mount` alone took 1785 ms (probe: timings inside `offered`). With a busy machine, "masks 1,000 results of 10 KB in under 500 ms" took 514 ms.
+  - Consequence: a red suite that names no product fault, so a real failure hides among them and the done check cannot be read.
+  - Likelihood: 3 (3 such failures in 6 suite runs on 2026-11-19)
+  - Impact: 2
+  - Existing controls: commit b187e40dd gave the idle-clock tests a 15 s limit.
+  - Response: mitigate.
+  - Actions: `later` waits by the wall clock; `MOUNT` (`hooks/__tests__/testkit.ts`) gives every engine test that mounts the band a 15 s limit, since the kit has no per-file default (its exports are `describe`, `expect`, `mock`, `test`, `tier`, probed); the redaction and memory budgets keep their limits and assert on the fastest of three samples.
+  - Trigger: a suite failure whose message is a timeout or a time limit.
+  - Owner: verification
+  - Source: observed in session 2cf55002 on 2.1.327, 2026-11-19.
+  - Status: mitigated 2026-11-19. Verified: claude 2.1.327, `claude plugin test` twice per plugin: claudetto 129 pass 0 fail, claudetto-you-should-know 160 pass 0 fail; `bunx tsc --noEmit` exit 0 for both.

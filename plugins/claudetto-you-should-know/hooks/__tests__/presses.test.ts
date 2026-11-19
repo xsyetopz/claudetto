@@ -1,7 +1,7 @@
 import { expect, test } from "claude-code/testing";
 
 import { RESPOND_BOX_BUSY, RESPOND_NOT_FILLED } from "../view/draft";
-import { type Box, type Offer, offered, pause } from "./testkit";
+import { type Box, type Offer, offered, pause, MOUNT } from "./testkit";
 
 type Row = { id: string; view?: { kind: string } };
 type Kept = Map<string, unknown>;
@@ -37,7 +37,7 @@ const explained = async ($: Parameters<typeof offered>[0], on: Parameters<typeof
 	return band;
 };
 
-test("Knew this already marks the line known and clears without a toast", async ($, on) => {
+test("Knew this already marks the line known and clears without a toast", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -53,7 +53,7 @@ test("Knew this already marks the line known and clears without a toast", async 
 	expect(box.toasts).toEqual([]);
 });
 
-test("That was helpful marks the line known", async ($, on) => {
+test("That was helpful marks the line known", MOUNT, async ($, on) => {
 	// Arrange
 	const kept: Kept = new Map();
 	const band = await offered($, on, fresh(), { kept });
@@ -69,7 +69,7 @@ test("That was helpful marks the line known", async ($, on) => {
 });
 
 for (const key of ["Not relevant", "Couldn’t understand"]) {
-	test(`${key} clears the row and leaves the known list alone`, async ($, on) => {
+	test(`${key} clears the row and leaves the known list alone`, MOUNT, async ($, on) => {
 		// Arrange
 		const kept: Kept = new Map();
 		const band = await offered($, on, fresh(), { kept });
@@ -85,7 +85,7 @@ for (const key of ["Not relevant", "Couldn’t understand"]) {
 	});
 }
 
-test("Understood marks the line known and clears the card", async ($, on) => {
+test("Understood marks the line known and clears the card", MOUNT, async ($, on) => {
 	// Arrange
 	const kept: Kept = new Map();
 	const band = await explained($, on, fresh(), kept);
@@ -99,7 +99,7 @@ test("Understood marks the line known and clears the card", async ($, on) => {
 	expect(view(kept)).toBeUndefined();
 });
 
-test("Dismiss on an offer shows the asked row that clears by itself after 20 seconds", async ($, on) => {
+test("Dismiss on an offer shows the asked row that clears by itself after 20 seconds", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -120,7 +120,7 @@ test("Dismiss on an offer shows the asked row that clears by itself after 20 sec
 	expect(view(kept)).toBeUndefined();
 });
 
-test("a press on the asked row answers once even when pressed twice", async ($, on) => {
+test("a press on the asked row answers once even when pressed twice", MOUNT, async ($, on) => {
 	// Arrange
 	const kept: Kept = new Map();
 	const band = await offered($, on, fresh(), { kept });
@@ -136,7 +136,7 @@ test("a press on the asked row answers once even when pressed twice", async ($, 
 	expect(kept.get("known")).toEqual([LINE]);
 });
 
-test("Chat in main session fills the box with the draft and a blank line, then clears the card", async ($, on) => {
+test("Chat in main session fills the box with the draft and a blank line, then clears the card", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -155,7 +155,7 @@ test("Chat in main session fills the box with the draft and a blank line, then c
 	expect(view(kept)).toBeUndefined();
 });
 
-test("Chat with text in the box toasts that the box is busy and keeps the card", async ($, on) => {
+test("Chat with text in the box toasts that the box is busy and keeps the card", MOUNT, async ($, on) => {
 	// Arrange
 	const box = { ...fresh(), text: "half a thought" };
 	const kept: Kept = new Map();
@@ -172,7 +172,7 @@ test("Chat with text in the box toasts that the box is busy and keeps the card",
 	expect(view(kept)).toBe("explained");
 });
 
-test("Chat refused by the box toasts the not-filled text and keeps the card", async ($, on) => {
+test("Chat refused by the box toasts the not-filled text and keeps the card", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();

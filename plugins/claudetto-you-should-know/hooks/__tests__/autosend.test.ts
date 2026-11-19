@@ -18,9 +18,13 @@ const settle = async (): Promise<void> => {
 	}
 };
 
-/** Waits `ms` of real time: the plugin counts idle time on its own clock, which a test cannot move. */
+/**
+ * Waits `ms` of real time: the plugin counts idle time on its own clock, which a test cannot move.
+ * It reads the wall clock, because a 5 ms timer fires late and 200 of them took 2308 ms on 2.1.327.
+ */
 const later = async (ms: number, fn: () => Promise<void>): Promise<void> => {
-	for (let waited = 0; waited < ms; waited += 5) {
+	const end = Date.now() + ms;
+	while (Date.now() < end) {
 		await pause();
 	}
 	await fn();

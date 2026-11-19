@@ -1,8 +1,8 @@
 import { expect, test } from "claude-code/testing";
 
-import { type Box, offered, pause } from "./testkit";
+import { type Box, offered, pause, MOUNT } from "./testkit";
 
-test("Learn more shows the explanation that came with the offer, without a second fork", async ($, on) => {
+test("Learn more shows the explanation that came with the offer, without a second fork", MOUNT, async ($, on) => {
 	const box: Box = { text: "", filled: [], toasts: [], forks: 0 };
 	const band = await offered($, on, box);
 	await band.press({ key: "Learn more" });
@@ -15,7 +15,7 @@ test("Learn more shows the explanation that came with the offer, without a secon
 	expect(box.forks).toBe(1);
 });
 
-test("Knew this already clears the offer with no toast", async ($, on) => {
+test("Knew this already clears the offer with no toast", MOUNT, async ($, on) => {
 	const box: Box = { text: "", filled: [], toasts: [], forks: 0 };
 	const band = await offered($, on, box);
 	await band.press({ key: "Knew this already" });
@@ -26,7 +26,7 @@ test("Knew this already clears the offer with no toast", async ($, on) => {
 	expect(box.toasts).toEqual([]);
 });
 
-test("Dismiss shows the asked row with its one-shot buttons", async ($, on) => {
+test("Dismiss shows the asked row with its one-shot buttons", MOUNT, async ($, on) => {
 	const box: Box = { text: "", filled: [], toasts: [], forks: 0 };
 	const band = await offered($, on, box);
 	await band.press({ key: "Dismiss" });
@@ -37,7 +37,7 @@ test("Dismiss shows the asked row with its one-shot buttons", async ($, on) => {
 	expect(await band.find({ key: "Not relevant" })).toBeDefined();
 });
 
-test("Disable arms on the first press, then fills the off command and never runs it", async ($, on) => {
+test("Disable arms on the first press, then fills the off command and never runs it", MOUNT, async ($, on) => {
 	const box: Box = { text: "", filled: [], toasts: [], forks: 0 };
 	const band = await offered($, on, box);
 	await band.press({ key: "Disable" });
@@ -50,7 +50,7 @@ test("Disable arms on the first press, then fills the off command and never runs
 	expect(box.filled).toEqual(["/plugin disable claudetto-you-should-know"]);
 });
 
-test("Disable with text in the box toasts and fills nothing", async ($, on) => {
+test("Disable with text in the box toasts and fills nothing", MOUNT, async ($, on) => {
 	const box: Box = { text: "half a thought", filled: [], toasts: [], forks: 0 };
 	const band = await offered($, on, box);
 	await band.press({ key: "Disable" });

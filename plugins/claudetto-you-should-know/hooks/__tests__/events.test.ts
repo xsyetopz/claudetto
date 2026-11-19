@@ -1,7 +1,7 @@
 import type { Engine } from "claude-code/testing";
 import { expect, test } from "claude-code/testing";
 
-import { type Box, offered, pause } from "./testkit";
+import { type Box, offered, pause, MOUNT } from "./testkit";
 
 const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
 const OFF_TEXT = "/plugin disable claudetto-you-should-know";
@@ -31,7 +31,7 @@ const armed = async ($: Engine, on: Parameters<typeof offered>[1], box: Box, kep
 	return band;
 };
 
-test("turning off fills the command and shows the off view", async ($, on) => {
+test("turning off fills the command and shows the off view", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -44,7 +44,7 @@ test("turning off fills the command and shows the off view", async ($, on) => {
 	expect(view(kept)).toBe("off");
 });
 
-test("a typed disable takes the off view down", async ($, on) => {
+test("a typed disable takes the off view down", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -58,7 +58,7 @@ test("a typed disable takes the off view down", async ($, on) => {
 	expect(view(kept)).toBeUndefined();
 });
 
-test("the next ordinary prompt takes an unconfirmed off view down too", async ($, on) => {
+test("the next ordinary prompt takes an unconfirmed off view down too", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -72,7 +72,7 @@ test("the next ordinary prompt takes an unconfirmed off view down too", async ($
 	expect(view(kept)).toBeUndefined();
 });
 
-test("a plugin command typed by the person takes the off view down", async ($, on) => {
+test("a plugin command typed by the person takes the off view down", MOUNT, async ($, on) => {
 	// Arrange
 	on("command.run", () => ({}) as never);
 	const box = fresh();
@@ -87,7 +87,7 @@ test("a plugin command typed by the person takes the off view down", async ($, o
 	expect(view(kept)).toBeUndefined();
 });
 
-test("ending the session clears an open offer", async ($, on) => {
+test("ending the session clears an open offer", MOUNT, async ($, on) => {
 	// Arrange
 	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
 	const kept: Kept = new Map();
@@ -102,7 +102,7 @@ test("ending the session clears an open offer", async ($, on) => {
 	expect(view(kept)).toBeUndefined();
 });
 
-test("ending the session clears an off view", async ($, on) => {
+test("ending the session clears an off view", MOUNT, async ($, on) => {
 	// Arrange
 	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
 	const kept: Kept = new Map();

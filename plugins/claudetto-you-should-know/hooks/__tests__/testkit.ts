@@ -25,6 +25,13 @@ export const REPLY = "learn: Tests run in order.\ntag: You should know\nexplain:
 
 export const pause = (): Promise<void> => new Promise((resolve) => setTimeout(() => resolve(), 5));
 
+/**
+ * Time limit for a test that mounts the band. `$.ui.mount` alone took 1785 ms
+ * on claude 2.1.327, and a loaded machine pushed a mounting test past the
+ * kit's 5 s default; the kit has no per-file default, so each such test passes this.
+ */
+export const MOUNT = { timeoutMs: 15_000 };
+
 export type Box = {
 	text: string;
 	filled: string[];

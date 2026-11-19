@@ -1,7 +1,7 @@
 import type { Engine } from "claude-code/testing";
 import { expect, test } from "claude-code/testing";
 
-import { type Box, offered, pause } from "./testkit";
+import { type Box, offered, pause, MOUNT } from "./testkit";
 
 const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
 
@@ -16,7 +16,7 @@ const typed = async ($: Engine, kind: "composer" | "bridge" | "sdk", turn: strin
 	}
 };
 
-test("an offer survives one typed prompt and clears on the second", async ($, on) => {
+test("an offer survives one typed prompt and clears on the second", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 
@@ -31,7 +31,7 @@ test("an offer survives one typed prompt and clears on the second", async ($, on
 	expect(afterTwo).toBeUndefined();
 });
 
-test("a prompt from the SDK leaves the offer counters alone", async ($, on) => {
+test("a prompt from the SDK leaves the offer counters alone", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 

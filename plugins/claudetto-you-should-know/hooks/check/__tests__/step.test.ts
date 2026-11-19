@@ -2,7 +2,7 @@ import type { Engine } from "claude-code/testing";
 import { describe, expect, mock, test } from "claude-code/testing";
 
 import { isCheckStep } from "../step";
-import { type Box, offered, PLUGIN, PROPS, pause, REPLY, USAGE } from "../../__tests__/testkit";
+import { type Box, offered, PLUGIN, PROPS, pause, REPLY, USAGE, MOUNT } from "../../__tests__/testkit";
 
 type On = Parameters<typeof offered>[1];
 
@@ -43,7 +43,7 @@ const step = async ($: Engine, turnId: string, index: number, agentId?: string):
 	await settle();
 };
 
-test("a sub-agent step passes straight through and never starts a check (REQ-029)", async ($, on) => {
+test("a sub-agent step passes straight through and never starts a check (REQ-029)", MOUNT, async ($, on) => {
 	// Arrange
 	const counted = await session($, on, ["terminal"], ["terminal"]);
 
@@ -57,7 +57,7 @@ test("a sub-agent step passes straight through and never starts a check (REQ-029
 	expect(counted.forks).toBe(1);
 });
 
-test("a surface that draws no band gets no check (REQ-029)", async ($, on) => {
+test("a surface that draws no band gets no check (REQ-029)", MOUNT, async ($, on) => {
 	// Arrange
 	const counted = await session($, on, ["desktop"], []);
 
@@ -68,7 +68,7 @@ test("a surface that draws no band gets no check (REQ-029)", async ($, on) => {
 	expect(counted.forks).toBe(0);
 });
 
-test("a bridge prompt makes the terminal entry not count as a watched band (REQ-029)", async ($, on) => {
+test("a bridge prompt makes the terminal entry not count as a watched band (REQ-029)", MOUNT, async ($, on) => {
 	// Arrange
 	const counted = await session($, on, ["terminal"], ["terminal"]);
 
@@ -81,7 +81,7 @@ test("a bridge prompt makes the terminal entry not count as a watched band (REQ-
 	expect(counted.forks).toBe(0);
 });
 
-test("a turn that already holds an offer starts no second check, the next turn does (REQ-029)", async ($, on) => {
+test("a turn that already holds an offer starts no second check, the next turn does (REQ-029)", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const band = await offered($, on, box);

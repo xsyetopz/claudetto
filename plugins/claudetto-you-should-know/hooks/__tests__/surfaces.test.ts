@@ -2,7 +2,7 @@ import { expect, test } from "claude-code/testing";
 
 import { ABOUT_THIS, APP_COPY, plainText, TERMINAL_COPY } from "../view/copy";
 import { hasOwnComposer } from "../view/table";
-import { type Box, offered, PLUGIN, PROPS, pause } from "./testkit";
+import { type Box, offered, PLUGIN, PROPS, pause, MOUNT } from "./testkit";
 
 type Node = { type?: string; props?: Record<string, unknown>; children?: unknown[] };
 
@@ -44,7 +44,7 @@ const waitFor = async (check: () => Promise<boolean>): Promise<void> => {
 	}
 };
 
-test("terminal offer: lead, star column and five digit buttons in order", async ($, on) => {
+test("terminal offer: lead, star column and five digit buttons in order", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 
@@ -67,7 +67,7 @@ test("terminal offer: lead, star column and five digit buttons in order", async 
 });
 
 for (const surface of ["desktop", "vscode", "mobile"]) {
-	test(`${surface}: buttons are click-only, with no Disable and no star column`, async ($, on) => {
+	test(`${surface}: buttons are click-only, with no Disable and no star column`, MOUNT, async ($, on) => {
 		// Arrange
 		const band = await offered($, on, fresh(), { surface });
 
@@ -82,7 +82,7 @@ for (const surface of ["desktop", "vscode", "mobile"]) {
 	});
 }
 
-test("desktop: a hover card of width 60 holds the About copy and shows on hover only", async ($, on) => {
+test("desktop: a hover card of width 60 holds the About copy and shows on hover only", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { surface: "desktop" });
 
@@ -97,7 +97,7 @@ test("desktop: a hover card of width 60 holds the About copy and shows on hover 
 	expect(JSON.stringify(cards[0]?.children)).not.toContain("/plugin disable");
 });
 
-test("desktop inks the star and tag subtle; vscode and mobile ink the star as a suggestion", async ($, on) => {
+test("desktop inks the star and tag subtle; vscode and mobile ink the star as a suggestion", MOUNT, async ($, on) => {
 	// Arrange
 	const desktop = await offered($, on, fresh(), { surface: "desktop" });
 
@@ -108,7 +108,7 @@ test("desktop inks the star and tag subtle; vscode and mobile ink the star as a 
 	expect(subtle.length).toBe(2);
 });
 
-test("an external user sees no About button and no Disable button", async ($, on) => {
+test("an external user sees no About button and no Disable button", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { env: { USER_TYPE: "external" } });
 
@@ -119,7 +119,7 @@ test("an external user sees no About button and no Disable button", async ($, on
 	expect(keys).toEqual(["Learn more", "Knew this already", "Dismiss"]);
 });
 
-test("a narrow terminal that cannot hold the copy shows no About button", async ($, on) => {
+test("a narrow terminal that cannot hold the copy shows no About button", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { props: { ...PROPS, maxRows: 1, bodyColumns: 100 } });
 
@@ -130,7 +130,7 @@ test("a narrow terminal that cannot hold the copy shows no About button", async 
 	expect(keys).not.toContain("What is this");
 });
 
-test("What is this swaps the body for the dim copy, Return to topic brings the topic back", async ($, on) => {
+test("What is this swaps the body for the dim copy, Return to topic brings the topic back", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 
@@ -148,7 +148,7 @@ test("What is this swaps the body for the dim copy, Return to topic brings the t
 	expect(back).toContain("Tests run in order.");
 });
 
-test("a survey hides an offer but keeps an explained card, without buttons", async ($, on) => {
+test("a survey hides an offer but keeps an explained card, without buttons", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 	const survey = await $.ui.mount({ plugin: PLUGIN, surface: "terminal", component: "AbovePrompt", props: { ...PROPS, hasSurvey: true } });
@@ -165,7 +165,7 @@ test("a survey hides an offer but keeps an explained card, without buttons", asy
 	expect(buttons(await survey.drawn())).toEqual([]);
 });
 
-test("Learn more with no shipped explanation forks, and an empty explanation shows the failure with OK", async ($, on) => {
+test("Learn more with no shipped explanation forks, and an empty explanation shows the failure with OK", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { replies: ["learn: Tests run in order.\ntag: You should know", "   "] });
 
@@ -181,7 +181,7 @@ test("Learn more with no shipped explanation forks, and an empty explanation sho
 	expect(buttons(await band.drawn())).toEqual([]);
 });
 
-test("a reader of the explained card sees Understood, Chat in main session and Dismiss, and Dismiss asks again with 1, 2, 0", async ($, on) => {
+test("a reader of the explained card sees Understood, Chat in main session and Dismiss, and Dismiss asks again with 1, 2, 0", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 	await band.press({ key: "Learn more" });
@@ -198,7 +198,7 @@ test("a reader of the explained card sees Understood, Chat in main session and D
 	expect(asked).toEqual([["1", "That was helpful"], ["2", "Didn’t understand"], ["0", "Dismiss"]]);
 });
 
-test("Dismiss on an offer asks with five buttons and Turn off suggestions on the terminal", async ($, on) => {
+test("Dismiss on an offer asks with five buttons and Turn off suggestions on the terminal", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 
@@ -236,7 +236,7 @@ const INKS = {
 } as const;
 
 for (const surface of ["vscode", "mobile", "desktop"] as const) {
-	test(`${surface} draws the lead with its star and tag inks (REQ-015)`, async ($, on) => {
+	test(`${surface} draws the lead with its star and tag inks (REQ-015)`, MOUNT, async ($, on) => {
 		// Arrange
 		const tree = await (await offered($, on, fresh(), { surface })).drawn();
 
@@ -249,7 +249,7 @@ for (const surface of ["vscode", "mobile", "desktop"] as const) {
 	});
 }
 
-test("the terminal row wraps its body beside the star column (REQ-016)", async ($, on) => {
+test("the terminal row wraps its body beside the star column (REQ-016)", MOUNT, async ($, on) => {
 	// Arrange
 	const tree = await (await offered($, on, fresh())).drawn();
 
@@ -262,7 +262,7 @@ test("the terminal row wraps its body beside the star column (REQ-016)", async (
 	expect((row?.children?.[1] as Node).props).toMatchObject({ wrap: "wrap" });
 });
 
-test("the desktop row has a left cell with the hover card and a body (REQ-016)", async ($, on) => {
+test("the desktop row has a left cell with the hover card and a body (REQ-016)", MOUNT, async ($, on) => {
 	// Arrange
 	const tree = await (await offered($, on, fresh(), { surface: "desktop" })).drawn();
 
@@ -288,7 +288,7 @@ test("the About copy is three lines in the app card and four, ending with the di
 	expect(ABOUT_THIS).toContain("/plugin disable claudetto-you-should-know");
 });
 
-test("Learn more with no shipped explanation runs a fork and shows its result, and the button stays on the offer (REQ-039)", async ($, on) => {
+test("Learn more with no shipped explanation runs a fork and shows its result, and the button stays on the offer (REQ-039)", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const band = await offered($, on, box, { replies: ["learn: Tests run in order.\ntag: You should know", "**Order matters**\nSteps run one after another."] });
@@ -304,7 +304,7 @@ test("Learn more with no shipped explanation runs a fork and shows its result, a
 	expect(JSON.stringify(await band.drawn())).toContain("Steps run one after another.");
 });
 
-test("Dismiss on an offer asks without Turn off suggestions on a surface with its own composer (REQ-043)", async ($, on) => {
+test("Dismiss on an offer asks without Turn off suggestions on a surface with its own composer (REQ-043)", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { surface: "desktop" });
 

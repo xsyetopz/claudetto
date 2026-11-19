@@ -1,5 +1,7 @@
 import { expect, mock, test } from "claude-code/testing";
 
+import { MOUNT } from "./testkit";
+
 declare const setTimeout: (fn: () => void, ms: number) => unknown;
 
 const PLUGIN = "claudetto-you-should-know";
@@ -25,7 +27,7 @@ const settled = async (done: () => boolean): Promise<void> => {
 	}
 };
 
-test("the sixth step of a drawn band asks the fork once and stores its offer", async ($, on) => {
+test("the sixth step of a drawn band asks the fork once and stores its offer", MOUNT, async ($, on) => {
 	mock.clock(on, { now: 1000 });
 	mock.store(on);
 	on("session.id", () => ({ value: "s1" }));

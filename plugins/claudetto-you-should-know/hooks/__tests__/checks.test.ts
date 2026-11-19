@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { type Box, offered, PLUGIN, PROPS, pause } from "./testkit";
+import { type Box, offered, PLUGIN, PROPS, pause, MOUNT } from "./testkit";
 
 type Kept = Map<string, unknown>;
 type Row = { id: string; view?: { kind: string } };
@@ -23,7 +23,7 @@ const step = async ($: Parameters<typeof offered>[0], index: number): Promise<vo
 	await settle();
 };
 
-test("a Heads up tag leads the row with the star, the tag and a middle dot", async ($, on) => {
+test("a Heads up tag leads the row with the star, the tag and a middle dot", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh(), { replies: ["learn: Disk is nearly full.\ntag: Heads up"] });
 
@@ -37,7 +37,7 @@ test("a Heads up tag leads the row with the star, the tag and a middle dot", asy
 	expect(drawn).not.toContain("You should know");
 });
 
-test("a check issues one fork that carries only a prompt", async ($, on) => {
+test("a check issues one fork that carries only a prompt", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 
@@ -49,7 +49,7 @@ test("a check issues one fork that carries only a prompt", async ($, on) => {
 	expect(Object.keys((box.args?.[0] ?? {}) as object)).toEqual(["prompt"]);
 });
 
-test("a row left in explaining by a dead process is cleared and the next check runs", async ($, on) => {
+test("a row left in explaining by a dead process is cleared and the next check runs", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map([["sessions", [{ id: "s1", view: { kind: "explaining", line: "old" } }]]]);
@@ -62,7 +62,7 @@ test("a row left in explaining by a dead process is cleared and the next check r
 	expect(view(kept)).toBe("offer");
 });
 
-test("a second check does not start while one is in flight", async ($, on) => {
+test("a second check does not start while one is in flight", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	let release: () => void = () => undefined;
@@ -81,7 +81,7 @@ test("a second check does not start while one is in flight", async ($, on) => {
 	expect(whileHeld).toBe(1);
 });
 
-test("the strip shows the note while a view is open and nothing once it is gone", async ($, on) => {
+test("the strip shows the note while a view is open and nothing once it is gone", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await offered($, on, fresh());
 	const open = await band.find({ key: "Learn more" });
@@ -95,7 +95,7 @@ test("the strip shows the note while a view is open and nothing once it is gone"
 	expect(await band.find({ key: "Learn more" })).toBeUndefined();
 });
 
-test("a surface that detached no longer counts as drawing the band", async ($, on) => {
+test("a surface that detached no longer counts as drawing the band", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const surfaces = ["desktop"];
@@ -114,7 +114,7 @@ test("a surface that detached no longer counts as drawing the band", async ($, o
 	expect(box.forks).toBe(1);
 });
 
-test("a surface that is still reported keeps drawing the band after a detach elsewhere", async ($, on) => {
+test("a surface that is still reported keeps drawing the band after a detach elsewhere", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const surfaces = ["desktop"];
@@ -131,7 +131,7 @@ test("a surface that is still reported keeps drawing the band after a detach els
 	expect(box.forks).toBe(2);
 });
 
-test("with debug on, the last three checks draw as rows above the note and no more", async ($, on) => {
+test("with debug on, the last three checks draw as rows above the note and no more", MOUNT, async ($, on) => {
 	// Arrange
 	const checks = [1, 2, 3, 4, 5].map((n) => ({ number: n, step: 6, outcome: "none", latencyMs: 1500, at: 1_700_000_000_000 }));
 	const kept: Kept = new Map([["sessions", [{ id: "s1", checked: 5, checks }]]]);
@@ -149,7 +149,7 @@ test("with debug on, the last three checks draw as rows above the note and no mo
 	expect(drawn.match(/debug · check/g)).toHaveLength(3);
 });
 
-test("with debug off no check row draws", async ($, on) => {
+test("with debug off no check row draws", MOUNT, async ($, on) => {
 	// Arrange
 	const checks = [1, 2].map((n) => ({ number: n, step: 6, outcome: "none", latencyMs: 1500, at: 1_700_000_000_000 }));
 	const kept: Kept = new Map([["sessions", [{ id: "s1", checked: 2, checks }]]]);
@@ -161,7 +161,7 @@ test("with debug off no check row draws", async ($, on) => {
 	expect(JSON.stringify(await band.drawn())).not.toContain("debug · check");
 });
 
-test("with debug on and a survey up, no check row draws", async ($, on) => {
+test("with debug on and a survey up, no check row draws", MOUNT, async ($, on) => {
 	// Arrange
 	const checks = [1, 2].map((n) => ({ number: n, step: 6, outcome: "none", latencyMs: 1500, at: 1_700_000_000_000 }));
 	const kept: Kept = new Map([["sessions", [{ id: "s1", checked: 2, checks }]]]);
@@ -175,7 +175,7 @@ test("with debug on and a survey up, no check row draws", async ($, on) => {
 	expect(drawn).not.toContain("debug · check");
 });
 
-test("three ignored offers skip the next eligible check, and the skip is used up", async ($, on) => {
+test("three ignored offers skip the next eligible check, and the skip is used up", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map<string, unknown>([["looksToSkip", 1]]);
@@ -188,7 +188,7 @@ test("three ignored offers skip the next eligible check, and the skip is used up
 	expect(kept.get("looksToSkip")).toBe(0);
 });
 
-test("an answer resets both backoff counters", async ($, on) => {
+test("an answer resets both backoff counters", MOUNT, async ($, on) => {
 	// Arrange
 	const kept: Kept = new Map<string, unknown>([["typedPastInARow", 4]]);
 	const band = await offered($, on, fresh(), { kept });
@@ -202,7 +202,7 @@ test("an answer resets both backoff counters", async ($, on) => {
 	expect(kept.get("looksToSkip")).toBe(0);
 });
 
-test("a proposed line equal to a seen line ignoring case and one full stop is not shown", async ($, on) => {
+test("a proposed line equal to a seen line ignoring case and one full stop is not shown", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map<string, unknown>([["seen", [LINE.toUpperCase().slice(0, -1)]]]);
@@ -215,7 +215,7 @@ test("a proposed line equal to a seen line ignoring case and one full stop is no
 	expect(view(kept)).toBeUndefined();
 });
 
-test("a proposed line equal to a known line is not shown", async ($, on) => {
+test("a proposed line equal to a known line is not shown", MOUNT, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map<string, unknown>([["known", [LINE.toLowerCase()]]]);
@@ -228,7 +228,7 @@ test("a proposed line equal to a known line is not shown", async ($, on) => {
 	expect(view(kept)).toBeUndefined();
 });
 
-test("a shown line is kept as seen so it is not offered again", async ($, on) => {
+test("a shown line is kept as seen so it is not offered again", MOUNT, async ($, on) => {
 	// Arrange
 	const kept: Kept = new Map();
 

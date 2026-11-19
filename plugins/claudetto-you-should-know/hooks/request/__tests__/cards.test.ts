@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { parseExplanation } from "../cards";
-import { type Box, offered, PLUGIN, PROPS, pause } from "../../__tests__/testkit";
+import { type Box, offered, PLUGIN, PROPS, pause, MOUNT } from "../../__tests__/testkit";
 
 describe("parseExplanation", () => {
 	test("splits titled cards with a sketch and a caption", () => {
@@ -34,7 +34,7 @@ const open = async ($: Parameters<typeof offered>[0], on: Parameters<typeof offe
 	return band;
 };
 
-test("an explained card with a sketch draws the sketch lines in a code block", async ($, on) => {
+test("an explained card with a sketch draws the sketch lines in a code block", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await open($, on);
 
@@ -47,7 +47,7 @@ test("an explained card with a sketch draws the sketch lines in a code block", a
 	expect(drawn).toContain("Caption here");
 });
 
-test("a sketch line wider than the body minus the inset ends in an ellipsis", async ($, on) => {
+test("a sketch line wider than the body minus the inset ends in an ellipsis", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await open($, on, { bodyColumns: 40 });
 
@@ -59,7 +59,7 @@ test("a sketch line wider than the body minus the inset ends in an ellipsis", as
 	expect(drawn).toContain("…");
 });
 
-test("a survey keeps the sketch card and draws no button", async ($, on) => {
+test("a survey keeps the sketch card and draws no button", MOUNT, async ($, on) => {
 	// Arrange
 	const band = await open($, on);
 	const survey = await $.ui.mount({ plugin: PLUGIN, surface: "terminal", component: "AbovePrompt", props: { ...PROPS, hasSurvey: true } });
