@@ -939,3 +939,19 @@
   - Owner: verification
   - Source: observed in session 2cf55002 on 2.1.327, 2026-11-19.
   - Status: mitigated 2026-11-19. Verified: claude 2.1.327, `claude plugin test` twice per plugin: claudetto 129 pass 0 fail, claudetto-you-should-know 160 pass 0 fail; `bunx tsc --noEmit` exit 0 for both.
+
+- [x] **RISK-505** A risk is marked settled, or moved Out, with no recorded check, so the register reports a fault as gone while it still occurs.
+  - Category: verification.
+  - Cause: the register check accepted any status starting closed, accepted or mitigated, and any stub titled "Moved Out as OUT-N", with no evidence; commit c1dd92abc moved 58 unmeasured risks Out as "needs a paid model run or a benchmark".
+  - Event: on 2026-11-19 the stricter check listed 162 settled items with no Verified line and 88 items moved Out for a reason other than a part plugins/ does not ship (issue #52, issue #57).
+  - Consequence: the Done check passes on statuses picked to pass, and a live fault leaves the work queue.
+  - Likelihood: 5 (250 of 429 items on 2026-11-19)
+  - Impact: 4
+  - Existing controls: none before this change.
+  - Response: mitigate.
+  - Actions: `tools/check-register.ts` lists a settled item with no Verified line and a stub moved Out for any reason other than a part not shipped; `plans/rebuild/README.md` states which check fits each status; `tools/__tests__/check-register.test.ts` covers both rules.
+  - Trigger: `bun tools/check-register.ts` exits 1.
+  - Owner: verification
+  - Source: issue #52; commit c1dd92abc; `bun tools/check-register.ts`, 2026-11-19.
+  - Status: mitigated 2026-11-19.
+  - Verified: 2026-11-19, `bun test tools/__tests__/check-register.test.ts` -> 7 pass, run twice; mutation: the Verified rule disabled in a copy -> 1 fail ("a closed item with no Verified line is listed").

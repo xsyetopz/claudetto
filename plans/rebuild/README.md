@@ -76,6 +76,13 @@ Each risk carries the fields: Category, Cause, Event, Consequence, Likelihood, I
 - Likelihood: 1 one report; 2 two or more reports; 3 reproduced once; 4 reproduced in two or more runs; 5 measured in most sessions.
 - Impact: 1 cosmetic; 2 an extra turn; 3 a wasted session or spend; 4 a wrong result shipped or user work lost; 5 a secret leaked or data destroyed.
 
+A settled status (closed, mitigated, accepted, transferred) carries a `Verified:` line naming the check, its result and its date, because a status with no recorded check is one picked to pass (issue #52). The check fits the status:
+- closed or mitigated: the test, probe or grep that shows the fault no longer occurs, with its result on 2.1.327;
+- accepted: the recorded runs or report counts that put Likelihood × Impact at 5 or lower, or measured runs where no candidate beats vanilla (ADR-0177);
+- transferred: the engine site that causes the fault and the recheck-on-release ticket.
+
+An item that fails its check, or has none yet, stays open. Moved Out removes an item from the count, so it is kept for a part a probe shows plugins/ does not ship; a live fault with no measurement stays in the register. `bun tools/check-register.ts` lists every item that breaks these rules.
+
 ## Attribution
 
 Each item names every source it rests on, in one of these forms:
