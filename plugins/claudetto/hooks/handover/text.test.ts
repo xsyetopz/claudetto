@@ -13,6 +13,17 @@ describe("handover text", () => {
 		expect(out).toContain("done, tests pass");
 		expect(out).not.toContain("first");
 	});
+	test("extract never cuts a surrogate pair when it shortens a row", () => {
+		const lone = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u;
+		// 499 code units, then an emoji straddling the 500-unit row limit.
+		const prompt = `${"a".repeat(499)}😀tail`;
+		const answer = `${"b".repeat(999)}😀tail`;
+		const out = extract([
+			{ role: "user", text: prompt },
+			{ role: "assistant", text: answer },
+		]);
+		expect(lone.test(out)).toBe(false);
+	});
 	test("compose appends the git state", () => {
 		const out = compose("body", "abc1234", "");
 		expect(out).toContain("git HEAD: abc1234");

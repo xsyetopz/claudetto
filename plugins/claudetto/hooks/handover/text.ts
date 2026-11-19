@@ -25,6 +25,19 @@ const EXTRACT_LIMIT = 12_000;
 const TITLE = "# Handover from Previous Session";
 const GIT_TAIL = "\ngit HEAD: ";
 
+/** The first `n` code units, without a surrogate pair cut in half at the end. */
+const head = (text: string, n: number): string => {
+	const cut = text.slice(0, n);
+	return /[\uD800-\uDBFF]$/u.test(cut) && text.length > n ? cut.slice(0, -1) : cut;
+};
+
+/** The last `n` code units, without a surrogate pair cut in half at the start. */
+const tail = (text: string, n: number): string => {
+	if (n <= 0) return "";
+	const cut = text.slice(-n);
+	return /^[\uDC00-\uDFFF]/u.test(cut) && text.length > n ? cut.slice(1) : cut;
+};
+
 /** A prior handover's body, without its title and its git state, which go stale. */
 const unwrap = (text: string): string => {
 	const end = text.lastIndexOf(GIT_TAIL);
@@ -40,16 +53,18 @@ const unwrap = (text: string): string => {
  */
 export function extract(rows: readonly Row[]): string {
 	const said = rows.filter((r) => r.role === "user" && r.text.trim() !== "");
-	const carried = said
-		.filter((r) => r.text.trimStart().startsWith(TITLE))
-		.map((r) => unwrap(r.text.trimStart()))
-		.join("\n\n")
-		.slice(0, EXTRACT_LIMIT / 2);
-	const prompts = said.filter((r) => !r.text.trimStart().startsWith(TITLE)).map((r) => `- ${r.text.trim().slice(0, ROW_LIMIT)}`);
+	const carried = head(
+		said
+			.filter((r) => r.text.trimStart().startsWith(TITLE))
+			.map((r) => unwrap(r.text.trimStart()))
+			.join("\n\n"),
+		EXTRACT_LIMIT / 2,
+	);
+	const prompts = said.filter((r) => !r.text.trimStart().startsWith(TITLE)).map((r) => `- ${head(r.text.trim(), ROW_LIMIT)}`);
 	const answer = rows.findLast((r) => r.role === "assistant" && r.text.trim() !== "");
 	const parts = prompts.length > 0 ? ["User prompts so far:", ...prompts] : [];
-	if (answer) parts.push("", "Last answer:", answer.text.trim().slice(0, ROW_LIMIT * 2));
-	const recent = parts.join("\n").slice(-(EXTRACT_LIMIT - carried.length));
+	if (answer) parts.push("", "Last answer:", head(answer.text.trim(), ROW_LIMIT * 2));
+	const recent = tail(parts.join("\n"), EXTRACT_LIMIT - carried.length);
 	return [carried, recent].filter((s) => s.trim() !== "").join("\n\n");
 }
 
