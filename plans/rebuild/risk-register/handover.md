@@ -430,3 +430,19 @@
   - Status: closed; the same probe after the change sent the handover followed by `second one`.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > the prompt that opened the turn stays after the handover" (the committed test that encodes the probe outcome); the stub probe was not re-run.
   - Source: probe, `claude` 2.1.327, 2026-11-18, `$TMPDIR/hprobe3` (stub from reports/2026-11-18-research/handover-probes/probe-h/stub.ts with input tokens 195000), command `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`.
+
+- [x] **RISK-507** The handover fork misses the cache on the parent's last message when that message has string content (issue #60).
+  - Category: engine limit.
+  - Cause: the parent's last message carries `cache_control`, so it goes out as a one-block list, while `$.model.fork` (chunk-m14bt1pz.js:241015-241040, built from forkContextMessages) resends it as a plain string, so the cache prefix ends one message early.
+  - Event: paid runs on claude 2.1.327, 2026-11-19, 8 per arm: on a one-line prompt with no tool call the fork read 13,406 of 16,380 cached tokens (Haiku 5.5) and 12,604 of 15,559 (Sonnet 5.5); after a Read it read 36,798 of 36,800 and 35,955 of 35,957.
+  - Consequence: one uncached message per handover fork.
+  - Likelihood: 1
+  - Impact: 2
+  - Existing controls: above the 70,000-token renewal threshold the last message is a tool result, so the measured cost there is 0 in 8 of 8.
+  - Response: transfer.
+  - Actions: recheck on each release by sending a first-request fork and comparing its cache read with the parent request's total.
+  - Trigger: a Claude Code release.
+  - Owner: handover
+  - Status: transferred 2026-11-20 (issue #60): the engine site is located, the cost at the renewal threshold measured 0, and recheck-on-release ticket #64 carries the check.
+  - Verified: 2026-11-19, claude 2.1.327, fake-API request bodies and the paid runs above (issue #60); Likelihood 1 × Impact 2 = 2.
+  - Source: issue #60.

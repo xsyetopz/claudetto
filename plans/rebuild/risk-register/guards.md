@@ -1352,3 +1352,19 @@
   Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true when unset (fill.test.ts), so the agent starts inside the sandbox; allowUnsandboxedCommands stays true per ADR-0159, so an agent can still ask for a call outside it and that call prompts.
 
 - [x] **RISK-486** Moved Out as OUT-2347: the item describes a part that plugins/ does not ship.
+
+- [x] **RISK-506** A masked tool result still stores the raw secret in the transcript's structured record (issue #59).
+  - Category: engine limit.
+  - Cause: Claude Code 2.1.327 builds the tool-result row with its structured `toolUseResult` beside the model-facing content (chunk-m14bt1pz.js@4545258, `toolUseResult:Xt?DKe(...)`), and the `session.append` hook claudetto masks with reaches only the content; the hook types call the structured record stored as made.
+  - Event: in the batch-11 env2 runs of 2026-11-19, the model saw the env values masked while `toolUseResult.stdout` in the session JSONL held them raw, in 6 of 6 runs.
+  - Consequence: a secret the model never read sits in plain text in `~/.claude/projects/*.jsonl`.
+  - Likelihood: 2
+  - Impact: 4
+  - Existing controls: claudetto masks the content the model reads (hooks/guards/redact/redact.ts) and denies reads of `.env` files and credential folders, so most secrets never reach a tool result.
+  - Response: transfer.
+  - Actions: recheck on each Claude Code release whether a plugin hook can rewrite `toolUseResult`, and mask it there when one can.
+  - Trigger: a Claude Code release.
+  - Owner: guards
+  - Status: transferred 2026-11-20 (issue #59): the engine site is located and no plugin surface on 2.1.327 reaches it; recheck-on-release ticket #63 carries the check.
+  - Verified: 2026-11-20, cc-inspect code search of claude 2.1.327 for `toolUseResult:`: the row is built at chunk-m14bt1pz.js@4545258 from the tool's own output, apart from the content the append hook rewrites; the 2026-11-19 batch-11 env2 runs (fixtures in reports/2026-11-19-research/goal/fixtures227.sh, observation in issue #59) show the raw value in the structured record.
+  - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts:123 (engine-limit note).

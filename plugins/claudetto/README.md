@@ -28,6 +28,8 @@ Each knob mirrors a compaction knob, with "handover" for "compact" and `CLAUDETT
 | `CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE` (env) | Renewal threshold as a percent of the context window. |
 | `CLAUDETTO_AUTO_HANDOVER_WINDOW` (env) or `autoHandoverWindow` (settings) | Renewal threshold in tokens, such as `70k`; the env value wins. |
 
+The handover runs as a fork of the session. When the main thread's last message is plain text rather than a tool result, that message is sent again uncached; above the renewal threshold the last message has been a tool result in every run measured.
+
 A manual `/compact` keeps Claude Code's summary and asks it to keep the user's corrections, refusals, and consents word for word.
 
 ### Headless Runs
@@ -80,6 +82,8 @@ It also removes a `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` that an earlier claude
 ## Guards
 
 The fill adds permission rules that Claude Code enforces: reads of `.env` files (not `.env.example` or `.env.sample`) and credential folders are denied, `git push --force` and `-f` are denied, a `git config` or `-c` that sets a hooks path is denied, and `git stash`, `git reset --hard`, `git clean`, `git branch -D`, tag pushes, `pkill`, `killall` and edits of the user settings file ask first. It turns the sandbox on with `autoAllowBashIfSandboxed`, denies sandboxed writes to shell start-up files, `~/.ssh`, `~/.gitconfig` and plugin and hook folders, and denies sandboxed reads of credential folders.
+
+Before the model reads a tool result, claudetto masks the values of the project's env-style files and the secrets that `betterleaks` finds, or a set of built-in key shapes when `betterleaks` is not installed. On Claude Code 2.1.327 a hook reaches only the text the model reads: the session file in `~/.claude/projects` still stores the tool's raw output in its `toolUseResult` record.
 
 Four options in the plugin settings tune the hooks:
 
