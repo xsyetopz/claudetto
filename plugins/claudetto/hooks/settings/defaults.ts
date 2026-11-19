@@ -69,9 +69,6 @@ export const RETIRED_REMINDER_TEXTS: readonly string[] = [
 	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.",
 ];
 
-/** Bumped when the defaults change, so a fill runs once per set and never undoes a user's later edit. */
-export const FILL_VERSION = 6;
-
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 
 /** Merges defaults into held: scalars when unset, records by key, arrays by missing entry. */
@@ -146,3 +143,18 @@ export const fillNotice = (path: string, added: readonly string[]): string => {
 	if (removals.length > 0) parts.push(removals.join(", "));
 	return `claudetto changed ${path}: ${parts.join("; ")}.`;
 };
+
+/** FNV-1a hash of a text, as eight hex digits; the hooks worker has no crypto global to rely on. */
+export const fillVersion = (text: string): string => {
+	let hash = 0x811c9dc5;
+	for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 0x01000193) >>> 0;
+	return hash.toString(16).padStart(8, "0");
+};
+
+/**
+ * Identifies the current defaults set, so a fill runs once per set and never
+ * undoes a user's later edit. Derived from the filled text of empty settings, so
+ * any change to a default or a guard rule starts a new fill; a hand-bumped
+ * number was missed when the git -C rules landed (#41).
+ */
+export const FILL_VERSION = fillVersion(fillSettings(undefined, [])?.text ?? "");

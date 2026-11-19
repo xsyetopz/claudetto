@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { DEFAULTS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings } from "./defaults";
+import { DEFAULTS, FILL_VERSION, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "./defaults";
 
 describe("defaults fill", () => {
 	test("fills every default into empty settings", () => {
@@ -122,5 +122,19 @@ describe("fill notice", () => {
 		expect(added).toEqual(["removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"]);
 		expect(notice).toContain("removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
 		expect(notice).not.toMatch(/set 1 unset default/);
+	});
+});
+
+describe("fill version", () => {
+	test("changes when any default in the filled text changes", () => {
+		// Arrange
+		const text = fillSettings(undefined, [])?.text ?? "";
+
+		// Act
+		const changed = fillVersion(text.replace("git push --force*", "git push --force-x*"));
+
+		// Assert
+		expect(FILL_VERSION).toBe(fillVersion(text));
+		expect(changed).not.toBe(FILL_VERSION);
 	});
 });
