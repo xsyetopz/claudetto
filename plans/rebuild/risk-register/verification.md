@@ -602,7 +602,7 @@
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
   Status: moved Out as OUT-2777 (Verified line).
 
-- [ ] **RISK-463** The agent marks a setting absent after a query that lists settings only.
+- [x] **RISK-463** The agent marks a setting absent after a query that lists settings only.
   - Category: conduct. Cause: a `surface` query of kind `setting` lists settings only. Event: `experimental.cacheTtl` marked absent and written into two files; the key exists as agent frontmatter.
   - Cause: A search on a single surface.
   - Event: 'Absent' for a name another surface holds.
@@ -617,6 +617,8 @@
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
   - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+  - Verified: batch14, 2026-11-19, claude 2.1.327, Sonnet 5.5, plugin at 37bd3cf0f, 6 runs per arm (reports/2026-11-19-research/goal/fixtures463.sh, score2.py; the verdict is the answer's first word). Target fixtures, where the name exists only on a second surface: px (an env var read only by tool.sh) vanilla 6/6, claudetto 6/6; fm (a frontmatter key the settings schema leaves out) vanilla 6/6, claudetto 6/6. Absent-name control fmc vanilla 6/6, claudetto 6/6. Absent-name control pxc vanilla 3/6, claudetto 5/6; each of the 4 failures read "this tool" as Claude Code ("yes, Claude Code has a color theme") or asked which tool was meant. None of them called a present name absent. The scenario F data above (3 of 3) predates this goal.
+  - Status: closed 2026-11-19: the fault (absent for a name another surface holds) stayed out of 24 of 24 target runs on two fixtures, vanilla and claudetto.
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
