@@ -170,7 +170,7 @@
   - Category: agent conduct, product.
   - Cause: the Stop check on uncommitted files (plugins/claudetto/hooks/slices.ts:105-154) blocks a stop even when the reply hands a step to the user; the root prompt rule "Do the doable work first" also pushes on.
   - Event: after a reply ending with "What I Need From You", the agent writes a second reply and runs a command unasked.
-  - Consequence: work built on a step the user has not done. Likelihood: 1; the user's turn is overrun; a critical conduct breach in the user's view; the user's turn is overrun; a critical conduct breach in the user's words.
+  - Consequence: work built on a step the user has not done. A merged source scored it at one report; the user's turn is overrun; a critical conduct breach in the user's view; the user's turn is overrun; a critical conduct breach in the user's words.
   - Likelihood: 3
   - Impact: 3
   - Existing controls: grader `doable_step_left` (read, not run).

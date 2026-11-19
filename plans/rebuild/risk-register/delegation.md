@@ -914,7 +914,7 @@
   - Category: agent failure.
   - Cause: They sit on a permission prompt or a tool call that never returned; telling them to close does not always work; One commenter reports that main lets subagents read and reread their text while they wait for other agents or main, so context compounds after each read event. Another commenter disputes it and says it began recently; the texts at `texts.ts:67` (`SEND_MESSAGE`) and `:21` (`Agent`) do not route new same-area work to `SendMessage`.
   - Event: Two commenters report it; An idle subagent re-reads its whole context before each read event; finished agents sit idle while new ones are spawned; a user note holds that re-spawning agents costs more than resuming existing ones.
-  - Consequence: Leftover subagents hold the session; Compounding token spend; extra spend. Likelihood: 1; each spawn costs 5k to 11k tokens at start.
+  - Consequence: Leftover subagents hold the session; Compounding token spend; extra spend. A merged source scored it at one report; each spawn costs 5k to 11k tokens at start.
   - Likelihood: 2
   - Impact: 3 (wasted spend)
   - Existing controls: Plan covers runaway background work only; None at 088a227c: no idle handling; `surface/texts.ts:13` is only the SendMessage text; `SEND_MESSAGE` text.

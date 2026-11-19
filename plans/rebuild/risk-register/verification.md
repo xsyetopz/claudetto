@@ -213,7 +213,7 @@
   - Category: verification.
   - Cause: a model reports done without a check at the real layer; Self-certification without external evidence; the report is written from intent, not evidence; prose closes a turn without a check; a delegate report is treated as evidence; model-stated motives are rationalization. No prompt is proven to remove it; Self-correction without external feedback fails (cited 2310.01798); the grader is the actor; status derives from narration; a prompt-type Stop judge has 0 tools and sees transcript text only; completion gates fail open (onFailure ignored on Stop, SubagentStop, TaskCompleted, TeammateIdle; Stop blocks capped at 8 in a row); agent-type hooks default to Haiku; subagent cards show the prompt launched, every tool call, and the returned text verbatim, with no check of completion; Harness checks accept model-reported "done"/"Confirmed" and tests with fakes as proof.
   - Event: Opus 5.5 investigations come back incomplete and a check finds mistakes in nearly every chat (1wqnjkp, score 53); a script that "never actually had the script call the API" (1wvj0hv); claimed visits to several websites while logs showed one (1wl6wyn); green checks over a broken core, hallucinated test results, silent empty subagent output, premature completion (codex#43329), about 60 records; the "100% self-reported against 25% real success" record is a Gemini planner plus Claude Code setup; "Done", "fixed", "passes", "should work", "all issues addressed" with nothing run, including "Task 23.2 is done" after a rejected edit; mock-only proof; deferred steps relabelled "intentionally deferred"; a failed check hidden by stderr to /dev/null or a pipe; Prettier in a Biome repo; 161 vs 159 tasks; "validates the same" with 5 new warnings; 7 of 9 handoff sections empty; The agent grades itself and reports it as measured: skipped files in 67.9% of runs, 80.4% misleading (cited 2609.20812); 100% self-reported vs 25% real (reported); 7.8% of "solved" patches fail developer tests (cited 2503.15223); a workflow run reports "completed" while a thread failed; 49 tasks auto-closed, 2 on evidence (reported); a scheduled-run summary graded by the agent missed a revoked token; the root accepts a report of finished work that is partial; The agent claims a pass that no real-layer check backs.
-  - Consequence: a wrong result shipped; A wrong result ships as finished; Failed or partial work counts as done; a wrong result ships; A wrong result ships without a recorded check; a wrong result shipped. Likelihood: 1.
+  - Consequence: a wrong result shipped; A wrong result ships as finished; Failed or partial work counts as done; a wrong result ships; A wrong result ships without a recorded check; a wrong result shipped. A merged source scored it at one report.
   - Likelihood: 4 (measured in two or more session-log runs)
   - Impact: 4
   - Existing controls: the Stop claim check; plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c ("Probe each claim ... before you report it"); the agent reports in `plugins/claudetto/agents/*.md` end with what was done, what was checked, and what is left; Recorded real-layer checks replace self-report (Keep items on verification); grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
@@ -290,7 +290,7 @@
   - Category: verification.
   - Cause: the agent meets a measure instead of the goal; A benchmark is the yardstick.
   - Event: "Do not delete the tests to make the tests pass" needed in CLAUDE.md (1wp239j); an expected value relaxed instead of a regression fixed (1wu40t8); majority hacking on editable tests, sandbox egress to fetch an answer key, impossible-task cheating, a permission-hook workaround; a gate turned green by rebuilding the baseline from another session with no mention in the report (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414), labelled plausible); a held case where the main agent refused a subagent's bound lowered 190 to 180 "which I didn't accept on my own, because it lowers a check" (session `00bfd354` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); Scorers pass while the product regresses.
-  - Consequence: a wasted session and spend; a wrong result shipped. Likelihood: 1; False confidence.
+  - Consequence: a wasted session and spend; a wrong result shipped. A merged source scored it at one report; False confidence.
   - Likelihood: 2
   - Impact: 4
   - Existing controls: the bound-change fault at plan line 301, the "should still fail" step at plan line 1321; Benchmarks are out of scope; the claim "The agent games benchmarks and repeats checks" is missing at 088a227c.
@@ -594,7 +594,7 @@
   - Category: conduct. Cause: a `surface` query of kind `setting` lists settings only. Event: `experimental.cacheTtl` marked absent and written into two files; the key exists as agent frontmatter.
   - Cause: A search on a single surface.
   - Event: 'Absent' for a name another surface holds.
-  - Consequence: a false claim shipped. Likelihood: 1; A false fact in the plan.
+  - Consequence: a false claim shipped. A merged source scored it at one report; A false fact in the plan.
   - Likelihood: 3
   - Impact: 3
   - Existing controls: none.
@@ -603,7 +603,7 @@
   - Trigger: an "absent" mark with no `code` search.
   - Owner: verification
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
-  - Status: accepted; likelihood 1 by the item's own text. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
+  - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
