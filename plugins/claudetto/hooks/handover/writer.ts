@@ -73,5 +73,5 @@ export async function writeHandover($: EngineInterface): Promise<Handover> {
 	if (body === "") body = extract(await $.session.messages());
 	const head = await git($, ["rev-parse", "--short", "HEAD"]);
 	const status = await git($, ["status", "--short"]);
-	return { text: compose(body, head, status), usage };
+	return { text: compose(body, head, status), ...(usage === undefined ? {} : { usage }) };
 }

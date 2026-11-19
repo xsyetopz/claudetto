@@ -4,10 +4,10 @@ import { fault } from "../fault";
 /** What the line shows; each field is absent until the engine reports it. */
 export type Figures = {
 	readonly model?: string;
-	readonly contextPercent?: number;
-	readonly fiveHour?: number;
-	readonly sevenDay?: number;
-	readonly cacheHit?: number;
+	readonly contextPercent?: number | undefined;
+	readonly fiveHour?: number | undefined;
+	readonly sevenDay?: number | undefined;
+	readonly cacheHit?: number | undefined;
 };
 
 type Usage = {

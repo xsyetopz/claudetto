@@ -42,7 +42,7 @@ export function registerShell(on: On, options: PluginOptions = {}): void {
 			allowed.delete(id);
 		}
 	}).catch(($, e, next) => (fault($, "shell guard", next.error), next(e)));
-	on("tool.check", { tool: "Bash" }, ($, e, next) => {
+	on("tool.check", { tool: "Bash" }, (_$, e, next) => {
 		const verdict = e.tool_use_id === undefined ? undefined : allowed.get(e.tool_use_id);
 		return verdict ?? next(e);
 	}).catch(($, e, next) => (fault($, "shell check", next.error), next(e)));
