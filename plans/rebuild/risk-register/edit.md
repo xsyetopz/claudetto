@@ -32,12 +32,12 @@
   - Consequence: an extra turn per miss.
   - Likelihood: 4
   - Impact: 2
-  - Existing controls: none; no plugin lever exists.
-  - Response: accept.
-  - Actions: recorded only.
+  - Existing controls: `Edit` validation runs before `PreToolUse`, but after the plugin `tool.call` hook, which can rewrite the call.
+  - Response: mitigate.
+  - Actions: `hooks/edit/tabs.ts` (REQ-EDIT-003) drops the extra tab from both strings when only the shortened `old_string` is in the file, and tells the model why.
   - Trigger: an `Edit` in a tab-indented file.
   - Owner: edit
-  - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search `tengu_tab_read_sep`: chunk-e38nza00.js@1555 still reads `Qt("tengu_tab_read_sep",!1)`, default off, so the limit stays and no plugin lever exists.
+  - Status: mitigated 2026-11-19 by REQ-EDIT-003. Measured on claude-sonnet-5-5, claude 2.1.327, a tab-indented guard.js and a three-line Edit: vanilla sent the extra tab and failed its first Edit in 6 of 6 runs (12 Edits for 6 tasks); with the hook 0 of 6 failed (6 Edits), every file kept its indentation, and a probe run quoted the hook note back. The core fix is still off: claude 2.1.327, 2026-11-18, cc-inspect search `tengu_tab_read_sep`: chunk-e38nza00.js@1555 still reads `Qt("tengu_tab_read_sep",!1)`, default off. In the dogfood the miss cost five failed Edits, and the retry wrote the extra tab into wall.ts.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:615 (measured).
 
 - [x] **RISK-480** Moved Out as OUT-2348: the item describes a part that plugins/ does not ship.
