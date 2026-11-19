@@ -832,10 +832,10 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Impact: 3
   - Existing controls: The output style line on uncommitted edits (plugins/claudetto/output-styles/claudetto.md, last line).
   - Response: mitigate
-  - Actions: Ship one style line that commits the user's edits in their own slice unless the user said to leave them out.
+  - Actions: Ship one style line that commits edits the agent did not make in their own slice, named by what they change, unless the user said to leave them out.
   - Trigger: A commit that leaves a file the user edited dirty, or a hand-off that names uncommitted edits as the block.
   - Owner: reply
-  - Status: mitigated 2026-11-19. Measured on claude-sonnet-5-5 with a seed that leaves one user edit uncommitted: vanilla left the edit uncommitted in 3 of 3 runs; the line committed it in its own commit in 3 of 3 runs alone and 3 of 3 inside the full style. Control prompt "commit only that fix": the edit stayed out in 3 of 3 runs in both arms.
+  - Status: mitigated 2026-11-19. Measured on claude-sonnet-5-5 with a seed that leaves one user edit uncommitted: vanilla left the edit uncommitted in 3 of 3 runs; the line committed it in its own commit in 3 of 3 runs alone and 3 of 3 inside the full style. Control prompt "commit only that fix": the edit stayed out in 3 of 3 runs in both arms. Reworded 2026-11-19, because the tree does not show who made an edit (a formatter, a hook or another session look the same as the user): the line names the change, not its author. Re-measured with the same seed: committed in its own slice in 3 of 3 runs, each message naming the change; with "commit only that fix" the edit stayed out in 3 of 3.
   - Source: https://github.com/xsyetopz/claudetto/issues/28; observed in transcript, 2026-11-19.
 
 - [x] **RISK-495** The agent hands work back to the user before it tries the steps it can reach.
