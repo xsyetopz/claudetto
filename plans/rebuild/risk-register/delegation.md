@@ -409,12 +409,12 @@
   Status: mitigated; the Agent tool takes `prompt` and `description` for every spawn (chunk-nk78ptca.js@344), and Heracles.md:17, Athena.md:13 and Artemis.md:13 each open the report to the lead with the result, so a spawn has a task and returns a report. hooks/delegation/spawn.ts denies a barred model on the call. claude 2.1.327, 2026-11-19.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
-- [ ] **RISK-185** The agent starts a background shell and never looks at it.
+- [x] **RISK-185** The agent starts a background shell and never looks at it.
   - Category: agent conduct.
   - Cause: Claudetto 2.1.319 gave the agent no step to watch its background shell.
   - Event: the agent spawned a shell and the user had to ask what the progress was.
   - Consequence: the user polls the agent; a stuck task stays stuck.
-  - Likelihood: 1
+  - Likelihood: 3 (was 1; on 2026-11-19 vanilla never looked in 8 of 12 runs on r185a and r185b).
   - Impact: 2
   - Existing controls: none.
   - Response: mitigate.
@@ -424,6 +424,8 @@
   Status: accepted; vanilla 2.1.327 says a background command's completion arrives as a notification and a running background agent gets a reminder each turn (chunk-m14bt1pz.js@3762250, @5939009), and its own text says not to poll, so a claudetto line that tells the agent to check would work against it. `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` at hooks/settings/defaults.ts:45 covers a stuck agent. The cheap monitor model is not carried (ADR-0177: no measured gain).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+  - Verified: 2026-11-19, paid batchC, claude-sonnet-5-5, n=6 per cell, cost inside RISK-451's $5.137 (reports/2026-11-19-research/goal/fixtures185.sh). The scorer passes a run when a later tool call names the task id, its output path or a redirected file, or when the job's output reached the transcript. Looked: r185a vanilla 1/6 (1/7 with the rep-0 probe), claudetto 0/6, with the cure 6/6. r185b vanilla 3/6 (the agent reported 4/6; a rescore of the same runs gives 3/6), claudetto 5/6, cure 6/6. r185c control (a dev server meant to keep running, pass at 6 tool calls or fewer): 6/6 in all three arms. Harness limit: drive.py ends at the first result, so vanilla's completion notice is never delivered and the vanilla fault rate may run high against interactive use.
+  - Status: mitigated 2026-11-19: the output-style paragraph that has the agent read a background command's output before a reply that depends on it beats vanilla on r185a and r185b and holds level on the r185c control.
 
 ## Guards
 
