@@ -114,11 +114,16 @@ const scan = async ($: EngineInterface, text: string): Promise<string[] | undefi
 };
 
 /**
- * Masks secrets in every tool result before the model reads it or the transcript stores
- * it (RISK-227, issue #54). Measured on 2.1.327 (2026-11-19): vanilla hands `cat .env`
- * output to the model verbatim. With values masked, the agent can load an env file into
- * a command (`set -a; . ./.env; set +a; ./check.sh`) without learning the secret, so a
- * missing variable that a file in reach supplies is no reason to stop.
+ * Masks secrets in every tool result before the model reads it (RISK-227, issue #54).
+ * Measured on 2.1.327 (2026-11-19): vanilla hands `cat .env` output to the model
+ * verbatim. With values masked, the agent can load an env file into a command
+ * (`set -a; . ./.env; set +a; ./check.sh`) without learning the secret, so a missing
+ * variable that a file in reach supplies is no reason to stop.
+ *
+ * Engine limit (2.1.327, issue #59): the row's structured record (`toolUseResult.stdout`)
+ * is stored as made and is outside a hook's reach (SessionAppendInput in the plugin
+ * types), so the transcript file keeps the raw value while the model reads the masked
+ * `content`. Remove this note once `session.append` lets a hook rewrite that record.
  *
  * Two sources, because each misses what the other holds: betterleaks (466 default rules
  * plus betterleaks.toml) finds key shapes by pattern and entropy, about 0.1 s per result
