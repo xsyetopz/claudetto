@@ -79,13 +79,14 @@ It also removes a `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` that an earlier claude
 
 The fill adds permission rules that Claude Code enforces: reads of `.env` files (not `.env.example` or `.env.sample`) and credential folders are denied, `git push --force` and `-f` are denied, a `git config` or `-c` that sets a hooks path is denied, and `git stash`, `git reset --hard`, `git clean`, `git branch -D`, tag pushes, `pkill`, `killall` and edits of the user settings file ask first. It turns the sandbox on with `autoAllowBashIfSandboxed`, denies sandboxed writes to shell start-up files, `~/.ssh`, `~/.gitconfig` and plugin and hook folders, and denies sandboxed reads of credential folders.
 
-Three options in the plugin settings tune the hooks:
+Four options in the plugin settings tune the hooks:
 
 | Option | Effect |
 | --- | --- |
 | `protectedPaths` | Folders no session may read or write (default: the held-out eval folder). The fill adds a `Read` deny rule and sandbox `denyRead` and `denyWrite` for each, and a Bash call that names one, also through a glob, a variable or a `cd` to home, is refused. An empty list turns the check off. The `denyWrite` entry stops shell writers (`>`, `tee`, `cp`, `sed -i`) only while `sandbox.enabled` is true; with the sandbox off, only the `Read` deny and the Bash check apply. |
 | `memoryFreeMinPercent` | A new `Bash`, `Monitor` or `Agent` call is refused while free memory (`memory_pressure -Q`) is under this percent (default 20; 0 turns it off). A failed read never blocks. |
 | `bashTimeLimitMinutes` | The wall-time limit under Shell Commands. |
+| `includeGitInstructions` | Adds a short git block to the `Bash` tool in place of Claude Code's own, which the fill turns off with the `includeGitInstructions` setting false (default on). The block carries the commit and pull request lines from the `attribution` setting and adds none for an unset or empty value. When the setting or `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` turns the builtin block on, the builtin block stays alone and session start reports the conflict. Turned off, set `includeGitInstructions` to true in settings to get the builtin block back. |
 
 ## Notices
 
