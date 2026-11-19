@@ -33,6 +33,7 @@ describe("defaults fill", () => {
 		// Assert
 		expect(next.sandbox.enabled).toBe(true);
 		expect(next.sandbox.autoAllowBashIfSandboxed).toBe(true);
+		expect(next.sandbox.allowUnsandboxedCommands).toBe(true);
 		expect(next.sandbox.excludedCommands).toContain("claude *");
 		expect(next.sandbox.network.allowAllUnixSockets).toBe(true);
 		expect(next.sandbox.network.allowedDomains).toBeUndefined();

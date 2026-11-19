@@ -51,7 +51,7 @@
   The key is written because its default is not fixed: when unset it is the inverse of the server gate `bot_protected_tengu_compiled_pudding` (`autoAllowBashIfSandboxed ?? !gate`, chunk-1yrzf3wn.js@1116482), and the settings schema documents it as false. Unset, an account with the gate on gets a permission prompt for every sandboxed command.
   Basis: reported; default measured by code read of 2.1.327 (2026-11-18). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`).
   Source: openspec/specs/sandbox/spec.md:8; openspec/specs/sandbox/spec.md:80; openspec/specs/setup/spec.md:283; chunk-1yrzf3wn.js@1116482 and chunk-ja5z738t.js@138689 (claude 2.1.327); ADR-0188.
-  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. 'writes the minimal sandbox block of ADR-0188' now also asserts no sandbox.network.allowedDomains; enabled and autoAllowBashIfSandboxed true are asserted. allowUnsandboxedCommands is left unset, and unset counts as allowed: the 2.1.327 binary forbids unsandboxed commands only when the setting is `=== false` (function CC, read with strings 2026-11-19).
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. 'writes the minimal sandbox block of ADR-0188' now also asserts no sandbox.network.allowedDomains; enabled and autoAllowBashIfSandboxed true are asserted. allowUnsandboxedCommands is written true (guards/fill.ts:42), asserted in the same test since 2026-11-19; the 2.1.327 binary forbids unsandboxed commands only when the setting is `=== false` (function CC, read with strings 2026-11-19).
 
 ## Setup Groups
 
