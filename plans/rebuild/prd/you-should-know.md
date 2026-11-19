@@ -504,6 +504,7 @@
   Basis: cited. Status: missing at 088a227c (`git grep -n -E "truncate-end|overflowX|maxLines" 088a227c -- plugins/claudetto-you-should-know` finds none).
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
   Moved: the painted check to OUT-2002 in README.md (needs a TUI). 2026-11-19, ADR-0190 agent decision.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: `claude plugin test` 160 pass, 0 fail; the painted check of OUT-2002 needs a TUI and was not run (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## Conflicts with Settled Decisions
 

@@ -15,6 +15,7 @@
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: runtime SessionStart/PreCompact payload values; cc-inspect cli cannot display a hook-written file. Static: custom_instructions literal present in 2.1.327 binary
   Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: the `model` key is absent (not null) on clear (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 - [x] **CTX-596** StopFailure runs as a `classic.StopFailure` hook. With `ANTHROPIC_BASE_URL=http://127.0.0.1:9` the run prints "API Error: Connection refused", then `classic.StopFailure`, then `$.ui.notify (claudetto): 40 chars: no-surface`, because `-p` has no surface. The notice fires only on an API-error stop
   Basis: measured.
@@ -123,6 +124,7 @@
   Source: reports/2026-11-18-research/incident-lab/run.py; ADR-0187.
   Verified: not re-run 2026-11-19: safe-mode vs --settings hook run needs a hook-written file that cc-inspect cli cannot show; static: "safe-mode" literals present (19 lines) in 2.1.327 binary
   Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: 0, 1 and 0 hook runs across the three arms (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## External Sweep, 2026-11-18
   Verified: source already on 2.1.327.

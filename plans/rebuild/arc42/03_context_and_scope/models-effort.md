@@ -7,6 +7,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1305.
   Verified: not re-run 2026-11-19: measured on a real haiku request ($0.00346); static: rejects_disabled_thinking x4 and CLAUDE_CODE_DISABLE_THINKING x6 present in 2.1.327 binary
   Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: free arms on three models and one paid CLAUDE_CODE_DISABLE_THINKING run ($0.0017) (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## Models and Effort
   Verified: binary string search, claude 2.1.327, 2026-11-19: rejects_disabled_thinking (4 hits), alwaysThinkingEnabled (15), and MAX_THINKING_TOKENS (8) are in the bundle; the adaptive result of each setting stays as measured with paid runs and is not rerun.

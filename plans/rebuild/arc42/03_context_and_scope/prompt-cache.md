@@ -26,6 +26,7 @@
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: needs subscription-login request capture; static: CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL x6 present in 2.1.327 binary
   Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: main thread 1h, subagent 5m, subagent 1h with the env var (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## Prompt Cache
 

@@ -73,6 +73,7 @@
   Source: probe on Claude Code 2.1.325 as the old plan states (probe name, date, and command not given).
   Verified: PASS: a perl allow ran under acceptEdits in a probe; the `source: config` text is not visible through cc-inspect. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
   Verified: tick audit 2026-11-19: the fake-API rerun on 2.1.327 recorded above shows the allow; the `source: config` text is not visible through the fake API, so that half rests on the measurement in Basis.
+  Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: OTel tool_decision showed accept from config, the file changed, and the arm with no allow was rejected (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## Machine, Shell, and Disk
   Verified: cc-inspect code cli fake API (no paid call), claude 2.1.327, 2026-11-19: with --settings allowing Bash(perl -0pi -e *) under acceptEdits, the same perl call completed with no prompt (tool_result is_error false).
