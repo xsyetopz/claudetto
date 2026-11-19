@@ -233,7 +233,7 @@
 
 - [x] **REQ-YOU-SHOULD-KNOW-022** claudetto shall make the hotkeys the digits shown on terminal, and shall treat a bare digit typed in the prompt box as a button press for the same key (the auto-send logic treats a lone digit as a press).
   Acceptance: terminal buttons carry their digit as `hotkey` and `plain`, and a lone digit sent from the terminal composer counts as that button's press: it blocks the auto-sent note for the offer. Verification: test.
-  Decision: the host dispatches `hotkey` presses and the test kit has no hotkey dispatch, so the plugin's own part (the digit on the button and the lone-digit rule) is what the tests assert (agent decision, 2026-11-19; the user may overrule).
+  Decision: the host dispatches `hotkey` presses and the test kit has no hotkey dispatch, so the plugin's own part (the digit on the button and the lone-digit rule) is what the tests assert (user decision, 2026-11-19).
   Basis: cited. Status: partial at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/view.ts:132-134@088a227c; chunk-nvx1z6pc.js@27593 (claude 2.1.327 binary); chunk-nvx1z6pc.js@78483 (claude 2.1.327 binary).
   Verified: behaviour test through the test kit (surfaces.test.ts and autosend.test.ts), claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 134 pass, 0 fail.
