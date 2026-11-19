@@ -52,7 +52,7 @@ claudetto ships one output style, `claudetto:Claudetto`, and selects it when you
 
 claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin reader ends at once instead of waiting for the 120-second timeout. Each command also runs under a wall-time limit, set by the `bashTimeLimitMinutes` option (30 by default, 0 turns it off). When the limit is reached, claudetto stops the command and its child processes, also when the command runs in the background, and tells the model why. A command that commits or pushes runs with `pipefail`, so `bun test | tail -3 && git commit` stops when the tests fail. These guards apply to a command the permission rules already allow; a command that names git runs without the stdin redirect and the time limit (it keeps `pipefail` when it commits), because Claude Code refuses a git command in a worktree-isolated agent unless it is a plain list; a command that needs approval runs as the model wrote it, so the approval dialog and saved rules show the model's own command.
 
-claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many places in a file. After an in-place perl edit, the model sees the diff stat of the files it changed and reads them again before it writes them.
+claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many places across files, also when run by `xargs`, `find -exec` or a loop (`git grep -l old | xargs perl -pi -e ...`). The output style and the Heracles agent ask for that form when one change repeats across files. After an in-place perl edit, the model sees the diff stat of the files it changed and reads them again before it writes them.
 
 ## Edit Fixes
 

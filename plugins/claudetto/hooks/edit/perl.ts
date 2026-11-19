@@ -1,8 +1,12 @@
 import type { On } from "claude-code";
 import { fault } from "../shared/fault";
 
-/** Matches a Bash call that edits files in place with perl. */
-const PERL_EDIT = /(?:^|[;&|({]\s*)perl\s+(?:-\S*\s+)*-\S*i/;
+/**
+ * Matches a Bash call that edits files in place with perl, wherever perl sits in
+ * command position: first, after a separator, or run by `xargs`, `find -exec` or
+ * a loop or `if` body, because a rename is usually `git grep -l x | xargs perl -pi`.
+ */
+export const PERL_EDIT = /(?:^|[;&|({]|\b(?:do|then|else|xargs(?:\s+-\S+)*)|-exec)\s*perl\s+(?:-\S*\s+)*-\S*i/;
 
 /** Files whose `git diff --numstat` line differs between `before` and `after`. */
 export const touched = (before: string, after: string): string[] => {

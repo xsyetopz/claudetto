@@ -1,8 +1,24 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { touched } from "../perl";
+import { PERL_EDIT, touched } from "../perl";
 
 describe("perl diff note", () => {
+	test("finds perl -i run by xargs, a loop or find -exec, and not perl named as text", () => {
+		// Arrange
+		const edits = [
+			"git grep -l fetchUser | xargs perl -pi -e 's/a/b/g'",
+			"git grep -lz a | xargs -0 perl -0pi -e 's/a/b/g'",
+			"for f in a.js b.js; do perl -pi -e 's/a/b/g' \"$f\"; done",
+			"find . -name '*.md' -exec perl -pi -e 's/a/b/' {} +",
+			"cd src && perl -pi -e 's/a/b/' a.js",
+		];
+		const others = ["perl -ne 'print' a.ts", "echo perl -pi is fast", "git commit -m 'use perl -pi'"];
+
+		// Act and Assert
+		expect(edits.filter((c) => !PERL_EDIT.test(c))).toEqual([]);
+		expect(others.filter((c) => PERL_EDIT.test(c))).toEqual([]);
+	});
+
 	test("names only the files whose numstat line changed", () => {
 		// Arrange
 		const before = "1\t1\ta.ts\n";
