@@ -172,7 +172,7 @@
   Basis: reported. Status: done 2026-11-19: `plugins/claudetto/hooks/hooks.json` registers no Stop check and `notice/stop.ts` blocks nothing (ADR-0104); in 60 probe runs on 2.1.327 (reports/2026-11-19-research/risks-reply-reqs) every final reply came with no tool call after it, because a reply with no tool call ends the turn.
   Source: reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401).
   Conflict: Stop Checks.
-  Verified: not re-run 2026-11-19: no probe in this session; static evidence: plugins/claudetto/output-styles/claudetto.md.
+  Verified: not re-run 2026-11-19: no probe in this session; static evidence: plugins/claudetto/output-styles/claudetto.md. Tick audit 2026-11-19: the tick rests on the 60 paid probe runs named in Status; no paid rerun (no paid benchmarks), and hooks.json still registers no Stop hook.
 
 ## Reply Format
 
@@ -209,7 +209,6 @@
 - [x] **REQ-REPLY-132** Moved Out as OUT-2765: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
-  Verified: git grep -n AskUserQuestion -- plugins -> 0 hits, so no bare mention in any shipped prompt text (2.1.327, 2026-11-19). Name-level only: the plugins ship no prompt text that mentions the tool.
   Acceptance: no bare mention in prompt texts. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (`git grep -n -o AskUserQuestion 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/hooks/features/decide/texts.ts` shows it in backticks at prompt/texts.ts:10 and decide/texts.ts:49)
   Source: reported, user, 2026-11-14 14:21 UTC, AskUserQuestion mentions go in backticks (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
@@ -238,7 +237,7 @@
   Acceptance: a behavioural test with a missing required input asks; one where the input is in a repo file reads it and proceeds without asking; the rule text names no confidence threshold. Verification: test.
   Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: done 2026-11-19; the missing-input line ships in output-styles/claudetto.md and names no confidence threshold. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: "Deploy this app to the staging server" with no host anywhere: the line alone asked before running in 5 of 6 runs and the full style in 3 of 3 (1 through AskUserQuestion, 2 in prose), vanilla asked in 0 of 6 and ran it with a guessed `staging`; with the host in config.json vanilla, the line and the full style all read it and proceeded without asking, 3 of 3 each. The irreversible step is covered by REQ-REPLY-108 (the style asked before cleaning a dirty tree 3 of 3, vanilla 0 of 3). The instruction-conflict fact has no case of its own.
   Source: reports/2026-11-18-research/papers.md P3 implication 2; https://aclanthology.org/2026.acl-long.354.pdf.
-  Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only).
+  Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only). Tick audit 2026-11-19: the tick rests on the paid Sonnet 5.5 runs named in Status; no paid rerun (no paid benchmarks), and `grep -n confidence plugins/claudetto/output-styles/claudetto.md` names no threshold.
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 

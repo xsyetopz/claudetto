@@ -100,7 +100,7 @@
   Acceptance: `git show 088a227c:plugins/claudetto-you-should-know/hooks/register.ts` shows it. Verification: inspection.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto-you-should-know/hooks/register.ts:36@088a227c; plugins/claudetto-you-should-know/hooks/register.ts:174@088a227c; plugins/claudetto-you-should-know/hooks/hooks.json:1@088a227c (no `PreToolUse` hook).
-  Verified: claude plugin test plugins/claudetto-you-should-know -> 134 pass; hooks register turn.step and ui.render, and no tool.call or tool.check hook (2.1.327, 2026-11-19).
+  Verified: `git show 088a227c:plugins/claudetto-you-should-know/hooks/register.ts` registers turn.step (:174), ui.render on AbovePrompt (:217) and tool.call (:267); the tool.call hook logs AskUserQuestion questions and answers and returns `next(e)`, so no call is held. The current tree registers turn.step and ui.render and no tool.call hook; claude plugin test plugins/claudetto-you-should-know -> 160 pass (2.1.327, 2026-11-19).
 
 - [x] **BB-038** Moved Out as OUT-2581: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 

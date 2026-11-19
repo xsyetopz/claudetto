@@ -70,7 +70,7 @@
   Basis: reported. Status: have at 088a227c (plugins/claudetto/.claude-plugin/plugin.json:61 describes a temp-folder age, not a retention default; the ask rule is missing).
   Verified: 2026-11-18, weak evidence. `grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto` finds no hit, so the plugin ships no default for either key and no code reads them; the acceptance holds. The ask rule over edits to these two settings is not built; REQ-SETUP-065 writes autoMemoryEnabled only on a yes. Reopened 2026-11-18 in review: the ask rule clause is open, so the item stays BUILD.
   Source: external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:58; openspec/specs/session-hygiene/spec.md:33.
-  Verified: grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto -> 0 hits; hooks/guards/rules.ts ASK holds Edit and Write on ~/.claude/settings.json, and the cc-inspect cli fill wrote both ask rules; fill.test.ts pins the ask list (2.1.327, 2026-11-19).
+  Verified: grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto -> 0 hits; hooks/guards/rules.ts ASK holds Edit and Write on ~/.claude/settings.json, and the cc-inspect cli fill wrote both ask rules; fill.test.ts pins only the stash, tag-push and process-kill ask entries, so the two settings.json ask entries rest on rules.ts:59-60 and the fill run, not on a test (2.1.327, 2026-11-19).
 
 ## Stop and Reply Checks
 
