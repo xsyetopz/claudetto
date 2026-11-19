@@ -1,0 +1,14 @@
+# Tool-output scan config for claudetto's redact guard (hooks/guards/redact.ts).
+# Extends the betterleaks default rules (466 in 1.10.1) with secret-named assignments, which the defaults
+# miss when the value has low entropy (`API_TOKEN=abc123xyz789`). Checked with `betterleaks config check`.
+title = "claudetto tool-output extension"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "claudetto-secret-assignment"
+description = "A secret-named shell or env assignment, with or without export"
+regex = '''(?im)^\s*(?:export\s+)?[A-Z0-9_]*(?:SECRET|TOKEN|PASSWORD|PASSWD|API_?KEY|PRIVATE_?KEY|CREDENTIAL)[A-Z0-9_]*\s*=\s*["']?([^\s"']{6,})'''
+secretGroup = 1
+keywords = ["secret", "token", "password", "passwd", "key", "credential"]
