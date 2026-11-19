@@ -451,6 +451,8 @@
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures. The control r450ac is defined and not run. Limit: these were 20-turn runs, which do not reproduce a two-hour goal session.
   - Verified: 2026-11-19, batchCTL, claude 2.1.327, Sonnet 5.5, plugin 1b094765a, 6 runs per arm (fixtures450.sh, scorers/r450.py): control r450ac, where a broken import in common.py must be fixed before report.py can work, so editing a second file is right: vanilla 5/6, claudetto 6/6. The vanilla miss (run 3) edited only report.py, left the import broken and ran nothing. claudetto holds level on the control and the closed status stands; no r450bc fixture is defined.
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures, and claudetto holds the control r450ac at 6/6 (vanilla 5/6).
+  - Verified: 2026-11-19, batchCTL2, claude 2.1.327, Sonnet 5.5, plugin 26539f1f9, 6 runs per arm: new confirm-pair control r450bc (fixtures450.sh, scorers/r450bc.py), the r450b repo where slug.py imports common.collapse and common.py has a syntax error, so fixing common.py first is right. Dry check before the run: the seed fails the hidden test, a correct slug.py alone fails, both fixed pass. Result: vanilla 6/6, claudetto 6/6, $0.674.
+  - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures, and claudetto holds both controls at 6/6 (r450ac, vanilla 5/6; r450bc, vanilla 6/6).
 
 - [x] **RISK-451** A background command masks its exit status.
   Category: agent conduct
