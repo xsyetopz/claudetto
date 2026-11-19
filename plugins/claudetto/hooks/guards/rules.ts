@@ -30,8 +30,12 @@ export const ENV_FILES: readonly string[] = [
 export const DENY: readonly string[] = [
 	...ENV_FILES.map((path) => `Read(${path})`),
 	...CREDENTIALS.map((path) => `Read(${path})`),
+	// The middle wildcards catch `git -C dir push --force` and a flag after the remote, which a prefix rule misses (RISK-103).
 	"Bash(git push --force*)",
+	"Bash(git *push* --force*)",
 	"Bash(git push -f*)",
+	"Bash(git *push* -f)",
+	"Bash(git *push* -f *)",
 	// A hooks override makes a check pass without the repo's hooks (RISK-467); git config keys ignore case.
 	"Bash(git config *core.*ooks*ath*)",
 	"Bash(git *-c core.*ooks*ath*)",
@@ -43,6 +47,10 @@ export const ASK: readonly string[] = [
 	"Bash(git reset --hard*)",
 	"Bash(git clean *)",
 	"Bash(git branch -D *)",
+	"Bash(git * stash*)",
+	"Bash(git * reset --hard*)",
+	"Bash(git * clean *)",
+	"Bash(git * branch -D *)",
 	"Bash(git push --tags*)",
 	"Bash(git push * --tags*)",
 	"Bash(git push * refs/tags/*)",

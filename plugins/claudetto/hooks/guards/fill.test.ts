@@ -17,6 +17,8 @@ describe("guard rules", () => {
 				"Read(~/.aws/**)",
 				"Bash(git push --force*)",
 				"Bash(git push -f*)",
+				"Bash(git *push* --force*)",
+				"Bash(git *push* -f *)",
 				"Read(~/.claudetto-holdout/**)",
 			]),
 		);
@@ -63,7 +65,7 @@ describe("guard rules", () => {
 
 		// Assert
 		expect(next.permissions.ask).toEqual(
-			expect.arrayContaining(["Bash(git stash*)", "Bash(pkill *)", "Bash(killall *)", "Bash(git push --tags*)"]),
+			expect.arrayContaining(["Bash(git stash*)", "Bash(git * stash*)", "Bash(pkill *)", "Bash(killall *)", "Bash(git push --tags*)"]),
 		);
 	});
 
