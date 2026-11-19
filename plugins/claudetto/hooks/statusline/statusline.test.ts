@@ -16,6 +16,14 @@ describe("status line", () => {
 		expect(formatLine({ model: "m" })).toBe("m");
 	});
 
+	test("never shows 100% for a figure that is still below 100", () => {
+		// Act
+		const line = formatLine({ contextPercent: 99.6, fiveHour: 99.5, sevenDay: 100, cacheHit: cacheHitPercent({ input_tokens: 4, cache_read_input_tokens: 996, cache_creation_input_tokens: 0 }) });
+
+		// Assert
+		expect(line).toBe("ctx 99% | 5h 99% | 7d 100% | cache 99%");
+	});
+
 	test("cache hit is cache reads over all prompt tokens", () => {
 		// Act and Assert
 		expect(cacheHitPercent({ input_tokens: 100, cache_read_input_tokens: 800, cache_creation_input_tokens: 100 })).toBe(80);
