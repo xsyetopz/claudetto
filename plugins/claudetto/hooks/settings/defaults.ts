@@ -24,12 +24,17 @@ import { type Json, indentOf, isRecord, parseSettings } from "./settings";
  * The sandbox block and the guard rules come from fillGuards (ADR-0188), the one
  * writer of `sandbox`, so the two never disagree.
  */
+/** The commit trailer setup fills: a co-author that git hosts link to Claude's account. */
+export const CO_AUTHOR = "Co-Authored-By: Claude <noreply@anthropic.com>";
+
 export const DEFAULTS: Json = {
 	skillListingMaxDescChars: 60,
 	outputStyle: "claudetto:Claudetto",
 	showClearContextOnPlanAccept: true,
-	// One trailer in the form the project convention names; vanilla adds a Co-Authored-By line (REQ-GUARDS-063).
-	attribution: { commit: "Assisted-by: Claude Code", pr: "Assisted-by: Claude Code" },
+	// One commit trailer and never a Signed-off-by, as the Linux kernel's rules for AI agents ask, in the one form
+	// GitHub and GitLab credit to an account: GitHub links noreply@anthropic.com to the `claude` login (REQ-GUARDS-063).
+	// A PR body credits no one, so the PR line only discloses the tool.
+	attribution: { commit: CO_AUTHOR, pr: "Assisted-by: Claude Code" },
 	// claudetto's shorter git block replaces the builtin one; the builtin switch also drops the attribution reminder, which claudetto's block carries (hooks/git/instructions.ts).
 	includeGitInstructions: false,
 	bashOutputMaxChars: 8000,
@@ -78,7 +83,14 @@ export const RETIRED_REMINDER_TEXTS: readonly string[] = [
  */
 export const RETIRED_ALLOWS: readonly string[] = ["Bash(claude -p *)"];
 
-export type Fill = { readonly text: string; readonly added: readonly string[] };
+/**
+ * Commit trailers that earlier setup versions wrote to `attribution.commit`. No git
+ * host credits an `Assisted-by` line to an account, so the fill replaces one equal
+ * to an entry with CO_AUTHOR; a trailer the user wrote is kept.
+ */
+export const RETIRED_COMMIT_TRAILERS: readonly string[] = ["Assisted-by: Claude Code"];
+
+export type Fill ={ readonly text: string; readonly added: readonly string[] };
 
 /** Merges defaults into held: scalars when unset, records by key, arrays by missing entry. */
 const merge = (held: Json, defaults: Json, path: string, added: string[]): Json => {
@@ -132,6 +144,11 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
 			added.push(...retired.map((entry) => `removed permissions.allow ${String(entry)}`));
 		}
 	}
+	const attribution = next["attribution"];
+	if (isRecord(attribution) && typeof attribution["commit"] === "string" && RETIRED_COMMIT_TRAILERS.includes(attribution["commit"])) {
+		next["attribution"] = { ...attribution, commit: CO_AUTHOR };
+		added.push(`replaced attribution.commit ${attribution["commit"]}`);
+	}
 	fillGuards(next, added, walls);
 	if (added.length === 0) return { text: text ?? "", added };
 	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, added };
@@ -143,11 +160,12 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
  *
  * @param path User settings file the fill wrote.
  * @param added Entries `fillSettings` reported, each a key or a key and a list entry.
- * @returns One line naming each set key, the count of entries added per list, and each removal on its own.
+ * @returns One line naming each set key, the count of entries added per list, and each removal or replacement on its own.
  */
 export const fillNotice = (path: string, added: readonly string[]): string => {
-	const removals = added.filter((entry) => entry.startsWith("removed "));
-	const sets = added.filter((entry) => !entry.startsWith("removed "));
+	const isChange = (entry: string): boolean => entry.startsWith("removed ") || entry.startsWith("replaced ");
+	const removals = added.filter(isChange);
+	const sets = added.filter((entry) => !isChange(entry));
 	const groups = new Map<string, string[]>();
 	for (const entry of sets) {
 		const key = entry.split(" ", 1)[0] ?? entry;

@@ -84,14 +84,13 @@ describe("guard rules", () => {
 		);
 	});
 
-	test("sets one Assisted-by trailer and no Co-Authored-By or Signed-off-by line", () => {
+	test("sets one commit trailer that git hosts link to the claude account, and no Signed-off-by line", () => {
 		// Act
 		const next = fillOf(undefined);
 
 		// Assert
-		expect(next.attribution.commit).toBe("Assisted-by: Claude Code");
-		expect(JSON.stringify(next)).not.toContain("Co-Authored-By");
+		expect(next.attribution.commit).toBe("Co-Authored-By: Claude <noreply@anthropic.com>");
+		expect(next.attribution.commit.match(/^[\w-]+:/gmu)).toHaveLength(1);
 		expect(JSON.stringify(next)).not.toContain("Signed-off-by");
-		expect(next.attribution.commit.match(/Assisted-by/gu)).toHaveLength(1);
 	});
 });

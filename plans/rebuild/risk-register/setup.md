@@ -408,4 +408,5 @@
   Owner: setup.
   Status: mitigated 2026-11-19 (issue #47).
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto`: 115 pass, 0 fail. Live with `--plugin-dir`, the Bash description ends with the block and both lines. With `includeGitInstructions: true`, the builtin block stays alone and the conflict notice is logged. The first request is 45,426 bytes against 46,144 with the builtin block and reminder.
+  Verified: claude 2.1.327, 2026-11-19: the filled commit line is now `Co-Authored-By: Claude <noreply@anthropic.com>` (ADR-0191), which GitHub credits to the `claude` account; cc-inspect cli with the filled settings shows the Bash description ending with that line. `claude plugin test plugins/claudetto`: 130 pass, 0 fail. The dogfood check of a real commit stays the open action.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19.

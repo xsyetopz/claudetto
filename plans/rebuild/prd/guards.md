@@ -87,12 +87,13 @@
 
 ## Commit Attribution
 
-- [x] **REQ-GUARDS-063** claudetto shall follow the project convention with a single `Assisted-by` trailer, never write `Signed-off-by` for the user, and put session history in the Record or PR description.
-  Acceptance: a commit made by claudetto carries one `Assisted-by` trailer and no `Signed-off-by`. Verification: test.
+- [x] **REQ-GUARDS-063** claudetto shall write one commit trailer that git hosts credit to an account, `Co-Authored-By: Claude <noreply@anthropic.com>` (ADR-0191), never write `Signed-off-by` for the user, and put session history in the Record or PR description.
+  Acceptance: a commit made by claudetto carries one co-author trailer and no `Signed-off-by`. Verification: test.
   Basis: cited (a contribution certificate in the dossier). Status: missing at 088a227c (`git grep Assisted-by` finds nothing under `plugins/`).
-  Source: external/please-use-me-often/agent-terms/CONTRIBUTION-CERTIFICATE.md:22.
+  Source: external/please-use-me-often/agent-terms/CONTRIBUTION-CERTIFICATE.md:22; user decision, 2026-11-19 (ADR-0191).
   Verified: claude 2.1.327, 2026-11-18. cc-inspect cli, query Co-Authored-By: vanilla request 1 holds the text; with attribution.commit set to Assisted-by: Claude Code the request holds Assisted-by and no Co-Authored-By. Setup fills attribution when unset; fill.test.ts pins it. The setting is one static line, so the model name is not in the trailer.
   Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. fill.test.ts now asserts one Assisted-by and no Signed-off-by or Co-Authored-By in the filled attribution; with Signed-off-by added to the default by hand it failed, and passed after restoring. The trailer reaching a commit rests on the 2026-11-18 cc-inspect request probe.
+  Verified: claude 2.1.327, 2026-11-19 (#47, ADR-0191): fill.test.ts asserts the filled commit value is `Co-Authored-By: Claude <noreply@anthropic.com>`, one trailer, no Signed-off-by; defaults.test.ts asserts the retired `Assisted-by: Claude Code` value is replaced and a user value kept. Both failed before the change (116 pass, 2 fail) and pass after (`claude plugin test plugins/claudetto`: 130 pass, 0 fail). cc-inspect cli with the filled settings: the Bash description ends with "End each commit message with the line `Co-Authored-By: Claude <noreply@anthropic.com>`". GitHub GraphQL links that email to the `claude` login (commit cd87e6696).
 
 ## Web Fetch and Browser Fallback
 

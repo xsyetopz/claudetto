@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { DEFAULTS, FILL_VERSION, RETIRED_ALLOWS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "../defaults";
+import { DEFAULTS, FILL_VERSION, RETIRED_ALLOWS, RETIRED_COMMIT_TRAILERS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "../defaults";
 
 describe("defaults fill", () => {
 	test("fills every default into empty settings", () => {
@@ -114,6 +114,22 @@ describe("defaults fill", () => {
 		// Assert
 		expect(next.permissions.allow).toEqual(["Read", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
 		expect(fill?.added).toContain("removed permissions.allow Bash(claude -p *)");
+	});
+
+	test("replaces the retired Assisted-by commit trailer and keeps one the user wrote", () => {
+		// Arrange
+		const retired = JSON.stringify({ attribution: { commit: RETIRED_COMMIT_TRAILERS[0], pr: "mine" } });
+		const own = JSON.stringify({ attribution: { commit: "Assisted-by: my-agent" } });
+
+		// Act
+		const replaced = fillSettings(retired);
+		const kept = JSON.parse(fillSettings(own)?.text ?? "");
+
+		// Assert
+		expect(JSON.parse(replaced?.text ?? "").attribution).toEqual({ commit: "Co-Authored-By: Claude <noreply@anthropic.com>", pr: "mine" });
+		expect(replaced?.added).toContain("replaced attribution.commit Assisted-by: Claude Code");
+		expect(fillNotice("s.json", replaced?.added ?? [])).toContain("; replaced attribution.commit Assisted-by: Claude Code.");
+		expect(kept.attribution.commit).toBe("Assisted-by: my-agent");
 	});
 
 	test("leaves complete settings unchanged", () => {
