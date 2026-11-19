@@ -22,7 +22,7 @@
   Basis: reported, user rule, 2026-11-13. Status: missing at 088a227c: `git grep` of the baseline hooks finds Bun hard-coded in `plugins/claudetto/hooks/features/setup/settings.ts:27-45` (the statusline command runs `bun --no-env-file`), `key.ts:24` (the Context7 use text is `bunx ctx7`) and `starter-families.ts:49` (`bun test --bail --dots`); `hold.ts` holds `bunx` only in its tests.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; user decision, 2026-11-13.
   Verified: grep -rniw bun over plugins/ non-test sources -> 0 hits (2.1.327, 2026-11-19).
-  Verified: grep -rniw bun plugins (non-test), 2026-11-19: 4 hits, none a Bun rule. README.md:53 and hooks/guards/commit.ts:6,9 use bun test as an example of a piped test command; hooks/guards/rules.ts:77 lists ~/.bun/bin among the PATH folders in sandbox denyWrite, which protects the folder without requiring Bun. Supersedes the earlier 0-hit line.
+  Verified: grep -rniw bun plugins (non-test), 2026-11-19: 4 hits, none a Bun rule. README.md:53 and hooks/guards/shell/commit.ts:6,9 use bun test as an example of a piped test command; hooks/guards/wall/rules.ts:77 lists ~/.bun/bin among the PATH folders in sandbox denyWrite, which protects the folder without requiring Bun. Supersedes the earlier 0-hit line.
 
 - [x] **CON-019** Moved Out as OUT-2709: governs how the rebuild agent works or writes the plan; no shipped part of plugins/ carries it, so no check on plugins/ ticks it, and the goal still binds the work to it.
 

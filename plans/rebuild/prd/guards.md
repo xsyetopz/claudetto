@@ -70,7 +70,7 @@
   Basis: reported. Status: have at 088a227c (plugins/claudetto/.claude-plugin/plugin.json:61 describes a temp-folder age, not a retention default; the ask rule is missing).
   Verified: 2026-11-18, weak evidence. `grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto` finds no hit, so the plugin ships no default for either key and no code reads them; the acceptance holds. The ask rule over edits to these two settings is not built; REQ-SETUP-065 writes autoMemoryEnabled only on a yes. Reopened 2026-11-18 in review: the ask rule clause is open, so the item stays BUILD.
   Source: external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:58; openspec/specs/session-hygiene/spec.md:33.
-  Verified: grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto -> 0 hits; hooks/guards/rules.ts ASK holds Edit and Write on ~/.claude/settings.json, and the cc-inspect cli fill wrote both ask rules; fill.test.ts pins only the stash, tag-push and process-kill ask entries, so the two settings.json ask entries rest on rules.ts:59-60 and the fill run, not on a test (2.1.327, 2026-11-19).
+  Verified: grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto -> 0 hits; hooks/guards/wall/rules.ts ASK holds Edit and Write on ~/.claude/settings.json, and the cc-inspect cli fill wrote both ask rules; fill.test.ts pins only the stash, tag-push and process-kill ask entries, so the two settings.json ask entries rest on rules.ts:59-60 and the fill run, not on a test (2.1.327, 2026-11-19).
 
 ## Stop and Reply Checks
 
@@ -114,10 +114,10 @@
 ## Sandbox
 
 - [x] **REQ-GUARDS-071** claudetto shall set the sandbox deny-list as: allowWrite `~/`, `/Volumes/`, `/private/tmp`; denyWrite 14 files that run later; denyRead Keychains and cloud credentials; `~/.ssh` and `~/.gnupg` not in denyRead; `allowMachLookup ["*"]`; `excludedCommands` `ps *`, `top *`, `sysctl *`, `launchctl list`.
-  Acceptance: the filled settings hold the block from `hooks/guards/rules.ts` (the denyWrite list has grown past 14 with ~/.claude/plugins, ~/.claude/hooks and the xcrun cache, and allowWrite adds /opt/homebrew and /private/var/folders per ADR-0188). Verification: test.
+  Acceptance: the filled settings hold the block from `hooks/guards/wall/rules.ts` (the denyWrite list has grown past 14 with ~/.claude/plugins, ~/.claude/hooks and the xcrun cache, and allowWrite adds /opt/homebrew and /private/var/folders per ADR-0188). Verification: test.
   Basis: user decision. Status: have.
   Source: user decision, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); user decision, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
-  Verified: claude 2.1.327, 2026-11-18. hooks/guards/rules.ts and fill.ts write the sandbox block (allowWrite, denyWrite, denyRead with login keychain re-allowed, allowMachLookup, excludedCommands per ADR-0159 and ADR-0188). cc-inspect cli accepted the filled settings and enforced them. claude plugin test plugins/claudetto: 35 pass.
+  Verified: claude 2.1.327, 2026-11-18. hooks/guards/wall/rules.ts and fill.ts write the sandbox block (allowWrite, denyWrite, denyRead with login keychain re-allowed, allowMachLookup, excludedCommands per ADR-0159 and ADR-0188). cc-inspect cli accepted the filled settings and enforced them. claude plugin test plugins/claudetto: 35 pass.
   Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 105 pass, 0 fail: new fill.test.ts test 'writes the sandbox lists of REQ-GUARDS-071 and keeps ~/.ssh and ~/.gnupg readable'; with ~/.ssh added to DENY_READ by hand it failed (104 pass, 1 fail), and passed after restoring.
 
 ## Destructive Commands

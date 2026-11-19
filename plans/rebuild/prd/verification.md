@@ -21,12 +21,12 @@
 ## Red Baseline and Validator Test
 
 - [x] **REQ-VERIFICATION-059** claudetto shall record the `just check` baseline and shall test `claude plugin validate --strict --json` for `hasCatch:false` and a second gating hook.
-  Acceptance: `just verify` fails on a plugin whose `claude plugin validate --json` report has a gating hook with `hasCatch:false`. Verification: test (tools/check-catch.test.ts).
+  Acceptance: `just verify` fails on a plugin whose `claude plugin validate --json` report has a gating hook with `hasCatch:false`. Verification: test (tools/__tests__/check-catch.test.ts).
   Basis: measured. Status: partial at 088a227c (tools/validator.ts, tools/guard-catch.test.ts exist).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:38; tools/validator.ts:1@088a227c.
   Verified: claude 2.1.327, 2026-11-18, `claude plugin validate plugins/claudetto --strict` failed on the six gating hooks without `.catch` before commit 67e9597ab and passes after it; `just verify` runs it before each push, so no repo-own validator test is kept.
   Decision: 2.1.327 fact: `claude plugin validate --strict` exits 0 on `hasCatch:false` (it only lists "gating hook without .catch"), so the earlier claim that validate fails was wrong; tools/check-catch.sh reads the JSON report and the justfile runs it per plugin.
-  Verified: claude 2.1.327, 2026-11-19, `bun test tools/check-catch.test.ts`: 2 pass, 0 fail; a copy of plugins/claudetto with the `.catch` removed from agent.spawn exits 1 and names agent.spawn, the shipped plugin exits 0 (before: no test; validate --strict exited 0 on the copy). Commit with the test; GitHub issue not opened because gh issue create was denied by the permission classifier.
+  Verified: claude 2.1.327, 2026-11-19, `bun test tools/__tests__/check-catch.test.ts`: 2 pass, 0 fail; a copy of plugins/claudetto with the `.catch` removed from agent.spawn exits 1 and names agent.spawn, the shipped plugin exits 0 (before: no test; validate --strict exited 0 on the copy). Commit with the test; GitHub issue not opened because gh issue create was denied by the permission classifier.
 
 ## Paid Runs
 

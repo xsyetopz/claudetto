@@ -66,7 +66,7 @@
   Acceptance: `git show 088a227c:plugins/claudetto/hooks/features/stop-notice/stop-notice.ts` shows it. Verification: inspection.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/stop-notice/stop-notice.ts:10@088a227c.
-  Verified: claude plugin test plugins/claudetto -> 54 pass incl. hooks/notice/stop.test.ts (2.1.327, 2026-11-19).
+  Verified: claude plugin test plugins/claudetto -> 54 pass incl. hooks/notice/__tests__/stop.test.ts (2.1.327, 2026-11-19).
 
 - [x] **BB-026** Moved Out as OUT-2570: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 

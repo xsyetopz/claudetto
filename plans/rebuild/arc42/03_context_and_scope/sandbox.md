@@ -65,4 +65,4 @@
   Basis: measured (five nested runs; three unnested probes, 2026-11-18; code read). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/incident-lab/runs/hang-sonnet.jsonl (nested); reports/2026-11-18-research/incident-lab/sandbox-probe.txt (unnested); ADR-0188.
   Verified: source already on 2.1.327.
-  Verified: PASS (static plus tests): hooks/settings/defaults.test.ts:35-36 asserts sandbox.autoAllowBashIfSandboxed true and excludedCommands contains 'claude *'; `$C plugin test plugins/claudetto` 105 pass 0 fail, binary 2.1.327, 2026-11-19. The nested-sandbox EPERM was not rebuilt (it needs a nested claude -p).
+  Verified: PASS (static plus tests): hooks/settings/__tests__/defaults.test.ts:35-36 asserts sandbox.autoAllowBashIfSandboxed true and excludedCommands contains 'claude *'; `$C plugin test plugins/claudetto` 105 pass 0 fail, binary 2.1.327, 2026-11-19. The nested-sandbox EPERM was not rebuilt (it needs a nested claude -p).
