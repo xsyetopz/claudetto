@@ -128,7 +128,7 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
  *
  * @param path User settings file the fill wrote.
  * @param added Entries `fillSettings` reported, each a key or a key and a list entry.
- * @returns One line naming each set key and the count of entries added per list.
+ * @returns One line naming each set key, the count of entries added per list, and each removal on its own.
  */
 export const fillNotice = (path: string, added: readonly string[]): string => {
 	const removals = added.filter((entry) => entry.startsWith("removed "));
