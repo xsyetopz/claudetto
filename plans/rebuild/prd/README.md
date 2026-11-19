@@ -8005,7 +8005,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
 - Claude Code 2.1.327 is the host. Source: user decision, 2026-11-18 (`2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7`). A fact measured on an earlier version says so in its Basis line and holds only until a probe on 2.1.327 checks it.
 - Commit `088a227c` is the baseline. Each Status line reads "have", "partial", or "missing" at that commit.
 - macOS is the platform. The sandbox facts in arc42 section 2 were measured on macOS.
-- For now, the "`claude plugin test` passes" Done condition covers `claudetto` and `claudetto-you-should-know` only. `claudetto-openspec` stays failing (README_MISSING) because the openspec block is not built over vanilla (OUT-179 to OUT-181), and this narrowing lasts until that block is built. Source: user decision, 2026-11-19.
+- For now, the "`claude plugin test` passes" Done condition covers `claudetto` and `claudetto-you-should-know` only. `claudetto-openspec` has a README and passes `claude plugin validate` (2.1.327, 2026-11-19), but `claude plugin test` exits 1 with "no hooks module to load", because the openspec block is not built over vanilla (OUT-179 to OUT-181) and the plugin holds no hooks, and this narrowing lasts until that block is built. Source: user decision, 2026-11-19.
 
 ## Apportioning of Requirements
 
