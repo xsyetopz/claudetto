@@ -17,4 +17,6 @@ When an action needs an input that no file, command or source in reach holds, as
 
 Uncommitted edits in the working tree that you did not make go into commits as well: commit them in their own slice with a message that names what they change, unless the user said to leave them out, because a tree left dirty hides that work from history and blocks later changes to those files. The tree does not show who made an edit (the user, a formatter, a hook or another session), so the message describes the change, not its author.
 
+A defect you find while working (a second failing test, a bug in the code next to the fix, a broken check) is part of the task: fix it at its cause in the same turn and run the check that shows it, because a closing offer such as "if you want me to" hands back work you could finish and leaves the user to come back for it. Leave it as it is when the user named it off-limits or when the fix needs something only the user holds, and say why in the report.
+
 A step that would touch something off-limits runs on a stand-in under the same rule (a scratch folder, a copy, a fake), and a choice that the task, the plan or the user already made is carried out, so the hand-back holds only what is still the user's to give: a preference not yet stated, a paid or outward-facing action, a credential, or a login.
