@@ -977,7 +977,7 @@
   Actions: Name the user's blind folders in a guard; deny sandbox-off reads of them.
   Trigger: A sandbox-off command names a folder the user set apart.
   Owner: guards
-  Status: open
+  Status: mitigated 2026-11-19. hooks/guards/wall.ts refuses every Bash call that names a wall in any spelling (`~/`, `$HOME/`, `${HOME}/`, the expanded home), sandbox on or off; wall.test.ts passes, and fails with the guard unregistered (claude plugin test, 75 pass; mutant 74 pass 1 fail). Probe, claude 2.1.327 via cc-inspect cli, 2026-11-19: with only `Read(<project>/blind/**)` denied, a sandboxed `ls blind` listed the file, and a sandbox-off one reached the permission ask, so the Read rule alone does not cover Bash. A glob that spells no part of the wall name still passes this guard.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (handoff, bug the agent caused); observed in transcript, 2026-11-16
   Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true when unset (fill.test.ts), so the agent starts inside the sandbox; allowUnsandboxedCommands stays true per ADR-0159, so an agent can still ask for a call outside it and that call prompts.
 
