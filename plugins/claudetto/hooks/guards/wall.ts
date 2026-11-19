@@ -155,20 +155,20 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 	if (walls.length === 0) return;
 	on("tool.call", { tool: "Bash" }, async ($, e, next) => {
 		if (e.tool !== "Bash") return next(e);
-		// A spelled wall ends in its last part; only a glob can name a wall without it.
+		// A spelled wall ends in its last part; only a glob, a variable or a substitution can name a wall without it.
 		const command = e.command;
 		const text = expandStatic(command);
-			const words = globWords(text);
-			const named = walls.some((wall) => text.includes(wall.replace(/^.*\//u, "")) || command.includes(wall.replace(/^.*\//u, "")));
+		const words = globWords(text);
+		const named = walls.some((wall) => text.includes(wall.replace(/^.*\//u, "")) || command.includes(wall.replace(/^.*\//u, "")));
 		if (words.length === 0 && !named && !/[$`]/u.test(text)) return next(e);
 		// Without a home the `~/` and `$HOME/` spellings and globs still match; only the expanded one is lost.
 		const home = await $.env.get("HOME").catch(() => undefined);
 		const atHome = movesHome(text, home);
-			// After a move to home, a plain relative word names a folder of home as much as a glob does.
-			const reach = atHome ? text.split(/[\s;&|()<>]+/u).map((w) => w.replace(/["']/gu, "")).filter(Boolean) : words;
+		// After a move to home, a plain relative word names a folder of home as much as a glob does.
+		const reach = atHome ? text.split(/[\s;&|()<>]+/u).map((w) => w.replace(/["']/gu, "")).filter(Boolean) : words;
 		const hit = walls.find(
-				(wall) => [command, text].some((t) => wallNames(wall, home).some((name) => t.includes(name))) || globHitsWall(reach, wall, home, atHome) || dynamicWall(text, wall, home),
-			);
+			(wall) => [command, text].some((t) => wallNames(wall, home).some((name) => t.includes(name))) || globHitsWall(reach, wall, home, atHome) || dynamicWall(text, wall, home),
+		);
 		return hit === undefined ? next(e) : { deny: wallReason(hit) };
 	}).catch(($, e, next) => (fault($, "wall guard", next.error), next(e)));
 }
