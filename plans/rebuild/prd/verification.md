@@ -11,12 +11,13 @@
 
 ## Git Hooks Check
 
-- [x] **REQ-VERIFICATION-032** claudetto shall fail its repo guard when the resolved `core.hooksPath` is not `<repo>/.githooks`, and `.githooks/pre-push` shall run `just verify`.
+- [ ] **REQ-VERIFICATION-032** claudetto shall fail its repo guard when the resolved `core.hooksPath` is not `<repo>/.githooks`, and `.githooks/pre-push` shall run `just verify`.
   Acceptance: the guard compares resolved paths, so a worktree that rewrites a relative hooks path as an absolute one passes; with another path it prints "git hooks are off: run just setup" and fails. Verification: inspection.
   Basis: cited, task text (done in the bedrock repo, adopted here). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:67; justfile:116-119@088a227c; .githooks/pre-push:6@088a227c.
   Verified: demonstration, 2026-11-18: `just verify` passes with core.hooksPath at .githooks; with GIT_CONFIG_VALUE_0=/tmp it prints "git hooks are off: run just setup" and exits 1; .githooks/pre-push runs `just verify`.
   Verified: inspection and run 2026-11-19: justfile:10-11 guard prints "git hooks are off: run just setup" and exits 1; .githooks/pre-push:3 execs just verify.
+  Status: to be determined, 2026-11-19. Commit 9fdce2231 removed .githooks/pre-push and the verify guard by user decision, and the leftover `just setup` recipe is gone too, so the Verified lines above describe a state the repo no longer has. The user decides whether the hook returns or this requirement moves Out.
 
 ## Red Baseline and Validator Test
 

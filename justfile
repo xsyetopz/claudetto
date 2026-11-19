@@ -1,7 +1,3 @@
-# Points git at the repository's hooks folder.
-setup:
-	git config core.hooksPath .githooks
-
 # Validates, typechecks and tests every shipped plugin.
 verify:
 	#!/bin/sh
