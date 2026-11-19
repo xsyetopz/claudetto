@@ -439,3 +439,35 @@
   - Status: closed 2026-11-19. `hooks/guards/stdin.ts` runs each Bash command as `{ cmd\n} </dev/null`; the model's command stays in history, so the cache prefix holds. Probe on 2.1.327 (cc-inspect cli, Bash `cat <<EOF >/dev/null … EOF; wc -l`): vanilla moved the call to the background and did not end in 60 s; with the plugin `wc -l` printed 0 in the same second. An emptied glob variable (CTX-838) now reads EOF the same way.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> 130 pass, 0 fail, including "stdin guard > reads stdin from /dev/null and keeps a heredoc intact"; the guard is plugins/claudetto/hooks/guards/shell/stdin.ts:10 (the status cites hooks/guards/stdin.ts, which does not exist); `bash` on `{ cat <<EOF >/dev/null ... EOF; wc -l } </dev/null` -> prints 0 and exits 0.
   - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.
+
+- [x] **RISK-508** zsh passes an unquoted `$VAR` that holds a command with its arguments, or a list of files, as one word (issue #61, cluster E).
+  - Category: host behaviour.
+  - Cause: zsh does not split unquoted parameter expansions unless `sh_word_split` is set; the model writes such commands for bash.
+  - Event: 21 Bash results in this machine's transcripts, 10 sessions, 2026-11-17 to 2026-11-19, such as `command not found: echo hi there` and `no such file or directory: bun /Users/.../main.ts` (reports/2026-11-19-research/goal/zsh/README.md, cluster E).
+  - Consequence: the call fails or exits 0 with no work done, and the next turn rewrites the command.
+  - Likelihood: 2
+  - Impact: 2
+  - Existing controls: the SessionStart env-file line `setopt no_nomatch no_equals` (REQ-KERNEL-014).
+  - Response: mitigate.
+  - Actions: add `sh_word_split` to the env-file line in hooks/hooks.json.
+  - Trigger: a Bash result with `command not found:` or `no such file or directory:` naming a value with spaces.
+  - Owner: kernel
+  - Status: mitigated 2026-11-20. `ksh_arrays` was the other candidate and is rejected: its probe turned `exit ${pipestatus[1]}` from `exit 1` into `exit 0`, and 297 recorded commands use a 1-based subscript.
+  - Verified: 2026-11-20, claude 2.1.327, paid batchZE (claude-sonnet-5-5, zsh 5.9, 6 per arm, $1.261): `C="echo hi there"; $C` vanilla 0/6, claudetto 6/6; `F="a.txt notes.md"; wc -l $F` vanilla 0/6, claudetto 6/6; control `${pipestatus[1]}` 6/6 on both. Probe (reports/2026-11-20-research/zsh/probe.sh with the user's shell snapshot): 6 of 6 split cases fixed, 8 of 8 controls unchanged; the one changed case is an unquoted path with a space. Transcript scan (scan.ts, 104,848 Bash commands): 0 such paths, 0 of 107 literal cases and 0 of a 58-case substitution sample harmed.
+  - Source: issue #61; reports/2026-11-20-research/zsh/README.md.
+
+- [x] **RISK-509** zsh rejects bash-only syntax that no zsh option restores: `${a,,}` and `${a^^}`, `"$var[...]"`, and `[ a \< b ]` (issue #61, clusters F, G and H).
+  - Category: host behaviour.
+  - Cause: zsh has no case-modification expansion and no `\<` in `[`, and reads `$var[` as a subscript.
+  - Event: 16 Bash results in this machine's transcripts, 2026-11-17 to 2026-11-19: F 5, G 10, H 1 (reports/2026-11-19-research/goal/zsh/README.md).
+  - Consequence: one failed call, then a rewrite in the next turn.
+  - Likelihood: 1
+  - Impact: 2
+  - Existing controls: zsh prints the error (`bad substitution`, `bad math expression`, `condition expected`), and in the cited transcripts the next command was rewritten.
+  - Response: accept.
+  - Actions: none. No option covers F or H; `ksh_arrays` covers G but breaks `${pipestatus[1]}` and 1-based arrays (RISK-508). /bin/bash 3.2 on macOS also fails on F, so switching the shell does not cure it.
+  - Trigger: more than 5 such results in a week.
+  - Owner: kernel
+  - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2, and no candidate beats vanilla.
+  - Verified: 2026-11-20, zsh 5.9 probe: `a=ab; echo ${a^^}` gives `bad substitution` under zsh and under /bin/bash 3.2; `setopt ksh_arrays` turns `false | true; echo "exit ${pipestatus[1]}"` into `exit 0` (reports/2026-11-20-research/zsh/README.md).
+  - Source: issue #61.

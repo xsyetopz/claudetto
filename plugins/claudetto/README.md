@@ -104,4 +104,4 @@ claudetto shows one line: model, `ctx` percent, `5h` and `7d` rate-limit percent
 
 ## Shell Start-Up
 
-At a session start, claudetto adds `setopt no_nomatch no_equals` to the session's env file for zsh, so an unmatched glob or a word starting with `=` reaches the command as written.
+At a session start, claudetto adds `setopt no_nomatch no_equals sh_word_split` to the session's env file for zsh, so an unmatched glob or a word starting with `=` reaches the command as written, and an unquoted `$VAR` that holds a command with its arguments (`C="echo hi"; $C`) or a list of files splits into words as it does in bash. `${pipestatus[1]}` and 1-based arrays keep their zsh meaning. The cost: an unquoted variable that holds one path with a space (`ls $d` with `d="My Dir"`) now splits; quote it as `"$d"`. None of 104,848 recorded Bash commands on the measuring machine had that shape.

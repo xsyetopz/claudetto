@@ -7,7 +7,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "[ -n \"$CLAUDE_ENV_FILE\" ] || exit 0; grep -qs 'setopt no_nomatch no_equals' \"$CLAUDE_ENV_FILE\" || echo '[ -n \"$ZSH_VERSION\" ] && setopt no_nomatch no_equals' >> \"$CLAUDE_ENV_FILE\""
+						"command": "[ -n \"$CLAUDE_ENV_FILE\" ] || exit 0; grep -qs 'setopt no_nomatch no_equals sh_word_split' \"$CLAUDE_ENV_FILE\" || echo '[ -n \"$ZSH_VERSION\" ] && setopt no_nomatch no_equals sh_word_split' >> \"$CLAUDE_ENV_FILE\""
 					}
 				]
 			}

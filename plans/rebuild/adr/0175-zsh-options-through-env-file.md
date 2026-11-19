@@ -27,5 +27,6 @@ The `ZDOTDIR` route is not chosen. On 2.1.327 the shell snapshot pre-check scans
 
 - The loud zsh errors stop; commands keep their zsh semantics.
 - `**` keeps its zsh meaning.
+- 2026-11-20, issue #61: the same line gains `sh_word_split`, so an unquoted `$VAR` holding a command or a file list splits as in bash; `ksh_arrays` stays off because it re-bases `${pipestatus[1]}` (RISK-508, RISK-509).
 
 Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:560; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:567; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:569 (measured).
