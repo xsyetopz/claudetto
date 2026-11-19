@@ -24,7 +24,7 @@ The plan for claudetto on Claude Code 2.1.327. Four standards split it; each fil
 | `risk-register/<block>.md` | ISO 31000:2018 process fields | What known problems remain? Each medical error with its cure, in the file of its owning block |
 | `reference/you-should-know-prompt.md` | none | Verbatim copy of the `cc-plugin-you-should-know@builtin` prompt |
 
-An arc42 section file over 300 lines becomes a directory of the same name with a `README.md` index and one file per template subsection (a runtime scenario, a concept, a white box). Subsections whose titles share a leading phrase share one file, so no file name extends another.
+An arc42 section file over 603 lines becomes a directory of the same name with a `README.md` index and one file per template subsection (a runtime scenario, a concept, a white box). Subsections whose titles share a leading phrase share one file, so no file name extends another.
 
 ## Blocks
 

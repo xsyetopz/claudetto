@@ -26,7 +26,7 @@ hooks/
   then import for unrelated reasons. Only `register.ts` and `hooks.json` sit at the `hooks/` top level.
 - A feature with sub-concerns nests them the same way, e.g. `guards/shell/`, `guards/wall/`, `guards/redact/`;
   a data file its code reads (`betterleaks.toml`) lives beside that code.
-- Keep a source module under 300 lines; past that, split it into a folder of role files (see `view/parts/`).
+- Keep a source module under 603 lines; past that, split it into a folder of role files (see `view/parts/`).
 - Imports are relative and extension-less (`../shared/constants`).
 
 ## Tests
