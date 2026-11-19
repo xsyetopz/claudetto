@@ -8982,7 +8982,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: measured. Status: have at 088a227c (`plugins/claudetto-openspec`).
   Source: openspec/specs/lean-openspec/spec.md:129.
 
-- [x] **OUT-2544** Out (plugins/claudetto-you-should-know still holds hyphenated names (session-rows, view-actions, view-row, propose-text, card-draw.test) and some are files the user holds uncommitted; moved from CON-011 in arc42/02_architecture_constraints/user-rules.md): claudetto shall use real directories and no hyphenated file families, and shall delete each old path when its replacement lands.
+- [x] **OUT-2544** Out (the rule is OUT-002's, which holds: `git ls-files plugins | grep -E '/[^/]*-[^/]*\.ts$'` lists only `propose-text.ts`, which shares its prefix with no file (2026-11-19); moved from CON-011 in arc42/02_architecture_constraints/user-rules.md): claudetto shall use real directories and no hyphenated file families, and shall delete each old path when its replacement lands.
   Basis: cited. Status: missing at 088a227c (79 hyphenated source files, probe: `find plugins tools -name '*-*.ts'` on the 088a227c tree, 2026-11-17).
   Source: user decision, 2026-11-16 (old plan, What We Can Do); plugins at 088a227c; user decision, 2026-11-16 17:36 UTC, files-as-directories is unacceptable; no file families (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949).
 
@@ -8994,11 +8994,11 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: cited. Status: missing at 088a227c (`git grep -il 'samzilverberg\|who96' 088a227c` finds nothing over the baseline tree; the rebuild shall carry both credits).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/session-handoff/spec.md:170,174.
 
-- [x] **OUT-2547** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-002 in arc42/05_building_block_view.md): Feature `compaction` (`session.compact`, `model.fork`, `turn.complete`) writes its own handoff in place of the core summary. It compacts by session age since session start or since the last compaction (`handoff.ts:67-83`), which the cache ...
+- [x] **OUT-2547** Out (the item describes the 088a227c `compaction` feature, which the rebuild dropped with its session-age trigger; the rebuild's own handover, which also replaces the core summary, ships in plugins/claudetto/hooks/handover/ and is tracked by the REQ-HANDOVER items; moved from BB-002 in arc42/05_building_block_view.md): Feature `compaction` (`session.compact`, `model.fork`, `turn.complete`) writes its own handoff in place of the core summary. It compacts by session age since session start or since the last compaction (`handoff.ts:67-83`), which the cache ...
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/compaction/handoff.ts:48@088a227c; plugins/claudetto/hooks/features/compaction/handoff.ts:74@088a227c; plugins/claudetto/hooks/features/compaction/handoff.ts:87@088a227c; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031).
 
-- [x] **OUT-2548** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-003 in arc42/05_building_block_view.md): Feature `memory` (`tool.check`, `agent.spawn`, `session.usage`) holds a call under memory pressure, plus a session tree.
+- [x] **OUT-2548** Out (the item describes the 088a227c `memory` feature, which the rebuild dropped with its session tree; the rebuild's memory hold ships as plugins/claudetto/hooks/guards/memory.ts (REQ-GUARDS-020); moved from BB-003 in arc42/05_building_block_view.md): Feature `memory` (`tool.check`, `agent.spawn`, `session.usage`) holds a call under memory pressure, plus a session tree.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/memory/hold.ts:245@088a227c; plugins/claudetto/hooks/features/memory/session-tree.ts:72@088a227c.
 
@@ -9070,11 +9070,11 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/agent-model/model.ts:5@088a227c.
 
-- [x] **OUT-2566** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-021 in arc42/05_building_block_view.md): Feature `delegation` (`agent.offer`, `tool.describe`, `tool.call`, `tool.register`) holds agent routing texts and caps.
+- [x] **OUT-2566** Out (the item describes the 088a227c `delegation` feature, which the rebuild dropped with its routing texts, `tool.call` and `tool.register` hooks; the rebuild ships only `agent.offer` and `agent.spawn` hooks in plugins/claudetto/hooks/delegation/ (REQ-DELEGATION-026, REQ-DELEGATION-044); moved from BB-021 in arc42/05_building_block_view.md): Feature `delegation` (`agent.offer`, `tool.describe`, `tool.call`, `tool.register`) holds agent routing texts and caps.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/delegation/delegation.ts:7@088a227c; plugins/claudetto/hooks/features/delegation/delegation.ts:11@088a227c.
 
-- [x] **OUT-2567** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-022 in arc42/05_building_block_view.md): Agents at 088a227c: `Artemis` (search; `claude-haiku-5-5`, effort high), `Athena` (review; `claude-sonnet-5-5`, effort medium), `Heracles` (edit; `claude-sonnet-5-5`, effort medium), `Metis` (plan; `claude-sonnet-5-5`, effort medium). Open ...
+- [x] **OUT-2567** Out (the item describes the 088a227c agent set; the rebuild dropped Metis, and Artemis, Athena and Heracles ship with the models and efforts listed (plugins/claudetto/agents/, REQ-DELEGATION-044); moved from BB-022 in arc42/05_building_block_view.md): Agents at 088a227c: `Artemis` (search; `claude-haiku-5-5`, effort high), `Athena` (review; `claude-sonnet-5-5`, effort medium), `Heracles` (edit; `claude-sonnet-5-5`, effort medium), `Metis` (plan; `claude-sonnet-5-5`, effort medium). Open ...
   Basis: measured. Status: have at 088a227c.
   Source: plugins/claudetto/agents/Artemis.md:4@088a227c; plugins/claudetto/agents/Athena.md:4@088a227c; plugins/claudetto/agents/Heracles.md:4@088a227c; plugins/claudetto/agents/Metis.md:4@088a227c.
 
@@ -9106,7 +9106,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/price-step/price-step.ts:15@088a227c; plugins/claudetto/hooks/features/price-step/price-step.ts:102@088a227c.
 
-- [x] **OUT-2575** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-031 in arc42/05_building_block_view.md): The status line (`statusline/`, `bin/claudetto-statusline`) draws rows, segments, limits, and colour; colour is off under `NO_COLOR`.
+- [x] **OUT-2575** Out (the item describes the 088a227c status line, which the rebuild dropped with its rows, colour and `NO_COLOR` handling; the rebuild's one-line status line (model, context, 5h and 7d, cache) ships in plugins/claudetto/hooks/statusline/; moved from BB-031 in arc42/05_building_block_view.md): The status line (`statusline/`, `bin/claudetto-statusline`) draws rows, segments, limits, and colour; colour is off under `NO_COLOR`.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/statusline/color.ts:82@088a227c; plugins/claudetto/statusline/rows.ts:1@088a227c.
 
@@ -9122,7 +9122,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/commands/setup.md:1@088a227c.
 
-- [x] **OUT-2579** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-035 in arc42/05_building_block_view.md): Repo state at 088a227c: setup groups write `promptCacheTtl` and `subagentPromptCacheTtl` "1h", `bashOutputMaxChars` 8000, `MAX_MCP_OUTPUT_TOKENS` "10000", `CLAUDE_CODE_SUBAGENT_MODEL` Sonnet, the model pins, ...
+- [x] **OUT-2579** Out (the item describes the 088a227c setup groups, which the rebuild dropped with the `promptCacheTtl` keys; plugins/claudetto/hooks/settings/defaults.ts still writes `bashOutputMaxChars` 8000, `MAX_MCP_OUTPUT_TOKENS` "10000" and `CLAUDE_CODE_SUBAGENT_MODEL` (REQ-SETUP-055, REQ-DELEGATION-052); moved from BB-035 in arc42/05_building_block_view.md): Repo state at 088a227c: setup groups write `promptCacheTtl` and `subagentPromptCacheTtl` "1h", `bashOutputMaxChars` 8000, `MAX_MCP_OUTPUT_TOKENS` "10000", `CLAUDE_CODE_SUBAGENT_MODEL` Sonnet, the model pins, ...
   Basis: measured. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/setup/settings.ts:117@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:167@088a227c; plugins/claudetto/hooks/features/setup/settings.ts:202@088a227c.
 
@@ -9162,7 +9162,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: reported. Status: have at 088a227c (hooks/kernel, hooks/features).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:107.
 
-- [x] **OUT-2589** Out (the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship; moved from BB-046 in arc42/05_building_block_view.md): The rebuild shape: handoff by `$.model.fork`; `claudetto-you-should-know` ported from the 2.1.325 built-in on `turn.step`, never blocking; one Decider (Jev) with a configurable model fallback (`claude-haiku-5-5`, high; `deciderModel`, ...
+- [x] **OUT-2589** Out (the item describes the 2.1.325 rearchitecture plan; the rebuild dropped the Decider and `deciderModel`, while the handover by `$.model.fork` (plugins/claudetto/hooks/handover/writer.ts) and the you-should-know port on `turn.step` ship; moved from BB-046 in arc42/05_building_block_view.md): The rebuild shape: handoff by `$.model.fork`; `claudetto-you-should-know` ported from the 2.1.325 built-in on `turn.step`, never blocking; one Decider (Jev) with a configurable model fallback (`claude-haiku-5-5`, high; `deciderModel`, ...
   Basis: reported. Status: have at 088a227c (hooks/kernel, hooks/features, kernel/settings.ts `deciderModel`, rules/useTestPatterns.md).
   Source: openspec/changes/2-1-325-rearchitecture/proposal.md:12; openspec/changes/2-1-325-rearchitecture/design.md:107.
 
@@ -9307,7 +9307,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Source: external/please-use-me-often/agent-failure-dossier/00-INDEX.md:56; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:72.
 
 - [x] **OUT-2625** Out (third-party report with no probe; moved from CC-026 in arc42/08_concepts/consent.md): claudetto shall treat bounds and person-authored things as the user's.
-  Basis: reported. Status: partial at 088a227c: `plugins/claudetto-you-should-know/hooks/texts.ts:4` names `git commit --no-verify`; `plugins/claudetto` holds no such rule.
+  Basis: reported. Status: partial at 088a227c: `plugins/claudetto-you-should-know/hooks/texts.ts:4` names `git commit --no-verify`; `plugins/claudetto` holds no such rule. Recheck 2026-11-19: plugins/claudetto/agents/Heracles.md:11 keeps test assertions, expected values and limits "because they belong to the user"; no general rule on person-authored things ships.
   Source: openspec/specs/agent-conduct/spec.md:105; openspec/specs/agent-conduct/spec.md:119; plugins/claudetto-you-should-know/hooks/texts.ts:4@088a227c.
 
 - [x] **OUT-2626** Out (third-party report with no probe; moved from CC-056 in arc42/08_concepts/conventions-and-decisions.md): claudetto shall keep only timeless conventions in the rules file and put each decision (for example "we chose X over Y", "do not touch Z until migration lands") in one issue per open question, with its rationale and plan, which the agent ...
