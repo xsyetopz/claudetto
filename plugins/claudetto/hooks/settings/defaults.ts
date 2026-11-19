@@ -12,9 +12,10 @@ import { type Json, indentOf, isRecord, parseSettings } from "./settings";
  *   `disableBundledSkills` is left out, as it saves 854 more bytes and removes
  *   the bundled skills;
  * - `bashOutputMaxChars` 8000 trims a 10.5k-character result, 9,384 bytes;
- * - DISABLE_GIT_INSTRUCTIONS -1,492, FORK_SUBAGENT 0 -404, DISABLE_EXPLORE_PLAN_AGENTS
- *   -913, DISABLE_CRON with DISABLE_ADVISOR_TOOL -384 (the advisor stays off by
- *   product rule);
+ * - `includeGitInstructions` false with claudetto's shorter git block in its place
+ *   -718 against the builtin block and attribution reminder; FORK_SUBAGENT 0 -404,
+ *   DISABLE_EXPLORE_PLAN_AGENTS -913, DISABLE_CRON with DISABLE_ADVISOR_TOOL -384
+ *   (the advisor stays off by product rule);
  * - SILENT_TURN_REMINDER 0 drops the reminder text, -487 bytes per turn.
  * - `outputStyle` selects the claudetto style when the user picked none: on the
  *   flaky-test prompt its line reran the test and reported the split in 7 of 7
@@ -29,6 +30,8 @@ export const DEFAULTS: Json = {
 	showClearContextOnPlanAccept: true,
 	// One trailer in the form the project convention names; vanilla adds a Co-Authored-By line (REQ-GUARDS-063).
 	attribution: { commit: "Assisted-by: Claude Code", pr: "Assisted-by: Claude Code" },
+	// claudetto's shorter git block replaces the builtin one; the builtin switch also drops the attribution reminder, which claudetto's block carries (hooks/git/instructions.ts).
+	includeGitInstructions: false,
 	bashOutputMaxChars: 8000,
 	worktree: { baseRef: "head" },
 	env: {
@@ -36,7 +39,6 @@ export const DEFAULTS: Json = {
 		CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-5-5",
 		CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
 		CLAUDE_CODE_DISABLE_CRON: "1",
-		CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1",
 		CLAUDE_CODE_FORK_SUBAGENT: "0",
 		CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
 		CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",

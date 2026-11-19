@@ -393,3 +393,19 @@
   Trigger: a fill notice missing after a release that changes a default.
   Owner: setup.
   Status: closed, verified 2026-11-19 (see Verified).
+
+- [x] **RISK-501** Commits lack the attribution line setup writes, because setup's own switch removed the attribution reminder.
+  Category: setup.
+  Cause: setup wrote `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`. In 2.1.327 that switch (`BTt()`, chunk-m14bt1pz.js) removes both the Bash `# Git` block and the attribution reminder, so the `attribution` values setup also wrote never reached the model.
+  Event: dogfood commits on 2.1.327 carried no `Assisted-by: Claude Code` line, and the transcript held no attribution reminder.
+  Consequence: commits and pull requests lose the attribution the user's settings ask for.
+  Likelihood: 4
+  Impact: 2
+  Existing controls: setup writes `includeGitInstructions: false` and no env switch. `hooks/git/instructions.ts` appends a shorter git block with the `attribution.commit` and `attribution.pr` lines read from settings, and adds no line for an unset value. claudetto's `includeGitInstructions` option (default true) turns the block off. When the env or a settings source turns the builtin block on, claudetto's block stays out and session start logs the conflict. `instructions.test.ts` pins each case.
+  Response: mitigate.
+  Actions: confirm the line on dogfood commits in the next run. In the session where the fill first writes `attribution`, the block has no attribution line, because settings are read back at the next start.
+  Trigger: a commit or pull request without the configured attribution line.
+  Owner: setup.
+  Status: mitigated 2026-11-19 (issue #47).
+  Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto`: 115 pass, 0 fail. Live with `--plugin-dir`, the Bash description ends with the block and both lines. With `includeGitInstructions: true`, the builtin block stays alone and the conflict notice is logged. The first request is 45,426 bytes against 46,144 with the builtin block and reminder.
+  Source: observed in a dogfood session on 2.1.327, 2026-11-19.

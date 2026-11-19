@@ -40,6 +40,12 @@
 			"description": "A shell command still running after this many minutes is stopped with its child processes, also when it runs in the background. 0 turns it off.",
 			"default": 30,
 			"min": 0
+		},
+		"includeGitInstructions": {
+			"type": "boolean",
+			"title": "claudetto's git instructions",
+			"description": "Adds a short git block with the attribution lines from settings to the Bash tool, in place of Claude Code's own, which setup turns off with includeGitInstructions false. Turned off here, set includeGitInstructions to true in settings to get the builtin block back.",
+			"default": true
 		}
 	}
 }

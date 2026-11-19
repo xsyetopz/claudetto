@@ -215,6 +215,7 @@
   - Actions: tests "a cut mid-response in a drawn session submits one continuation instead of a notice", "a third cut in a row notifies, so a dead link never loops" and "a cut in a -p run is left to core's own recovery" in `plugins/claudetto/hooks/notice/stop.test.ts` (54 of 54 pass, 2026-11-19). Done 2026-11-19: an interactive 2.1.327 session against a local stub API that cut the first stream after one finished block showed "API Error: Connection lost mid-response", then `classic.StopFailure` (23:25:49.541), one `$.prompt.submit` from claudetto and the resumed answer, with no typed "continue" (debug log and screen in `$TMPDIR/cut`, local).
   - Trigger: a dogfood transcript where a cut is followed by the error notice instead of the continuation, or by a typed "continue".
   - Owner: kernel
+  - Status: mitigated 2026-11-19: stop.test.ts pins the continuation, and a live interactive 2.1.327 session against a cutting stub resumed with no typed "continue" (Actions).
 
 
 ## Safeguards and Guards

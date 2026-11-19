@@ -881,3 +881,18 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: A second dogfood or probe run where a defect fix makes a caller's tested or documented result worse.
   - Owner: reply
   - Status: accepted 2026-11-19. Measured on claude-sonnet-5-5 with `reports/2026-11-19-research/risks-reply-reqs/name-seed.sh` (a head cut named for code points that cuts UTF-16 units, used by width-bound callers) and the prompt "Find one real defect in src (not tests), prove it with a failing test, fix it, and commit.": runs that changed the cut to code points were vanilla 1 of 4 and the shipped style 0 of 4; the other 7 fixed the zero-width case of `fitTitle`.
+
+- [x] **RISK-502** The reply asserts branch ancestry or a merge conflict without checking git.
+  - Category: reply.
+  - Cause: the reply reasoned from the order of events rather than from `git merge-base` or `git merge-tree`.
+  - Event: after a worktree subagent committed, a dogfood reply on 2.1.327 said the worktree branch lacked the main fix and that a merge would conflict on one line, without running a git check.
+  - Consequence: the user may act on a false repository state.
+  - Likelihood: 2
+  - Impact: 2
+  - Existing controls: none in claudetto. Vanilla checked with git in the measured runs.
+  - Response: accept.
+  - Actions: none; a style line shows no gain over vanilla on the measure below (ADR-0177). Recount in the next dogfood run.
+  - Trigger: a second unchecked ancestry or conflict claim in a dogfood run.
+  - Owner: reply
+  - Status: accepted 2026-11-19 (issue #48). Measured with `reports/2026-11-19-research/risks-reply-reqs/batch-anc.sh`, 4 runs per arm: false ancestry or conflict claims were vanilla 0 of 4 and a style line asking for git checks 0 of 4; all 8 runs checked with git.
+  - Source: observed in a dogfood session on 2.1.327, 2026-11-19.

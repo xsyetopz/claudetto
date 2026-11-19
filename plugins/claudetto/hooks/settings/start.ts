@@ -2,6 +2,7 @@ import type { On, PluginOptions } from "claude-code";
 import { fault } from "../fault";
 
 import { repairSettings } from "../builtins/builtins";
+import { GIT_CONFLICT, builtinGitForced, ownGitOn } from "../git/instructions";
 import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
 import { userSettingsPath } from "./settings";
 
@@ -36,6 +37,8 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 			);
 		}
 		if (added.length > 0) $.ui.log(fillNotice(path, added));
+		// Only an explicit turn-on counts: an unset switch is the fill's to set, and a value the fill wrote just now is not read back until the next session.
+		if (ownGitOn(options) && (await builtinGitForced($))) $.ui.log(GIT_CONFLICT);
 		return result;
 	}).catch(($, e, next) => (fault($, "settings fill", next.error), next(e))); // A failed settings write must not block the session.
 }

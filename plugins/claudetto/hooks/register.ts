@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerGuards } from "./guards/guards";
+import { registerGit } from "./git/instructions";
 import { registerPerl } from "./edit/perl";
 import { registerTabs } from "./edit/tabs";
 import { registerOffer } from "./delegation/offer";
@@ -16,6 +17,7 @@ import { registerStatusline } from "./statusline/statusline";
 export const register = (on: On, options: PluginOptions): void => {
 	registerStart(on, options);
 	registerGuards(on, options);
+	registerGit(on, options);
 	registerPerl(on);
 	registerTabs(on);
 	registerCompact(on);
