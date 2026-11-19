@@ -5,15 +5,24 @@ import { limitCommand, minutes } from "./limit";
 import { closeStdin } from "./stdin";
 
 /**
+ * Matches a command that names git. Claude Code refuses a git command in a
+ * worktree-isolated agent when it is more than a plain list of commands or
+ * when an interpreter such as perl runs before git, and the stdin group and the
+ * watchdog both add that. Such a command keeps only pipefail, a plain line.
+ */
+const NAMES_GIT = /\bgit\b/;
+
+/**
  * Wraps the model's Bash command in claudetto's guards: stdin from /dev/null
  * (RISK-488), a wall-time limit (RISK-056) and pipefail before a commit or push
- * (RISK-104).
+ * (RISK-104). A command that names git skips the first two (RISK-499).
  *
  * @param command The Bash command as the model wrote it.
  * @param limit The time limit in minutes; 0 leaves it out.
  * @returns The command as it reaches the shell.
  */
 export const guardCommand = (command: string, limit: number): string => {
+	if (NAMES_GIT.test(command)) return gateCommit(command);
 	const closed = closeStdin(command);
 	return gateCommit(limit === 0 ? closed : limitCommand(closed, limit * 60));
 };

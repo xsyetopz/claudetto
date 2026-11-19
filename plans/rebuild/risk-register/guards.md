@@ -334,6 +334,21 @@
   - Status: closed 2026-11-19. Probe on 2.1.327 under `acceptEdits` with allow `Bash(git *)`, `Bash(perl -0pi -e *)` and deny `Bash(git push --force*)`: `git init` ran, the perl edit ran, the force push was denied with the vanilla text, and an unlisted `curl` got the vanilla "This command requires approval". `false | tail -1 && git commit` made 0 commits, so the guards still wrap allowed calls.
   - Source: probe, claude 2.1.327, 2026-11-19 (cc-inspect cli); `extend/mod-api/calls/tool-command-config` (clawdipedia, read 2026-11-19): `tool.check` fires after `tool.call`.
 
+- [x] **RISK-499** A claudetto command rewrite makes every git command fail in a worktree-isolated agent.
+  - Category: agent behaviour (plugin defect).
+  - Cause: Claude Code 2.1.327 runs `judgeBgWorktreeCommand` (chunk-mzt9ps2f.js) on the command it is about to execute when an agent has `isolation: "worktree"`. The `tool.call` rewrite reaches it, so the stdin group (`{ cmd } </dev/null`) makes the parse non-simple and the watchdog puts perl before git; the guard then refuses any command that names git.
+  - Event: probe, claude 2.1.327, 2026-11-19, cc-inspect cli with a WorktreeCreate hook, `claudetto:Heracles` with `isolation: "worktree"`, subagent Bash `git status`: refused with "this command names git in a form too complex to verify that it stays inside the worktree. Refusing to run it". The same call with no plugin ran git.
+  - Consequence: a worktree-isolated agent cannot run git at all.
+  - Likelihood: 4
+  - Impact: 4
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: `guardCommand` in hooks/guards/shell.ts leaves a command that names git without the stdin group and the watchdog; only the plain `set -o pipefail` line stays before a commit or push. A cheap reliable signal for an isolated worktree was not found, so every git command is exempt (accepted cost: no time limit and no stdin close for git calls).
+  - Trigger: a Bash result with "too complex to verify that it stays inside the worktree".
+  - Owner: guards
+  - Status: closed 2026-11-19. shell.test.ts "a command that names git gets no stdin group and no watchdog" failed before the fix and passes after (claude plugin test: 105 pass, 1 fail before; 106 pass after). Re-probe on 2.1.327 with the fix: `git status` and `git commit -m x` in the isolated subagent ran, with no refusal. Issue #45.
+  - Source: probe, claude 2.1.327, 2026-11-19 (cc-inspect cli).
+
 ## Reply Style and Sycophancy
 
 - [x] **RISK-057** Narration in shipped source.

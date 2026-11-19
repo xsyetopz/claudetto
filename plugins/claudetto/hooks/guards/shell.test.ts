@@ -38,6 +38,15 @@ describe("shell guard", () => {
 		expect(seen).toEqual(["curl -s example.com"]);
 	});
 
+	test("a command that names git gets no stdin group and no watchdog, so the worktree guard can verify it", () => {
+		// Arrange: Claude Code refuses a git command in a worktree-isolated agent unless it parses as a plain list with no interpreter ahead of git.
+
+		// Act and Assert
+		expect(guardCommand("git status", 30)).toBe("git status");
+		expect(guardCommand("cd sub && git log -1", 30)).toBe("cd sub && git log -1");
+		expect(guardCommand("git commit -m x", 30)).toBe("set -o pipefail\ngit commit -m x");
+	});
+
 	test("a limit of 0 leaves the watchdog out", () => {
 		// Act and Assert
 		expect(guardCommand("ls", 0)).toBe("{ ls\n} </dev/null");
