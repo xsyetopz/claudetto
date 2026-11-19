@@ -5,3 +5,5 @@
   Basis: measured, cited docs, reported. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/hooks.json@088a227c; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:12. Not located: tags C:80, C:87.
   Verified: binary string "toward a runaway" -> 2 hits, "hook overran" -> 2; the other limits carry their docs and constant citations in the item (2.1.327, 2026-11-19).
+  Verified: re-run on claude 2.1.327, 2026-11-19: binary 2.1.327: "hook overran" + effect "counted toward a runaway" present (perl ctx); clawdipedia page clock-http-process-env-settings states process.run 30 s default/10 min max/4,194,304 bytes; chunk offsets not re-resolved; "crypto.subtle" only found as Bun doc text, no-Buffer/no-process and $.store 4 MiB not re-checked
+  Verified: code read, claude 2.1.327, 2026-11-19: a hook still running after its budget logs hook overran with effect counted toward a runaway (chunk-b0yr0k8v.js@64151); the host counts overruns per plugin and at Gui=2 in a row reports a runaway plugin in the hooks worker with that plugin as culprit (chunk-m14bt1pz.js@4945918, @4932274). So the twice-past-budget rule holds as two overruns in a row.

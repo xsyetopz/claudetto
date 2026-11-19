@@ -23,6 +23,7 @@
   Basis: user decision. Status: partial at 088a227c (the code says `handoff`; `git grep -n -i handover 088a227c -- plugins` finds only a `handover-probe` tool call).
   Source: user decision, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369).
   Verified: claude plugin test plugins/claudetto -> 54 pass; compact.ts replaces the core summary with the handover (2.1.327, 2026-11-19).
+  Verified: re-run on claude 2.1.327, 2026-11-19: glossary definition; consistent with plugins/claudetto/hooks/handover/compact.ts using session.compact (inspection only)
 
 - [x] **TERM-006** Moved Out as OUT-2698: describes a part that plugins/ does not ship: the status line shows cache reads over all prompt tokens of one turn, a different measure.
 

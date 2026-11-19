@@ -4,5 +4,6 @@
   Basis: reported, cited, and measured (n=3 to 16). Status: partial at 088a227c (`plugins/claudetto/hooks/features/surface/surface.ts`; only `skills/docs` ships).
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:60; plugins/claudetto/hooks/features/surface/surface.ts@088a227c.
   Verified: `find plugins -name SKILL.md` finds 0 files; no plugin ships a skill (2026-11-19).
+  Verified: not re-run 2026-11-19: opinion/cited third-party figures (0 of 16 headless runs, 80% prompt cut); nothing local to run
 
 - [x] **CC-036** Moved Out as OUT-2671: third-party report with no probe.

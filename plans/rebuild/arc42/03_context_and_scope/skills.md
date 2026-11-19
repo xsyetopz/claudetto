@@ -6,11 +6,13 @@
   Basis: measured, fake-API run, 2.1.318; re-measured on claude 2.1.327, 2026-11-18 (fake-API probe, project skills `sk-a` to `sk-d`): four skills with 80-character descriptions add 339 bytes to the first request (messages 10,133 to 10,472 bytes), about 85 bytes or 20 to 25 tokens each, and no skill body text appears in the request. So discovery costs far less than 100 tokens per skill for short descriptions and grows with description length. Frontmatter with `license`, `compatibility`, `metadata` and `allowed-tools` loaded without error. The body size advice (1,500 to 5,000 characters, under 500 lines) is reported from agentskills.io and is not enforced by the program.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:45; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:958; openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:101.
   Verified: source already on 2.1.327.
+  Verified: not re-run 2026-11-19: advice plus 2.1.318 validator probes; nothing re-run, no literal check
 
 - [x] **CTX-712** The Agent Skills standard (agentskills.io) was donated to the Linux Foundation AAIF. Frontmatter fields: `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`. 70+ platforms support it. Public registries hold over 1.3M skills with low-signal slop, and untrusted skills carry prompt-injection and script-execution supply-chain risk
   Basis: reported, agentskills.io. Checked on claude 2.1.327, 2026-11-18: the program loads a skill with the frontmatter fields `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools` without error (fake-API probe, `skills` list in the init event). The Linux Foundation donation, the 70+ platform count, the 1.3M registry count and the supply-chain risk are facts about other parties and stay reported, unverified: they are not visible in the program.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specific-researches-found-through-gemini-ai-studio.jsonl:68.
   Verified: source already on 2.1.327.
+  Verified: not re-run 2026-11-19: third-party ecosystem claims (LF AAIF, 70+ platforms, 1.3M skills); nothing local to run
 
 ## Skills
 
@@ -20,6 +22,7 @@
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:876; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:878.
   Verified: binary string search, claude 2.1.327, 2026-11-19: skillListingMaxDescChars default 1536 is present.
+  Verified: re-run on claude 2.1.327, 2026-11-19: 2.1.327 binary: skillListingMaxDescChars described "Per-skill description character cap in the skill listing sent to Claude (default: 1536)"; the 200 run and the no-warning ellipsis not re-run
 
 ## Skills
 
