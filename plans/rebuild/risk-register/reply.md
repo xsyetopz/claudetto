@@ -931,3 +931,18 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: accepted 2026-11-19 (issue #48). Measured with `reports/2026-11-19-research/risks-reply-reqs/batch-anc.sh`, 4 runs per arm: false ancestry or conflict claims were vanilla 0 of 4 and a style line asking for git checks 0 of 4; all 8 runs checked with git.
   - Source: observed in a dogfood session on 2.1.327, 2026-11-19.
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+
+- [ ] **RISK-503** The reply names the user as the source of a permission denial whose source the result does not state.
+  - Category: reply.
+  - Cause: a denied tool result reads "Permission to use Bash with command … has been denied." whether the auto-mode classifier, a permission rule, the harness or the user denied it, and the agent fills the unknown source with the user.
+  - Event: in a 2.1.327 session on 2026-11-19 a `pkill -f` call came back denied with no source; the reply said the user had declined it, though the user had not been asked (issue #50).
+  - Consequence: the user is assigned a decision they never made, and the next step is misdirected (asking the user to approve or rerun something they never refused).
+  - Likelihood: 2 (one observation, no probe yet)
+  - Impact: 3
+  - Existing controls: none in claudetto.
+  - Response: mitigate.
+  - Actions: find whether a 2.1.327 hook event or the debug log carries the denial source; if one does, attach it to the tool result; else measure a reply line that names a denial's source only when the result shows it.
+  - Trigger: a reply that attributes a denial to the user when the result names no source.
+  - Owner: reply
+  - Source: issue #50; observed in session 2cf55002 on 2.1.327, 2026-11-19.
+  - Status: open 2026-11-19.
