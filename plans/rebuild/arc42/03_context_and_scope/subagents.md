@@ -32,6 +32,7 @@
   Basis: measured (2.1.327, fake API, no MCP servers) for the direction and the 23 KB gap; reported for "hundreds of kilobytes".
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261022T122153Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>).
   Verified: source already on 2.1.327.
+  Verified: not re-run 2026-11-19: not re-measured, needs a paid run; static evidence: none beyond the item.
 
 ## Subagents and Multi-Agent
 
@@ -43,6 +44,7 @@
   Status: n/a (fact).
   Source: external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:169; openspec/changes/2-1-325-rearchitecture/design.md:129,133@088a227c9^ (related only: a cache-hit probe and `ENABLE_PROMPT_CACHING_1H`; these lines do not state the item's claim).
   Verified: source already on 2.1.327.
+  Verified: not re-run 2026-11-19: not re-checked this session; static evidence: none beyond the item.
 
 ## Subagents and Multi-Agent
 
@@ -57,4 +59,5 @@
   Basis: observed (user-supplied `/usage` output, 2026-11-18); read (chunk-4dyhk64x.js@7794, claude 2.1.327). Status: n/a (usage state).
   Source: user decision, 2026-11-18 (user message in ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl, after line 671).
   Verified: source already on 2.1.327.
+  Verified: not re-run 2026-11-19: a user /usage report, not locally re-runnable; static evidence: none.
 
