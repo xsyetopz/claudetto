@@ -1,0 +1,63 @@
+== overload-flag cto exit=0
+  init model: claude-sonnet-5-5
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 1}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 2}
+  system: {"subtype": "model_fallback", "trigger": "overloaded", "original_model": "claude-sonnet-5-5", "fallback_model": "claude-haiku-5-5", "content": "Switched to Haiku 5.5 due to high demand for Sonnet 5.5"}
+  assistant model: claude-haiku-5-5
+  result: success is_error=False 'OK' modelUsage: ['claude-haiku-5-5']
+  requests: 3 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+  requests: 1 x model=claude-haiku-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== overload-noflag cto exit=124
+  init model: claude-sonnet-5-5
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 1}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 2}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 3}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 4}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 5}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 6}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 7}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 8}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 9}
+  system: {"subtype": "api_retry", "error_status": 529, "attempt": 10}
+  requests: 10 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== server-flag cto exit=0
+  init model: claude-sonnet-5-5
+  system: {"subtype": "model_fallback", "trigger": "server_error", "original_model": "claude-sonnet-5-5", "fallback_model": "claude-haiku-5-5", "content": "Switched to Haiku 5.5 due to high demand for Sonnet 5.5"}
+  assistant model: claude-haiku-5-5
+  result: success is_error=False 'OK' modelUsage: ['claude-haiku-5-5']
+  requests: 1 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+  requests: 1 x model=claude-haiku-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== compact-flag cto exit=0
+  init model: claude-sonnet-5-5
+  assistant model: claude-sonnet-5-5
+  result: success is_error=False 'OK' modelUsage: ['claude-sonnet-5-5']
+  system: {"subtype": "status", "status": "compacting"}
+  system: {"subtype": "status"}
+  init model: claude-sonnet-5-5
+  system: {"subtype": "compact_boundary"}
+  result: success is_error=False '' modelUsage: ['claude-haiku-5-5', 'claude-sonnet-5-5']
+  requests: 1 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+  requests: 3 x model=claude-sonnet-5-5 compacting=True output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+  requests: 1 x model=claude-haiku-5-5 compacting=True output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== compact-noflag cto exit=124
+  init model: claude-sonnet-5-5
+  assistant model: claude-sonnet-5-5
+  result: success is_error=False 'OK' modelUsage: ['claude-sonnet-5-5']
+  system: {"subtype": "status", "status": "compacting"}
+  system: {"subtype": "status", "status": "compacting"}
+  system: {"subtype": "status", "status": "compacting"}
+  system: {"subtype": "status", "status": "compacting"}
+  system: {"subtype": "status", "status": "compacting"}
+  requests: 1 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+  requests: 10 x model=claude-sonnet-5-5 compacting=True output_config={"effort": "medium"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== known-model cto exit=0
+  init model: claude-sonnet-5-5
+  assistant model: claude-sonnet-5-5
+  result: success is_error=False 'OK' modelUsage: ['claude-sonnet-5-5']
+  requests: 1 x model=claude-sonnet-5-5 compacting=False output_config={"effort": "high"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+== unknown-model cto exit=0
+  init model: claude-zeta-9-1
+  assistant model: claude-zeta-9-1
+  result: success is_error=False 'OK' modelUsage: ['claude-zeta-9-1']
+  requests: 1 x model=claude-zeta-9-1 compacting=False output_config={"effort": "high"} thinking={"type": "adaptive", "display": "updates"} systemBytes=5887
+
