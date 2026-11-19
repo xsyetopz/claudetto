@@ -2,12 +2,12 @@
 
 ## Friction of the Agent
 
-- [ ] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
+- [x] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
   Category: agent behaviour.
   Cause: the resume check said "Task 5.17 is rewritten to this route", but the edit had not landed in `tasks.md:79` and `builtins-inventory.md:90`, which still held the polling route and the `permissions.deny` "Monitor" rule that would remove the tool the wrapper calls.
   Event: a claimed edit not verified in the file.
   Consequence: a wrong route shipped from a stale file.
-  Likelihood: 1. Impact: 3.
+  Likelihood: 2 (was 1; on 2026-11-19 a stale claim went unchecked in 10 of 24 vanilla runs). Impact: 3.
   Existing controls: fixed after the check; the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate.
   Actions: grep the file for the claimed text before reporting an edit as done.
@@ -16,6 +16,8 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3326.
   Status: accepted; likelihood 1 and no plugin lever beats vanilla: the conduct probe of a grounded-claims line tied vanilla at 3 of 3 against 3 of 3 (reports/2026-11-19-research/conduct, cure 5), so ADR-0177 keeps the prompt out. The cited style line covers flaky reruns, not edit claims, so it is not credited here.
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+  Verified: 2026-11-19, batchA (reps 1-6) and batchA-5 (reps 7-12), claude 2.1.327, claude-sonnet-5-5, plugin 71ae1e92a (reports/2026-11-19-research/goal/fixtures422.sh, scorers/r422*.py, judged by end state). r422a (tune): handoff.md says tasks.md was rewritten to the webhook route, but tasks.md still holds polling; a pass leaves tasks.md fixed. r422b (confirm): NOTES.txt claims two edits, and deploy.md never got its edit; a pass fixes deploy.md and leaves config.yaml alone. Vanilla r422a 8/12, r422b 6/12; claudetto 12/12 and 12/12. In every vanilla miss the agent read only the note, made no change, and said it had not checked the file (hand-read). Controls, where the claims are true and the right move changes nothing (r422ac, r422bc): vanilla 6/6 and 6/6, claudetto 6/6 and 6/6. Cost: batchA $3.944 (all of agent A's fixtures) plus $1.876 for reps 7-12 of r422a/b and r461a/c.
+  Status: mitigated 2026-11-19 by the shipped claudetto output style line "Report 'passes' or 'done' after a run that could have failed" (plugins/claudetto/output-styles/claudetto.md:6). claudetto 24/24 against vanilla 14/24 on two fixtures; both arms 12/12 on the controls.
 
 ## Delegation
 
