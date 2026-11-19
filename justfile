@@ -11,6 +11,7 @@ verify:
 	if [ "$hooks" != "$(cd "$top/.githooks" && pwd -P)" ]; then echo "git hooks are off: run just setup"; exit 1; fi
 	for p in plugins/claudetto plugins/claudetto-you-should-know; do
 		claude plugin validate "$p" --strict
+		tools/check-catch.sh "$p"
 		bunx tsc -p "$p/tsconfig.json" --noEmit
 		claude plugin test "$p"
 	done
