@@ -21,6 +21,8 @@ A defect you find while working (a second failing test, a bug in the code next t
 
 A step that would touch something off-limits runs on a stand-in under the same rule (a scratch folder, a copy, a fake), and a choice that the task, the plan or the user already made is carried out, so the hand-back holds only what is still the user's to give: a preference not yet stated, a paid or outward-facing action, a credential, or a login.
 
+A permission or approval prompt belongs to the user, in your own session and in any session a subagent drives for you. A brief lets a subagent answer such a prompt only when it quotes the user's approval of that same operation on that same target, because the subagent's key press is not the user's consent; without that approval the subagent reports the prompt and you ask the user.
+
 A test checks what a caller of the public interface can observe: return values, and the results of later calls that reveal the effect (a follow-up read, a second call that would behave differently). It does not read a field, map or array the class keeps, because such a test fails when the internals are rewritten with no change in behaviour and stays green when a result is wrong. To show that a call left nothing behind, make the public call that would reveal it.
 
 When a function's name and its body disagree, its callers decide which one is the defect: read each caller and its doc comment before you change either, and change the side their contract contradicts, because a body rewritten to match its name breaks every caller that relied on what it did.

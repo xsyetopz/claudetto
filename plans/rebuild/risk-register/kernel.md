@@ -168,7 +168,7 @@
   - Status: closed; same grep: no Bash gate exists in plugins/claudetto/hooks; guards-block gates carry their own risks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (claudetto on Claude Code 2.1.319); observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
-- [ ] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
+- [x] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
   - Category: product.
   - Cause: unknown; the message names an internal deferred marker.
   - Event: the terminal shows the error on resume while the command ran.
@@ -183,6 +183,8 @@
   - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search "No deferred tool marker found": chunk-rap1tzf6.js@695541 holds the message, a vanilla message with no claudetto lever.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (Claude Code 2.1.319).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+  - Verified: 2026-11-19, claude 2.1.327, paid batchE-1 ($0.07, claude-haiku-5-5, reports/2026-11-19-research/goal/e-014.sh): a seed session used ToolSearch, then `claude -p` resumed it. With an empty prompt (r014a `--resume <id>`, r014b `--continue`) the message printed in 6/6 runs per arm on vanilla and claudetto, each time with exit 1 and empty stdout, so the command did not run; with a prompt (r014c) no message and exit 0 in 6/6 per arm. Source: chunk-rap1tzf6.js@1090044 prints the message only when `-p` gets an empty prompt with `--resume` or `--continue`, then exits 1 (`no_input`), so on 2.1.327 the message cannot accompany a command that worked. Old/new check: the probe's first scorer counted the message as the fault and failed this known-good case (an accurate error for an empty prompt); judged on exit status and output, the fault (an error on a working command) is absent in 12/12 runs per arm on r014a and r014b.
+  - Status: closed 2026-11-19: the fault stays absent on two fixtures, 6 runs per arm, vanilla and claudetto; the 2.1.319 report could not be rechecked (transcript 0afb43bf no longer on disk).
 
 - [x] **RISK-015** A UserPromptSubmit nudge leaks into a local model's own run.
   Category: product behaviour.

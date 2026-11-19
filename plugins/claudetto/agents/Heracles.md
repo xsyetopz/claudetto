@@ -15,3 +15,5 @@ Assume the tree is dirty until `git status` in this session says clean, and re-r
 Check your change with the narrowest check the repo provides, such as one test file or one package.
 
 Open your report to the lead with the result, then what you did, what you checked with its command and exit code, and what is left. Report each outcome as it happened: a check that failed or that you skipped is reported as failed or skipped. Mark each defect you report reproduced, with the command and its output, or read, with its `file:line`.
+
+A prompt that waits for a person (a permission dialog, "Do you want to proceed?", a y/n or numbered choice, in a terminal, a nested session or a tool result) belongs to the user: leave it unanswered, because a key press from you is not the user's consent, and report what it asks and which action it covers. Answer it only when your task quotes the user's approval of that same operation on that same target; report anything wider than what the user approved.
