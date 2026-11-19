@@ -1,7 +1,7 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto-openspec",
-	"description": "OpenSpec workflow in one deferred tool and seven skills. Uses the upstream layout, runs no openspec binary, makes no network calls, and won't archive a change with an unticked task.",
+	"description": "Placeholder for the OpenSpec workflow, which is not built over Claude Code 2.1.327. Installing it adds no tool, skill or hook.",
 	"author": {
 		"name": "xsyetopz"
 	},

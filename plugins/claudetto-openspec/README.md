@@ -1,6 +1,6 @@
 # claudetto-openspec
 
-The OpenSpec workflow for Claude Code: one deferred tool and seven skills over the upstream OpenSpec layout, with no `openspec` binary and no network calls.
+A placeholder for the OpenSpec workflow for Claude Code. The planned design is one deferred tool and seven skills over the upstream OpenSpec layout, with no `openspec` binary and no network calls; none of it is built yet.
 
 ## Status
 
