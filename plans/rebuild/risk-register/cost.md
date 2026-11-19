@@ -253,6 +253,7 @@
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
   Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
   Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
+  Verified: claude 2.1.327, 2026-11-19, cc-inspect cli (fake API) with `--plugin-dir plugins/claudetto` and its filled permissions and sandbox (excludedCommands holds `claude *`): a `claude -p` Bash call lands in `permission_denials`; with `Bash(claude -p *)` added to allow it runs (a nested request reaches the stub) and no denial is listed; a sandboxed `echo` lists none. Mutation: `RETIRED_ALLOWS` emptied in a copy -> 129 pass, 1 fail (issue #51).
 
 ## Ungrouped
 
@@ -290,3 +291,4 @@
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
   Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
   Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
+  Verified: claude 2.1.327, 2026-11-19, cc-inspect cli (fake API) with `--plugin-dir plugins/claudetto` and its filled permissions and sandbox (excludedCommands holds `claude *`): a `claude -p` Bash call lands in `permission_denials`; with `Bash(claude -p *)` added to allow it runs (a nested request reaches the stub) and no denial is listed; a sandboxed `echo` lists none. Mutation: `RETIRED_ALLOWS` emptied in a copy -> 129 pass, 1 fail (issue #51).
