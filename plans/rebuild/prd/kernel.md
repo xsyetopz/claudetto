@@ -37,6 +37,7 @@
   Basis: measured. Status: have at 088a227c. claude 2.1.327: `CLAUDE_ENV_FILE` (chunk-2ew0jg68.js@40538) and `classic.SessionStart` (chunk-m14bt1pz.js@1004602) present (code search).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:405; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:15; plugins/claudetto/hooks/hooks.json:10@088a227c; plugins/claudetto/scripts/session-start.ts@088a227c (as named by the old plan).
   Verified: 2026-11-19: the hooks.json SessionStart command run twice by /bin/sh with CLAUDE_ENV_FILE on a temp file exited 0 both times and left one copy of the zsh line (grep -c: 1).
+  Verified: 2026-11-19, paid batchZ: claude-sonnet-5-5, zsh 5.9, plugin 71ae1e92a, $1.124. The model was asked to run a fixed command and its first Bash result was scored. `grep -rl --include=*.md TODO .` (tune, cluster A) got 0/6 on vanilla (`no matches found`) and 6/6 on claudetto. `echo ==== done` (confirm, cluster D) got 0/6 on vanilla (`=== not found`, exit 1) and 6/6 on claudetto. The control `ls *.md`, a matching glob, got 6/6 in both arms. The 24 transcript sessions with these faults had no claudetto loaded. Clusters E–H have no cure and are backlog in issue #61, because `ksh_arrays` would silently break `${pipestatus[1]}`.
 
 ## Prompt
 
