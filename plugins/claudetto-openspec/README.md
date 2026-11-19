@@ -4,7 +4,7 @@ The OpenSpec workflow for Claude Code: one deferred tool and seven skills over t
 
 ## Status
 
-This plugin holds only its manifest. The openspec block is not built over vanilla Claude Code 2.1.327 (OUT-179 to OUT-181 in `plans/rebuild/prd/README.md`), so installing it adds no tool, skill or hook.
+The openspec block is not built over vanilla Claude Code 2.1.327 (OUT-179 to OUT-181 in `plans/rebuild/prd/README.md`). The plugin holds its manifest and a hooks module that registers nothing, so installing it adds no tool, skill or hook.
 
 ## Install
 

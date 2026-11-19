@@ -15,8 +15,9 @@ verify:
 		bunx tsc -p "$p/tsconfig.json" --noEmit
 		claude plugin test "$p"
 	done
-	# OpenSpec is out of the rebuild (ADR-0189): it must load, its warnings stay.
+	# OpenSpec is out of the rebuild (ADR-0189); its stub hooks module must load and pass its test, and its warnings stay.
 	claude plugin validate plugins/claudetto-openspec
+	claude plugin test plugins/claudetto-openspec
 
 # Bumps one plugin's patch version, e.g. `just bump claudetto`.
 bump plugin:
