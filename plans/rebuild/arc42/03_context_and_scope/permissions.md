@@ -17,6 +17,7 @@
   Basis: reported (one commenter's remedy); the mechanism is measured. Claude Code 2.1.327 does not send `permissions.deny` rules to the model: a fake-API probe (cc-inspect `cli`, `--settings` with three marker deny rules) found the marker in no request, stream or transcript. A bare tool-name rule (`Write`) removes that tool from the request's tools list (same probe). Otherwise a deny list changes agent behaviour only through the denials the agent hits, so its length alone does not. The same probe refutes a commenter who says permission settings go into the system prompt and can be hallucinated away (external/2026-10-21/reddit.com-r-claudecode-comments-1x8me5g-how-do-you-prevent-claude-code-20261020T024648Z.md:149): rules are enforced by the client, not read by the model. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xqwdbp-is-there-any-way-to-stop-claude-20261109T153047Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xqwdbp/>).
   Verified: source already on 2.1.327.
+  Verified: PASS: cc-inspect cli with --settings carrying deny rules `Bash(zzmarkerq9 *)`, `Read(./zzmarkerr8/**)` and `WebFetch`, binary 2.1.327, 2026-11-19: the marker string is in no request or transcript; the bare WebFetch rule keeps it out of the request tools.
 
 ## External Sweep, 2026-11-18
 
