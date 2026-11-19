@@ -1,5 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /**
  * The tail core gives every API-error text for a stream cut after output

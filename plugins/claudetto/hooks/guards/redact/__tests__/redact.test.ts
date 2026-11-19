@@ -1,6 +1,6 @@
 import { describe, expect, mock, test } from "claude-code/testing";
 
-import { MASK, envValues, findings, isEnvFile, mapBlock, redact } from "./redact";
+import { MASK, envValues, findings, isEnvFile, mapBlock, redact } from "../redact";
 
 const ENV = 'API_TOKEN=abc123xyz789\nexport DB_URL="postgres://u:pw4567@db/x"\nDEBUG=1\nNAME=dev # short\n# COMMENTED=notavalue99\n';
 const RUN = { exitCode: 0, stderr: "", isStdoutTruncated: false, isStderrTruncated: false };

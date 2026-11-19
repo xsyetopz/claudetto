@@ -1,7 +1,7 @@
 import type { AgentSpawnInput } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { registerSpawn } from "./spawn";
+import { registerSpawn } from "../spawn";
 
 const spawn = (model: string): AgentSpawnInput => ({
 	tool_use_id: "t1",

@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** Fable, Mythos and Opus, by alias or full id (`claude-opus-5-5`, `claude-fable-5-2`). */
 const BARRED = /fable|mythos|opus/iu;

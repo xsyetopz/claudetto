@@ -1,5 +1,5 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /**
  * How Claude Code 2.1.327 reads `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, in any

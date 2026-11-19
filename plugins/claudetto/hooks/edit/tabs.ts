@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** Drops one leading tab from each line that has one. */
 const dropTab = (text: string): string => text.replace(/^\t/gmu, "");

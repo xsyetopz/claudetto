@@ -1,5 +1,5 @@
-import { fillGuards } from "../guards/fill";
-import { WALLS } from "../guards/rules";
+import { fillGuards } from "../guards/wall/fill";
+import { WALLS } from "../guards/wall/rules";
 import { type Json, indentOf, isRecord, parseSettings } from "./settings";
 
 /**

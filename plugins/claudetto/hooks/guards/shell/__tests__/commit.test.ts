@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { gateCommit } from "./commit";
+import { gateCommit } from "../commit";
 
 describe("commit gate", () => {
 	test("turns on pipefail for a commit after a piped check", () => {

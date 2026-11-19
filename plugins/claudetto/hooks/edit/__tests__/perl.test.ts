@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { touched } from "./perl";
+import { touched } from "../perl";
 
 describe("perl diff note", () => {
 	test("names only the files whose numstat line changed", () => {

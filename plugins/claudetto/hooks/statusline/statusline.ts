@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** What the line shows; each field is absent until the engine reports it. */
 export type Figures = {

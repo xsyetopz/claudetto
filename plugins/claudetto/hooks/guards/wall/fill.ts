@@ -1,4 +1,4 @@
-import { type Json, isRecord } from "../settings/settings";
+import { type Json, isRecord } from "../../settings/settings";
 import { ALLOW_WRITE, ASK, DENY, DENY_READ, DENY_WRITE, EXCLUDED, wallRule } from "./rules";
 
 const list = (value: unknown): unknown[] => (Array.isArray(value) ? (value as unknown[]) : []);

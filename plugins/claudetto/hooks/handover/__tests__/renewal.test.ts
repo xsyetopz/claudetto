@@ -1,6 +1,6 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
-import { resetRenewal } from "./renewal";
+import { resetRenewal } from "../renewal";
 
 function world(on: On, tokens: number, settings: Record<string, unknown> = {}, env: Record<string, string> = {}) {
 	on("settings.read", () => ({ value: settings }));

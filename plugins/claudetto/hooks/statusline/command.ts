@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 import { userSettingsPath } from "../settings/settings";
 

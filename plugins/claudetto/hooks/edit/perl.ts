@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** Matches a Bash call that edits files in place with perl. */
 const PERL_EDIT = /(?:^|[;&|({]\s*)perl\s+(?:-\S*\s+)*-\S*i/;

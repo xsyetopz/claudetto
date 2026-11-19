@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /**
  * Hides the engine's built-in agent types from the model, except `fork`

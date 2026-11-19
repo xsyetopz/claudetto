@@ -1,4 +1,4 @@
-# Tool-output scan config for claudetto's redact guard (hooks/guards/redact.ts).
+# Tool-output scan config for claudetto's redact guard (hooks/guards/redact/redact.ts).
 # Extends the betterleaks default rules (466 in 1.10.1) with secret-named assignments, which the defaults
 # miss when the value has low entropy (`API_TOKEN=abc123xyz789`). Checked with `betterleaks config check`.
 title = "claudetto tool-output extension"

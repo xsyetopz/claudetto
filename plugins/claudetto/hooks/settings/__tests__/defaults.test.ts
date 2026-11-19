@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { DEFAULTS, FILL_VERSION, RETIRED_ALLOWS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "./defaults";
+import { DEFAULTS, FILL_VERSION, RETIRED_ALLOWS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "../defaults";
 
 describe("defaults fill", () => {
 	test("fills every default into empty settings", () => {

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { resetRenewal } from "./renewal";
 import { isOff, PENDING, writeHandover } from "./writer";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 const BLOCK = "claudetto:handover";
 

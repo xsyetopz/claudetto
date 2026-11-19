@@ -1,5 +1,5 @@
 import type { On, PluginOptions, ToolCheckResult } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../../shared/fault";
 import { gateCommit } from "./commit";
 import { limitCommand, minutes } from "./limit";
 import { closeStdin } from "./stdin";

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { GIT_CONFLICT, gitBlock } from "./instructions";
+import { GIT_CONFLICT, gitBlock } from "../instructions";
 
 const BASE = "Executes a bash command and returns its output.";
 

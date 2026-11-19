@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { BUILTIN_IDS, repairSettings } from "./builtins";
+import { BUILTIN_IDS, repairSettings } from "../builtins";
 
 const ALL_OFF = Object.fromEntries(BUILTIN_IDS.map((id) => [`${id}@builtin`, false]));
 

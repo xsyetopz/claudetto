@@ -3,8 +3,8 @@ import { cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const script = join(import.meta.dir, "check-catch.sh");
-const plugin = join(import.meta.dir, "..", "plugins", "claudetto");
+const script = join(import.meta.dir, "..", "check-catch.sh");
+const plugin = join(import.meta.dir, "..", "..", "plugins", "claudetto");
 const env = { ...process.env, CLAUDE_BIN: process.env.CLAUDE_BIN ?? "claude" };
 
 function check(dir: string) {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { TAB_NOTE, readPrefixFix } from "./tabs";
+import { TAB_NOTE, readPrefixFix } from "../tabs";
 
 const FILE = 'export function f() {\n\tif (a) {\n\t\tconst x = 1;\n\t\tconst y = 2;\n\t}\n}\n';
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { guardCommand } from "./shell";
+import { guardCommand } from "../shell";
 
 describe("shell guard", () => {
 	test("a Bash call reaches the tool with every guard applied", async ($, on) => {

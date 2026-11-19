@@ -1,5 +1,5 @@
 import type { On, ToolCheckResult } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /**
  * Names the source of a deny that no person made, from core's structured verdict.

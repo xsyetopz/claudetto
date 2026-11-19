@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { requestOf, statuslineEdit } from "./command";
+import { requestOf, statuslineEdit } from "../command";
 
 describe("statusline edit text", () => {
 	test("carries the user's request from the stock text", () => {

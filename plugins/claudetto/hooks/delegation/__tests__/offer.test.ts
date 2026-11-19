@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { registerOffer } from "./offer";
+import { registerOffer } from "../offer";
 
 describe("agent.offer", () => {
 	test("hides a built-in agent type from the model", async ($, on) => {

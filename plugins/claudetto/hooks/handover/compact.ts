@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { KEEP_LINE } from "./text";
 import { isAutoOff, isOff, knob, writeHandover } from "./writer";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 const AUTOMATIC = new Set(["auto", "precompute", "plugin"]);
 

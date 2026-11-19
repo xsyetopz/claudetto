@@ -1,6 +1,6 @@
 import type { EngineInterface, ModelUsage } from "claude-code";
 import { compose, extract, FORK_PROMPT } from "./text";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** A written handover and, when a fork wrote it, what the fork cost. */
 export type Handover = { text: string; usage?: ModelUsage };

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { dynamicWall, expandStatic, globHitsWall, globWords, wallNames } from "./wall";
+import { dynamicWall, expandStatic, globHitsWall, globWords, wallNames } from "../wall";
 
 const FREE = { exitCode: 0, stdout: "System-wide memory free percentage: 50%\n", stderr: "", isStdoutTruncated: false, isStderrTruncated: false };
 

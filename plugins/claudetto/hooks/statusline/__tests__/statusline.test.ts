@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { cacheHitPercent, formatLine } from "./statusline";
+import { cacheHitPercent, formatLine } from "../statusline";
 
 describe("status line", () => {
 	test("shows model, context, both limits and cache in one line", () => {

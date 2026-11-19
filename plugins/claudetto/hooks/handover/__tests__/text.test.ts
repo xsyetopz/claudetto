@@ -1,5 +1,5 @@
 import { describe, expect, test } from "claude-code/testing";
-import { compose, extract, isCommit, parseTokens, threshold } from "./text";
+import { compose, extract, isCommit, parseTokens, threshold } from "../text";
 
 describe("handover text", () => {
 	test("extract keeps user prompts and the last answer", () => {

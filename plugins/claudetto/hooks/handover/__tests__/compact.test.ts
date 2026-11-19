@@ -1,7 +1,7 @@
 import type { ModelForkResult, On, SessionCompacted } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { KEEP_LINE } from "./text";
+import { KEEP_LINE } from "../text";
 
 const USAGE = { input_tokens: 1, output_tokens: 2, cache_read_input_tokens: 3, cache_creation_input_tokens: 4 };
 

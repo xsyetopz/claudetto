@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { limitCommand, minutes } from "./limit";
+import { limitCommand, minutes } from "../limit";
 
 describe("time limit", () => {
 	test("uses 30 by default, accepts 0 as off and rejects a negative or text value", () => {

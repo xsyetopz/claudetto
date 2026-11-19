@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { fillSettings } from "../settings/defaults";
-import { wallRule } from "./rules";
+import { fillSettings } from "../../../settings/defaults";
+import { wallRule } from "../rules";
 
 const fillOf = (text: string | undefined, walls?: readonly string[]) => JSON.parse(fillSettings(text, walls)?.text ?? "");
 

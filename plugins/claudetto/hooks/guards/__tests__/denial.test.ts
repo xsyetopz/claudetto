@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { denialSource } from "./denial";
+import { denialSource } from "../denial";
 
 describe("denial source", () => {
 	test("a deny from a settings rule names the rule and says no person declined it", async ($, on) => {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { floor, freeShare, reason } from "./memory";
+import { floor, freeShare, reason } from "../memory";
 
 const SAMPLE = "The system has 34359738368 (2097152 pages with a page size of 16384).\nSystem-wide memory free percentage: 12%\n";
 

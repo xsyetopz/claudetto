@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test, type TestBody } from "claude-code/testing";
 
-import { RESUME_TEXT } from "./stop";
+import { RESUME_TEXT } from "../stop";
 
 const CUT = "API Error: Connection lost mid-response. The response above may be incomplete.";
 

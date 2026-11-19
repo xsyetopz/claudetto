@@ -1,5 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../../shared/fault";
 import { WALLS } from "./rules";
 
 /**

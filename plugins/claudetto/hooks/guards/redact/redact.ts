@@ -1,5 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
-import { fault } from "../fault";
+import { fault } from "../../shared/fault";
 
 export const MASK = "[REDACTED]";
 
@@ -107,7 +107,7 @@ const envSecrets = async ($: EngineInterface): Promise<string[]> => {
 
 /** Scans text with betterleaks; undefined when it is not installed or fails, so the caller falls back to SHAPES. */
 const scan = async ($: EngineInterface, text: string): Promise<string[] | undefined> => {
-	const config = `${$.plugin.root}/hooks/guards/betterleaks.toml`;
+	const config = `${$.plugin.root}/hooks/guards/redact/betterleaks.toml`;
 	const argv = ["betterleaks", "stdin", "--no-banner", "-c", config, "-f", "json", "-r", "-", "--exit-code", "0", "-l", "error"];
 	const run = await $.process.run(argv, { stdin: text, timeoutMs: 10_000 }).catch(() => undefined);
 	return run?.exitCode === 0 ? findings(run.stdout) : undefined;

@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { isCommit, threshold } from "./text";
 import { isAutoOff, knob } from "./writer";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 /** A settings value as threshold() reads it: numbers and strings pass, the rest is unset. */
 const stringOf = (value: unknown): string | undefined =>
