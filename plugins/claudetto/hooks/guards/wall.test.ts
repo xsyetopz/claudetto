@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { globHitsWall, globWords, wallNames } from "./wall";
+import { dynamicWall, expandStatic, globHitsWall, globWords, wallNames } from "./wall";
 
 const FREE = { exitCode: 0, stdout: "System-wide memory free percentage: 50%\n", stderr: "", isStdoutTruncated: false, isStderrTruncated: false };
 
@@ -105,6 +105,48 @@ describe("wall guard", () => {
 		expect(ran.length).toBe(2);
 		expect(ran[0]).toContain("ls -a .*");
 		expect(ran[1]).toContain("git add .c*");
+	});
+
+	test("literal variables and echo substitutions are filled in before the check", () => {
+		// Act and Assert
+		expect(expandStatic("d=.claudetto; ls ~/${d}-holdout")).toContain("ls ~/.claudetto-holdout");
+		expect(expandStatic("a=~ b='.claudetto-holdout'; cat $a/$b/t")).toContain("cat ~/.claudetto-holdout/t");
+		expect(expandStatic("ls ~/$(echo .claudetto-holdout)")).toBe("ls ~/.claudetto-holdout");
+		expect(expandStatic("ls `printf .claudetto-holdout`")).toBe("ls .claudetto-holdout");
+		expect(expandStatic("ls $unset/x $(git rev-parse --show-toplevel)")).toBe("ls $unset/x $(git rev-parse --show-toplevel)");
+	});
+
+	test("a wall-depth folder built at run time is dynamic; deeper or project paths are not", () => {
+		// Arrange
+		const wall = "~/.claudetto-holdout";
+		const dynamic = ["ls ~/$x", "ls $HOME/$(pick)", "ls ${HOME}/`pick`", "ls /Users/u/${x}y", "ls $(echo ~)/.claudetto-holdout", "ls $d/.claudetto-holdout/t"];
+		const fine = ["ls ~/.config/$x", "ls $HOME/.cache/$(pick)", "ls $PWD/src", "cat $(git rev-parse --show-toplevel)/README.md", "ls ~/work", "echo $HOME", "ls $x/holdout"];
+
+		// Act and Assert
+		for (const c of dynamic) expect(dynamicWall(c, wall, "/Users/u")).toBe(true);
+		for (const c of fine) expect(dynamicWall(c, wall, "/Users/u")).toBe(false);
+	});
+
+	test("a call that builds the wall name by variable or substitution is refused; ordinary ones run", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({ value: FREE }));
+		on("env.get", (_$, e) => ({ value: e.name === "HOME" ? "/Users/u" : undefined }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+		const refused = ["d=.claudetto; ls ~/${d}-holdout", "ls ~/$(echo .claudetto-holdout)", "n=holdout; ls $HOME/.claudetto-$n", "ls ~/$x", "ls $(echo ~)/.claudetto-holdout", "cd ~ && ls $(echo .claudetto-holdout)", "r=/Users; ls $r/u/.claudetto-holdout", "ls $(echo /Users/u)/.claudetto-holdout"];
+		const allowed = ["ls $HOME/.config/$x", "echo $HOME $PWD", "cd $(git rev-parse --show-toplevel) && ls src", "f=a.ts; cat src/$f", "for f in src/*.ts; do wc -l $f; done"];
+
+		// Act
+		for (const command of [...refused, ...allowed]) await $.tool.call({ tool: "Bash", command, dangerouslyDisableSandbox: true }).catch(() => undefined);
+
+		// Assert
+		// Another hook wraps a command that runs, so match by containment.
+		expect(ran.length).toBe(allowed.length);
+		for (const [i, command] of allowed.entries()) expect(ran[i]).toContain(command);
 	});
 
 	test("an absolute wall is named as written", () => {

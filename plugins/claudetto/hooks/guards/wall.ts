@@ -94,6 +94,52 @@ export const globHitsWall = (words: string[], wall: string, home: string | undef
 	});
 };
 
+/** `$(echo X)` and backtick echoes whose body is plain text, so the value is known before the shell runs. */
+const LITERAL_ECHO = /\$\(\s*(?:echo|printf)\s+(?:-[neE]+\s+)?([^$`;&|()<>\\]*)\)|`\s*(?:echo|printf)\s+(?:-[neE]+\s+)?([^$`;&|()<>\\]*)`/gu;
+const ASSIGNMENT = /(?:^|[;&|(\n\s])(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=("[^"$`\\]*"|'[^']*'|[^\s;&|()"'$`\\]*)/gu;
+const VARIABLE = /\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A-Za-z0-9_]*))/gu;
+
+/**
+ * The command with what can be known before it runs filled in: `$(echo X)`
+ * and backtick echoes become X, and a variable assigned a literal in the same
+ * command is replaced by its value, so `d=.claudetto; ls ~/${d}-holdout` reads
+ * as `ls ~/.claudetto-holdout`. `HOME` is left alone, since the guard already
+ * knows its spellings. Anything else dynamic stays as written.
+ */
+export const expandStatic = (command: string): string => {
+	let text = command;
+	for (let round = 0; round < 3; round++) {
+		const vars = new Map<string, string>();
+		text = text.replace(LITERAL_ECHO, (_m, a: string | undefined, b: string | undefined) => (a ?? b ?? "").replace(/["']/gu, "").trim());
+		for (const m of text.matchAll(ASSIGNMENT)) {
+			const name = m[1] ?? "";
+			if (name !== "HOME") vars.set(name, (m[2] ?? "").replace(/["']/gu, ""));
+		}
+		const next = text.replace(VARIABLE, (whole, a: string | undefined, b: string | undefined) => vars.get(a ?? b ?? "") ?? whole);
+		if (next === text) break;
+		text = next;
+	}
+	return text;
+};
+
+const escapeRegExp = (text: string): string => text.replace(/[$^{}.*+?()[\]|\\/]/gu, "\\$&");
+
+/**
+ * Whether the wall's folder is built at run time, so its name cannot be read
+ * before the command runs: a home-rooted path whose first folder is dynamic
+ * (`~/$x`, `$HOME/$(cmd)`), or a dynamic part followed by the wall's last
+ * folder (`$(cmd)/.claudetto-holdout`). Folders deeper than the wall's depth
+ * (`~/.config/$x`) are left alone.
+ */
+export const dynamicWall = (text: string, wall: string, home: string | undefined): boolean => {
+	const roots = ["~", "$HOME", "${HOME}", ...(home === undefined ? [] : [home])].map(escapeRegExp).join("|");
+	const dynamic = "(?:\\$\\(|`|\\$\\{?[A-Za-z_@*#?!0-9])";
+	const atRoot = new RegExp(`(?:^|[\\s"'=:(])(?:${roots})/[^\\s/"']*${dynamic}`, "u");
+	const last = escapeRegExp(wall.replace(/^.*\//u, ""));
+	const beforeName = new RegExp(`(?:\\)|\`|\\$\\{?[A-Za-z_][A-Za-z0-9_]*\\}?)/${last}(?:[\\s/"';&|)]|$)`, "u");
+	return (ROOT.test(wall) && atRoot.test(text)) || beforeName.test(text);
+};
+
 /** The reason a call is refused, written as the next step because the model reads it. */
 export const wallReason = (wall: string): string =>
 	`${wall} is walled off from every session. Leave it alone; to check a rule that covers it, run the same command on a stand-in folder under the same rule.`;
@@ -111,12 +157,18 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 		if (e.tool !== "Bash") return next(e);
 		// A spelled wall ends in its last part; only a glob can name a wall without it.
 		const command = e.command;
-		const words = globWords(command);
-		if (words.length === 0 && !walls.some((wall) => command.includes(wall.replace(/^.*\//u, "")))) return next(e);
+		const text = expandStatic(command);
+			const words = globWords(text);
+			const named = walls.some((wall) => text.includes(wall.replace(/^.*\//u, "")) || command.includes(wall.replace(/^.*\//u, "")));
+		if (words.length === 0 && !named && !/[$`]/u.test(text)) return next(e);
 		// Without a home the `~/` and `$HOME/` spellings and globs still match; only the expanded one is lost.
 		const home = await $.env.get("HOME").catch(() => undefined);
-		const atHome = movesHome(command, home);
-		const hit = walls.find((wall) => wallNames(wall, home).some((name) => command.includes(name)) || globHitsWall(words, wall, home, atHome));
+		const atHome = movesHome(text, home);
+			// After a move to home, a plain relative word names a folder of home as much as a glob does.
+			const reach = atHome ? text.split(/[\s;&|()<>]+/u).map((w) => w.replace(/["']/gu, "")).filter(Boolean) : words;
+		const hit = walls.find(
+				(wall) => [command, text].some((t) => wallNames(wall, home).some((name) => t.includes(name))) || globHitsWall(reach, wall, home, atHome) || dynamicWall(text, wall, home),
+			);
 		return hit === undefined ? next(e) : { deny: wallReason(hit) };
 	}).catch(($, e, next) => (fault($, "wall guard", next.error), next(e)));
 }
