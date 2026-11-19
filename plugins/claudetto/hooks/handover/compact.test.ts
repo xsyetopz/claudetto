@@ -20,7 +20,9 @@ function world(
 	});
 	on("settings.read", () => ({ value: settings }));
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
-	on("model.fork", () => {
+	const requests: Record<string, unknown>[] = [];
+	on("model.fork", (_$, e) => {
+		requests.push(e as unknown as Record<string, unknown>);
 		if (fork instanceof Error) throw fork;
 		return { value: fork };
 	});
@@ -31,7 +33,7 @@ function world(
 		seen.push(e);
 		return { messages: [{ role: "user", text: "CORE", toolUses: [] }] };
 	});
-	return Object.assign(seen, { status });
+	return Object.assign(seen, { status, requests });
 }
 
 describe("session.compact", () => {
@@ -141,5 +143,61 @@ describe("session.compact", () => {
 		const seen = world(on, { CLAUDETTO_DISABLE_AUTO_HANDOVER: "1" });
 		await $.session.compact({ trigger: "auto", messages: [] });
 		expect(seen.length).toBe(1);
+	});
+	test("a fork that returns empty text takes the extract and bills no fork cost", async ($, on) => {
+		// Arrange
+		world(on, {}, { isAnswered: true, text: "  ", usage: USAGE });
+
+		// Act
+		const r = await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(r.messages?.[0]?.text).toContain("- fix the parser");
+		expect((r as SessionCompacted).usage).toEqual({ input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 });
+	});
+	test("a throwing fork bills no fork cost and the status line still clears", async ($, on) => {
+		// Arrange
+		const { status } = world(on, {}, new Error("overloaded"));
+		on("ui.log", () => ({ value: undefined }));
+
+		// Act
+		const r = await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect((r as SessionCompacted).usage).toEqual({ input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 });
+		expect(status).toEqual(["Writing handover…", undefined]);
+	});
+	test("CLAUDETTO_DISABLE_HANDOVER leaves automatic and manual compaction to core with no fork", async ($, on) => {
+		// Arrange
+		const seen = world(on, { CLAUDETTO_DISABLE_HANDOVER: "1" });
+
+		// Act
+		const auto = await $.session.compact({ trigger: "auto", messages: [] });
+		await $.session.compact({ trigger: "manual", messages: [] });
+
+		// Assert
+		expect(auto.messages?.[0]?.text).toBe("CORE");
+		expect(seen.length).toBe(2);
+		expect(seen.status).toEqual([]);
+		expect((seen[1] as { instructions?: string }).instructions).toBeUndefined();
+	});
+	test("a manual compaction reaches core with trigger manual and is not skipped", async ($, on) => {
+		const seen = world(on);
+		const r = await $.session.compact({ trigger: "manual", messages: [{ role: "user", text: "hi", toolUses: [] }] });
+		expect((seen[0] as { trigger: string }).trigger).toBe("manual");
+		expect((r as { skipped?: unknown }).skipped).toBeUndefined();
+	});
+	test("the handover fork asks for low effort and names no model", async ($, on) => {
+		// Arrange
+		const { requests } = world(on);
+
+		// Act
+		await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(requests.length).toBe(1);
+		expect(requests[0]?.effort).toBe("low");
+		expect("model" in (requests[0] ?? {})).toBe(false);
+		expect(String(requests[0]?.prompt)).toContain("Constraints:");
 	});
 });

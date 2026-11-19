@@ -2,7 +2,7 @@ import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 import { resetRenewal } from "./renewal";
 
-function world(on: On, tokens: number, settings: Record<string, unknown> = {}) {
+function world(on: On, tokens: number, settings: Record<string, unknown> = {}, env: Record<string, string> = {}) {
 	on("settings.read", () => ({ value: settings }));
 	const calls = { fork: 0, compact: 0 };
 	on("ui.log", () => ({ value: undefined }));
@@ -11,7 +11,7 @@ function world(on: On, tokens: number, settings: Record<string, unknown> = {}) {
 		calls.compact += 1;
 		return { messages: [{ role: "user", text: "H", toolUses: [] }] };
 	});
-	on("env.get", () => ({ value: undefined }));
+	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	on("model.fork", () => {
 		calls.fork += 1;
 		return { value: { isAnswered: true, text: "H", usage: { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } } };
@@ -85,6 +85,24 @@ describe("renewal", () => {
 		resetRenewal();
 		const calls = world(on, 90000);
 		await $.classic.Stop({ stop_hook_active: false, background_tasks: [{ id: "b", type: "shell", status: "running", description: "d" }] });
+		await $.turn.complete(TURN);
+		expect(calls.compact).toBe(0);
+	});
+	test("a prompt an hour after the last request starts no cycle, and no clock serves renewal", async ($, on) => {
+		// Arrange: no boundary event ran; the module registers no clock handler, so a clock call would throw.
+		resetRenewal();
+		const calls = world(on, 90000);
+
+		// Act: the idle hour leaves no trace the renewal reads; only the turn arrives.
+		await $.turn.complete(TURN);
+
+		// Assert
+		expect(calls.compact).toBe(0);
+	});
+	test("CLAUDETTO_DISABLE_HANDOVER stops renewal at a boundary", async ($, on) => {
+		resetRenewal();
+		const calls = world(on, 90000, {}, { CLAUDETTO_DISABLE_HANDOVER: "1" });
+		await $.classic.Stop({ stop_hook_active: false });
 		await $.turn.complete(TURN);
 		expect(calls.compact).toBe(0);
 	});
