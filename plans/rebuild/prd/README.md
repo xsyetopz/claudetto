@@ -460,6 +460,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Acceptance: a person with a dialog open, or on a surface with no composer, who presses Chat in main session sees the matching toast and keeps the card. Verification: demonstration in a TUI session.
   Basis: cited. Status: untested.
   Verified: probe of the harness, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know` with a hook-written refusal cause: the cause arrives stripped, so the branch falls to the not-filled text.
+  Decision: narrowed 2026-11-19 (fde4bde73): hooks/respond.test.ts now drives the dialog and no_composer branch text through a stand-in engine; what stays Out is the same press through the real host, which strips the cause.
   Source: plugins/claudetto-you-should-know/hooks/draft.ts (REQ-YOU-SHOULD-KNOW-055).
 
 - [x] **OUT-2002** Out (CTX-001, ADR-0190 agent decision, not the user's): whether the 2.1.326 fix keeps a row when a `wrap="truncate-end"` text holds a line feed shows only in a painted terminal, which the test kit does not run; a test sees the node tree, not the screen. The plugin cleans one-line text of line feeds before it draws (`cleanOneLine`, tested in rules.test.ts), so no line feed reaches a clipped text.

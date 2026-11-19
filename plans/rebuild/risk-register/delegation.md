@@ -440,6 +440,7 @@
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
   Status: accepted 2026-11-19: the refusal is the engine's worktree guard, which has no setting and runs after every hook, so no plugin control reaches it; each refusal names its cause and costs one turn.
+  Status: mitigated 2026-11-19 (bb4fdbf4, RISK-499, issue #45): the rebuild's own Bash wrapper put every command in a `{ ... } </dev/null` group behind a watchdog, so every git command in an isolated worktree became non-simple and was refused; a command naming git is now left unwrapped. The 495 measured refusals predate that wrapper (088a227c wraps no command), so they come from model-written expansions. Fake-API probe, 2.1.327, a worktree-isolated Heracles: `git status` was refused before the fix and ran after it. Residual: those model-written expansions, which no hook reaches because the guard runs after every hook; Likelihood stays 5 for them, Impact 2 (one turn per refusal, with the cause named).
 
 - [x] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
   Category: delegation, engine check.
