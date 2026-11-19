@@ -10,6 +10,7 @@ verify:
 	hooks="$(cd "$top" && cd "$(git config core.hooksPath || echo /nonexistent)" 2>/dev/null && pwd -P || true)"
 	if [ "$hooks" != "$(cd "$top/.githooks" && pwd -P)" ]; then echo "git hooks are off: run just setup"; exit 1; fi
 	for p in plugins/claudetto plugins/claudetto-you-should-know; do
+		if [ ! -d "$p/.claude-plugin/types" ]; then echo "$p/.claude-plugin/types is missing: Claude Code writes it when a session loads the plugin, so start one session with --plugin-dir $p first"; exit 1; fi
 		claude plugin validate "$p" --strict
 		tools/check-catch.sh "$p"
 		bunx tsc -p "$p/tsconfig.json" --noEmit

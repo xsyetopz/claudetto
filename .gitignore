@@ -13,9 +13,10 @@ __pycache__/
 /plugins/claudetto/evals/results/
 
 # Claude Code writes a `tsconfig.json` into a plugin folder that has none when a session loads the plugin, such as in `just sandbox`.
-# Only the core plugin has a `tsconfig.json` from `src/`.
+# claudetto and claudetto-you-should-know keep their own strict `tsconfig.json`, which `just verify` typechecks with.
 /plugins/*/tsconfig.json
 !/plugins/claudetto/tsconfig.json
+!/plugins/claudetto-you-should-know/tsconfig.json
 
 node_modules/
 /.claude/worktrees/
