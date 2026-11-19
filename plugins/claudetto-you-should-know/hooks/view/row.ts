@@ -1,20 +1,16 @@
 /** Picks the row to draw for the stored view and wires its presses to the actions. */
 
-import { parseExplanation } from "../cards";
-import type { Ctx } from "../context";
-import { noteTopic } from "../draft";
-import { fitCards } from "../fit";
-import { aboutFrame, aboutKeyOf } from "../copy";
-import {
-	askedRow,
-	explainedAskedRow,
-	explainedRow,
-	explainingRow,
-	failedRow,
-	offerRow,
-} from "../rows";
+import { parseExplanation } from "../request/cards";
+import type { Ctx } from "../shared/context";
+import { noteTopic } from "./draft";
+import { fitCards } from "../text/fit";
+import { aboutFrame, aboutKeyOf } from "./copy";
+import { askedRow, explainedAskedRow } from "./parts/asked";
+import { explainedRow, explainingRow } from "./parts/explained";
+import { offerRow } from "./parts/offer";
+import { failedRow } from "./parts/status";
 import { iterationOf, type View } from "../session/rows";
-import { hasOwnComposer, type Table } from "../table";
+import { hasOwnComposer, type Table } from "./table";
 import type { Actions } from "./actions";
 
 export type RowArgs = {

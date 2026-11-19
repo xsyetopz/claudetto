@@ -1,8 +1,8 @@
 /** The per-session rows kept in the store, and the pure rules over them. */
 
-import { NOTE_READ_MS, SESSIONS_MAX, SHOWN_KEEP_MS } from "../constants";
-import type { Check } from "../checks";
-import type { Tag } from "../parse";
+import { NOTE_READ_MS, SESSIONS_MAX, SHOWN_KEEP_MS } from "../shared/constants";
+import type { Check } from "../check/log";
+import type { Tag } from "../request/parse";
 
 export type View =
 	| { kind: "offer"; line: string; explanation?: string | undefined; shownAt?: number; promptsSurvived?: number; isOffArmed?: boolean }

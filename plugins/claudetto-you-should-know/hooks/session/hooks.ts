@@ -2,9 +2,9 @@
 
 import type { On } from "claude-code";
 
-import type { Ctx } from "../context";
+import type { Ctx } from "../shared/context";
 import { forgetDetached, isOpenView, rowOf, withViewCleared } from "./rows";
-import { fault } from "../fault";
+import { fault } from "../shared/fault";
 
 export function registerSession(on: On, ctx: Ctx): void {
 	on("session.detach", async ($, e, next) => {
