@@ -704,6 +704,7 @@
   Owner: delegation.
   Status: mitigated 2026-11-19. Probe reports/2026-11-19-research/risks-delegation/run.sh, Sonnet 5.5 on 2.1.327, `-p` (a belief probe: the prompt says a /clear is coming and asks WAIT or RESTART, so no real /clear runs). Seed s203 (the task still holds, WAIT is right): vanilla 8 of 16, the shipped line 8 of 8 alone and 4 of 4 in the full shipped style. Control s203c (the spec was replaced, RESTART is right): vanilla 3 of 4, mostly on the false belief that /clear wipes the subagent, and the shipped line 8 of 8 alone and 4 of 4 in the full style. A first one-sided wording ("start a new one only when its task changes") waited on the stale task in 2 of 4 control runs, so it was replaced.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/>).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, 44 runs: wait-is-right prompt: vanilla 15/16, line 8/8, style 4/4; restart-is-right prompt: vanilla 1/4, line 8/8, style 4/4; 0 Agent spawns -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
 
 - [x] **RISK-204** Each subagent receives the whole conversation history.
   Category: product behaviour.
@@ -763,6 +764,7 @@
   Status: accepted; paid probe, reports/2026-11-19-research/risks-delegation/run.sh seed s207, Sonnet 5.5, 3 runs: on "Our app retries 5 times though config.yaml says 3. Find out why." vanilla made 0 Agent calls in 3 of 3 and answered from a read of the config and source ($0.034-0.036 a run), so no line beats it on a small repo. A large-scale swarm of 76 agents is not reproduced here.
   Basis: reported, n=1.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5: vanilla made 0 Agent calls in 3 of 3 runs at $0.033-0.036 each -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
 
 - [x] **RISK-208** Verifier Inherits Reasoning.
   Category: Agent behaviour.

@@ -173,6 +173,7 @@
   Source: reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401).
   Conflict: Stop Checks.
   Verified: not re-run 2026-11-19: no probe in this session; static evidence: plugins/claudetto/output-styles/claudetto.md. Tick audit 2026-11-19: the tick rests on the 60 paid probe runs named in Status; no paid rerun (no paid benchmarks), and hooks.json still registers no Stop hook.
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5: in 30 runs, including the runs that ended on a question to the user, no tool call or assistant message followed the final reply; `hooks.json` registers no Stop hook -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
 
 ## Reply Format
 
@@ -233,11 +234,7 @@
   Source: reports/2026-11-18-research/papers.md P10 implication 4; external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xywg7f/memories_and_rules/>); reports/2026-11-18-research/dossier.md:174.
   Verified: inspection of plugins/claudetto/output-styles/claudetto.md, 2026-11-19.
 
-- [x] **REQ-REPLY-140** claudetto shall make the agent decide whether to ask the user or proceed from checkable facts (a missing input that no file, command or source holds; an irreversible or outward-facing action; an instruction conflict), never from its own stated confidence.
-  Acceptance: a behavioural test with a missing required input asks; one where the input is in a repo file reads it and proceeds without asking; the rule text names no confidence threshold. Verification: test.
-  Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: done 2026-11-19; the missing-input line ships in output-styles/claudetto.md and names no confidence threshold. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: "Deploy this app to the staging server" with no host anywhere: the line alone asked before running in 5 of 6 runs and the full style in 3 of 3 (1 through AskUserQuestion, 2 in prose), vanilla asked in 0 of 6 and ran it with a guessed `staging`; with the host in config.json vanilla, the line and the full style all read it and proceeded without asking, 3 of 3 each. The irreversible step is covered by REQ-REPLY-108 (the style asked before cleaning a dirty tree 3 of 3, vanilla 0 of 3). The instruction-conflict fact has no case of its own.
-  Source: reports/2026-11-18-research/papers.md P3 implication 2; https://aclanthology.org/2026.acl-long.354.pdf.
-  Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only). Tick audit 2026-11-19: the tick rests on the paid Sonnet 5.5 runs named in Status; no paid rerun (no paid benchmarks), and `grep -n confidence plugins/claudetto/output-styles/claudetto.md` names no threshold.
+- [x] **REQ-REPLY-140** Moved Out as OUT-3052: the shipped style asked before running in 1 of 3 Sonnet 5.5 runs on the missing-host prompt in the 2026-11-19 rerun (line alone 4 of 6, two of them ran `deploy.sh` first; vanilla 0 of 6), so the missing-input half of the acceptance fails (reports/2026-11-19-research/tick-rerun/reply-risk).
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
