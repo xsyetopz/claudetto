@@ -24,11 +24,7 @@
 
 ## Context and Budget Display
 
-- [x] **REQ-COST-021** claudetto shall report a startup-context baseline: run the `/context` split in a fresh session, cut unused MCP servers, unused tools by `permissions.deny`, unused skills by `skillOverrides`, and measure per task type once.
-  Verified: fake-API probe, claude 2.1.327, 2026-11-18, cc-inspect cli `-p /context`: prints Model, Tokens, and a category table (system prompt, skills, messages, free space, autocompact buffer) from count_tokens calls only, no model request; MCP tools, memory files and agents rows appear when present. `permissions.deny` and `skillOverrides` are vanilla settings.
-  Acceptance: a baseline report lists system prompt, system tools, MCP tools, memory files, custom agents, messages. Reports: 66k start = system tools 35.6k + MCP 16.6k + skills 5.9k + system prompt 5.2k + MCP instructions 2.3k + memory 1.5k; other users 45k, 27k, 10-11k, 9.5-11.6k; a missing `.gitignore` leaked node_modules, cutting startup from about 40,000 chars to about 1,236; autocompact buffer about 33k; skill descriptions under about 200 chars. Reason: Haiku price steps above 100k. Verification: demonstration.
-  Basis: reported. Status: partial at 088a227c (`plugins/claudetto/hooks/features/hygiene/`, `budget-run.ts`; baseline report missing). claude 2.1.327: `/context` and `/skill-doctor` present (chunk-271f7twe.js@1000-4200 command table); `/doctor` verified on 2.1.327 (prompt command, alias `checkup`, chunk-3z330av7.js@165730).
-  Source: external/2026-10-12/export-claude code 66k system prompt.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0fli2/claude_code_66k_system_prompt/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:59; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:8.
+- [x] **REQ-COST-021** Moved Out as OUT-2950: not built and no measured check shows a claudetto baseline report beats vanilla `/context` (ADR-0177).
 
 ## Decider
 
@@ -43,6 +39,7 @@
   Acceptance: no claudetto feature switches the model inside a session. The opusplan-then-Sonnet switch in one session was costly (reported); `/opusplan` called redundant now that subagent handoff works (reported opinion; not checkable locally because it judges usefulness). claude 2.1.327: the `opusplan` alias is in the model list (code search, chunk-jtw26wbb.js@963). Verification: inspection.
   Basis: measured (top-level `model` only), reported. Status: missing at 088a227c.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:20.
+  Verified: PASS: no model switch in plugins; only model.fork in handover/writer.ts; agents pin models. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 - [x] **REQ-COST-040** Moved Out as OUT-2353: the item needs a paid model run.
 
