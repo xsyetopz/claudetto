@@ -187,7 +187,7 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 		const named = walls.some((wall) => text.includes(wall.replace(/^.*\//u, "")) || command.includes(wall.replace(/^.*\//u, "")));
 		if (words.length === 0 && !named && !/[$`]/u.test(text)) return next(e);
 		// Without a home the `~/` and `$HOME/` spellings and globs still match; only the expanded one is lost.
-		const home = await $.env.get("HOME").catch(() => undefined);
+		const home = await $.env.get("HOME").catch((err: unknown) => (fault($, "wall home", err), undefined));
 		const atHome = movesHome(text, home);
 		// After a move to home, a plain relative word names a folder of home as much as a glob does.
 		const reach = atHome ? text.split(/[\s;&|()<>]+/u).map((w) => w.replace(/["']/gu, "")).filter(Boolean) : words;

@@ -109,7 +109,7 @@ const envSecrets = async ($: EngineInterface): Promise<string[]> => {
 const scan = async ($: EngineInterface, text: string): Promise<string[] | undefined> => {
 	const config = `${$.plugin.root}/hooks/guards/redact/betterleaks.toml`;
 	const argv = ["betterleaks", "stdin", "--no-banner", "-c", config, "-f", "json", "-r", "-", "--exit-code", "0", "-l", "error"];
-	const run = await $.process.run(argv, { stdin: text, timeoutMs: 10_000 }).catch(() => undefined);
+	const run = await $.process.run(argv, { stdin: text, timeoutMs: 10_000 }).catch((err: unknown) => (fault($, "redact scan", err), undefined));
 	return run?.exitCode === 0 ? findings(run.stdout) : undefined;
 };
 

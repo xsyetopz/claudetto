@@ -20,12 +20,13 @@ describe("memory hold", () => {
 		expect(floor("30")).toBe(20);
 	});
 
-	test("states the measured free share", () => {
+	test("states the measured free share and tells the model to wait and retry", () => {
 		// Act
 		const text = reason(12, 20);
 
 		// Assert
 		expect(text).toContain("12% free");
+		expect(text).toContain("then retry");
 	});
 
 	test("a Bash call is refused while free memory is under the floor and runs when the reading fails", async ($, on) => {

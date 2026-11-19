@@ -51,6 +51,33 @@ describe("wall guard", () => {
 		for (const r of results) expect(JSON.stringify(r)).toContain("walled off");
 	});
 
+	test("a failed HOME read leaves a debug line and the ~/ spelling is still refused", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({ value: FREE }));
+		on("env.get", () => {
+			throw new Error("env closed");
+		});
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const lines: string[] = [];
+		on("ui.log", (_$, e) => {
+			lines.push(`${e.to}: ${e.text}`);
+			return { value: undefined };
+		});
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+
+		// Act
+		const r = await $.tool.call({ tool: "Bash", command: "ls ~/.claudetto-holdout", dangerouslyDisableSandbox: true }).catch((error: unknown) => error);
+
+		// Assert
+		expect(ran).toEqual([]);
+		expect(JSON.stringify(r)).toContain("walled off");
+		expect(lines.some((l) => l.startsWith("debug: claudetto wall home failed:"))).toBe(true);
+	});
+
 	test("a Bash call that names no wall runs", async ($, on) => {
 		// Arrange
 		on("process.run", () => ({ value: FREE }));

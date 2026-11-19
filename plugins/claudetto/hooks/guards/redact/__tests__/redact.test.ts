@@ -116,6 +116,34 @@ describe("tool-result redaction", () => {
 		expect(JSON.stringify(session.appended())).not.toContain("ghp_abcdefghijklmnopqrstuvwxyz0123");
 	});
 
+	test("a scanner that throws leaves a debug line and the fallback shapes still mask", async ($, on) => {
+		// Arrange
+		const session = mock.session(on);
+		on("session.root", () => ({ value: "/repo" }));
+		on("fs.exists", () => ({ value: false }));
+		on("process.run", () => {
+			throw new Error("spawn ENOENT");
+		});
+		const lines: string[] = [];
+		on("ui.log", (_$, e) => {
+			lines.push(`${e.to}: ${e.text}`);
+			return { value: undefined };
+		});
+
+		// Act
+		await $.session.append({
+			door: "tool-result",
+			uuid: "u3",
+			origin: { kind: "tool", tool: "Bash" },
+			message: { type: "user", role: "user", content: [{ type: "tool_result", tool_use_id: "t3", content: "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123" }] },
+		});
+
+		// Assert
+		expect(lines.length).toBe(1);
+		expect(lines[0]).toStartWith("debug: claudetto redact scan failed:");
+		expect(JSON.stringify(session.appended())).not.toContain("ghp_abcdefghijklmnopqrstuvwxyz0123");
+	});
+
 	test("masks 1,000 results of 10 KB in under 500 ms", () => {
 		// Arrange
 		const values = envValues(ENV);
