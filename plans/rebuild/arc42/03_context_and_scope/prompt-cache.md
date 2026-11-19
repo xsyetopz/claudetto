@@ -18,12 +18,14 @@
   Source: fork probe, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with an Agent call of subagent_type fork, requests 1 and 2 compared (reports/2026-11-18-research/handover-probes/probe-fork.log); chunk-asj6f58y.js@1004680 (claude 2.1.327, cc-inspect `code search` cc_is_subagent).
   Verified: source already on 2.1.327.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: cc_is_subagent x2 and "Fork started" x1 in 2.1.327 binary; byte-identical prefix and 30,470 B tools not re-measured
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 - [x] **CTX-842** On a subscription login under claude 2.1.327, the main loop writes its cache with a 1h TTL. A non-fork subagent writes with no ttl field, which is the 5-minute default. `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL=1h` gives the subagent 1h. A short-lived worker finishes within 5 minutes of its last write, so the default suits it, and its writes cost 1.25x instead of 2x at API list prices (on a subscription meter a 1h write costs only about 1.1 times a 5m write, CTX-846). A worker that waits longer than 5 minutes between turns re-writes its prefix. That is one more reason to end workers per slice (REQ-DELEGATION-065) rather than to raise their TTL.
   Basis: measured (request bodies). Status: n/a (built-in behaviour).
   Source: subagent TTL probe, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with `login` oauth and with the env set, an Agent call of subagent_type general-purpose (reports/2026-11-18-research/handover-probes/probe-ttl.log); env name from cc-inspect `surface` env, chunk-2ew0jg68.js:18928; write multipliers from https://platform.claude.com/docs/en/build-with-claude/prompt-caching (fetched 2026-11-18).
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: needs subscription-login request capture; static: CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL x6 present in 2.1.327 binary
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 ## Prompt Cache
 
@@ -47,6 +49,7 @@
   Source: reports/2026-11-18-research/surface-probes/meter-probe.md (three runs; meter-probe-2/log.jsonl, meter-probe-3/log.jsonl); reports/2026-11-18-research/surface-probes/meter-probe/log.jsonl; user instruction to run the probe, 2026-11-18 (session 2cf55002); external/2026-11-18/reddit.com-r-claudecode-comments-1xy6h6k-running-18-claude-code-session-20261117T224849Z.md:47,267 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xy6h6k/running_18_claude_code_sessions_at_once_and_half/>); reports/2026-11-18-research/dossier.md:24.
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: measurement against the user subscription weekly meter; not repeatable locally
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 ## External Sweep, 2026-11-18
 

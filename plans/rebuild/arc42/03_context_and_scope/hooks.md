@@ -7,18 +7,21 @@
   Source: probe G, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with TaskCreated, TaskCompleted, PostToolUse and Stop command hooks writing stdin to an absolute log (reports/2026-11-18-research/handover-probes/probe-g/probe.log and hooks.log).
   Verified: source already on 2.1.327.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: 2.1.327 binary string counts >0 for task_subject, task_description, background_tasks, session_crons, noOutputExpected, last_assistant_message, stop_hook_active, TaskCreated, TaskCompleted; payload key-by-key and "no exit code" not re-run (hook-stdin capture via cc-inspect cli could not show the hook output file)
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 - [x] **CTX-841** SessionStart reports `source` "startup" at launch, "compact" after `/compact` (with `model` set), and "clear" after `/clear` (with `model` null). PreCompact before a `/compact` carries `trigger` "manual" and `custom_instructions` null. A handover injector therefore keys on SessionStart `source` "clear" or "compact" to put the pending handover into the first turn.
   Basis: measured.
   Source: probe I, claude 2.1.327, 2026-11-18, cc-inspect `code cli` with `--settings` holding SessionStart and PreCompact command hooks, prompts one, /compact, two, /clear, three (reports/2026-11-18-research/handover-probes/probe-i/probe.log and hooks.log).
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: runtime SessionStart/PreCompact payload values; cc-inspect cli cannot display a hook-written file. Static: custom_instructions literal present in 2.1.327 binary
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 - [x] **CTX-596** StopFailure runs as a `classic.StopFailure` hook. With `ANTHROPIC_BASE_URL=http://127.0.0.1:9` the run prints "API Error: Connection refused", then `classic.StopFailure`, then `$.ui.notify (claudetto): 40 chars: no-surface`, because `-p` has no surface. The notice fires only on an API-error stop
   Basis: measured.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:150.
   Verified: binary string search, claude 2.1.327, 2026-11-19: StopFailure is in the bundle (17 hits); the behaviour stays as measured on the earlier version named in the fact and was not rerun.
   Verified: not re-run 2026-11-19: needs a plugin run with ANTHROPIC_BASE_URL refusing connections; static: "StopFailure", "Connection refused", "no-surface" literals present in 2.1.327 binary
+  Verified: tick audit 2026-11-19, re-run on 2.1.327: `CLAUDE_CODE_MAX_RETRIES=0 ANTHROPIC_BASE_URL=http://127.0.0.1:9 claude -p hi --plugin-dir plugins/claudetto --debug-file` printed "API Error: Connection refused — a firewall or proxy may be blocking it (ECONNREFUSED)", and the debug log shows `$.ui.notify (claudetto): 64 chars: no-surface` then `classic.StopFailure settled`; the notice is now 64 characters, not 40.
 
 - [x] **CTX-606** Claude Code 2.1.296 has 33 hook events (PreToolUse to MessageDisplay), unchanged across 2.1.293, 2.1.295, 2.1.296, and all 33 are present on 2.1.326 (cc-inspect `surface` hook-event lists 33 names, 2026-11-17). Permission modes are default/manual, acceptEdits, plan, auto, dontAsk, bypassPermissions; the effort scale is low, medium, high, xhigh, max (chunk-ja5z738t.js@161058, 2.1.327; the persisted `effortLevel` setting accepts low to xhigh only, @278287). claudetto shall rest on these cited Claude Code 2.1.312 facts: 33 hook events; six permission modes (default, acceptEdits, plan, auto, dontAsk, bypassPermissions); deny/ask before allow, a hook's allow cannot override; CLAUDE.md, CLAUDE.local.md, unscoped `.claude/rules/*.md` load at launch inside an "override defaults" reminder; context rebuilt at session start, `/clear`, `/compact`; `paths:` rules load on matching tool touch; Stop-type hooks capped at 8 continuations; <=24 prompt/agent hooks at once; subagents <=20 concurrent, depth 3. 2.1.326: the 33 hook events were checked with cc-inspect `surface`; on 2.1.327 the subagent spawn-depth default is 3 (chunk-ja9j7x1x.js@341); the 8-continuation and 24-hook caps were not located in the program.
   Acceptance: `surface` lists the 33 events on 2.1.326. Verification: probe. Each count is re-queried against 2.1.325 before use. 2.1.326: the 33 hook events were checked with cc-inspect `surface`; on 2.1.327 the 33 events are confirmed again (chunk-ja5z738t.js@5436) and the spawn-depth default is 3 (chunk-ja9j7x1x.js@341); the 8-continuation and 24-hook caps were not located. Verification: probe.
@@ -119,6 +122,7 @@
   Basis: measured (two cc-inspect cli runs on a fake API, 2026-11-18). Status: done in reports/2026-11-18-research/incident-lab/run.py.
   Source: reports/2026-11-18-research/incident-lab/run.py; ADR-0187.
   Verified: not re-run 2026-11-19: safe-mode vs --settings hook run needs a hook-written file that cc-inspect cli cannot show; static: "safe-mode" literals present (19 lines) in 2.1.327 binary
+  Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
 
 ## External Sweep, 2026-11-18
   Verified: source already on 2.1.327.

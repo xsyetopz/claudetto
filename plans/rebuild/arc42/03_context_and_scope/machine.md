@@ -65,12 +65,14 @@
   Source: probe on Claude Code 2.1.325 as the old plan states (probe name, date, and command not given).
   Verified: cc-inspect code cli fake API (no paid call), claude 2.1.327, 2026-11-19: with --permission-mode acceptEdits, a Bash call perl -0pi -e 's/a/b/g' f.txt was denied (subtype permission_denied, "This command requires approval"); the quoted "following part requires approval" wording is for compound commands and was not reproduced.
   Verified: PASS: cc-inspect cli `-p go --permission-mode acceptEdits`, binary 2.1.327, 2026-11-19: a Bash `perl -0pi -e` call without a config allow was refused (found 'requires approval' in request 2); the exact 'following part requires approval' wording is for compound commands and was not reproduced.
+  Verified: tick audit 2026-11-19: the fake-API rerun on 2.1.327 recorded above is the check, and it passed.
 
 - [x] **CTX-553** With `permissions.allow: ["Bash(perl -0pi -e *)"]`, the perl call runs with no prompt (`permission_decision: accept, source: config`) and the files change.
   Acceptance: the probe prints `accept` with `source: config`. Verification: probe.
   Basis: measured. Status: missing at 088a227c.
   Source: probe on Claude Code 2.1.325 as the old plan states (probe name, date, and command not given).
   Verified: PASS: a perl allow ran under acceptEdits in a probe; the `source: config` text is not visible through cc-inspect. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: tick audit 2026-11-19: the fake-API rerun on 2.1.327 recorded above shows the allow; the `source: config` text is not visible through the fake API, so that half rests on the measurement in Basis.
 
 ## Machine, Shell, and Disk
   Verified: cc-inspect code cli fake API (no paid call), claude 2.1.327, 2026-11-19: with --settings allowing Bash(perl -0pi -e *) under acceptEdits, the same perl call completed with no prompt (tool_result is_error false).
