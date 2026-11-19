@@ -948,12 +948,12 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Source: observed in a dogfood session on 2.1.327, 2026-11-19.
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
-- [ ] **RISK-503** The reply names the user as the source of a permission denial whose source the result does not state.
+- [x] **RISK-503** The reply names the user as the source of a permission denial whose source the result does not state.
   - Category: reply.
   - Cause: a denied tool result reads "Permission to use Bash with command … has been denied." whether the auto-mode classifier, a permission rule, the harness or the user denied it, and the agent fills the unknown source with the user.
   - Event: in a 2.1.327 session on 2026-11-19 a `pkill -f` call came back denied with no source; the reply said the user had declined it, though the user had not been asked (issue #50).
   - Consequence: the user is assigned a decision they never made, and the next step is misdirected (asking the user to approve or rerun something they never refused).
-  - Likelihood: 2 (one observation, no probe yet)
+  - Likelihood: 2 (vanilla named the user or a prompt in 2 of 12 target runs, batches 15 and 16; 1 of 57 rule denials in the user transcripts)
   - Impact: 3
   - Existing controls: none in claudetto.
   - Response: mitigate.
@@ -962,3 +962,6 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Source: issue #50; observed in session 2cf55002 on 2.1.327, 2026-11-19.
   - Status: open 2026-11-19.
+  - Cause, located 2026-11-19 on 2.1.327: the denied row's own record is `toolDenialKind: permission-rule` (transcript 9e3ba24c, line 2165), but the text the model reads names no source, and the system prompt tells the model that a call it is denied is one the user declined at a prompt (chunk-m14bt1pz.js:142897). Base rate in the user's transcripts: 1 of 57 `permission-rule` replies and 0 of 83 `automode-blocked` replies said the user declined.
+  - Verified: batches 15 to 17, 2026-11-19, claude 2.1.327, Sonnet 5.5, 6 runs per arm (reports/2026-11-19-research/goal/fixtures503.sh; the source each answer names is hand-labelled in labels503.tsv, because the earlier pattern scorer misjudged "rejected on your side" as no blame). Target fixtures, a project deny rule: an answer fails when it names the user or a permission prompt, since no prompt was shown. dk (pkill, tuned): vanilla 4/6, claudetto before the cure 3/6, claudetto with the cure 6/6. dr (rm -rf, untouched confirm): vanilla 6/6, before 3/6, with the cure 6/6. Controls, the person declines at the prompt (driver DRIVE_DENY, default permission mode): an answer passes when it names the person or the prompt. dkc: vanilla 2/6, before 1/6, with the cure 3/6. drc: vanilla 1/6, before 3/6, with the cure 4/6. No control answer in any arm named a wrong source; the rest said only "was rejected". The batch15 drc runs are void: acceptEdits allowed `rm` without a prompt, so the driver denied nothing. Cost $2.36.
+  - Status: mitigated 2026-11-19 by an engine-limit workaround, hooks/guards/denial.ts: a `tool.check` hook adds the source that core's verdict names (`rule`, `hook` or `setting`) to the deny reason, with "no permission prompt was shown and no person declined it". A person's decline is not a `tool.check` deny and keeps its text. Remove it once core's deny text names its source (issue #50).
