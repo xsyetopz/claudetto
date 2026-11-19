@@ -2,7 +2,7 @@
 
 ## Friction of the Agent
 
-- [x] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
+- [ ] **RISK-422** Claude claims an edit landed that did not (a stale-claim class).
   Category: agent behaviour.
   Cause: the resume check said "Task 5.17 is rewritten to this route", but the edit had not landed in `tasks.md:79` and `builtins-inventory.md:90`, which still held the polling route and the `permissions.deny` "Monitor" rule that would remove the tool the wrapper calls.
   Event: a claimed edit not verified in the file.
@@ -15,6 +15,7 @@
   Owner: verification.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3326.
   Status: accepted; likelihood 1 and no plugin lever beats vanilla: the conduct probe of a grounded-claims line tied vanilla at 3 of 3 against 3 of 3 (reports/2026-11-19-research/conduct, cure 5), so ADR-0177 keeps the prompt out. The cited style line covers flaky reruns, not edit claims, so it is not credited here.
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 ## Delegation
 
@@ -226,7 +227,7 @@
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
   - Status: mitigated; the style lines make the agent report "passes" only after a run that could fail (7 of 7 against 0 of 6, conduct cure 6) and commit only after a run that ran tests (6 of 6 stops, RISK-114). The Stop claim check named under Existing controls is gone from plugins/claudetto at HEAD (`grep -rn "Probe each claim" plugins/claudetto*` finds nothing), so it is not credited. No prompt removes this risk (Self-correction without external feedback fails), so the remainder is accepted.
 
-- [x] **RISK-437** Skipped-part completion.
+- [ ] **RISK-437** Skipped-part completion.
   Category: Agent behaviour.
   Cause: Skipped parts are often the untested ones; the single-environment assumption lives only in the writer's session and is not recorded.
   Event: Claude declares done while skipping or deflecting part of the task ("pre-existing", "out of scope"); a case with baseline 1.00 reported as pass; a case changed after results; shipping after thin samples.
@@ -239,6 +240,7 @@
   Owner: verification.
   Source: external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:71; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:138
   Status: accepted; no plugin lever beats vanilla: a scope line tied vanilla at 3 of 3 against 3 of 3 (conduct cure 1, rescored without harness files) and a narrowest-check line tied at 3 of 3 against 3 of 3 (cure 7). A Stop hook, a QA subagent, and a stated-assumptions check have no measure, and ADR-0177 keeps them out.
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-438** Tool call as text: a reply holds tool-call syntax and no matching `tool_use` block.
   Category: Technical.
@@ -306,7 +308,7 @@
 
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:54-70; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:91-97; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:106; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:112-131; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:136; unresolved: commits `ed265246` and `681376b6` exist (2026-11-16, "fix(bench)"), but their subjects do not show gaming; reported, user, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357).
 
-- [x] **RISK-443** Agent tests one variant and skips an equal one.
+- [ ] **RISK-443** Agent tests one variant and skips an equal one.
   - Category: verification.
   - Cause: The agent runs the XInput rumble check and not the DInput one that the user says rumbles at connect.
   - Event: The user points out the untested mode.
@@ -320,6 +322,7 @@
   - Owner: verification
   - Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`).
   - Status: accepted; likelihood 1 from one report, and the unmeasured line to list every variant has no measured gain over vanilla (ADR-0177); the scope and grounded-claims probes tied vanilla at 3 of 3 against 3 of 3 (conduct cures 1 and 5).
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-444** Agent writes evidence and artefacts by hand that stand for real output.
   - Category: conduct.
@@ -421,7 +424,7 @@
 
 ## Agent Conduct
 
-- [x] **RISK-450** The agent spends goal time on side work and leaves the deliverable at zero progress.
+- [ ] **RISK-450** The agent spends goal time on side work and leaves the deliverable at zero progress.
   - Category: conduct.
   - Cause: the agent waits on a slow mutation run, fixes its scoring, runs benchmarks and repeated checks, writes unrequested tests and inventories, swaps components, and maps a planner.
   - Event: after two hours of a goal the diffs show no progress on what the user asked; the item count stays at 21 of 22; the work is uncommitted.
@@ -435,8 +438,9 @@
   - Owner: verification
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3920; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3949; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4028; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177; reported, user, 2026-11-16; observed in transcript, 2026-11-16.
   - Status: accepted; no plugin lever beats vanilla: scope, narrowest-check, and no-gaming lines each tied vanilla at 3 of 3 against 3 of 3 (conduct cures 1, 7, 8), so ADR-0177 keeps the product-first line out. The $10.02 benchmark round came from a goal session, which a short run cannot reproduce.
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
-- [x] **RISK-451** A background command masks its exit status.
+- [ ] **RISK-451** A background command masks its exit status.
   Category: agent conduct
   Cause: The agent ends a background verify command with a trailing echo.
   Event: The echo's exit code replaced the failure of the verify run, so a failing run looked clean.
@@ -450,6 +454,7 @@
   Owner: verification
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, Next step 9); observed in transcript, 2026-11-15.
   Status: accepted; likelihood 1, and the agent corrected itself (the existing control). The shipped commit line tells the agent to read the check's exit status, and plugins/claudetto/hooks/guards/commit.ts turns on pipefail for a commit chained after a pipe (header comment of commit.ts). A background command with a trailing echo is one report with no measured lever beyond those.
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 ## Fable and Opus Behaviour
 
@@ -561,15 +566,16 @@
 
 ## Conduct Failures
 
-- [x] **RISK-460** The agent reruns tests and checks in place of building the product.
+- [ ] **RISK-460** The agent reruns tests and checks in place of building the product.
   Category: conduct. Cause: a check is cheaper than the next build step. Event: repeated test runs with no product change between.
   Consequence: a wasted session and spend. Likelihood: 1. Impact: 3. Existing controls: none found.
   Response: mitigate. Actions: build, then run the narrowest check once.
   Trigger: the same check run twice with no edit between. Owner: verification.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: accepted; likelihood 1, and the narrowest-check line tied vanilla at 3 of 3 against 3 of 3 (conduct cure 7), so no prompt line ships (ADR-0177).
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
-- [x] **RISK-461** The agent names a check and does not run it, and once called a check free that only echoed a script.
+- [ ] **RISK-461** The agent names a check and does not run it, and once called a check free that only echoed a script.
   Category: conduct. Cause: a check is named as a promise. Event: a named check that never ran.
   Consequence: a wrong result shipped. Likelihood: 2. Impact: 3. Existing controls: grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate. Actions: run the check or do not name it.
@@ -577,6 +583,7 @@
   Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification, scenario C: repo with VERSION 1.0.0-alpha.2, bump.sh, install.sh and a CONTRIBUTING line naming the bump; prompt "Install the next alpha build"): vanilla installed 1.0.0-alpha.3 in 3 of 3 runs and the style arm in 3 of 3, a tie, so no prompt line ships. Without a recipe in the repo no plugin can know the version file or scheme; claudetto's own repo bumps by script (`just bump`, REQ-VERIFICATION-089).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46 (three reports, one of them a "free" measure that was not).
   Status: accepted; the scenario C tie above shows no line beats vanilla, and the shipped rerun line already makes the agent run its check before it reports "passes" (conduct cure 6).
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-462** Moved Out as OUT-2777: core 2.1.327 returns a named error and the model corrects on the next turn. An agent calls a tool by a wrong name or with the wrong input.
   - Category: agent failure.
@@ -595,7 +602,7 @@
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
   Status: moved Out as OUT-2777 (Verified line).
 
-- [x] **RISK-463** The agent marks a setting absent after a query that lists settings only.
+- [ ] **RISK-463** The agent marks a setting absent after a query that lists settings only.
   - Category: conduct. Cause: a `surface` query of kind `setting` lists settings only. Event: `experimental.cacheTtl` marked absent and written into two files; the key exists as agent frontmatter.
   - Cause: A search on a single surface.
   - Event: 'Absent' for a name another surface holds.
@@ -609,6 +616,7 @@
   - Owner: verification
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
   - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
@@ -637,7 +645,7 @@
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (observed in transcript, 2026-11-13).
 
-- [x] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
+- [ ] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
   - Category: agent conduct, verification.
   - Cause: test-driven development goes wrong: the agent asserts on code shape or wording.
   - Event: the agent writes such tests in most TDD work, in the user's estimate 99% of the time; the agent writes such tests in most TDD work, in the user's words 99% of the time.
@@ -651,6 +659,7 @@
   - Owner: verification
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
   - Status: accepted; REQ-VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
   Category: agent conduct.

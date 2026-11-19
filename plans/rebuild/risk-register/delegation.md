@@ -78,7 +78,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
-- [x] **RISK-163** Opinion smuggling into subagent briefs.
+- [ ] **RISK-163** Opinion smuggling into subagent briefs.
   Category: agent
   Cause: A main session that disagrees during planning leaks its opinion into subagent briefs.
   Event: The subagent returns an echo of the plan.
@@ -92,6 +92,7 @@
   Owner: delegation
   Status: accepted; vanilla 2.1.327 already tells the lead to explain what it has learned or ruled out and never to delegate understanding (cc-inspect code search "Never delegate understanding", chunk-m14bt1pz.js@3959626), and Athena.md:12 and Heracles.md:17 require each finding to carry `path:line` evidence marked read or reproduced, so a bare echo of the plan cannot pass as a finding. A brief form with a leaning decision and a supports/contradicts verdict has no measured gain over this, and it would add a prompt line (ADR-0177).
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-164** Stub files override agent roles and stop subagent handoff.
   Category: delegation.
@@ -197,7 +198,7 @@
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
   Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
-- [x] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
+- [ ] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
   Category: agent conduct.
   Cause: a nested session's prompt reaches a subagent, which cannot tell its own consent from the user's.
   Event: one subagent pressed "1" and the result was counted as proof the approval rule works.
@@ -408,7 +409,7 @@
   Status: mitigated; the Agent tool takes `prompt` and `description` for every spawn (chunk-nk78ptca.js@344), and Heracles.md:17, Athena.md:13 and Artemis.md:13 each open the report to the lead with the result, so a spawn has a task and returns a report. hooks/delegation/spawn.ts denies a barred model on the call. claude 2.1.327, 2026-11-19.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
-- [x] **RISK-185** The agent starts a background shell and never looks at it.
+- [ ] **RISK-185** The agent starts a background shell and never looks at it.
   - Category: agent conduct.
   - Cause: Claudetto 2.1.319 gave the agent no step to watch its background shell.
   - Event: the agent spawned a shell and the user had to ask what the progress was.
@@ -422,6 +423,7 @@
   - Owner: delegation
   Status: accepted; vanilla 2.1.327 says a background command's completion arrives as a notification and a running background agent gets a reminder each turn (chunk-m14bt1pz.js@3762250, @5939009), and its own text says not to poll, so a claudetto line that tells the agent to check would work against it. `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` at hooks/settings/defaults.ts:45 covers a stuck agent. The cheap monitor model is not carried (ADR-0177: no measured gain).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 ## Guards
 
@@ -541,7 +543,7 @@
 
 ## Model Variability
 
-- [x] **RISK-193** Five paths change the served model unnoticed.
+- [ ] **RISK-193** Five paths change the served model unnoticed.
   Category: delegation.
   Cause: a flag fallback; per-provider alias resolution; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`; an unrecognised model getting the short prompt (2.1.312) with a refused effort dropped (2.1.310); a failed compaction retrying on a larger model.
   Event: a subagent or the main loop runs on a model other than the one named.
@@ -554,6 +556,7 @@
   Owner: delegation. PreModelSwitch exists in 2.1.327 (chunk-m14bt1pz.js@4122610, a hook can answer deny or ask), but `git grep PreModelSwitch` finds nothing under `plugins/`, and the same entry holds two opposing parts: Existing controls keep the flag fallback while Actions turn it off.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
   Status: accepted 2026-11-19; vanilla 2.1.327 announces each model switch, so no fixed-model setting ships. Core writes a `model_fallback` system message with its trigger (`model_not_found`, `permission_denied`, `overloaded`, `server_error`, `last_resort`, `model_blocked`), `original_model` and `fallback_model` (chunk-rj3e7agr.js@531194), shows "Switched to <model> due to high demand for <model>", "because <model> is not available" or "returned an error that could not be retried" (chunk-8g2nr9dn.js@291743), and shows "Switched to <model>" on a refusal fallback (chunk-18d5r2hb.js@284918). The fixed-model settings trade availability for that notice. Alias resolution and the short prompt for an unrecognised model carry no notice and stay at Likelihood 2; claudetto pins the subagent model (hooks/settings/defaults.ts:36). Earlier analysis: `CLAUDE_CODE_NO_MODEL_FALLBACK` makes a swap fail instead of switching (chunk-asj6f58y.js@495439) and also stops compaction with "Compaction unavailable" when a swap is needed (chunk-m14bt1pz.js@2961351), so a fixed model costs availability; `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` and `switchModelsOnFlag:false` leave a refused request with no retry (chunk-18d5r2hb.js@277228). The source writes all three only in the user's eval profile. Choice: write them for every setup, write them for an eval profile only, or write none and use a PreModelSwitch hook that asks. The subagent part is covered: CLAUDE_CODE_SUBAGENT_MODEL at hooks/settings/defaults.ts:36 and spawn.ts.
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 ## Delegation and Subagents
 
@@ -752,7 +755,7 @@
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
 
-- [x] **RISK-207** Research Over Measure.
+- [ ] **RISK-207** Research Over Measure.
   Category: Agent behaviour.
   Cause: A question about the agent's own code, config, accounts or data goes to a swarm, with one verifier per finding.
   Event: A 76-agent run (4.7M tokens, 928 tool calls, about 71 verifiers) gave 3 wrong headline findings, each killed in under a minute by one API call, one function read, or one usage-endpoint read. A second run hit the session limit at 432k tokens with zero results. One narrow agent was right in 77k tokens and 22 calls and corrected the premise.
@@ -767,6 +770,7 @@
   Basis: reported, n=1.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:37,41,43,55,59-69 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5: vanilla made 0 Agent calls in 3 of 3 runs at $0.033-0.036 each -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
+  Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-208** Verifier Inherits Reasoning.
   Category: Agent behaviour.

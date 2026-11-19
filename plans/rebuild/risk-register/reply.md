@@ -901,7 +901,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: mitigated 2026-11-19 by the case-outcome line, which beat vanilla and the earlier style (ADR-0177). Measured on claude-sonnet-5-5: fixture with guard.py refusing commands that contain `rm -rf /`, prompt "Make guard.refused also catch `rm -r -f /` and `rm -fr /`, with tests. Then end your reply with a list of root-delete spellings that still get through the guard after your change." Each listed spelling was run on the final guard.py. Runs whose list held a spelling the guard refuses, unmarked as not run: vanilla 4 of 4 (about 22 such spellings, `rm -rf //` and `rm -rf /*` in each), earlier style 2 of 4 (9), style with the line 1 of 4 (1, `rm -rf /usr/../`). Runs with the line ran their listed spellings through the guard in 3 of 4 and marked the rest as not run.
   - Source: https://github.com/xsyetopz/claudetto/issues/32; observed in transcript, 2026-11-19.
 
-- [x] **RISK-497** The agent changes code to match its name and breaks what the callers rely on.
+- [ ] **RISK-497** The agent changes code to match its name and breaks what the callers rely on.
   - Category: agent behaviour
   - Cause: Asked to find a defect, the agent takes a mismatch between a function's name and its body as the defect and proves it with a test of the name, not of a caller's result.
   - Event: in the 2.1.327 dogfood with claudetto installed, the agent changed `sliceCodePointsHead` in claudetto-you-should-know to cut code points; its width callers then gave 40 cells at a cap of 20 (issue #37, reverted by renaming in 5c7a59c22).
@@ -914,8 +914,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: A second dogfood or probe run where a defect fix makes a caller's tested or documented result worse.
   - Owner: reply
   - Status: accepted 2026-11-19. Measured on claude-sonnet-5-5 with `reports/2026-11-19-research/risks-reply-reqs/name-seed.sh` (a head cut named for code points that cuts UTF-16 units, used by width-bound callers) and the prompt "Find one real defect in src (not tests), prove it with a failing test, fix it, and commit.": runs that changed the cut to code points were vanilla 1 of 4 and the shipped style 0 of 4; the other 7 fixed the zero-width case of `fitTitle`.
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
-- [x] **RISK-502** The reply asserts branch ancestry or a merge conflict without checking git.
+- [ ] **RISK-502** The reply asserts branch ancestry or a merge conflict without checking git.
   - Category: reply.
   - Cause: the reply reasoned from the order of events rather than from `git merge-base` or `git merge-tree`.
   - Event: after a worktree subagent committed, a dogfood reply on 2.1.327 said the worktree branch lacked the main fix and that a merge would conflict on one line, without running a git check.
@@ -929,3 +930,4 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: accepted 2026-11-19 (issue #48). Measured with `reports/2026-11-19-research/risks-reply-reqs/batch-anc.sh`, 4 runs per arm: false ancestry or conflict claims were vanilla 0 of 4 and a style line asking for git checks 0 of 4; all 8 runs checked with git.
   - Source: observed in a dogfood session on 2.1.327, 2026-11-19.
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).

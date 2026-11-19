@@ -168,7 +168,7 @@
   - Status: closed; same grep: no Bash gate exists in plugins/claudetto/hooks; guards-block gates carry their own risks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (claudetto on Claude Code 2.1.319); observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
-- [x] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
+- [ ] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
   - Category: product.
   - Cause: unknown; the message names an internal deferred marker.
   - Event: the terminal shows the error on resume while the command ran.
@@ -182,6 +182,7 @@
   - Owner: kernel
   - Status: accepted; code search, claude 2.1.327, 2026-11-18, cc-inspect search "No deferred tool marker found": chunk-rap1tzf6.js@695541 holds the message, a vanilla message with no claudetto lever.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (Claude Code 2.1.319).
+  - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
 
 - [x] **RISK-015** A UserPromptSubmit nudge leaks into a local model's own run.
   Category: product behaviour.
