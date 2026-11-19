@@ -30,6 +30,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:56; external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:84; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:80; external/2026-11-16/reddit.com-r-claudeai-comments-1xw205g-the-problem-with-fable-52-20261114T143353Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xw205g/the_problem_with_fable_52/>). Unlocated: the 394-call, 99%-of-weekly-limit, $100, and 95%/70% figures.
   Status: partial at abed830ed: the fill writes CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3; the caps in effect and the subagent model deny are unprobed.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3 in hooks/settings/defaults.ts take effect in the probe; Opus and Fable spawns refused by agent.spawn; no defaults.ts change needed.
+  Status: mitigated 2026-11-18: the spawn-depth and concurrency caps take effect and Opus and Fable spawns are refused (Verified line).
 
 - [x] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
   Category: cost.
@@ -250,6 +251,7 @@
   - Status: open (Existing controls: partial at 088a227c).
   - Source: user goal set through `/goal`, 2026-11-16 06:24 UTC, past 25 percent of the seven-day limit, free work only (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
+  Status: closed 2026-11-18: vanilla 2.1.327 already asks before a paid `claude -p` run (Verified line), so claudetto adds no component (ADR-0177).
 
 ## Ungrouped
 
@@ -285,3 +287,4 @@
   Status: open.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit relayed in the handoff, not re-checked by the handoff writer).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
+  Status: closed 2026-11-18: vanilla 2.1.327 already asks before a paid `claude -p` run (Verified line), so claudetto adds no component (ADR-0177).

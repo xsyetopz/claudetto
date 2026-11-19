@@ -135,6 +135,7 @@
 
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
   Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
+  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327 (the closing line above); the BUILD line is superseded.
 
 - [x] **RISK-167** Silent delegation skip: the agent skips a required subagent or reviewer without saying so.
   Category: delegation.
@@ -193,6 +194,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit is kept as reported; no limit text was found in 2.1.327.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
   Category: agent conduct.
@@ -437,6 +439,7 @@
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Status: accepted 2026-11-19: the refusal is the engine's worktree guard, which has no setting and runs after every hook, so no plugin control reaches it; each refusal names its cause and costs one turn.
 
 - [x] **RISK-187** The engine blocks a foreground "sleep N" and subagents have no other way to wait.
   Category: delegation, engine check.
@@ -642,6 +645,7 @@
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32519; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
   - Category: product defect.
@@ -1005,6 +1009,7 @@
   - Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
   - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 moved a no-model subagent under an Opus main from claude-opus-5-5 to claude-sonnet-5-5.
+  Status: mitigated 2026-11-18: CLAUDE_CODE_SUBAGENT_MODEL moves a no-model subagent off Opus (Verified line).
 
 ## Product and Tooling
 
@@ -1023,6 +1028,7 @@
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): Artemis frontmatter sets autoCompactWindow 100000 (agents/Artemis.md); no plugin read-withholding hook is shipped.
+  Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-224** A pending run-log line is lost when a session ends before 3 root turns.
   - Category: product.

@@ -17,6 +17,7 @@
   Status: open.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
   Verified 2026-11-19: every catch site in claudetto and claudetto-you-should-know writes its error to the debug log through a fault() helper; claudetto compact.test.ts and you-should-know fault.test.ts each fail on a mutant without the log (claude plugin test: 42 and 63 pass, 0 fail).
+  Status: mitigated 2026-11-19: every catch site logs through fault() (Verified line).
 
 ## Verification and Honesty
 

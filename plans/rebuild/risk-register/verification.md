@@ -37,6 +37,7 @@
   Status: open (rebuild).
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:822 (P176, measured).
   Verified: 2026-11-18, commit 328809c7f, `claude plugin test plugins/claudetto`: text.test.ts pins the 70k default as the literal 70000, so an undefined constant fails.
+  Status: mitigated 2026-11-18: the threshold test pins the literal 70000 (Verified line).
 
 ## Verification and Honesty
 
@@ -347,6 +348,7 @@
   - Status: open.
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2949`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3033`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections and popup answer); reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
   Status: partial: `just release <plugin>` bumps the patch first; the dev-install recipe must bump too before this closes.
+  Status: moved Out as OUT-2776: `just release` bumps the patch first, and the repo has no other install recipe (justfile).
 
 - [x] **RISK-446** The agent calls a fix proven after a run that cannot show the failure, and skips the full run.
   - Category: conduct.
@@ -586,6 +588,7 @@
   - Status: open.
   - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter `command` is missing; An unexpected parameter `cmd` was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
+  Status: moved Out as OUT-2777 (Verified line).
 
 - [x] **RISK-463** The agent marks a setting absent after a query that lists settings only.
   - Category: conduct. Cause: a `surface` query of kind `setting` lists settings only. Event: `experimental.cacheTtl` marked absent and written into two files; the key exists as agent frontmatter.

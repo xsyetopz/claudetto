@@ -282,6 +282,7 @@
   Owner: guards. Status: partial at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/levers-review.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:380; plugins/claudetto/.claude-plugin/plugin.json:84@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:131@088a227c.
   Verified: claude 2.1.327, 2026-11-18. The OS sandbox plus the Read deny rules cover every shell channel: cc-inspect cli probe, redirect, tee, cp and python open of a denied path all failed with Operation not permitted (vanilla read the file). claude plugin test plugins/claudetto: 35 pass. The holdout wall is in deny, denyRead and denyWrite by default; the holdout path itself was not probed.
+  Status: mitigated 2026-11-18: the sandbox and the Read deny rules refuse every shell channel probed (Verified line).
 
 - [x] **RISK-054** Moved Out as OUT-2322: the item describes a part that plugins/ does not ship.
 
@@ -459,6 +460,7 @@
   Owner: guards. Status: open; missing at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:27,43; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:76; openspec/changes/2-1-325-rearchitecture/design.md:187; external/please-use-me-often/agent-terms/TERMS-OF-USE.md:224; unresolved: no source line located for this claim
   Verified: claude 2.1.327, 2026-11-18. Settings ask rules prompt on hard reset, clean, stash, branch -D, tag pushes, pkill and killall (fill.test.ts). Prompts are Claude Code's own and are enforced by it. The disk-cleanup prompt part is not built.
+  Status: mitigated 2026-11-19 for git: the ask rules cover stash, hard reset, clean and branch -D, also in the `git -C dir` form since RISK-103's fix (fake-API probe, 2.1.327). Accepted for rm globs and disk cleanup: Claude Code enforces settings rules and claudetto judges no command text (ADR-0125).
 
 - [x] **RISK-068** Moved Out as OUT-2325: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
 
@@ -778,6 +780,7 @@
   Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:151.
   Verified: claude 2.1.327, 2026-11-18. Subagent shells inherit the same settings: the force-push deny and the ask rules apply to them as to the main session (settings are session-wide). Not probed separately inside a subagent.
+  Status: mitigated 2026-11-19. Probe: a Sonnet subagent ran `git -C <repo> push --force` and `git -C <repo> stash list` with no denial or prompt, and the main session ran the same push, so the gap was the prefix form of the rules, not the subagent. rules.ts adds middle-wildcard forms; a fake-API probe on 2.1.327 denied all seven force-push and stash forms tried and left `git push origin feat-fix` free; claude plugin test plugins/claudetto: 88 pass.
 
 ## Verification Risks
 

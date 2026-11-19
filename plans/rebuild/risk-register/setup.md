@@ -126,6 +126,7 @@
   Trigger: a Bash call with `dangerouslyDisableSandbox`, especially one whose command had an in-sandbox fix on record.
   Owner: setup. Status: open.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:61; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:156; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:157; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:37; external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:77.
+  Status: mitigated 2026-11-18: routine writes meet no EPERM with the ADR-0188 block (Verified line).
 
 ## Context Loss and Handover
 
@@ -274,6 +275,7 @@
   - Owner: setup
   - Status: open (Existing controls: partial at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Status: closed: outside claudetto (OUT-866, ADR-0190), as the first Status line says.
 
 - [x] **RISK-411** The user's settings keep the retired _TEXT key.
   Verified: test, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: 'removes a retired reminder text and keeps one the user wrote' passes; the fill removes CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT only when it equals one of the two retired texts.
@@ -290,6 +292,7 @@
   - Owner: setup
   - Status: open (Existing controls: have at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Status: mitigated 2026-11-19: the session-start fill removes the retired text (Verified line); it runs in the hook, outside the Bash sandbox.
 
 ## Claude Code Faults
 

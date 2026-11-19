@@ -118,6 +118,7 @@
   Trigger: a simplification of code that carries a recorded decision.
   Owner: handover. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:105.
+  Status: mitigated 2026-11-19 for options the user refused: the handover keeps every user correction, refusal and consent word for word (hooks/handover/text.ts:14), and the dogfood handover of 2026-11-19 carried that Constraints section. Accepted for an option the agent ruled out alone: the next session rechecks it against the code.
 
 - [x] **RISK-133** Compaction on session age, not cache state.
   - Category: Product.
