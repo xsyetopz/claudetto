@@ -28,9 +28,29 @@ describe("defaults fill", () => {
 		expect(next.sandbox.autoAllowBashIfSandboxed).toBe(true);
 		expect(next.sandbox.excludedCommands).toContain("claude *");
 		expect(next.sandbox.network.allowAllUnixSockets).toBe(true);
+		expect(next.sandbox.network.allowedDomains).toBeUndefined();
 		expect(next.sandbox.filesystem.allowWrite).toEqual(expect.arrayContaining(["/opt/homebrew", "/private/var/folders"]));
 		expect(next.sandbox.filesystem.denyWrite).toContain("/private/var/folders/**/xcrun_db*");
 		expect(next.permissions.allow).toEqual(["Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
+	});
+
+	test("writes no key that stops claudetto's own hooks or skills and denies no tool whose removal grows the request", () => {
+		// Act
+		const next = JSON.parse(fillSettings(undefined)?.text ?? "");
+
+		// Assert: on 2.1.327 a ToolSearch deny adds 28,025 bytes to the first request and a Skill deny 8,855 (REQ-SETUP-022).
+		for (const key of ["disableAllHooks", "disableSkillShellExecution", "disableSideloadFlags", "disableCommandPluginSources"]) expect(next).not.toHaveProperty(key);
+		for (const tool of ["ToolSearch", "Skill", "Bash"]) expect(next.permissions.deny).not.toContain(tool);
+	});
+
+	test("writes the stall timeout and no script caps", () => {
+		// Act
+		const next = JSON.parse(fillSettings(undefined)?.text ?? "");
+
+		// Assert: the stall timeout counts silence, and script caps would force the default permission mode (REQ-SETUP-056).
+		expect(next.env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS).toBe("900000");
+		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
+		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB");
 	});
 
 	test("keeps every value the user set and adds only what is missing", () => {

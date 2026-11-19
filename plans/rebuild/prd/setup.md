@@ -33,9 +33,10 @@
 
 - [x] **REQ-SETUP-022** claudetto shall never write `disableAllHooks`, `disableSkillShellExecution`, `disableSideloadFlags`, `disableCommandPluginSources` (a key that stops its own hooks, skills, or sideloaded folder), nor any key that removes /login, /logout, /doctor, or the updater, and shall never `permissions.deny` a tool whose removal raises the request: removing ToolSearch adds 37,936 chars, Skill 8,720, and Bash saves 407 but takes the shell away. A shortened prompt piece that changes behavior on the task set is reverted and the run recorded.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "disableAllHooks|disableSkillShellExecution|disableSideloadFlags|disableCommandPluginSources|permissions" plugins/claudetto --exclude-dir=types`: 0 hits, so no plugin code writes any of them.
-  Acceptance: a setup test asserts none of these keys is written and fails when ToolSearch is in `permissions.deny`, naming +37,936. Verification: test.
+  Acceptance: a setup test asserts none of these keys is written and fails when ToolSearch, Skill or Bash is in `permissions.deny`; the test names the 2.1.327 cost (ToolSearch +28,025 bytes, Skill +8,855). Verification: test.
   Basis: measured (claude 2.1.317); corrected on 2.1.327 by a fake-API request probe (`-p` mode, temp project, bytes; baseline 47,323): deny ToolSearch +28,025 (was +37,936), deny Skill +8,855 (was +8,720), deny Bash -594 (was -407), deny Workflow, ScheduleWakeup and ReportFindings -12,823; `disableSideloadFlags` is present (chunk-ja5z738t.js@263136). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`); missing as a test at 088a227c; no git grep for `disableSideloadFlags` or the +37,936 figure was run in plugins/.
   Source: openspec/specs/surface-trim/spec.md:51; openspec/specs/surface-trim/spec.md:8; openspec/specs/surface-trim/spec.md:31; openspec/specs/surface-trim/spec.md:80; openspec/changes/archive/2026-11-09-release-2-1-319/specs/surface-trim/spec.md:9.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. New test 'writes no key that stops claudetto's own hooks or skills and denies no tool whose removal grows the request' (defaults.test.ts); with ToolSearch put in the deny list by hand it failed (99 pass, 4 fail with the other mutants), and passed again after restoring.
 
 ## Setup Contract
 
@@ -47,6 +48,7 @@
   The key is written because its default is not fixed: when unset it is the inverse of the server gate `bot_protected_tengu_compiled_pudding` (`autoAllowBashIfSandboxed ?? !gate`, chunk-1yrzf3wn.js@1116482), and the settings schema documents it as false. Unset, an account with the gate on gets a permission prompt for every sandboxed command.
   Basis: reported; default measured by code read of 2.1.327 (2026-11-18). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts`).
   Source: openspec/specs/sandbox/spec.md:8; openspec/specs/sandbox/spec.md:80; openspec/specs/setup/spec.md:283; chunk-1yrzf3wn.js@1116482 and chunk-ja5z738t.js@138689 (claude 2.1.327); ADR-0188.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. 'writes the minimal sandbox block of ADR-0188' now also asserts no sandbox.network.allowedDomains; enabled and autoAllowBashIfSandboxed true are asserted. allowUnsandboxedCommands is left unset, and unset counts as allowed: the 2.1.327 binary forbids unsandboxed commands only when the setting is `=== false` (function CC, read with strings 2026-11-19).
 
 ## Setup Groups
 
@@ -133,6 +135,7 @@
   Acceptance: the written env holds the stall timeout and no script caps key. Verification: test.
   Basis: measured. Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/setup/spec.md:25; plugins/claudetto/hooks/features/setup/settings.ts:183@088a227c.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. New test 'writes the stall timeout and no script caps' (defaults.test.ts) asserts 900000 and no CLAUDE_CODE_SCRIPT_CAPS or SUBPROCESS_ENV_SCRUB; with a SCRIPT_CAPS key added by hand it failed, and passed after restoring.
 
 ## Surface Control
 

@@ -85,6 +85,7 @@
   Basis: cited (a contribution certificate in the dossier). Status: missing at 088a227c (`git grep Assisted-by` finds nothing under `plugins/`).
   Source: external/please-use-me-often/agent-terms/CONTRIBUTION-CERTIFICATE.md:22.
   Verified: claude 2.1.327, 2026-11-18. cc-inspect cli, query Co-Authored-By: vanilla request 1 holds the text; with attribution.commit set to Assisted-by: Claude Code the request holds Assisted-by and no Co-Authored-By. Setup fills attribution when unset; fill.test.ts pins it. The setting is one static line, so the model name is not in the trailer.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 103 pass, 0 fail. fill.test.ts now asserts one Assisted-by and no Signed-off-by or Co-Authored-By in the filled attribution; with Signed-off-by added to the default by hand it failed, and passed after restoring. The trailer reaching a commit rests on the 2026-11-18 cc-inspect request probe.
 
 ## Web Fetch and Browser Fallback
 

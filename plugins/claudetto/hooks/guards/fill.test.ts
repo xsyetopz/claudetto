@@ -69,12 +69,14 @@ describe("guard rules", () => {
 		);
 	});
 
-	test("sets one Assisted-by trailer and no Co-Authored-By line", () => {
+	test("sets one Assisted-by trailer and no Co-Authored-By or Signed-off-by line", () => {
 		// Act
 		const next = fillOf(undefined);
 
 		// Assert
 		expect(next.attribution.commit).toBe("Assisted-by: Claude Code");
 		expect(JSON.stringify(next)).not.toContain("Co-Authored-By");
+		expect(JSON.stringify(next)).not.toContain("Signed-off-by");
+		expect(next.attribution.commit.match(/Assisted-by/gu)).toHaveLength(1);
 	});
 });
