@@ -108,4 +108,19 @@ describe("fill notice", () => {
 		expect(notice.match(/permissions\.deny/g)?.length).toBe(1);
 		expect(notice).not.toMatch(/(^|, )(deny|ask|sandbox) \(/);
 	});
+
+	test("reports a removed retired text as a removal, not as a set default", () => {
+		// Arrange
+		const full = JSON.parse(fillSettings("{}")?.text ?? "");
+		full.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT = RETIRED_REMINDER_TEXTS[0];
+		const added = fillSettings(JSON.stringify(full))?.added ?? [];
+
+		// Act
+		const notice = fillNotice("/home/u/.claude/settings.json", added);
+
+		// Assert
+		expect(added).toEqual(["removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"]);
+		expect(notice).toContain("removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
+		expect(notice).not.toMatch(/set 1 unset default/);
+	});
 });

@@ -131,13 +131,18 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
  * @returns One line naming each set key and the count of entries added per list.
  */
 export const fillNotice = (path: string, added: readonly string[]): string => {
+	const removals = added.filter((entry) => entry.startsWith("removed "));
+	const sets = added.filter((entry) => !entry.startsWith("removed "));
 	const groups = new Map<string, string[]>();
-	for (const entry of added) {
+	for (const entry of sets) {
 		const key = entry.split(" ", 1)[0] ?? entry;
 		groups.set(key, [...(groups.get(key) ?? []), entry]);
 	}
 	const named = [...groups.values()].map((entries) =>
 		entries.length === 1 ? entries[0] : `${entries[0]?.split(" ", 1)[0]} (${entries.length} entries)`,
 	);
-	return `claudetto set ${added.length} unset default(s) in ${path}: ${named.join(", ")}.`;
+	const parts: string[] = [];
+	if (sets.length > 0) parts.push(`set ${sets.length} unset default(s): ${named.join(", ")}`);
+	if (removals.length > 0) parts.push(removals.join(", "));
+	return `claudetto changed ${path}: ${parts.join("; ")}.`;
 };
