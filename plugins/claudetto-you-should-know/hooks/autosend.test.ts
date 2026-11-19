@@ -26,6 +26,9 @@ const later = async (ms: number, fn: () => Promise<void>): Promise<void> => {
 	await fn();
 };
 
+/** Each idle-clock test waits 2.2 s of real time after an offer that takes about 2 s to set up, close to the kit's 5 s default. */
+const IDLE = { timeoutMs: 15_000 };
+
 const send = async ($: Engine, text: string, kind = "composer"): Promise<void> => {
 	await $.prompt.submit({ text, origin: { kind }, wait: false } as never);
 	await settle();
@@ -33,7 +36,7 @@ const send = async ($: Engine, text: string, kind = "composer"): Promise<void> =
 
 const withNote = (box: Box) => box.sent?.filter((s) => Array.isArray(s.context) && s.context.length > 0) ?? [];
 
-test("an offer idle for two seconds sends its note with the typed message and clears as known", async ($, on) => {
+test("an offer idle for two seconds sends its note with the typed message and clears as known", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const kept: Kept = new Map();
@@ -50,7 +53,7 @@ test("an offer idle for two seconds sends its note with the typed message and cl
 	expect(view(kept)).toBeUndefined();
 });
 
-test("an offer idle for less than two seconds sends no note", async ($, on) => {
+test("an offer idle for less than two seconds sends no note", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box, { env: ON });
@@ -62,7 +65,7 @@ test("an offer idle for less than two seconds sends no note", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("with the switch off no note is sent", async ($, on) => {
+test("with the switch off no note is sent", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box);
@@ -74,7 +77,7 @@ test("with the switch off no note is sent", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("a session driven by another program sends no note", async ($, on) => {
+test("a session driven by another program sends no note", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box, { env: { ...ON, CLAUDE_CODE_SESSION_KIND: "bg" } });
@@ -86,7 +89,7 @@ test("a session driven by another program sends no note", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("a lone digit counts as a button press and blocks the note for that offer", async ($, on) => {
+test("a lone digit counts as a button press and blocks the note for that offer", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box, { env: ON });
@@ -101,7 +104,7 @@ test("a lone digit counts as a button press and blocks the note for that offer",
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("a message from the bridge sends no note", async ($, on) => {
+test("a message from the bridge sends no note", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box, { env: ON });
@@ -113,7 +116,7 @@ test("a message from the bridge sends no note", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("the note goes once for one offer", async ($, on) => {
+test("the note goes once for one offer", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	await offered($, on, box, { env: ON });
@@ -128,7 +131,7 @@ test("the note goes once for one offer", async ($, on) => {
 	expect(withNote(box)).toHaveLength(1);
 });
 
-test("an offer pressed away by a button sends no note", async ($, on) => {
+test("an offer pressed away by a button sends no note", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const band = await offered($, on, box, { env: ON });
@@ -142,7 +145,7 @@ test("an offer pressed away by a button sends no note", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("a narrow terminal that cannot hold the five-label row starts no idle clock", async ($, on) => {
+test("a narrow terminal that cannot hold the five-label row starts no idle clock", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const props = { hasSurvey: false, isCollapsed: false, isWorking: false, maxRows: 1, bodyColumns: 100, scroll: { offset: 0, bodyRows: 20 }, view: {} };
@@ -160,7 +163,7 @@ for (const [name, patch] of [
 	["a survey", { hasSurvey: true }],
 	["a scrolled view", { scroll: { offset: 3, bodyRows: 20 } }],
 ] as const) {
-	test(`${name} starts no idle clock`, async ($, on) => {
+	test(`${name} starts no idle clock`, IDLE, async ($, on) => {
 		// Arrange
 		const box = fresh();
 		const props = { hasSurvey: false, isCollapsed: false, isWorking: false, maxRows: 20, bodyColumns: 100, scroll: { offset: 0, bodyRows: 20 }, view: {}, ...patch };
@@ -174,7 +177,7 @@ for (const [name, patch] of [
 	});
 }
 
-test("debug rows stop the idle clock", async ($, on) => {
+test("debug rows stop the idle clock", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const checks = [{ number: 1, step: 6, outcome: "none", latencyMs: 1500, at: 1_700_000_000_000 }];
@@ -188,7 +191,7 @@ test("debug rows stop the idle clock", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("an armed Disable stops the idle clock", async ($, on) => {
+test("an armed Disable stops the idle clock", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const band = await offered($, on, box, { env: ON });
@@ -202,7 +205,7 @@ test("an armed Disable stops the idle clock", async ($, on) => {
 	expect(withNote(box)).toHaveLength(0);
 });
 
-test("time while the model works does not count as idle", async ($, on) => {
+test("time while the model works does not count as idle", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
 	const props = { hasSurvey: false, isCollapsed: false, isWorking: true, maxRows: 20, bodyColumns: 100, scroll: { offset: 0, bodyRows: 20 }, view: {} };
