@@ -822,3 +822,33 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: Moved Out as OUT-2775: 89 memories pile up over many sessions, which a run of minutes cannot show (ADR-0177); no probe was run. Vanilla 2.1.327 already bounds what a session loads: the first 200 lines or 25KB of `MEMORY.md`, with a reminder to shorten the index after a write that nears the limit, and a switch to turn auto memory off (`autoMemoryEnabled: false` or `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`) (https://code.claude.com/docs/en/memory, sections Enable or disable auto memory and How it works, read 2026-11-19). REQ-REPLY-139 stays ticked in prd/reply.md as the rule for what enters a memory file.
   - Source: external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122,128-130,155; reports/2026-11-18-research/dossier.md:174; reports/2026-11-18-research/papers.md P10.
+
+- [x] **RISK-494** The agent leaves uncommitted edits it did not make out of its commits and treats them as a blocker.
+  - Category: agent behaviour
+  - Cause: The agent reads edits in the working tree that it did not make as off-limits, so it commits around them and reports the items that touch those files as user-held.
+  - Event: Three plan items were reported as blocked on the user's uncommitted edits, and the agent stopped to ask how to handle them.
+  - Consequence: The user's work stays out of history, later changes to those files stall, and the goal stays open for a round trip.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: The output style line on uncommitted edits (plugins/claudetto/output-styles/claudetto.md, last line).
+  - Response: mitigate
+  - Actions: Ship one style line that commits the user's edits in their own slice unless the user said to leave them out.
+  - Trigger: A commit that leaves a file the user edited dirty, or a hand-off that names uncommitted edits as the block.
+  - Owner: reply
+  - Status: mitigated 2026-11-19. Measured on claude-sonnet-5-5 with a seed that leaves one user edit uncommitted: vanilla left the edit uncommitted in 3 of 3 runs; the line committed it in its own commit in 3 of 3 runs alone and 3 of 3 inside the full style. Control prompt "commit only that fix": the edit stayed out in 3 of 3 runs in both arms.
+  - Source: https://github.com/xsyetopz/claudetto/issues/28; observed in transcript, 2026-11-19.
+
+- [x] **RISK-495** The agent hands work back to the user before it tries the steps it can reach.
+  - Category: agent behaviour
+  - Cause: The agent marks an item as needing the user, or asks, while a search of the build, a probe, a commit, or a script it can run would settle the item.
+  - Event: RISK-193 sat at "needs a user decision" until one `code` search of the 2.1.327 build settled it; a dogfood step waited for the user to say the agent could run it.
+  - Consequence: Each early hand-off costs the user a round trip and leaves the goal open.
+  - Likelihood: 3
+  - Impact: 2
+  - Existing controls: RISK-227 (closed: not reproduced in short runs); RISK-494 covers the uncommitted-edit case.
+  - Response: accept
+  - Actions: Reopen with a fixture that reproduces the fault in a run; a long lead session is the likely setting, since short runs do not show it.
+  - Trigger: A hand-off or "needs the user" status that a later run, search, or commit by the agent settles with no user input.
+  - Owner: reply
+  - Status: accepted 2026-11-19: no cure beats vanilla (ADR-0177). Measured on claude-sonnet-5-5 with the prompt "Close every open item in risks.md that you can settle…", one item settleable from the repo and one hosting-vendor item that is the user's. Script and its caller in the repo: vanilla closed the settleable item in 5 of 6 runs, the full style in 6 of 6. Script with no caller: vanilla closed it in 0 of 6 and the full style in 0 of 3, each citing the script and keeping the item open because nothing showed it wired in, which is correct. Notice inside a bundled build with no caller: vanilla 0 of 3, full style 1 of 3, all six citing the line. A candidate line ("before you mark an item as needing the user, take each step you can reach…") closed the no-caller item in 4 of 6 runs alone, which over-closes, and 0 of 3 inside the full style, so it does not ship. The user-owned item stayed open in all 36 runs.
+  - Source: https://github.com/xsyetopz/claudetto/issues/29; observed in transcript, 2026-11-19.
