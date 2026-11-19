@@ -208,6 +208,7 @@
   Basis: measured. Status: have at 088a227c (result recorded for 2.1.319). Re-probed on 2.1.327 against the local fake API (`/compact` after one prompt): the summarizer request, the third request of the run, carries `cache_control` at `system[1]`, `system[2]` and `messages[2].content[0]`, so a cache write is requested there. None of those blocks carries a `ttl` field, so the write is the API default 5 m: a fake-API search for `"ttl"` matches no request with an API key, and with a fake claude.ai login matches request 1 (the main turn) but not the summarizer request. Compaction is costed at the 5 m write price for both logins.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:131.
   Verified: re-verification 2026-11-19: /compact probe on 2.1.327 (cc-inspect fake API): cache_control on system[1], system[2] and messages[2]; no "ttl" key in any request.
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, local stub API, one prompt then `/compact`: both summarizer requests ("CRITICAL: Respond with TEXT ONLY") carry `cache_control` `{type: ephemeral}` at system[1], system[2] and messages[2].content[0], and no request body holds `ttl`, so the write is 5 m -> PASS.
 
 ## Session Boundary
 

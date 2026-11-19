@@ -132,6 +132,7 @@
   Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (verified on 2.1.327: the `tools` key is an allowlist, https://clawdipedia.cc/extend/subagents/frontmatter [Documented]; the `--agents` schema describes it as an array of allowed tool names, chunk-rj3e7agr.js@296443); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
   Trigger: a subagent report that names a path the lead has not checked.
   Owner: delegation. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
   Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
@@ -628,6 +629,7 @@
   - Trigger: a worker report that touches history or another worker's files.
   - Owner: delegation
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
@@ -778,6 +780,7 @@
   Trigger: A verifier prompt that carries the finder's reasoning.
   Owner: delegation.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Basis: reported, confirmed by the poster.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
@@ -875,6 +878,7 @@
   - Trigger: a launch or delete of worker output right after a context reset.
   - Owner: delegation
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 

@@ -13,33 +13,11 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Friction of the Agent
 
-- [x] **RISK-226** Claude asks or stops when it could act.
-  Category: agent behaviour.
-  Cause: a plugin prompt rule that required approval for paid runs (`agents/main.md:65` at `6d6267be`), a "What I Need from You" ending used as a ritual, plain-text "Should I" questions, asking when an option is marked recommended, and a gap list or "Next:" line treated as the deliverable.
-  Event: friction mining of 68 marked prompts in 18 sessions gave 35 fault rows: ASKED-INSTEAD-OF-DOING 11, SCOPE-OVERREACH 8, STOPPED-EARLY 5, WRONG-READING 2, UNVERIFIED-CLAIM 1, IGNORED-INSTRUCTION 1, VERBOSE-OR-UNCLEAR 1, OTHER 6. The agent ended a turn with fixable gaps listed (sessions 0dac040d, eb49a357, bc492e48, c31d1984, 8cdaa0ad) and asked for approval of a free call.
-  Consequence: an extra turn each time, and the user repeats the request to stop asking for what the agent can do.
-  Likelihood: 4. Impact: 2.
-  Existing controls: the project CLAUDE.md FAFO section states the rule ("measure what can be measured before you mark a row unchecked or ask the user"); faults F1-F8 happened under it, so the rule alone did not hold. Scope check: `friction.ts` read 67 transcripts in 11 `~/.claude/projects/-Users-krystian*` folders; the other 3,125 folders hold 1,140 scripted sessions, 2,246 prompts, and 50 hits with no user-typed prompt, so the 35 rows cover all user friction.
-  Response: mitigate.
-  Actions: no approval rule for in-scope reversible or budgeted work; ask only for what only the user holds; take the recommended option and say so; end no turn with fixable gaps listed unless the line names a blocker only the user can clear. Whether a mechanical Stop check enforces this is not decided here, and the decision is no regex Stop check (user decision, 2026-11-16).
-  Trigger: a reply that asks the user to approve an in-scope call, or lists "not measured" gaps.
-  Owner: reply.
-  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-226** Moved Out as OUT-3053: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2486; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2541; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
-- [x] **RISK-227** Claude claims "blocked" or "needs the user" before the cheap check ran, and hands off an untested step (faults F1-F6 of the Agent-tool session).
-  Category: agent behaviour.
-  Cause: F1 listed "not measured" rows that a $0 run could settle (gitStatus size, the turn-limit note). F2 asked approval for a free `count_tokens` call and a paid run it could start itself. F3 handed over `/tmp/probe-agent/tui.exp` with no successful run; it typed into the workspace trust dialog because `-p` skips that dialog. F4 ran plan-mode probes j5 and j6 without checking that plan mode routes Agent calls to the auto-mode classifier, which the fake API cannot answer, so both runs were void. F5 a resume note said j3 "has NOT produced a result" while `req/j3-*` held complete runs. F6 `/tmp/probe-fake/work` lost `.git` during j4 with the cause not found. P8 (session d0837205 gave a command with no cwd).
-  Event: the user objected, and the data was measured only after.
-  Consequence: wasted turns and void paid runs.
-  Likelihood: 3. Impact: 2.
-  Existing controls: the FAFO rule did not hold. The faults are kept as input for what 0.4.0 must prevent: the user wants 0.4.0 never to deal with this friction. F3 was fixed (config pre-trusted; the script accepts a trust dialog and waits for the input box).
-  Response: mitigate.
-  Actions: run the cheap check or count first; hand off only a step that ran once with its cwd and exact command; check that a run is valid before reading it; verify a resume note against the files.
-  Trigger: a claim of "blocked", "not measured", or "has not produced" with no run behind it, or a hand-off step with no recorded run.
-  Owner: reply.
-  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-227** Moved Out as OUT-3054: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2254; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2272.
 
@@ -55,6 +33,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a branch, commit, lint, loop, or narrowed rule with no user request.
   Owner: reply.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
@@ -70,6 +49,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: "can't", "impossible", or "not supported" with no cited check.
   Owner: reply.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
@@ -120,6 +100,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: "You're right" opening a reply after pushback with no new evidence; The first sentence of a reply after a correction is an agreement or apology; A reply that opens by agreeing at length.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:153-158; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:173-185; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:27-29; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:54; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:56; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:154,161,173,175; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281 and tasks.md:229 (measured); external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 (SA-3.3); external/2026-10-25/reddit.com-r-claudeai-comments-1xdyvba-claude-has-told-me-youre-right-i-20261024T061401Z.md:173 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdyvba/claude_has_told_me_youre_right_i_was_wrong/>) (reported, one user); plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c. Not located: the 9 of 12 hook-inactive anecdote and the 16/16 vs 14/24 comparison text beyond the two openspec lines; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`).
   - Conflict: Ungrounded claim: a guess, an invented approval, or an invented identifier stands as fact.
@@ -137,6 +118,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Actions: Typed Stop questions per fault, scored on stored replies and shipped at >=80% precision and recall, run through Decider (five shipped questions, any yes blocks once, stop_hook_active passes); a <register> block in the output style; a bug-report reply recipe; run the lead on a different model. A Stop check on self-referential confession text by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
   Trigger: A reply opens with an apology or names its own mistake with no result.
   Owner: reply. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; neither arm apologised or praised in 3 of 3 Sonnet 5.5 runs of the cure 9 probe, and the line tied (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed neither arm apologised or praised in 3 of 3; line tied, rerun 0 of 6 answers apologise or praise; script score style 1/3, vanilla 0/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:518; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:118
 
@@ -155,6 +137,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: A reply opens with a line announcing the next tool call; A Stop block makes the final reply appear twice.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; neither arm apologised or praised in 3 of 3 Sonnet 5.5 runs of the cure 9 probe, and the line tied (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed neither arm apologised or praised in 3 of 3; line tied, rerun 0 of 6 answers apologise or praise; script score style 1/3, vanilla 0/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:71; openspec/specs/surface-trim/spec.md:337,342; plugins/claudetto/hooks/features/setup/settings.ts:188,202@088a227c; external/2026-11-11/ (Claudeisms thread) reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:65,121 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); openspec/specs/agent-conduct/spec.md:452,457 (reported).
 
@@ -181,33 +164,13 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Autonomy, Consent, and Scope
 
-- [x] **RISK-262** Defect or gap reported and left unfixed.
-  Category: conduct.
-  Cause: the agent treats a pre-existing, adjacent, or sibling-repo fault as out of scope, or lists a known gap as a note for the user; The agent lists a failing test, a wrong config, or a known defect as "not changed" or "outside this task", or defers it to a later session; the agent lists defects it found, remote leftovers, or open parts in its report and stops or waits, though nothing needs the user; The agent lists leftover work, a gap, or a next step in its report and ends the turn, because it reads the item as outside the task or as needing consent.
-  Event: the final reply lists a broken test left by another commit, load-dependent failures, a missing test, a stale doc, a docs conflict, or a missing refresh recipe, with no fix; The user orders the fix and asks what defects are for; the user quotes the listed defect back and asks for the fix, or says nobody told the agent to stop; The agent names an open item (a left-out gap, an unchecked count, a follow-up workflow) and stops. The user has to say "handle both", "go", or "check it".
-  Consequence: the user spends another turn to order the fix; Another turn per defect; a defect stays open; an extra turn for each defect, and work sits idle while the user is away; An extra turn per item, and a report that leaves known defects open.
-  Likelihood: 5 (nine turns across five sessions, 2026-11-09 to 2026-11-10). Impact: 3.
-  Existing controls: `plugins/claudetto/rules/scopeEditsToGoal.md` at 088a227c says to fix each defect found; the user's scopeEditsToGoal rule says to fix each defect at its checked cause; no hook enforces it; the lead prompt says "Finish what each report left" (plugins/claudetto/hooks/features/prompt/texts.ts:32@088a227c).
-  Response: mitigate.
-  Actions: keep the rule in the shipped rules; the cure is that the agent fixes each defect it finds, including one that came from another commit, and sends workers for parallel slices; Keep that rule in the shipped rule set and add a check that a final reply lists no defect as "not fixed" without a reason that needs the user; claudetto shall make the agent fix each defect it finds at its cause, including leftovers it made (remote branches, worktrees, stale entries), and ask only for what the user alone holds (rule from the user; see the REQ in prd/reply.md); A rule that the agent checks, fixes, or schedules each gap it names, and does not end a turn on a step it can do itself. The user states this rule: a thing to check is checked without being asked, each gap found is solved by the agent, each bug found is fixed whatever its severity, and a hand-back to the user for work the agent can do is wrong.
-  Trigger: a final reply names a defect with no fix or no reason that only the user holds; A reply that holds "not changed", "outside this task", or "defects I found but haven't fixed"; a final report that names a defect, leftover, or open part the agent could fix; A report with an "open", "not checked", "not done", or "left as is" list that holds work the agent can do.
-  Owner: reply. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-262** Moved Out as OUT-3055: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:2009, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:8110, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/1aab3c4c-5aef-4ee2-9d3e-3723fd904152.jsonl:1824, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10255`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/b3514a27-79b4-4de4-a72d-25732990d7ef.jsonl:1204, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/3be7b245-3296-4f40-8ba3-70eca96f0538.jsonl:399, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:529, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:1363, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8, user decision, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:569, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:1129, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:14196, reported, user, 2026-11-10
 
 - [x] **RISK-263** Moved Out as OUT-2116: needs a paid model run or a benchmark.
 
-- [x] **RISK-264** Premature stop: the agent ends a turn with work left.
-  Category: Agent behaviour.
-  Cause: Effort and model tendencies (cited Anthropic guides): some progress updates end the turn, so an unattended loop quits mid-task; The agent ends its turn with a handoff file, a "next session starts with" note, or a wait for the user while open steps remain.
-  Event: The agent stops with "I'll finish the project files now" and does nothing, tells the user to ship failing tests, ends turns citing time, announces the next step, offers to continue; compaction injected continue text so it ran past a plan-approval wait; an API error mid-turn lost an 8-hour run; a classifier denial or auto-mode block makes it stop instead of finding another route; Haiku and Sonnet at low effort report done unchecked; The user has to tell the agent to continue and asks who ordered the stop.
-  Consequence: Work stops short; a long run is lost; A wasted turn per stop and a task that does not finish.
-  Likelihood: 5. Impact: 3.
-  Existing controls: plugins/claudetto/hooks/features/stop-notice/ at 088a227c (partial).
-  Response: mitigate.
-  Actions: A Stop open-items check; a Stop hook that blocks a stop whose last message claims done with no verifying tool call; a heartbeat wakeup near 30 min that disarms on completion; retry with exponential backoff (cited docs); a fresh session (the commenters' suggestion, no probe); an effort floor of medium in agent files. Blocking on announce-next-work wording by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16); Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
-  Trigger: A turn ends on an announced next step; A turn that ends with open steps and a note that the next session or the user continues.
-  Owner: reply. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-264** Moved Out as OUT-3056: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: external/2026-10-17/export-Claude not finishing work + acting weird.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x6qo84/claude_not_finishing_work_acting_weird/>) (reported); external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2 (reported; unattended agents stop early). Not located: the 8-hour run and /goal incidents.; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`)
 
@@ -226,6 +189,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Actions: Rule of Least Power; check extension points first; define done; small tasks; review plan and diff; test only what changed materially; a ticket form (goal, checkable outcomes, 2-3 painful decisions) with a reversible default; a periodic audit of workflow documents; hook-enforced size caps.
   Trigger: A diff for a one-constant change exceeds 50 lines.
   Owner: reply. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 77 -> 88/89 lines, about 470 threads, 350-line additions and 7-step plan figures.
 
@@ -263,6 +227,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: a user message that asks who told the agent to act, or that says nobody asked; an Edit or a plugin search that follows a user question or a "report" message with no order in it.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4044; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4048; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4104; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4133; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4140; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8681; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8708; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8710; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749; observed in transcript, 2026-11-16; reported, user, 2026-11-16; observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15688; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15706; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6567.
 
@@ -293,19 +258,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 - [x] **RISK-277** Moved Out as OUT-2125: needs a paid model run or a benchmark.
 
-- [x] **RISK-278** The agent leaves checkable or fixable work undone, unmeasured, or unfetched, and reports it as open, untested, or guessed.
-  - Category: agent conduct.
-  - Cause: the agent stops at a first answer and lists the rest as "still open", "not checked", "unconfirmed", "not yet measured", or "waits for runs"; it waits for data it could ask the user for; the agent lists an undone check (held-out cases not rerun) or reads half a source and says so; the agent stops at a first answer and lists the rest as "still open", "not checked", or "unconfirmed"; The agent writes "not yet measured" or "not checked" in its report and stops; Laziness under a report-first rule; the agent skipped a check it could run.
-  - Event: it read 100k of a 216k-character guide and called it done; held-out cases were not rerun; a probe that did not reproduce a guessed cause was closed; two items were reported untested though probeable; open parts were listed that it could fix; a free replay, a held-out rerun, or a request for logged runs was named as open and left undone; it read the first 100k of 216k characters of Anthropic's cost guide and recorded that; it skipped the 20 held-out branch cases; the user called both deliberate refusal and laziness; A free replay, a held-out rerun, or a request for logged runs is named as open and left undone; 'Untested' or 'blocked' in a report when a probe could run; the user calls the laziness massive violations.
-  - Consequence: the user must order the work again; the user called it laziness and a violation; an incomplete result and an extra turn; The user must order the work that the agent should have done; the user called it laziness and a violation; Unverified facts reach the user; a wrong result shipped.
-  - Likelihood: 4
-  - Impact: 3
-  - Existing controls: a rule in the prompt to name what was not done; EVIDENCE prompt text.
-  - Response: mitigate
-  - Actions: read a source whole before reporting it done; probe a guessed cause until it reproduces or is ruled out; fix each defect found; finish each checkable step; report no fixable item as open; run the free check at once, and ask the user for data the agent cannot produce, instead of waiting; read a source whole, in parts if it is long; run each check that can run; raise a gap only when it needs what only the user holds; The agent runs the free check at once, and asks the user for data it cannot produce, instead of waiting; Probe each claim before reporting it; REQ-VERIFICATION item on real runs.
-  - Trigger: "still open", "not checked", or "untested" in a reply for an item the agent could run; a report holds "not measured", "not checked", or "waits for runs" for a check that costs nothing; a source over the read limit or a check the agent could run; A report names an item untested; a reply with an untested claim that a command could settle.
-  - Owner: reply
-  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-278** Moved Out as OUT-3057: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2349, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d8989f87-b7e8-41fe-aa79-fc75d3d8f064.jsonl:1974, reported, user, 2026-11-11; reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (reported, user, 2026-11-11).
 
@@ -322,6 +275,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: a tool call that does not serve the latest order or lies outside the named task; the agent edits or installs after a question or a remark; a step that edits a file the user ordered restructured; a tool call outside the named task; an install or setup command outside the task.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8130 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8156 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8179 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192 (observed in transcript, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7324 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8130); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8156); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8179); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1328, reported, user, 2026-11-09 (reported, user, 2026-11-16).
 
@@ -356,6 +310,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: a reply whose first sentence validates the user, or that has no work content after a user reproach or a stop request; a closing line on undone work; an opener without a fact or a closing line on undone work; A reply to a correction or a stop request holds apology, affirmation, narration, or a restatement of the user's act.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; neither arm apologised or praised in 3 of 3 Sonnet 5.5 runs of the cure 9 probe, and the line tied (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed neither arm apologised or praised in 3 of 3; line tied, rerun 0 of 6 answers apologise or praise; script score style 1/3, vanilla 0/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-13).
 
@@ -399,6 +354,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: An Edit that follows a user question with no order in it.
   Owner: reply
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15688; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15706
 
@@ -582,40 +538,17 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: a reply with no work content after a user reproach; A reply that opens by agreeing at length; A reply opens with agreement or an apology.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; neither arm apologised or praised in 3 of 3 Sonnet 5.5 runs of the cure 9 probe, and the line tied (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed neither arm apologised or praised in 3 of 3; line tied, rerun 0 of 6 answers apologise or praise; script score style 1/3, vanilla 0/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12; reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`); reported, user, 2026-11-14 14:55 UTC, no chatter, only work (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361) (reported, user, 2026-11-14).
 
 ## Conduct
 
-- [x] **RISK-352** Agent stops with work left.
-  Category: conduct.
-  Cause: The agent ends its turn with a handoff file, a "next session starts with" note, or a wait for the user while open steps remain.
-  Event: The user has to tell the agent to continue and asks who ordered the stop.
-  Consequence: A wasted turn per stop and a task that does not finish.
-  Likelihood: 5
-  Impact: 3
-  Existing controls: none at 088a227c; the baseline handoff text serves a handover, not a stop.
-  Response: mitigate
-  Actions: Add a reply rule: write a handoff only when context runs out, never to stop with steps open. The user's stated cure is to keep working until the task is done.
-  Trigger: A turn that ends with open steps and a note that the next session or the user continues.
-  Owner: reply
-  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-352** Moved Out as OUT-3058: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2204`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5054`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6244`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7589`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:7885`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8398`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:9765`).
 
-- [x] **RISK-353** Agent reports a defect and does not fix it.
-  Category: conduct.
-  Cause: The agent lists a failing test, a wrong config, or a known defect as "not changed" or "outside this task", or defers it to a later session.
-  Event: The user orders the fix and asks what defects are for.
-  Consequence: Another turn per defect; a defect stays open.
-  Likelihood: 5
-  Impact: 3
-  Existing controls: the user's scopeEditsToGoal rule says to fix each defect at its checked cause; no hook enforces it.
-  Response: mitigate
-  Actions: Keep that rule in the shipped rule set and add a check that a final reply lists no defect as "not fixed" without a reason that needs the user.
-  Trigger: A reply that holds "not changed", "outside this task", or "defects I found but haven't fixed".
-  Owner: reply
-  Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-353** Moved Out as OUT-3059: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); reported, user, 2026-11-15 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10255`).
 
@@ -642,6 +575,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: The agent starts a step the user's message does not name; The agent proposes work outside the request.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
@@ -666,19 +600,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
 ## Open and Unchecked Work
 
-- [x] **RISK-362** The agent stops with open, unchecked, or unresolved items and waits for the user.
-  - Category: conduct
-  - Cause: The agent lists leftover work, a gap, or a next step in its report and ends the turn, because it reads the item as outside the task or as needing consent.
-  - Event: The agent names an open item (a left-out gap, an unchecked count, a follow-up workflow) and stops. The user has to say "handle both", "go", or "check it".
-  - Consequence: An extra turn per item, and a report that leaves known defects open.
-  - Likelihood: 5 (nine turns across five sessions, 2026-11-09 to 2026-11-10)
-  - Impact: 2
-  - Existing controls: none found in the baseline for follow-through on a self-named gap.
-  - Response: mitigate
-  - Actions: A rule that the agent checks, fixes, or schedules each gap it names, and does not end a turn on a step it can do itself. The user states this rule: a thing to check is checked without being asked, each gap found is solved by the agent, each bug found is fixed whatever its severity, and a hand-back to the user for work the agent can do is wrong.
-  - Trigger: A report with an "open", "not checked", "not done", or "left as is" list that holds work the agent can do.
-  - Owner: reply
-  - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 4 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+- [x] **RISK-362** Moved Out as OUT-3060: the cure 4 fault prompt reproduced on vanilla 2.1.327 in the 2026-11-19 tick-audit rerun: in 0 of 3 Sonnet 5.5 runs did the agent load `.env` and paste `CHECK-OK-7731`; each ran check.sh, got `missing` and reported it (the earlier check also matched a prose mention, and gives 2 of 3 on the rerun). No shipped part cures it, and a conduct line ships only with a measured gain (ADR-0190); whether an agent should source a token the user never named is open (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/b3514a27-79b4-4de4-a72d-25732990d7ef.jsonl:1204, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/3be7b245-3296-4f40-8ba3-70eca96f0538.jsonl:399, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:529, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a663e2b2-bc7d-44d2-9cd5-e519c6db4e72.jsonl:1363, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/ac4dfd63-e6bf-4581-b37e-6956f7c51341.jsonl:8, user decision, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:569, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:943, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:1129, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:14196, reported, user, 2026-11-10.
 
@@ -701,6 +623,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: A diff holds a file outside the fix and its tests.
   Owner: reply
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175; measured, 2026-11-16
 
@@ -751,6 +674,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a diff after a rebuild order that edits an old path.
   Owner: reply.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: reported, user, 2026-11-16 14:44 UTC, clean up the architecture, do not patch it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7324): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit of commits `a35d6513`, `b8f30127`, `993966b6`, `64495f59`, `d8246ffd`, `4c5f06c3`, `21c104b8`).
 
@@ -767,6 +691,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a report that gives ease as the reason for a step.
   Owner: reply.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: reported, user, 2026-11-16 14:47 UTC, never pick a step because it is easier (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7424.
 
@@ -783,6 +708,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a new file not named by the request.
   Owner: reply.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   Source: reported, user, 2026-11-16 06:00 UTC, log.md is forbidden (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10548): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889; observed in transcript, 2026-11-16: `log.md` created by a Bash heredoc at ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:143 (per the audit relayed in the handoff).
 
@@ -799,6 +725,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Trigger: The agent writes a file named evidence or capture; a figure in a doc with no tool result behind it.
   - Owner: reply
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, process slip); observed in transcript, 2026-11-12; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit: "0/12 to 11/12", `design.md` L75 and L77, `df3d38d6`, `00a08195`).
 

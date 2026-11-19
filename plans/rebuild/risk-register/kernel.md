@@ -34,6 +34,7 @@
   - Trigger: A reply states a branch, version, or tool the repo does not show; an answer that matches the commonest stack with no look at the repo.
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19,36,40,41; openspec/changes/2-1-325-rearchitecture/design.md:195,224; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:26-33; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:48; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:59-62 (threads 1ws94i6, 1wp1yht, 1ub7lxv).
 
@@ -217,6 +218,7 @@
   - Owner: kernel
   - Status: mitigated 2026-11-19: stop.test.ts pins the continuation, and a live interactive 2.1.327 session against a cutting stub resumed with no typed "continue" (Actions).
   - Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto` from plugins/: exit 0, 115 pass, 0 fail, including "stop notice > a cut mid-response in a drawn session submits one continuation instead of a notice".
+  - Verified: tick-audit rerun 2026-11-19: an interactive 2.1.327 session against a local stub that cut the first stream showed "API Error: Connection lost mid-response", then `classic.StopFailure` and one `$.prompt.submit` from claudetto, and the stub served the resumed answer ("RESUMED-AFTER-CUT") with no typed "continue" -> PASS.
 
 
 ## Safeguards and Guards
@@ -270,6 +272,7 @@
   - Trigger: The agent edits or installs after a question or a remark; The agent reads or probes outside the request.
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
@@ -319,6 +322,7 @@
   - Trigger: A cleanup request or a note that says keep nothing.
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738).
 
@@ -335,6 +339,7 @@
   - Trigger: The agent names a file the plan.
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
@@ -351,6 +356,7 @@
   - Trigger: A user states a fact about the code or the tool.
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
+  - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
   - Source: user decision, 2026-11-16 17:42 UTC, check a user claim before relying on it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177).
 
