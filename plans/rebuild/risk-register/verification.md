@@ -659,7 +659,7 @@
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (observed in transcript, 2026-11-13).
 
-- [ ] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
+- [x] **RISK-466** Agent writes implementation-detail prose tests in place of behaviour tests.
   - Category: agent conduct, verification.
   - Cause: test-driven development goes wrong: the agent asserts on code shape or wording.
   - Event: the agent writes such tests in most TDD work, in the user's estimate 99% of the time; the agent writes such tests in most TDD work, in the user's words 99% of the time.
@@ -674,6 +674,8 @@
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
   - Status: accepted; REQ-VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
+  - Verified: 2026-11-19, batch D, claude 2.1.327, claude-sonnet-5-5, plugin 71ae1e92a (reports/2026-11-19-research/goal/fixtures466.sh, scorers/_t466.py). Each run's own tests are run against three things: its own implementation, a reference that behaves the same but keeps different internals, and 7-9 mutants that break behaviour. A run passes when the tests are green on both implementations and kill every mutant. r466b (tune: a RateLimiter with a public hits map): vanilla 1/6, shipped style 1/6, with the test-observability line 6/6. r466d (confirm, untouched while tuning: a Cache with a public entries map): vanilla 0/6, shipped style 0/6, with the line 5/6. Every failure without the line came from a test that read hits or entries, so it went red on the reference. The one failure with the line was a thin test that let a mutant survive. Control r466ac (renderEnv, where the exact text is the contract): 6/6 in all three arms. Cost $4.222 (r466 runs, by per-run cost fields).
+  - Status: mitigated 2026-11-19 by the test-observability line in plugins/claudetto/output-styles/claudetto.md: 11/12 with the line against 1/12 vanilla on two fixtures, with the control level at 6/6.
 
 - [x] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
   Category: agent conduct.
