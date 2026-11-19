@@ -9,7 +9,7 @@ const BASE = "Executes a bash command and returns its output.";
 const engine = (on: On, settings: Record<string, unknown>, env: Record<string, string> = {}) => {
 	const logged: string[] = [];
 	on("tool.describe", (_$, e) => ({ description: e.description }) as never);
-	on("settings.read", (_$, e) => ({ value: e.key === undefined ? settings : settings[e.key] }) as never);
+	on("settings.read", () => ({ value: settings }) as never);
 	on("env.get", (_$, e) => ({ value: env[e.name] }) as never);
 	on("ui.log", (_$, e) => {
 		logged.push(e.text);

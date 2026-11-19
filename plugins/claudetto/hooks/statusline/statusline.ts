@@ -41,6 +41,9 @@ export const formatLine = (f: Figures): string => {
  * moves context and rate limits, `turn.complete` the cache figure of the last
  * main-loop turn. Subagent turns are skipped, since their cache is not the
  * lead's. The figures live in this closure because a hook instance is per session.
+ * Claude Code 2.1.327 draws every pinned plugin status as "⚠ claudetto: …" in
+ * its warning colour (chunk-cfxefa64.js, the pinned-notice renderer), so the
+ * glyph is the engine's frame and not a fault this line reports.
  */
 export function registerStatusline(on: On): void {
 	let figures: Figures = {};

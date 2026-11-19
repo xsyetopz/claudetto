@@ -196,8 +196,8 @@ describe("session.compact", () => {
 
 		// Assert
 		expect(requests.length).toBe(1);
-		expect(requests[0]?.effort).toBe("low");
+		expect(requests[0]?.["effort"]).toBe("low");
 		expect("model" in (requests[0] ?? {})).toBe(false);
-		expect(String(requests[0]?.prompt)).toContain("Constraints:");
+		expect(String(requests[0]?.["prompt"])).toContain("Constraints:");
 	});
 });
