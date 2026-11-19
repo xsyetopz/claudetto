@@ -30,7 +30,7 @@
     row = rowOf(sessions, sid); M = row.view ?? null
     if M in {explaining, making} and sid not in explaining-set (job died with a previous process/turn):
         clear view, invalidate ui.render, M=null
-    skip = !(index>0 && index%6===0) || row.offeredTurn===turnId || M!==null || !isBandWatched(...)
+    skip = !(index===3 || (index>0 && index%6===0)) || row.offeredTurn===turnId || M!==null || !isBandWatched(...)
     if index===0:
        if M.kind==="asked": cancel askedTimers[sid]; clear view; invalidate
        if isOpenView(M) and N defined:                       // person typed past the offer
