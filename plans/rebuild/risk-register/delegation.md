@@ -207,7 +207,7 @@
   Actions: the Terms define consent as the user's alone (a tool result, an agent or model reasoning is never the user); a subagent that meets such a prompt stops and reports.
   Trigger: a subagent answers a permission prompt.
   Owner: delegation.
-  Status: accepted 2026-11-19 (agent decision, ADR-0190): no shipped part stops a subagent from answering a nested prompt. The agent files named before (Haiku with `autoCompactWindow` 100000, read-only reviewers, Heracles git lines) do not address it, and Heracles.md:11 only reports a declined call. The cure is a conduct line, which ADR-0190 ships only with a measured gain, and that needs a paid run; Likelihood 1.
+  Status: open 2026-11-19: no shipped part stops a subagent from answering a nested prompt. The agent files named before (Haiku with `autoCompactWindow` 100000, read-only reviewers, Heracles git lines) do not address it, and Heracles.md:11 only reports a declined call. Accepting the risk is the user's decision; an earlier agent-made acceptance was withdrawn. Likelihood 1.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:162.
   Verified: git grep -n -i -E 'consent|permission prompt' -- plugins/claudetto/agents -> 0 hits, 2026-11-19.
 

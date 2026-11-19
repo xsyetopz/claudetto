@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { DEFAULTS, FILL_VERSION, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "./defaults";
+import { DEFAULTS, FILL_VERSION, RETIRED_ALLOWS, RETIRED_REMINDER_TEXTS, fillNotice, fillSettings, fillVersion } from "./defaults";
 
 describe("defaults fill", () => {
 	test("fills every default into empty settings", () => {
@@ -39,7 +39,7 @@ describe("defaults fill", () => {
 		expect(next.sandbox.network.allowedDomains).toBeUndefined();
 		expect(next.sandbox.filesystem.allowWrite).toEqual(expect.arrayContaining(["/opt/homebrew", "/private/var/folders"]));
 		expect(next.sandbox.filesystem.denyWrite).toContain("/private/var/folders/**/xcrun_db*");
-		expect(next.permissions.allow).toEqual(["Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
+		expect(next.permissions.allow).toEqual(["Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
 	});
 
 	test("writes no key that stops claudetto's own hooks or skills and denies no tool whose removal grows the request", () => {
@@ -81,7 +81,7 @@ describe("defaults fill", () => {
 		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("8");
 		expect(next.env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe("1");
 		expect(next.worktree).toEqual({ baseRef: "fresh", symlinkDirectories: ["node_modules"] });
-		expect(next.permissions.allow).toEqual(["Read", "Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
+		expect(next.permissions.allow).toEqual(["Read", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
 		expect(next.permissions.deny.filter((d: string) => d === "Workflow").length).toBe(1);
 		expect(next.permissions.deny).toContain("Bash(rm *)");
 		expect(next.sandbox.enabled).toBe(false);
@@ -101,6 +101,19 @@ describe("defaults fill", () => {
 		// Assert
 		expect(removed.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBeUndefined();
 		expect(kept.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBe("my own words");
+	});
+
+	test("removes the retired claude -p allow, so a paid headless run asks first", () => {
+		// Arrange
+		const held = JSON.stringify({ permissions: { allow: ["Read", RETIRED_ALLOWS[0]] } });
+
+		// Act
+		const fill = fillSettings(held);
+		const next = JSON.parse(fill?.text ?? "");
+
+		// Assert
+		expect(next.permissions.allow).toEqual(["Read", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"]);
+		expect(fill?.added).toContain("removed permissions.allow Bash(claude -p *)");
 	});
 
 	test("leaves complete settings unchanged", () => {

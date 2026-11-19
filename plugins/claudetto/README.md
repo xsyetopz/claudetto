@@ -70,10 +70,10 @@ At a session start, claudetto fills defaults into the user settings file, once p
 - Commit and PR trailer `Assisted-by: Claude Code` in place of the `Co-Authored-By` line.
 - `outputStyle` set to `claudetto:Claudetto`, as above.
 - Subagents run on `claude-sonnet-5-5` unless an agent file names a model.
-- `Bash(claude -p *)` and the two `perl` forms allowed.
+- The two `perl` forms allowed. `claude -p` is a paid run, so it keeps its permission prompt.
 - Guard rules, below.
 
-It also removes a `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` that an earlier claudetto version wrote, and keeps one you wrote.
+It also removes a `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` that an earlier claudetto version wrote, and keeps one you wrote. It removes the `Bash(claude -p *)` allow that earlier versions wrote.
 
 ## Guards
 

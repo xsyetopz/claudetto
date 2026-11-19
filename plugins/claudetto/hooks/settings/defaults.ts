@@ -49,7 +49,8 @@ export const DEFAULTS: Json = {
 	},
 	permissions: {
 		// One perl call makes many edits in place of many Edit calls (ADR-0097); edit/perl.ts shows its diff.
-		allow: ["Bash(claude -p *)", "Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"],
+		// `claude -p` is a paid run, so it stays behind the permission prompt.
+		allow: ["Bash(perl -0pi -e *)", "Bash(perl -pi -e *)"],
 		deny: [
 			"Workflow",
 			"ScheduleWakeup",
@@ -70,6 +71,12 @@ export const RETIRED_REMINDER_TEXTS: readonly string[] = [
 	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.",
 	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.",
 ];
+
+/**
+ * Allow entries that earlier setup versions wrote. `Bash(claude -p *)` let a paid
+ * headless run start with no prompt (RISK-391, RISK-393), so the fill removes it.
+ */
+export const RETIRED_ALLOWS: readonly string[] = ["Bash(claude -p *)"];
 
 export type Fill = { readonly text: string; readonly added: readonly string[] };
 
@@ -115,6 +122,15 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
 		const { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: _retired, ...rest } = env;
 		next["env"] = rest;
 		added.push("removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
+	}
+	const permissions = next["permissions"];
+	if (isRecord(permissions) && Array.isArray(permissions["allow"])) {
+		const allow = permissions["allow"] as unknown[];
+		const retired = allow.filter((entry) => typeof entry === "string" && RETIRED_ALLOWS.includes(entry));
+		if (retired.length > 0) {
+			next["permissions"] = { ...permissions, allow: allow.filter((entry) => !retired.includes(entry)) };
+			added.push(...retired.map((entry) => `removed permissions.allow ${String(entry)}`));
+		}
 	}
 	fillGuards(next, added, walls);
 	if (added.length === 0) return { text: text ?? "", added };

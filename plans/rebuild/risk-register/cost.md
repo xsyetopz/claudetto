@@ -251,7 +251,8 @@
   - Status: open (Existing controls: partial at 088a227c).
   - Source: user goal set through `/goal`, 2026-11-16 06:24 UTC, past 25 percent of the seven-day limit, free work only (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:11); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
-  Status: accepted 2026-11-19: the 2026-11-18 closing reason does not hold under claudetto, because the fill writes `permissions.allow` `Bash(claude -p *)` (plugins/claudetto/hooks/settings/defaults.ts, ADR-0188 on the user's 2026-11-18 ruling that non-destructive commands pass with no prompt), so no prompt stops a paid `claude -p` run. An ask rule would reverse ADR-0188, and a conduct line ships only with a measured gain (ADR-0190).
+  Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
+  Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
 
 ## Ungrouped
 
@@ -287,4 +288,5 @@
   Status: open.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit relayed in the handoff, not re-checked by the handoff writer).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): vanilla already asks before `claude -p` in the probe, so no permissions.ask rule is added to defaults.ts.
-  Status: accepted 2026-11-19: the 2026-11-18 closing reason does not hold under claudetto, because the fill writes `permissions.allow` `Bash(claude -p *)` (plugins/claudetto/hooks/settings/defaults.ts, ADR-0188 on the user's 2026-11-18 ruling that non-destructive commands pass with no prompt), so no prompt stops a paid `claude -p` run. An ask rule would reverse ADR-0188, and a conduct line ships only with a measured gain (ADR-0190).
+  Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
+  Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.

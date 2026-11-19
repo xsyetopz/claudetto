@@ -25,9 +25,9 @@ Chosen: the third. Setup writes, on top of the ADR-0159 block:
 - `sandbox.autoAllowBashIfSandboxed: true`. A sandboxed command runs with no prompt and no classifier call. Deny rules, command-specific ask rules and Claude Code's own safety checks still apply (schema text, chunk-ja5z738t.js@138689).
 - `sandbox.network.allowAllUnixSockets: true` (already in ADR-0159, missing from the user's settings today). The Docker socket block that started the GodHand run is gone.
 - `/opt/homebrew` in `sandbox.filesystem.allowWrite`. Installing a package is not destructive, and the second GodHand block goes away.
-- `excludedCommands` gains `claude *`, and `permissions.allow` gains `Bash(claude -p *)`. The headless fallback runs outside the outer sandbox, so its own sandbox starts and its own guards hold.
+- `excludedCommands` gains `claude *`. The headless fallback runs outside the outer sandbox, so its own sandbox starts and its own guards hold. `permissions.allow` gains no `claude -p` entry: a headless run is a paid run, and a paid run keeps its permission prompt (RISK-391, RISK-393). The fill removes the `Bash(claude -p *)` allow that an earlier version wrote.
 
-A person sees a prompt only for the commands that REQ-GUARDS-040 and ADR-0054 name: deleting files, branches, packages, services or data; history rewrites and force pushes; `pkill` and `killall`. Everything else either runs inside the sandbox with no prompt or is a plain allowed command.
+A person sees a prompt only for the commands that REQ-GUARDS-040 and ADR-0054 name: deleting files, branches, packages, services or data; history rewrites and force pushes; `pkill` and `killall`. Everything else either runs inside the sandbox with no prompt or is a plain allowed command, except `claude -p`, which asks because it spends money.
 
 Turning the sandbox off was rejected because a `permissions.deny` rule on a path stops only the Edit tool, not a shell writer (CTX-845). The sandbox is the only layer that stops `cp` or `>` into a protected path, and the only one that keeps the credential stores unreadable (`denyRead` in ADR-0159).
 
