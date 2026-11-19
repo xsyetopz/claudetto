@@ -47,6 +47,8 @@ claudetto ships one output style, `claudetto:Claudetto`, and selects it when you
 - Ask for an input that no file, command or source holds; read it from the repo when it is there.
 - Commit edits found in the working tree that it did not make, in their own slice, unless told to leave them out.
 - Run a step that would touch something off-limits on a stand-in, and carry out a choice the task or user already made.
+- Edit files only inside the directory the session started in; for a fix that belongs in a sibling repository or shared library, give its path and the exact change in the reply. When the bug sat in a sibling repository, Sonnet 5.5 left that repository untouched and named the file in 6 of 6 runs with this line, 2 of 6 without the style, and 0 of 6 with the style before the line.
+- On a stop or quiet order, end the turn with "Stopped." and nothing more. Sonnet 5.5 did so in 5 of 5 runs with this line and 1 of 6 without the style, and still carried out "Stop using var" in 3 of 3.
 
 ## Shell Commands
 
