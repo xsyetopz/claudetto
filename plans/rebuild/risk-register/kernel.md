@@ -216,6 +216,7 @@
   - Trigger: a dogfood transcript where a cut is followed by the error notice instead of the continuation, or by a typed "continue".
   - Owner: kernel
   - Status: mitigated 2026-11-19: stop.test.ts pins the continuation, and a live interactive 2.1.327 session against a cutting stub resumed with no typed "continue" (Actions).
+  - Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto` from plugins/: exit 0, 115 pass, 0 fail, including "stop notice > a cut mid-response in a drawn session submits one continuation instead of a notice".
 
 
 ## Safeguards and Guards
