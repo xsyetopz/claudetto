@@ -48,6 +48,7 @@
   Actions: Keep the sentence and its test; count false absence cards in the next dogfood run.
   Trigger: A card whose claim is that something is missing.
   Owner: you-should-know
-  Status: mitigated 2026-11-19 (issue #46); live effect not measured.
+  Status: mitigated 2026-11-19 (issue #46). Live check: one absence card in a dogfood session after the fix, and it was true (0 false of 1).
+  Verified: dogfood, claude 2.1.327, 2026-11-19, clone at 26cc57577, session 1bd6ee38: the card "The README never mentions the includeGitInstructions option" followed a grep of the whole README for each userConfig key; grep -c includeGitInstructions plugins/claudetto/README.md in that clone -> 0. Sample of one; the count continues in later dogfood runs.
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 160 pass, 0 fail.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19
