@@ -3,7 +3,7 @@
 import type { EngineInterface } from "claude-code";
 
 import type { Card } from "./cards";
-import { cleanOneLine, sliceCodePointsHead, stripControlSequences } from "./text";
+import { cleanOneLine, sliceUnitsHead, stripControlSequences } from "./text";
 import { MAX_LINE_WIDTH } from "./constants";
 
 export const OFF_BOX_BUSY =
@@ -45,7 +45,7 @@ export const cleanForDraft = (text: string): string =>
 	splitDirectiveKeywords(foldReferencePlaceholders(foldAtMentions(withoutInvisible(text))));
 
 export const noteTopic = (line: unknown): string =>
-	sliceCodePointsHead(
+	sliceUnitsHead(
 		cleanOneLine(stripControlSequences(typeof line === "string" ? line : "")),
 		MAX_LINE_WIDTH,
 	);

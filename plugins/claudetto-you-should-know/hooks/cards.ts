@@ -10,7 +10,7 @@ import {
 import {
 	cleanOneLine,
 	proseOf,
-	sliceCodePointsHead,
+	sliceUnitsHead,
 	stripControlSequences,
 	truncateAtWordBoundary,
 } from "./text";
@@ -62,7 +62,7 @@ export function parseExplanation(text: string): readonly Card[] {
 			if (card.sketch.length < MAX_SKETCH_LINES) {
 				card.sketch = [
 					...card.sketch,
-					sliceCodePointsHead(line, MAX_SKETCH_WIDTH),
+					sliceUnitsHead(line, MAX_SKETCH_WIDTH),
 				];
 			}
 			continue;

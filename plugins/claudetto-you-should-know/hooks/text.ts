@@ -22,7 +22,18 @@ export const cleanOneLine = (text: string): string =>
 		.replace(/\s+/g, " ")
 		.trim();
 
-export function sliceCodePointsHead(text: string, count: number): string {
+/**
+ * The head of `text` up to `count` UTF-16 units, without a cut surrogate pair.
+ * Units, not code points: the callers pass width budgets, and a character
+ * outside the basic plane takes two units and usually two terminal cells, so
+ * the unit count keeps the text inside its width. Same cut as the bundled
+ * plugin in claude 2.1.327 (chunk-nvx1z6pc.js).
+ *
+ * @param text The text to cut.
+ * @param count The most UTF-16 units to keep.
+ * @returns The head, one unit shorter when the cut would split a pair.
+ */
+export function sliceUnitsHead(text: string, count: number): string {
 	if (count <= 0) {
 		return "";
 	}
@@ -42,7 +53,7 @@ export function truncateAtWordBoundary(text: string, max: number): string {
 	if (text.length <= max) {
 		return text;
 	}
-	const head = sliceCodePointsHead(text, max - 1);
+	const head = sliceUnitsHead(text, max - 1);
 	const cut = head.search(/\s\S*$/);
 	const atWord = cut !== -1 ? head.slice(0, cut).trimEnd() : "";
 	return `${atWord.length > max / 2 ? atWord : head.trimEnd()}…`;
