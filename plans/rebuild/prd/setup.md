@@ -54,9 +54,11 @@
 
 - [x] **REQ-SETUP-027** claudetto shall write the env group: `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`="1" (a depth-1 subagent loses `Agent`; no mod counts spawns); `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` by plan (3 on Pro, 4 on Max, none on Ultra); `CLAUDE_CODE_DISABLE_CRON=1` (keeps `/loop` off because each fire resends the whole context, `/goal` on, polling through Monitor); `CLAUDE_CODE_DISABLE_ADVISOR_TOOL`; `worktree.baseRef` head.
   Verified: test, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: the fill writes SPAWN_DEPTH 1, CONCURRENT_SUBAGENTS 3, DISABLE_CRON 1, DISABLE_ADVISOR_TOOL 1 and worktree.baseRef head (36 pass); DISABLE_CRON with DISABLE_ADVISOR_TOOL cut the first request 47,323 to 46,939 bytes. The split by plan is OUT-862.
-  Acceptance: each key is in the written settings for its plan. Verification: test.
+  Acceptance: each key is in the written settings, with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` "3" for every plan. Verification: test.
+  Decision: the split by plan is Out (OUT-862).
   Basis: measured. Status: have at 088a227c (hooks/features/setup/settings.ts, hooks/features/setup/changes.ts).
   Source: openspec/specs/setup/spec.md:303; openspec/specs/setup/spec.md:276.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 105 pass, 0 fail: 'fills every default into empty settings' now asserts SPAWN_DEPTH 1, CONCURRENT_SUBAGENTS 3, DISABLE_CRON 1, DISABLE_ADVISOR_TOOL 1 and worktree.baseRef head; with CONCURRENT_SUBAGENTS set to 4 by hand it failed, and passed after restoring.
 
 ## Setup Fallback When Hooks Do Not Run
 
@@ -112,11 +114,7 @@
 
 ## Alias Pinning
 
-- [x] **REQ-SETUP-053** claudetto shall write `ANTHROPIC_DEFAULT_MODEL`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, and `ANTHROPIC_DEFAULT_HAIKU_MODEL` as full 5.5 IDs, so default, opus, sonnet, haiku, opusplan, and an agent's `model:` alias never resolve to an older model.
-  Verified: fake-API probe, claude 2.1.327, 2026-11-18, cc-inspect `cli -p hi` with --model opus, sonnet, haiku and no flag (key login), and no flag and --model opusplan (oauth login): the request body model is claude-opus-5-5, claude-sonnet-5-5, claude-haiku-5-5, claude-opus-5-5, and claude-sonnet-5-5 for both oauth runs. Vanilla already resolves the aliases to 5.5; the oauth login resolved the default to sonnet, so a Max login was not probed.
-  Acceptance: the written settings hold all four keys with 5.5 IDs. Without the pin the picker showed "Default (recommended) Opus 5" and `opusplan` named claude-opus-5. Verification: test.
-  Basis: measured. Status: have at 088a227c.
-  Source: openspec/specs/tier-profiles/spec.md:159; plugins/claudetto/hooks/features/setup/settings.ts:120@088a227c.
+- [x] **REQ-SETUP-053** Moved Out as OUT-3050: ADR-0177: vanilla 2.1.327 already resolves default, opus, sonnet, haiku and opusplan to 5.5 IDs (cc-inspect fake-API probe, 2026-11-18), so the pin has no measured gain and is not written.
 
 ## Classifier Model
 

@@ -28,6 +28,28 @@ describe("memory hold", () => {
 		expect(text).toContain("12% free");
 	});
 
+	test("a Bash call is refused while free memory is under the floor and runs when the reading fails", async ($, on) => {
+		// Arrange: the plugin registers its own hooks; these stubs stand in for memory_pressure and the tool.
+		let reading: { exitCode: number; stdout: string } = { exitCode: 0, stdout: SAMPLE };
+		on("process.run", () => ({ value: { ...reading, stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+
+		// Act
+		const low = await $.tool.call({ tool: "Bash", command: "echo low" }).catch((error: unknown) => error);
+		reading = { exitCode: 1, stdout: "" };
+		await $.tool.call({ tool: "Bash", command: "echo unread" }).catch((error: unknown) => error);
+
+		// Assert
+		expect(JSON.stringify(low)).toContain("12% free");
+		expect(ran.length).toBe(1);
+		expect(ran[0]).toContain("echo unread");
+	});
+
 	test("parses 1,000 readings in under 100 ms", () => {
 		// Arrange
 		const start = performance.now();

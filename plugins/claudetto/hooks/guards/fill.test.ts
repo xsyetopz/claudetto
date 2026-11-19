@@ -37,6 +37,21 @@ describe("guard rules", () => {
 		expect(wallRule("$HOME/x")).toBe("~/x");
 	});
 
+	test("writes the sandbox lists of REQ-GUARDS-071 and keeps ~/.ssh and ~/.gnupg readable", () => {
+		// Act
+		const next = fillOf(undefined);
+
+		// Assert
+		const { filesystem, network, excludedCommands } = next.sandbox;
+		expect(filesystem.allowWrite).toEqual(expect.arrayContaining(["~/", "/Volumes/", "/private/tmp"]));
+		expect(filesystem.denyWrite).toEqual(expect.arrayContaining(["~/.zshrc", "~/.bashrc", "~/.gitconfig", "~/.ssh", "~/Library/LaunchAgents", "~/.local/bin", "~/.claude/hooks"]));
+		expect(filesystem.denyRead).toEqual(expect.arrayContaining(["~/Library/Keychains", "~/.aws", "~/.azure", "~/.config/gcloud", "~/.netrc", "~/.git-credentials"]));
+		expect(filesystem.denyRead).not.toContain("~/.ssh");
+		expect(filesystem.denyRead).not.toContain("~/.gnupg");
+		expect(network.allowMachLookup).toEqual(["*"]);
+		expect(excludedCommands).toEqual(expect.arrayContaining(["ps *", "top *", "sysctl *", "launchctl list"]));
+	});
+
 	test("writes no wall group for an empty list", () => {
 		// Act
 		const next = fillOf(undefined, []);

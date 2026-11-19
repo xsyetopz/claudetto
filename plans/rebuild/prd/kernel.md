@@ -8,10 +8,12 @@
 
 - [x] **REQ-KERNEL-003** claudetto shall register one `classic.StopFailure` hook that calls `$.ui.notify` on the user's `preferredNotifChannel`, only on an API-error stop, behind the option `notificationsEnabled` (default true), with none for permission, idle, or elicitation (native handles those).
   Decision: ADR-0190, StopFailure notice stays in kernel after a code search confirms vanilla lacks it.
-  Acceptance: An API-error stop notifies once; a permission prompt notifies nothing from claudetto. Verification: test.
+  Acceptance: An API-error stop notifies once; a normal stop notifies nothing; claudetto registers no permission, idle or elicitation notice. Verification: test.
+  Decision: no `notificationsEnabled` option, because the user's `preferredNotifChannel: notifications_disabled` already turns `$.ui.notify` off.
   Basis: read. Status: have at 088a227c. claude 2.1.327: `classic.StopFailure` (chunk-m14bt1pz.js@4444295), `ui.notify` (chunk-dafpvz32.js@3391) and `preferredNotifChannel` (chunk-ja5z738t.js@294945) present (code search).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:150; plugins/claudetto/hooks/features/stop-notice/stop-notice.ts@088a227c. Idea only: external/2026-10-14/export-attention-sound- A Claude Code mod that plays a sound when Claude needs you, so you (Notification event present).
   Verified: test, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto` (hooks/notice/stop.test.ts): a StopFailure notifies once with the error, a normal Stop notifies nothing. Code search: vanilla sends only the generic idle notice after the idle threshold (chunk-cfxefa64.js@56794). Revised: no `notificationsEnabled` option; the user's `preferredNotifChannel: notifications_disabled` already turns `$.ui.notify` off.
+  Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 105 pass, 0 fail: stop.test.ts 'an API-error stop notifies once with the error' and 'a normal stop notifies nothing' pass; the registered hook list the test run prints holds classic.StopFailure and no Notification, PermissionRequest or Elicitation hook.
 
 
 
@@ -30,9 +32,11 @@
 
 - [x] **REQ-KERNEL-014** claudetto shall append `renice 10 -p $$` (children nice 10) and zsh `[ -n "$ZSH_VERSION" ] && setopt no_nomatch no_equals` to `CLAUDE_ENV_FILE` at SessionStart only if absent (12 duplicate copies made each Bash command take 58.6 ms against 11.8 ms; `renice` is refused in the sandbox and its redirect hides that; read niceness with `perl -e 'print getpriority(0,0)'`). On a 10-core Mac, 10 two-second busy loops gave 26-27M by default, 23.7M under `nice -n 10`, 5.3M under `taskpolicy -c utility`, and 0 under `background`.
   Decision (ADR-0175, ADR-0190): only the zsh line ships, as a plugin SessionStart command hook in hooks/hooks.json, because `CLAUDE_ENV_FILE` reaches command hooks only and `renice` is refused in the sandbox. Verified 2026-11-18 on Claude Code 2.1.327 (cc-inspect cli, Bash calls): vanilla `grep -rn --include=*.ts x .` failed with "no matches found", exit 1; with the plugin it printed the match, exit 0, and `$options[nomatch]` read off.
-  Acceptance: Two SessionStart runs leave one copy of each line in the env file. Verification: test.
+  Acceptance: Two SessionStart runs leave one copy of each line in the env file. Verification: demonstration.
+  Decision: a hooks-module test cannot start a shell (`claude plugin test` refuses `node:child_process`: a module imports only its own files and "claude-code"), so the hooks.json command is run by hand.
   Basis: measured. Status: have at 088a227c. claude 2.1.327: `CLAUDE_ENV_FILE` (chunk-2ew0jg68.js@40538) and `classic.SessionStart` (chunk-m14bt1pz.js@1004602) present (code search).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:405; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:15; plugins/claudetto/hooks/hooks.json:10@088a227c; plugins/claudetto/scripts/session-start.ts@088a227c (as named by the old plan).
+  Verified: 2026-11-19: the hooks.json SessionStart command run twice by /bin/sh with CLAUDE_ENV_FILE on a temp file exited 0 both times and left one copy of the zsh line (grep -c: 1).
 
 ## Prompt
 

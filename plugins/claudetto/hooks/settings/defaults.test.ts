@@ -17,6 +17,13 @@ describe("defaults fill", () => {
 		expect(next.bashOutputMaxChars).toBe(8000);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER).toBe("0");
+		expect(next.env).toMatchObject({
+			CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
+			CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "3",
+			CLAUDE_CODE_DISABLE_CRON: "1",
+			CLAUDE_CODE_DISABLE_ADVISOR_TOOL: "1",
+		});
+		expect(next.worktree.baseRef).toBe("head");
 	});
 
 	test("writes the minimal sandbox block of ADR-0188", () => {

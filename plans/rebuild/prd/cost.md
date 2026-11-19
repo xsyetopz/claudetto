@@ -48,22 +48,22 @@
 
 ## Cache and Tokens
 
-- [x] **REQ-COST-042** claudetto shall avoid re-reading unchanged files.
-  Verified: cc-inspect code search, claude 2.1.327, 2026-11-18, "File unchanged since last read": vanilla Read returns "File unchanged since last read. The content from the earlier Read tool_result in this conversation is still current" (chunk-krf585s9.js@973), so a second Read of an unchanged file is served short with no claudetto code.
-  Acceptance: a second Read of an unchanged file in one session is refused or served short. Verification: test.
-  Basis: reported. Status: partial at 088a227c (features/repeat; see risk on withheld Read).
-  Source: reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408).
+- [x] **REQ-COST-042** Moved Out as OUT-3051: ADR-0177: vanilla 2.1.327 already serves a second Read of an unchanged file short ("File unchanged since last read", present in the 2.1.327 binary, checked 2026-11-19), so claudetto adds no code.
 
 ## Paid Calls
 
 - [x] **REQ-COST-047** claudetto shall cut context only by dropping repeated content after the cached prefix (re-reads, repeated tool output), and shall never minify, dedent or rewrite a file the agent reads to edit.
   Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rn -E 'tool\.result|tool\.call' hooks`: no hit; the registered modules (builtins, handover compact/renewal/clear) touch no Read result and add no text before the cache breakpoint.
-  Acceptance: no hook transforms a `Read` result of a source file; a token-saving hook changes no byte before the last cache breakpoint, shown by an unchanged prefix in a captured request. Verification: test.
+  Acceptance: no hook transforms a `Read` result of a source file; a token-saving hook changes no byte before the last cache breakpoint, shown by an unchanged prefix in a captured request. Verification: inspection.
+  Decision: no claudetto hook reads or rewrites a tool result, so there is no transform to test; the inspection is the registered hook list.
   Basis: cited (arXiv:2606.01326: dedent and identifier shortening cut resolved tasks from 46% to 36% and from 47% to 27%; the paper counts input tokens only, so its savings ignore cache reads). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P5 implications 1 and 3; https://arxiv.org/pdf/2606.01326.
+  Verified: inspection 2026-11-19: the hook list printed by claude 2.1.327 plugin test plugins/claudetto registers no tool.result hook; classic.PostToolUse (handover/renewal.ts:38) only marks a commit as a task boundary and passes the event on unchanged, and grep of hooks/ for updatedToolOutput and tool.result finds no hit.
 
 - [x] **REQ-COST-048** claudetto shall return a hook or tool result that fits under Claude Code's inline limit in the reply itself, and shall not write it to a file the agent must read back.
   Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rn -E 'writeFile|appendFile|mkdir' hooks`: no hit; the one `$.fs.write` (builtins/builtins.ts:55) repairs user settings, and handover returns text through `prompt.context`, not a file.
-  Acceptance: no claudetto hook writes a result file under 4,000 characters for the agent to read; the old file handoff stays removed (REQ-HANDOVER-023). Verification: test.
+  Acceptance: no claudetto hook writes a result file under 4,000 characters for the agent to read; the old file handoff stays removed (REQ-HANDOVER-023). Verification: inspection.
+  Decision: claudetto writes no result file, so there is no write to test; the inspection is a search of the hooks for file writes.
   Basis: cited (arXiv:2605.15184: moving small results to files cut one harness and model pair from 93.1 to 55.2; one run). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P7 implication 2; https://arxiv.org/pdf/2605.15184.
+  Verified: inspection 2026-11-19: grep of plugins/claudetto/hooks for fs.write, writeFile and appendFile finds only the settings fill; no hook writes a result file.
