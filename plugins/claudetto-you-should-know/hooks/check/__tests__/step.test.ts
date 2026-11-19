@@ -110,4 +110,9 @@ describe("isCheckStep", () => {
 		expect([1, 2, 4, 5, 7, 9, 11].some(isCheckStep)).toBe(false);
 		expect([6, 12, 18].every(isCheckStep)).toBe(true);
 	});
+
+	test("fires only on steps 3, 6 and 12 of 0..13", () => {
+		const fired = Array.from({ length: 14 }, (_, i) => i).filter(isCheckStep);
+		expect(fired).toEqual([3, 6, 12]);
+	});
 });

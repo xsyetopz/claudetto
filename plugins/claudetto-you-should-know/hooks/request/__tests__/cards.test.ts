@@ -18,6 +18,47 @@ describe("parseExplanation", () => {
 	test("returns no card for empty text", () => {
 		expect(parseExplanation("")).toEqual([]);
 	});
+
+	test("clips a long caption at a word with an ellipsis", () => {
+		const long = `**T**\n${"word ".repeat(1500)}`;
+		const cards = parseExplanation(long);
+		const lead = cards[0]?.lead ?? "";
+		expect(lead.length).toBeLessThanOrEqual(4001);
+		expect(lead.endsWith("…")).toBe(true);
+	});
+
+	test("starts a new card on a second fence and drops blank prose", () => {
+		const cards = parseExplanation("```\na\n```\n\n```\nb\n```");
+		expect(cards.length).toBe(2);
+	});
+
+	test("keeps at most 12 sketch lines and a title of a card with a line feed", () => {
+		const text = `**T**\n\`\`\`\n${Array.from({ length: 20 }, (_, i) => `r${i}`).join("\n")}\n\`\`\``;
+		expect(parseExplanation(text)[0]?.sketch.length).toBe(12);
+	});
+	test("a title over its limit ends in an ellipsis at a word boundary", () => {
+		// Arrange
+		const text = `**${"word ".repeat(40).trim()}**\nbody`;
+
+		// Act
+		const title = parseExplanation(text)[0]?.title ?? "";
+
+		// Assert
+		expect(title.endsWith("…")).toBe(true);
+		expect(title.length).toBeLessThanOrEqual(120);
+		expect(title.slice(0, -1).endsWith("word")).toBe(true);
+	});
+
+	test("a new fence starts a new card and an escape sequence in a sketch line is removed", () => {
+		// Arrange
+		const text = "**A**\n```\nx\u001b[31my\n```\n```\nb\n```";
+
+		// Act
+		const cards = parseExplanation(text);
+
+		// Assert
+		expect(cards.map((c) => c.sketch)).toEqual([["xy"], ["b"]]);
+	});
 });
 
 

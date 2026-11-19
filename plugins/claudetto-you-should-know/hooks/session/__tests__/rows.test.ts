@@ -2,6 +2,8 @@ import { describe, expect, test } from "claude-code/testing";
 
 import { isNoteRead, withRow, type Row } from "../rows";
 
+const DAY = 86_400_000;
+
 describe("withRow", () => {
 	test("puts the new row first and replaces its older one", () => {
 		const rows = withRow([{ id: "a" }, { id: "b" }], { id: "b", offeredTurn: "t" });
@@ -34,5 +36,37 @@ describe("isNoteRead", () => {
 
 	test("is never read once the off button is armed", () => {
 		expect(isNoteRead({ shownAt: 5, line: "x", idle: { ms: 9000 } }, { ...view, isOffArmed: true }, 0)).toBe(false);
+	});
+});
+
+describe("withRow keeps 32 rows", () => {
+	const closed = (id: string): Row => ({ id });
+	const open = (id: string, shownAt: number): Row => ({ id, view: { kind: "offer", line: "x", shownAt } });
+
+	test("the oldest closed row goes first when there are 33", () => {
+		// Arrange
+		const now = 10 * DAY;
+		const others = [...Array.from({ length: 30 }, (_, i) => open(`o${i}`, now - 1000)), closed("c1"), closed("c0")];
+
+		// Act
+		const rows = withRow(others, { id: "new" }, now);
+
+		// Assert
+		expect(rows).toHaveLength(32);
+		expect(rows.some((r) => r.id === "c0")).toBe(false);
+		expect(rows.some((r) => r.id === "c1")).toBe(true);
+	});
+
+	test("an open note shown over three days ago goes before one shown within three days", () => {
+		// Arrange
+		const now = 10 * DAY;
+		const others = [...Array.from({ length: 30 }, (_, i) => open(`o${i}`, now - 1000)), open("recent", now - DAY), open("stale", now - 3 * DAY - 1)];
+
+		// Act
+		const rows = withRow(others, { id: "new" }, now);
+
+		// Assert
+		expect(rows.some((r) => r.id === "stale")).toBe(false);
+		expect(rows.some((r) => r.id === "recent")).toBe(true);
 	});
 });
