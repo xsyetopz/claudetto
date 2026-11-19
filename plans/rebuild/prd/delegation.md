@@ -9,20 +9,18 @@
 ## Shared Checkout Git Rules
 
 - [x] **REQ-DELEGATION-015** claudetto shall tell delegates to run no tree-changing git (`stash`, `pop`, `checkout`, `switch`, `reset`, `restore`, `clean`, `rebase`, `merge`) and no `git add -A` or `.`; to commit own paths with `git commit --only <paths>` or explicit staging; to assume the tree is dirty unless `git status` this session says clean; to re-read the target after a rejected, interrupted, or failed write; to kill only by saved pid and never `pkill -f`. Allowed: `status`, `log`, `diff`, `show`, `blame`, `branch --list`, `describe --tags`. Consent needed: `stash`, `checkout -- <path>`, `restore`, `switch`, `reset --hard`, `clean`, `rebase`, amend, `stash drop/clear`, branch delete, `push`, `tag`, PR open or merge, `gh release`, a default-branch commit, removing a worktree with changes. Prohibited: force-push to a shared branch. One worktree or window per parallel agent, committed before it starts, same slug for branch, folder, and tab; no shared dev-server port across worktrees; run acceptance on the merged result too.
-  Acceptance: `Heracles.md` holds the `git commit --only` line and the re-read line; a stash or `-A` call by a delegate is denied. In claude 2.1.326 a subagent isolated in a worktree already refuses some branch-rewriting git commands in Bash (release note), and `ExitWorktree` refuses to remove a worktree while a background subagent or shell command may run in it unless `discard_changes` is passed. Verification: inspection.
+  Acceptance: `Heracles.md` holds the `git commit --only` line and the re-read line; a delegate's `git stash`, `reset --hard`, `clean` and `branch -D` prompt the user through the permission rules `setup` fills in (rules.ts ASK list), and `git add -A` is prose only in the Heracles body. In claude 2.1.326 a subagent isolated in a worktree already refuses some branch-rewriting git commands in Bash (release note), and `ExitWorktree` refuses to remove a worktree while a background subagent or shell command may run in it unless `discard_changes` is passed. Verification: inspection.
   Basis: reported (n=2 conduct, n=3 tool; stash and pop restored 81 staged deletions; every branch passed and the merge failed the same six tests 5 of 5). Status: missing at 088a227c (`git grep -F 'git commit --only'` finds nothing under `plugins/`).
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:73; external/please-use-me-often/agent-failure-dossier/judged/HANDOFF-D.md:13; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:38; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:74 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>); <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): git rules are body lines in agents/Heracles.md (commit --only, explicit staging, no tree-moving git); the SubagentStart injection was replaced by body lines per the triage list; read of the file.
+  Decision: ADR-0125 and ADR-0188: Claude Code's permission rules and sandbox enforce git risks and no claudetto hook judges a command; a denied call means the user declined it is a body line in Heracles.md, not a hook.
+  Verified: inspection 2026-11-19, claude 2.1.327: plugins/claudetto/agents/Heracles.md holds `git commit --only <paths>`, the re-read-after-a-failed-write line, no `git add -A`/`pkill -f`, and the denied-means-declined line; plugins/claudetto/hooks/guards/rules.ts:44-52 lists `Bash(git stash*)`, `reset --hard`, `clean`, `branch -D` as ASK rules. The same mechanism asked on `git push origin HEAD` from the lead in the REQ-VERIFICATION-090 probe; no subagent probe run this session.
 
 ## Agent Message Form
 
 ## Delegate Contract Injection
 
-- [x] **REQ-DELEGATION-024** claudetto shall inject the Delegate Contract at `SubagentStart` as `additionalContext`, with one source text: bound by the Terms, report outcomes faithfully, done only after a real check with command and exit code, and a denied call means the user declined it and is not retried in any form. The agent bodies (2,720 chars) drop "report outcomes faithfully" and "a denied call means the user declined it" (two lines claude 2.1.312 drops); the limit is that it is still text.
-  Acceptance: A subagent transcript begins with the contract text; no agent file or hook carries the two lines today. `texts-gate.ts:129` told the agent to run git writes with the sandbox off instead of finding the in-sandbox fix. Verification: test and inspection.
-  Basis: reported; read. Status: missing at 088a227c (no `SubagentStart` hook or "faithfully" in plugins/). `SubagentStart` is present in claude 2.1.327 (code search, chunk-ja5z738t.js@5607).
-  Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:28 (SA-2.3); external/please-use-me-often/agent-terms/DELEGATION-AGREEMENT.md:11 (DA-1.1); external/please-use-me-often/agent-terms/DELEGATION-AGREEMENT.md; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:119; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:147; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:33; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:281; openspec/changes/2-1-325-rearchitecture/design.md:286.
-  Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): the contract text lives in the Heracles body, one source; no SubagentStart hook is registered; read of agents/Heracles.md.
+- [x] **REQ-DELEGATION-024** Moved Out as OUT-3002: not built as a `SubagentStart` hook and no measured check shows it beats the contract text in the agent bodies; plugins/claudetto/agents/Heracles.md already carries the denied-call-means-declined line, the report-outcomes-as-they-happened line and the check-with-command-and-exit-code line, and a hook would inject the same text a second time (ADR-0177, ADR-0190).
 
 ## Model Allowlist Hook
 
@@ -31,6 +29,7 @@
   Basis: user decision. Status: missing at 088a227c.
   Source: user decision, 2026-11-13, restated 2026-11-18 (recorded in [ADR-0117](../adr/0117-agent-frontmatter-fields.md) and [ADR-0183](../adr/0183-logic-checked-by-execution.md)); the hook seam: `agent.spawn` mod event, https://clawdipedia.cc/extend/subagents/runtime (Documented), retrieved 2026-11-18.
   Verified: cc-inspect cli with --plugin-dir plugins/claudetto, claude 2.1.327, 2026-11-18, calls [Agent model opus], `-p go`: vanilla starts the subagent (8 requests); with the hook the Agent call is refused with "Subagents never run on opus..." and the run ends at 2 requests; model sonnet starts the subagent (8 requests). Unit test hooks/delegation/spawn.test.ts pins opus, fable and both full ids. Probe fact: the stock enum accepts opus and fable, so vanilla has no bar.
+  Verified: probe 2026-11-19, claude 2.1.327, cc-inspect fake API: Agent with model sonnet spawns (8 requests); model opus is refused with "Subagents run on Sonnet" in request 2. spawn.test.ts has no sonnet-passes case.
 
 ## Subagent Task Size
 
@@ -44,6 +43,7 @@
   Conflict: Read-Side Subagents.
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:89; openspec/changes/archive/2026-11-16-2-1-323/design.md:97; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:37; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6028; plugins/claudetto/agents/Artemis.md:4@088a227c; reported, user, 2026-11-13.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): Artemis subagent request carried model claude-haiku-5-5; plugins/claudetto/agents holds Artemis, Athena, Heracles (Metis is Out, ADR-0190); first request 47,323 -> 46,216 bytes with built-in agent types hidden by hooks/delegation/offer.ts; plugin test and validate --strict pass.
+  Verified: inspection 2026-11-19: Artemis/Athena/Heracles frontmatter in plugins/claudetto/agents; hooks/delegation/offer.ts hides non-fork built-ins.
 
 ## Watch Background Tasks
 
@@ -80,6 +80,7 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Basis: reported (a subagent one-liner credited with a lower plan tier: 89% weekly by day 5 fell under 25%); Sonnet is about 95% of subagent messages, so Opus-versus-Sonnet differences are confounded. Status: have at 088a227c (the Opus-per-call and escalate-to-Opus parts of the plan item conflict with the settled rule that Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)) and are not carried).
   Source: external/2026-10-12/export-the one-liner I add to almost every Claude Code prompt.jsonl:14 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x2dpvt/the_oneliner_i_add_to_almost_every_claude_code/>); plugins/claudetto/hooks/features/setup/settings.ts:120@088a227c; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): with CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 (hooks/settings/defaults.ts, FILL_VERSION 2) a general-purpose subagent under an Opus main sent model claude-sonnet-5-5 instead of claude-opus-5-5; Opus and Fable named in a spawn are refused by hooks/delegation/spawn.ts.
+  Verified: inspection 2026-11-19: hooks/settings/defaults.ts:36 sets CLAUDE_CODE_SUBAGENT_MODEL claude-sonnet-5-5; `git grep maxTurns -- plugins` is empty.
 
 ## Agent Texts
 
@@ -88,6 +89,7 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Basis: cited. Status: have at 088a227c (`plugins/claudetto/agents/Athena.md` holds a low-context line; `git grep -iE "low-context|not seen your tool" 088a227c` hits it).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:31; openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:210.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): agents/Athena.md carries the low-context-reader line; read of the file.
+  Verified: inspection 2026-11-19: plugins/claudetto/agents files (Artemis.md, Athena.md, Heracles.md).
 
 ## Worker Resume
 
@@ -97,5 +99,6 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070 (handoff, constraints: disable turn limits; nobody asked you to defer to the user).
   Conflict: Turn Caps.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): `git grep maxTurns plugins` returns nothing.
+  Verified: inspection 2026-11-19: no Metis agent file; plugins/claudetto/agents/Heracles.md holds the `git commit --only` line.
 
 ## Rules Passed to Workers
