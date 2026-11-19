@@ -48,12 +48,22 @@ describe("wall guard", () => {
 	test("a glob that spells no part of the wall name still matches it", () => {
 		// Arrange
 		const wall = "~/.claudetto-holdout";
-		const hits = ["~/.c?audetto-h*", "$HOME/.[c]laudetto-*", "/Users/u/.*-holdout/*", '"~/.cl*"'];
-		const misses = ["~/*", "~/**", "~/.claudetto*x", "src/*.ts", "~/.aws*"];
+		const hits = ["~/.c?audetto-h*", "$HOME/.[c]laudetto-*", "/Users/u/.*-holdout/*", '"~/.cl*"', "/Users/*/.claudetto-holdout", "~/.*", "~/.{claudetto-holdout,x}", "/Users/u/.claudetto-{holdout,y}"];
+		const misses = ["~/*", "~/**", "~/.claudetto*x", "src/*.ts", "~/.aws*", "~/.{aws,ssh}", "src/{a,b}.ts"];
 
 		// Act and Assert
 		for (const glob of hits) expect(globHitsWall(globWords(`ls ${glob}`), wall, "/Users/u")).toBe(true);
 		for (const glob of misses) expect(globHitsWall(globWords(`ls ${glob}`), wall, "/Users/u")).toBe(false);
+	});
+
+	test("a relative glob counts only after the command moves to home", () => {
+		// Arrange
+		const wall = "~/.claudetto-holdout";
+		const words = globWords("ls -a .c*");
+
+		// Act and Assert
+		expect(globHitsWall(words, wall, "/Users/u", false)).toBe(false);
+		expect(globHitsWall(words, wall, "/Users/u", true)).toBe(true);
 	});
 
 	test("a sandbox-off call with such a glob is refused before it runs", async ($, on) => {
@@ -73,6 +83,28 @@ describe("wall guard", () => {
 		// Assert
 		expect(ran).toEqual([]);
 		expect(JSON.stringify(result)).toContain("walled off");
+	});
+
+	test("a project glob runs and a glob after cd ~ is refused", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({ value: FREE }));
+		on("env.get", (_$, e) => ({ value: e.name === "HOME" ? "/Users/u" : undefined }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+
+		// Act
+		for (const command of ["ls -a .*", "git add .c*", "cd ~ && ls .c*-holdout", "cd; cat .c?audetto-holdout/t"]) {
+			await $.tool.call({ tool: "Bash", command, dangerouslyDisableSandbox: true }).catch(() => undefined);
+		}
+
+		// Assert
+		expect(ran.length).toBe(2);
+		expect(ran[0]).toContain("ls -a .*");
+		expect(ran[1]).toContain("git add .c*");
 	});
 
 	test("an absolute wall is named as written", () => {
