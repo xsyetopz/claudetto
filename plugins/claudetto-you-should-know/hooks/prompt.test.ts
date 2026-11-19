@@ -1,6 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
-import { ASKED_WAYS, explainPrompt, proposePrompt } from "./prompt";
+import { ASKED_WAYS, EXPLANATION_LENGTHS, explainPrompt, proposePrompt, SIDE_REQUEST_FRAME } from "./prompt";
 import { AFTER_KNOWN } from "./propose-text";
 import { parseExplanation } from "./cards";
 
@@ -85,4 +85,66 @@ test("an explanation shaped as the explain prompt asks parses into a titled card
 	// Assert
 	expect(cards[0]?.title).toBe("Listing the step once saves two runs");
 	expect(cards[0]?.lead).toContain("build step");
+});
+
+test("the check and the explanation each open with the side-request frame that bars tools and secrets (REQ-001)", () => {
+	// Arrange
+	const frame = SIDE_REQUEST_FRAME;
+
+	// Act
+	const check = proposePrompt([], []);
+	const explain = explainPrompt("TOPIC-LINE", undefined);
+
+	// Assert
+	expect(check.startsWith(`${frame}\n`)).toBe(true);
+	expect(explain.startsWith(`${frame}\n\n`)).toBe(true);
+	expect(frame).toContain("no tools");
+	expect(frame).toContain("single reply");
+	expect(frame).toContain("Credentials, tokens, keys, environment values, and personal data");
+});
+
+test("the explanation format asks for a bold title, a tiny example, a sketch within 60 by 6 and a closing choice (REQ-004)", () => {
+	// Arrange
+	const prompt = explainPrompt("TOPIC-LINE", undefined);
+
+	// Act
+	const shape = prompt.slice(prompt.indexOf("<shape>"), prompt.indexOf("</shape>"));
+
+	// Assert
+	expect(shape).toContain("two to six plain words");
+	expect(shape).toContain("tiny example");
+	expect(shape).toContain("60 characters wide and 6 lines tall");
+	expect(shape).toContain("the choice they are making, in one sentence");
+	expect(prompt).toContain("Keep the title as the only heading");
+});
+
+test("each direction puts exactly its own length line into the explanation prompt (REQ-005)", () => {
+	// Arrange
+	const limits = { first: "at most 100 words", simpler_words: "at most 100 words", less_detail: "at most 45 words", more_detail: "at most 160 words" } as const;
+
+	// Act and Assert
+	for (const direction of ["first", "simpler_words", "less_detail", "more_detail"] as const) {
+		const prompt = explainPrompt("T", direction === "first" ? undefined : { direction, previous: "P" });
+		const others = Object.entries(EXPLANATION_LENGTHS).filter(([name]) => name !== direction);
+		expect(prompt).toContain(EXPLANATION_LENGTHS[direction]);
+		expect(EXPLANATION_LENGTHS[direction]).toContain(limits[direction]);
+		for (const [, line] of others) {
+			expect(prompt).not.toContain(line);
+		}
+	}
+});
+
+test("the propose prompt fills the frame and the lists: nothing yet when empty, one dash line per item (REQ-009)", () => {
+	// Arrange
+	const empty = proposePrompt([], []);
+
+	// Act
+	const two = proposePrompt(["ONE", "TWO"], ["KNOWN"]);
+
+	// Assert
+	expect(empty.startsWith(SIDE_REQUEST_FRAME)).toBe(true);
+	expect(empty.split("(nothing yet)")).toHaveLength(3);
+	expect(empty).not.toContain("<<");
+	expect(two).toContain("- ONE\n- TWO");
+	expect(two.split("(nothing yet)")).toHaveLength(1);
 });

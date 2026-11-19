@@ -1,5 +1,6 @@
 import { expect, test } from "claude-code/testing";
 
+import { ABOUT_THIS, APP_COPY, plainText, TERMINAL_COPY } from "./copy";
 import { hasOwnComposer } from "./table";
 import { type Box, offered, PLUGIN, PROPS, pause } from "./testkit";
 
@@ -226,4 +227,92 @@ test("an unknown surface counts as one with its own composer; only the terminal 
 
 	// Assert
 	expect(own).toEqual([false, true, true, true, true]);
+});
+
+const INKS = {
+	vscode: { star: "suggestion", tagDim: true, tagColor: undefined },
+	mobile: { star: "suggestion", tagDim: true, tagColor: undefined },
+	desktop: { star: "subtle", tagDim: undefined, tagColor: "subtle" },
+} as const;
+
+for (const surface of ["vscode", "mobile", "desktop"] as const) {
+	test(`${surface} draws the lead with its star and tag inks (REQ-015)`, async ($, on) => {
+		// Arrange
+		const tree = await (await offered($, on, fresh(), { surface })).drawn();
+
+		// Act
+		const star = nodes(tree, (n) => n.type === "Text" && JSON.stringify(n.children) === '["✦"]')[0]?.props?.["color"];
+		const tag = nodes(tree, (n) => n.type === "Text" && JSON.stringify(n.children ?? "").includes("You should know") && n.children?.length === 3)[0];
+
+		// Assert
+		expect({ star, tagDim: tag?.props?.["dimColor"], tagColor: tag?.props?.["color"] }).toEqual(INKS[surface]);
+	});
+}
+
+test("the terminal row wraps its body beside the star column (REQ-016)", async ($, on) => {
+	// Arrange
+	const tree = await (await offered($, on, fresh())).drawn();
+
+	// Act
+	const row = nodes(tree, (n) => n.props?.["flexDirection"] === "row" && n.props?.["alignItems"] === "flex-start")[0];
+
+	// Assert
+	expect(row?.children?.length).toBe(2);
+	expect((row?.children?.[0] as Node).props).toMatchObject({ width: 2, flexShrink: 0 });
+	expect((row?.children?.[1] as Node).props).toMatchObject({ wrap: "wrap" });
+});
+
+test("the desktop row has a left cell with the hover card and a body (REQ-016)", async ($, on) => {
+	// Arrange
+	const tree = await (await offered($, on, fresh(), { surface: "desktop" })).drawn();
+
+	// Act
+	const row = nodes(tree, (n) => n.props?.["flexDirection"] === "row" && n.props?.["alignItems"] === "flex-start")[0];
+
+	// Assert
+	expect((row?.children?.[0] as Node).props).toMatchObject({ flexShrink: 0 });
+	expect(JSON.stringify((row?.children?.[0] as Node).children)).toContain("A side agent is watching");
+	expect(JSON.stringify(row?.children?.[1])).toContain("Tests run in order.");
+});
+
+test("the About copy is three lines in the app card and four, ending with the disable command, on the terminal (REQ-012)", () => {
+	// Assert
+	expect(APP_COPY.map((para) => plainText([para]))).toEqual([
+		"A side agent is watching your back while Claude works.",
+		"When something comes up that you should know but might miss, this plugin flags it for you.",
+		"Learn more to get a deeper explanation and chat about it.",
+	]);
+	expect(TERMINAL_COPY.map((para) => plainText([para])).slice(0, 3)).toEqual(APP_COPY.map((para) => plainText([para])));
+	expect(plainText([TERMINAL_COPY[3] as never])).toBe("Disable on this machine with /plugin disable claudetto-you-should-know.");
+	expect(TERMINAL_COPY).toHaveLength(4);
+	expect(ABOUT_THIS).toContain("/plugin disable claudetto-you-should-know");
+});
+
+test("Learn more with no shipped explanation runs a fork and shows its result, and the button stays on the offer (REQ-039)", async ($, on) => {
+	// Arrange
+	const box = fresh();
+	const band = await offered($, on, box, { replies: ["learn: Tests run in order.\ntag: You should know", "**Order matters**\nSteps run one after another."] });
+	const before = await band.find({ key: "Learn more" });
+
+	// Act
+	await band.press({ key: "Learn more" });
+	await waitFor(async () => (await band.find({ key: "Understood" })) !== undefined);
+
+	// Assert
+	expect(before).toBeDefined();
+	expect(box.forks).toBe(2);
+	expect(JSON.stringify(await band.drawn())).toContain("Steps run one after another.");
+});
+
+test("Dismiss on an offer asks without Turn off suggestions on a surface with its own composer (REQ-043)", async ($, on) => {
+	// Arrange
+	const band = await offered($, on, fresh(), { surface: "desktop" });
+
+	// Act
+	await band.press({ key: "Dismiss" });
+	await waitFor(async () => (await band.find({ key: "Not relevant" })) !== undefined);
+	const keys = buttons(await band.drawn()).map((b) => b["key"]);
+
+	// Assert
+	expect(keys).toEqual(["That was helpful", "Not relevant", "Couldn’t understand", "Dismiss"]);
 });
