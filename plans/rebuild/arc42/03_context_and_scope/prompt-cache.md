@@ -3,11 +3,13 @@
 ## Prompt Cache
 
 - [x] **CTX-283** Haiku 5.5 input over 100,000 tokens bills the whole request at five times ($0.10 to $0.50 per million input; $0.50 to $2.50 output).
-  Acceptance: The price-step guard withholds a result that would cross 100,000 tokens. Verification: test.
+  Acceptance: The Haiku agent sets `autoCompactWindow: 100000`, so its context compacts before the price step; no price-step hook ships. Verification: inspection.
+  Decision: OUT-423 (ADR-0131, ADR-0177): a vanilla agent setting keeps Haiku under the step; a result-withholding hook showed no measured gain.
   Basis: cited and re-read (claude 2.1.327, 2026-11-18): platform docs `models/haiku-5-5/overview`, Pricing table, state $0.10 input and $0.50 output per MTok for prompts up to 100,000 tokens and $0.50 and $2.50 for prompts over 100,000 tokens; the same step applies to cache writes ($0.125 to $0.625 for 5m, $0.20 to $1 for 1h) and reads ($0.01 to $0.05). The rate is set by prompt size, so a request over 100,000 tokens bills at the higher rate for all its tokens. Confirmed. The plan states the rule as fact in two places and as unverified in a third.
   Status: have at 088a227c (HAIKU_PRICE_STEP = 100_000, "five times").
   Source: external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:24; plugins/claudetto/hooks/features/price-step/price-step.ts:15,16@088a227c.
   Verified: source already on 2.1.327.
+  Verified: inspection, 2026-11-19: plugins/claudetto/agents/Artemis.md:4,7 holds model claude-haiku-5-5 and autoCompactWindow: 100000; git grep price-step -- plugins gives 0 hits.
 
 ## Prompt Cache
 
