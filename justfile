@@ -2,7 +2,7 @@
 setup:
 	git config core.hooksPath .githooks
 
-# Validates and tests every shipped plugin; fails while git hooks are off.
+# Validates, typechecks and tests every shipped plugin; fails while git hooks are off.
 verify:
 	#!/bin/sh
 	set -e
@@ -11,6 +11,7 @@ verify:
 	if [ "$hooks" != "$(cd "$top/.githooks" && pwd -P)" ]; then echo "git hooks are off: run just setup"; exit 1; fi
 	for p in plugins/claudetto plugins/claudetto-you-should-know; do
 		claude plugin validate "$p" --strict
+		bunx tsc -p "$p/tsconfig.json" --noEmit
 		claude plugin test "$p"
 	done
 	# OpenSpec is out of the rebuild (ADR-0189): it must load, its warnings stay.
