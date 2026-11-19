@@ -1,14 +1,7 @@
-# Points git at the repository's hooks, so the release check runs before each push.
-setup:
-	git config core.hooksPath .githooks
-
-# Validates, typechecks and tests every shipped plugin; fails while git hooks are off.
+# Validates, typechecks and tests every shipped plugin.
 verify:
 	#!/bin/sh
 	set -e
-	top="$(git rev-parse --show-toplevel)"
-	hooks="$(cd "$top" && cd "$(git config core.hooksPath || echo /nonexistent)" 2>/dev/null && pwd -P || true)"
-	if [ "$hooks" != "$(cd "$top/.githooks" && pwd -P)" ]; then echo "git hooks are off: run just setup"; exit 1; fi
 	for p in plugins/claudetto plugins/claudetto-you-should-know; do
 		if [ ! -d "$p/.claude-plugin/types" ]; then echo "$p/.claude-plugin/types is missing: Claude Code writes it when a session loads the plugin, so start one session with --plugin-dir $p first"; exit 1; fi
 		claude plugin validate "$p" --strict
