@@ -68,6 +68,26 @@ describe("wall guard", () => {
 		expect(ran.length).toBe(1);
 	});
 
+	test("a sibling folder that shares the wall's name as a prefix runs", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({ value: FREE }));
+		on("env.get", (_$, e) => ({ value: e.name === "HOME" ? "/Users/u" : undefined }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		const ran: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") ran.push(e.command);
+			return { result: "ok" } as never;
+		});
+		const siblings = ["ls ~/.claudetto-holdout-old", "cat $HOME/.claudetto-holdout2/t.md"];
+
+		// Act
+		for (const command of siblings) await $.tool.call({ tool: "Bash", command, dangerouslyDisableSandbox: true });
+
+		// Assert: another guard wraps a command that runs, so each sibling is looked for inside what ran.
+		expect(ran.length).toBe(siblings.length);
+		siblings.forEach((command, i) => expect(ran[i]).toContain(command));
+	});
+
 	test("a glob that spells no part of the wall name still matches it", () => {
 		// Arrange
 		const wall = "~/.claudetto-holdout";

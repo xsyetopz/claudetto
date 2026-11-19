@@ -142,6 +142,14 @@ export const foldPaths = (text: string): string => {
 const escapeRegExp =(text: string): string => text.replace(/[$^{}.*+?()[\]|\\/]/gu, "\\$&");
 
 /**
+ * Whether the text names the path itself and not a sibling that shares its
+ * name as a prefix: `~/.claudetto-holdout/t` and `~/.claudetto-holdout*` name
+ * the wall, `~/.claudetto-holdout-old` does not.
+ */
+export const namesPath = (text: string, name: string): boolean =>
+	new RegExp(`${escapeRegExp(name)}(?=$|[/\\s"';&|)<>*?[{\`])`, "u").test(text);
+
+/**
  * Whether the wall's folder is built at run time, so its name cannot be read
  * before the command runs: a home-rooted path whose first folder is dynamic
  * (`~/$x`, `$HOME/$(cmd)`), or a dynamic part followed by the wall's last
@@ -184,7 +192,7 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 		// After a move to home, a plain relative word names a folder of home as much as a glob does.
 		const reach = atHome ? text.split(/[\s;&|()<>]+/u).map((w) => w.replace(/["']/gu, "")).filter(Boolean) : words;
 		const hit = walls.find(
-			(wall) => [command, text].some((t) => wallNames(wall, home).some((name) => t.includes(name))) || globHitsWall(reach, wall, home, atHome) || dynamicWall(text, wall, home),
+			(wall) => [command, text].some((t) => wallNames(wall, home).some((name) => namesPath(t, name))) || globHitsWall(reach, wall, home, atHome) || dynamicWall(text, wall, home),
 		);
 		return hit === undefined ? next(e) : { deny: wallReason(hit) };
 	}).catch(($, e, next) => (fault($, "wall guard", next.error), next(e)));
