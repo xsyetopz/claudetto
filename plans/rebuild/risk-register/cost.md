@@ -14,6 +14,7 @@
   Trigger: auto mode on with a budget line.
   Owner: cost.
   Status: closed 2026-11-18. The budget line that read total_cost_usd is out (REQ-COST-002, REQ-COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (REQ-COST-046).
+  Verified: 2026-11-19, claude 2.1.327, `git grep -n -F total_cost_usd -- plugins/` -> no match (exit 1).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958; plugins/claudetto/statusline/segments.ts@088a227c.
 
 - [x] **RISK-374** Fan-out runaway: the model picks its own fan-out and model and spends the quota.
@@ -62,6 +63,7 @@
   Trigger: an "usage wait ended early" line in the hook log on a successful run.
   Owner: cost.
   Status: closed 2026-11-18. The price-step hook is out (REQ-COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
+  Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e price-step -e 'usage wait' -- plugins/` -> no match (exit 1).
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:71; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:595-597.
 
 ## Verification and Honesty
@@ -81,11 +83,26 @@
   Actions: Map an unknown or failed check to "unknown since <time>"; a Stop hook per session writes a status comment to a task board; a completion ledger tracks running, done-but-not-processed (alert past threshold), and processed.
   Trigger: A status check fails or times out.
   Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (REQ-COST-017); the rebuild has no status check to misread.
+  Verified: 2026-11-19, claude 2.1.327, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/` -> no match (exit 1).
   Source: not located: the commenter's post in the old plan; unresolved.
 
 ## Agent Conduct
 
-- [x] **RISK-379** Moved Out as OUT-2355: the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run).
+- [x] **RISK-379** The agent asks the user for `ANTHROPIC_API_KEY`.
+  - Category: conduct.
+  - Cause: a paid-run tool that the agent wrote read only the API key and stopped when it was unset; a paid-run tool read the API key and stopped when it was unset.
+  - Event: the agent told the user to export the key; the user called this a hazardous violation and said to use the OAuth token; the agent told the user to export the key; the user called this hazardous and said to use the OAuth token.
+  - Consequence: a secret handled in chat; a run billed to the API instead of the login; an extra turn.
+  - Likelihood: 1
+  - Impact: 3
+  - Existing controls: at 088a227c the paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` and the claim-check launcher drops the API key (`CHANGELOG.md:286`); a kernel secrets guard exists at 088a227c but redacts secret values in tool results (`hooks/features/secrets/scan.ts`, `hooks/kernel/secrets.ts`); no baseline rule stops a request for an API key or names the OAuth token (grep for `ANTHROPIC_API_KEY|OAUTH` finds only `setup/changes.ts:92` and `kernel/secrets.ts:13`).
+  - Response: mitigate.
+  - Actions: claudetto shall make the agent use the OAuth login and write each tool that calls a model to use the Claude Code OAuth token; claudetto shall make the agent use the OAuth login and never ask the user for an API key.
+  - Trigger: the text `ANTHROPIC_API_KEY is not set` in a tool result; a script that calls the Messages API.
+  - Owner: cost
+  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; `CHANGELOG.md:286` at 088a227c; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+  - Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
+  - Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
 
 ## Hooks, Gates, and Notices
 
@@ -142,11 +159,39 @@
 
 ## Subagent Cache Goes Cold
 
-- [x] **RISK-383** Moved Out as OUT-2356: the item is a third-party report with no probe.
+- [x] **RISK-383** Subagent Cache Goes Cold.
+  Category: Cost.
+  Cause: Subagents default to a 5-minute cache TTL against 1 hour on the main thread.
+  Event: A subagent that waits on a nested subagent, is resumed, or blocks on a build or test over 5 minutes goes cold. One commenter saw +40% usage. Cache creation bills 1.25x input at 5 minutes and 2x at 60 minutes. One cache bust in a 400k subagent transcript can cost more than running at 60 minutes, and iterative-test subagents may bust 10-20 times.
+  Consequence: Spend.
+  Likelihood: 1. Impact: 3.
+  Existing controls: None known at 088a227c.
+  Response: mitigate.
+  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
+  Trigger: A subagent turn that waits more than 5 minutes.
+  Owner: cost.
+  Basis: reported, one user.
+  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:380,388,392-397 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>)
+  Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
+  Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
 
 ## Audit Skill at Top Effort
 
-- [x] **RISK-384** Moved Out as OUT-2357: the item is a third-party report with no probe.
+- [x] **RISK-384** An orchestrator picks the top model and effort for a big audit skill and burns the limits.
+  Category: agent failure.
+  Cause: An orchestrator told to run a Cloudflare security-audit skill with its recommended model and effort chose Fable High and ran unattended; a second user needed three 5-hour sessions even on Sonnet. A commenter adds that a skill that fans out into subagents re-reads context at full cost, since subagents get about a 5-minute prompt cache against about 1 hour for the main session on a subscription plan.
+  Event: A large audit skill runs with the top model and effort, fanned out into subagents.
+  Consequence: Three 5-hour limits and 50 percent of the weekly tokens went to 11 percent of the task.
+  Likelihood: 2 (two users).
+  Impact: 3 (a wasted session or spend).
+  Existing controls: None at 088a227c: only the agent files fix effort (Artemis high on Haiku; Metis, Athena, Heracles medium on Sonnet, `plugins/claudetto/agents/*.md:4-5`@088a227c); no rule names an audit skill.
+  Response: mitigate.
+  Actions: Build a lightweight architecture map (signatures, exports, data flow) kept as one summary, then audit one file at a time against it; use a cheaper model for the bulk file-by-file passes and the top model for the final cross-file review; run /context and turn off unused MCP servers.
+  Trigger: A skill that fans out into subagents, or an orchestrator that picks the top effort without asking.
+  Owner: cost.
+  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
+  Status: mitigated 2026-11-20 (issue #52): claudetto sets CLAUDE_CODE_SUBAGENT_MODEL to Sonnet, denies an Agent call that names Opus or Fable, and caps concurrent subagents at 3, so a fan-out no longer runs on the top model; the main session's model stays the user's choice.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/delegation/__tests__/spawn.test.ts ("refuses opus and fable by alias and id") and hooks/settings/__tests__/defaults.test.ts (concurrency cap 3 written) pass; hooks/settings/defaults.ts:44 sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5.
 
 ## Compaction and Memory
 
@@ -167,6 +212,7 @@
   - Trigger: any session.
   - Owner: cost
   - Status: closed 2026-11-18. The OpenSpec task counter left with the openspec block (ADR-0189).
+  - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e specText -e CLAUDE_CODE_ENABLE_TASKS -- plugins/` -> no match (exit 1).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (observed, grep miss).
 
 - [x] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
@@ -214,6 +260,7 @@
   - Trigger: a tool prompt or error that names an API key.
   - Owner: cost
   - Status: closed 2026-11-18. The cause, tools/decider-claim-check.ts, is gone (`ls tools` finds no directory; claim-check tooling is on OUT-024). The general conduct cure is recorded in RISK-379.
+  - Verified: 2026-11-19, claude 2.1.327, `ls tools/decider-claim-check.ts` -> No such file or directory.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 ## Statusline
@@ -270,6 +317,7 @@
   Trigger: A rule makes the agent install or run a tool the project lacks.
   Owner: cost
   Status: closed 2026-11-18. The rule file useTestPatterns.md is not in the tree (`find . -name 'useTestPatterns*'` finds none), so the cause left with the removed rule.
+  Verified: 2026-11-19, claude 2.1.327, `find . -name 'useTestPatterns*' -not -path './node_modules/*' | wc -l` -> 0.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (2.3 times, round 5 dev against stock); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (changelog hono figures); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (round 6); measured, 2026-11-16
 
 ## Agent Conduct Defects Reported by the User

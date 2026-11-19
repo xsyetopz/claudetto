@@ -21,7 +21,21 @@
 
 ## Delegation
 
-- [x] **RISK-423** Moved Out as OUT-2405: the item is a third-party report with no probe.
+- [x] **RISK-423** Fable runs fail in six reported ways.
+  - Category: model behaviour.
+  - Cause: Agreement bias in the verifier; Fable failure modes reported in threads (5.2): a subagent resumed as Fable when no subagent model is set (AdriftAtlas); 500K tokens of reading before two edits (KayBay80); Opus found mistakes in Fable plans in 8 sessions (Bitter_Physics_239); core-mechanism bugs in 4 of 5 plans (TiuTalk); a usage-cap cut to 117m weighted tokens to reach 100% against 230m before (DrewHoov).
+  - Event: A cross-model check passes without a real check; reported in several threads.
+  - Consequence: False confidence; wasted spend and wrong plans.
+  - Likelihood: 2
+  - Impact: 3
+  - Existing controls: Fable is never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
+  - Response: mitigate.
+  - Actions: Opus reviews Fable's suggestions and plans in the lead session; reproduce a finding before it counts; set a subagent model.
+  - Trigger: A verifier that agrees every time; a Fable session or a Fable-planned task.
+  - Owner: verification
+  - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
+  - Status: accepted 2026-11-20 (issue #52): the subagent path is closed (claudetto pins subagents to Sonnet and denies Fable), and measured Fable runs do not reproduce an unchecked done or ungrounded claim.
+  - Verified: reports/2026-11-20-research/register-probes/fable-results.txt, Fable 5.2 on claude 2.1.327, 2026-11-20: cure 5 (grounded claim) and cure 6 (verified done) of reports/2026-11-19-research/conduct/run.sh, vanilla 6 of 6, style 6 of 6 after a rescore of two runs whose answers met the cure (one cited tool.py:4 and said "no JSON output is implemented", one ran the test 4 times and deleted the counter file); cost $2.79. Subagent pin: hooks/delegation/__tests__/spawn.test.ts passes.
 
 ## Guards
 
@@ -57,6 +71,7 @@
   Trigger: A regex grader flags a report that holds check evidence.
   Owner: verification
   Status: mitigated
+  Verified: 2026-11-20, claude 2.1.327, git grep -n 'TESTISH' -- plugins/ -> no match (exit 1); the regex grader is not in the plugin.
   Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:132,139,141.
 
 - [x] **RISK-426** Router oracles pass on keywords, and cleaning out prose pins removes behaviour guards.
@@ -104,6 +119,7 @@
   Owner: verification
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xvc77s-i-rewrote-my-claude-code-sessi-20261116T051759Z.md:33,35,101,119 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvc77s/i_rewrote_my_claude_code_session_rules_41_times/>).
   Status: mitigated; the shipped style lines cover the exit-code half. Against a runner that matches zero tests and prints a pass line, the style arm told the user the run was empty in 5 of 6 runs and vanilla in 0 of 6, and the commit line stopped the commit in 6 of 6 (RISK-114, reports/2026-11-19-research/risks-verification, scenario A); the rerun line reran the flaky test and reported the split in 7 of 7 runs against 0 of 6 (reports/2026-11-19-research/conduct). The other causes (an unreadable-file reviewer, grep on JSON as binary) are one report and have no measured lever, so they are accepted at likelihood 2.
+  Verified: 2026-11-20, claude 2.1.327, read reports/2026-11-19-research/conduct/README.md:26 -> rerun line reran the flaky test and reported the split in 7 of 7 runs against 0 of 6 vanilla; the empty-runner counts (5 of 6, 6 of 6) have no result file in reports/2026-11-19-research/risks-verification (only run.sh) and were not re-checked.
 
 - [x] **RISK-429** Executor test that skips the delegation path.
   Category: agent
@@ -118,6 +134,7 @@
   Trigger: A model verdict from a /clear-and-paste test.
   Owner: verification
   Status: closed. Cause removed: plugins/claudetto ships no executor or delegation test target (no agents directory, 2026-11-18); the delegation block owns the path.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'executor' -- plugins/ -> no match; `ls plugins/claudetto/agents` -> Artemis.md Athena.md Heracles.md (an agents directory does exist now, so the status's "no agents directory" is stale; none is an executor test target).
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:219 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>).
 
 - [x] **RISK-430** Agent is sure without checking.
@@ -167,6 +184,7 @@
   Trigger: A graded run fails on test ids while the tests pass
   Owner: verification
   Status: closed by commits 00a08195 and d1efb8e1. Basis: measured
+  Verified: 2026-11-20, claude 2.1.327, git show --stat 00a08195 d1efb8e1 -> both commits exist and touch tools/bench/grade.ts (00a08195:tools/bench/grade.ts:89 has `rm -rf .venv node_modules && sh -c ${task.install}`); `git merge-base --is-ancestor` says neither is an ancestor of HEAD, they sit on origin/feat/2.1.325-rearchitecture, and tools/bench is absent on this branch.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:251.
 
 - [x] **RISK-433** The upstream fix is reachable from the agent's worktree during a graded run.
@@ -182,6 +200,7 @@
   Trigger: A recorded `git` command names a ref or sha past base
   Owner: verification
   Status: closed by commit d1efb8e1. Basis: measured
+  Verified: 2026-11-20, claude 2.1.327, git show d1efb8e1:tools/bench/grade.ts | grep -n 'git init' -> line 75 `git init -q ${repo}` inside checkoutBase (line 65); the commit is on origin/feat/2.1.325-rearchitecture, not an ancestor of HEAD, and tools/bench is absent on this branch.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:253.
 
 - [x] **RISK-434** Spec gaming: the agent edits the referee it is graded by.
@@ -228,6 +247,7 @@
   - Owner: verification
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
   - Status: mitigated; the style lines make the agent report "passes" only after a run that could fail (7 of 7 against 0 of 6, conduct cure 6) and commit only after a run that ran tests (6 of 6 stops, RISK-114). The Stop claim check named under Existing controls is gone from plugins/claudetto at HEAD (`grep -rn "Probe each claim" plugins/claudetto*` finds nothing), so it is not credited. No prompt removes this risk (Self-correction without external feedback fails), so the remainder is accepted.
+  - Verified: 2026-11-20, claude 2.1.327, git grep -n 'Probe each claim' -- plugins/ -> no match (exit 1); reports/2026-11-19-research/conduct/README.md:26 -> 7 of 7 against 0 of 6 for the rerun line.
 
 - [x] **RISK-437** Skipped-part completion.
   Category: Agent behaviour.
@@ -257,6 +277,7 @@
   Actions: A Stop hook checks the last reply for tool-call syntax with no matching `tool_use` block in the transcript and tells the agent to re-issue. A scan by pattern alone is out (see OUT item on regex Stop checks; user decision, 2026-11-16); a check of transcript `tool_use` blocks against reply claims is the allowed form.
   Trigger: The last reply holds tool-call syntax and no `tool_use` block; A reply says done and the turn holds no tool_use block for the named action.
   Owner: verification. Status: closed. The only cure was a Stop hook scanning the reply by pattern, which the product rules forbid (no regex Stop check); one report, not reproduced on 2.1.327.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'tool-call syntax' -- plugins/ -> no match; the only Stop handler is notice/stop.ts, which checks a cut reply tail (stop.ts:43), not tool-call text.
   Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2; not located: the system-card line. Conflict check: the cure scans reply text at Stop and may fall under "No regex Stop check"; the lead decides; unresolved: no source line holds a tool call written as text; the nearest source, the Opus 5.5 prompting guide thread (external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2), says only that thinking cannot be turned off and that unattended agents stop early
 
 - [x] **RISK-439** Moved Out as OUT-2408: the part is not in plugins/.
@@ -361,10 +382,9 @@
   - Actions: Bump the version at the start of each cycle; check the installed version before a test on hardware; claudetto shall have the agent run each mechanical release chore on the first try, by a script, without being told (see ADR [ADR-0049](../adr/0049-version-bump-by-script.md)); Bump the patch version automatically on the first try.
   - Trigger: An installed build whose version equals the last release; The agent installs or tags a build; A release starts.
   - Owner: verification
-  - Status: open.
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2949`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3033`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections and popup answer); reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
-  Status: partial: `just release <plugin>` bumps the patch first; the dev-install recipe must bump too before this closes.
-  Status: moved Out as OUT-2776: `just release` bumps the patch first, and the repo has no other install recipe (justfile).
+  Status: accepted 2026-11-20 (issue #52): measured runs do not reproduce the fault when the repo names its bump script, and the style line tied vanilla (ADR-0177); `just release` bumps the patch first, and the repo has no other install recipe (justfile).
+  Verified: reports/2026-11-19-research/risks-verification/run.sh scenario C, Sonnet 5.5 on claude 2.1.327, 2026-11-19: on the fault prompt with a CONTRIBUTING that names the bump script, vanilla bumped the version before the install in 3 of 3 runs and the style line tied at 3 of 3 (recorded in commit b7790851a).
 
 - [x] **RISK-446** The agent calls a fix proven after a run that cannot show the failure, and skips the full run.
   - Category: conduct.
@@ -380,6 +400,7 @@
   - Owner: verification
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:138; reported, user, 2026-11-10.
   - Status: mitigated for the rerun half: the shipped style line reran a flaky test and reported the split in 7 of 7 Sonnet 5.5 runs against 0 of 6 vanilla (conduct, cure 6). Proving a load-only failure under that load needs a loaded machine that no short run reproduces; at likelihood 1 from one report that part is accepted.
+  - Verified: 2026-11-20, claude 2.1.327, read reports/2026-11-19-research/conduct/README.md:26 -> reran the flaky test and reported the split in 4 of 4 style runs (7 of 7 with the earlier 3) against 0 of 6 vanilla.
 
 ## Agent Habits
 
@@ -396,6 +417,7 @@
   Trigger: A test count that doubles in two weeks.
   Owner: verification
   Status: closed. Cause removed: no TDD skill pack and no 2,600-test suite remain; plugins/claudetto holds 25 tests (`claude plugin test`, 2026-11-18).
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'tdd\|superpowers' -- plugins/ -> no match; `~/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto` -> 130 pass, 0 fail across 23 files (the status's count of 25 is stale; far below 2,600).
   Source: external/2026-11-16/reddit.com-r-claudecoding-comments-1xxate6-tldr-psa-superpowers-skill-w-20261116T045402Z.md:31,33,52,54 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xxate6/tldr_psa_superpowers_skill_with_opus_ruined_my/>).
 
 ## Spec Drift
@@ -413,6 +435,7 @@
   Trigger: A second failed port attempt.
   Owner: verification
   Status: closed. Cause removed: the rebuild ports no UI; REQ-VERIFICATION-097 is out under ADR-0177.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'REQ-VERIFICATION-097' -- plans/rebuild/prd/README.md -> line 3234 is OUT-564, "Out (REQ-VERIFICATION-097, ADR-0177)".
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:49; external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbmm9l/claude_opus_having_a_hard_time_implementing_a_spec/>).
 
 ## Model Variability
@@ -428,6 +451,7 @@
   Actions: hard rules in hooks. The old cure "a daily internal benchmark per model" is Out under the settled no-benchmarks decision (user decision, 2026-11-16).
   Trigger: a user report of a sudden quality change.
   Owner: verification. Status: closed. Accepted as is: the old cure (a daily benchmark per model) is out under ADR-0087; nothing in the plugin can change model quality.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'benchmark' -- plugins/ -> no match (exit 1); no daily benchmark ships.
   Source: external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69 (reported, about 59 threads on perceived regressions); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:97 (Sonnet 5.5 edit mode, n=2 there, one report in the old item).
 
 ## Agent Conduct
@@ -474,7 +498,21 @@
 
 ## Fable and Opus Behaviour
 
-- [x] **RISK-452** Moved Out as OUT-2406: the item is a third-party report with no probe.
+- [x] **RISK-452** Fable 5.2 refers to content that does not exist ("here's your answer above/below", "x prior questions still await your call") and says a PDF was updated without checking the write.
+  Category: product fault
+  Cause: The model may confuse reasoning with output
+  Event: The reply points at an answer that is not there; a write is claimed unchecked
+  Consequence: An extra turn; a false done
+  Likelihood: 2 (two authors)
+  Impact: 2
+  Existing controls: none found at 088a227c
+  Response: mitigate
+  Actions: Check each write before reporting it done
+  Trigger: A reference to an earlier answer that does not exist
+  Owner: verification
+  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+  Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
+  Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
 
 ## Verification and Tests
 
@@ -491,6 +529,7 @@
   Trigger: A label set that was never re-judged
   Owner: verification
   Status: closed. Cause removed: the hand-labelled ground-truth sets left with the claim check and ledger; the lab scores from transcript counts (ADR-0187).
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'ground-truth\|ground_truth\|groundtruth' -- plugins/ -> no match (exit 1).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:33; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:35; external/2026-11-10/reddit.com-r-claudeai-comments-1xsg651-i-spent-three-weeks-measuring-wh-20261110T093243Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsg651/i_spent_three_weeks_measuring_whether_my_own/>).
 
 - [x] **RISK-454** A test inherits the environment of a git hook and flips core.bare to true in the real repo; a screenshot script leaves 157 Chrome profiles in temp.
@@ -702,6 +741,7 @@
   Trigger: a failed hooks guard during verify.
   Owner: verification
   Status: closed 2026-11-19. Setup fills two deny rules, `Bash(git config *core.*ooks*ath*)` and `Bash(git *-c core.*ooks*ath*)` (`hooks/guards/rules.ts`, fill version 4). Probe on 2.1.327 with those rules: `git config core.hooksPath`, `git -c core.hooksPath=` and `true && git -C . -c core.HooksPath=` are denied; `git status` runs. The rules apply from the session after the fill.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n 'core\.\*ooks' -- plugins/ -> plugins/claudetto/hooks/guards/wall/rules.ts:40 and :41 hold the two deny rules; the denial probe in the status was not re-run.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; observed in transcript, 2026-11-13.
 
 ## Lead Agent Conduct
@@ -780,6 +820,7 @@
   - Trigger: The check runs in the sandbox.
   - Owner: verification
   - Status: closed. Cause removed: `just check` and its PTY test left the tree (no justfile, 2026-11-18).
+  - Verified: 2026-11-20, claude 2.1.327, git ls-files | grep -i 'claude-tty' -> no match; `just --summary` -> bump release verify (no check recipe; a justfile does exist, so "no justfile" in the status is stale).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
 - [x] **RISK-473** A bulk one-call text pass truncates.
@@ -811,6 +852,7 @@
   - Trigger: A cleanup of temp output in a repo.
   - Owner: verification
   - Status: closed. Cause removed: the eval run and its test preload (.last-run) left the tree (no evals directory, 2026-11-18).
+  - Verified: 2026-11-20, claude 2.1.327, git grep -n 'last-run' -- plugins/ -> no match; `ls plugins/claudetto/evals` -> no such directory.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031).
 
 - [x] **RISK-475** A commitlint failure on pushed commits of a retired type.
@@ -826,6 +868,7 @@
   - Trigger: just lint runs.
   - Owner: verification
   - Status: closed. Cause removed: no commitlint config exists in the tree (2026-11-18); the retired commit type needs no action.
+  - Verified: 2026-11-20, claude 2.1.327, git ls-files | grep -i commitlint -> no match (exit 1); `ls .commitlintrc* commitlint.config.*` -> no such files.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
 ## Conduct Faults from the Rearchitecture Sessions

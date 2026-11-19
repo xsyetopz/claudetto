@@ -14,10 +14,9 @@
   Actions: log through $.ui.log or rethrow at each site.
   Trigger: a catch clause with no bound error in plugins/*/hooks.
   Owner: kernel.
-  Status: open.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
-  Verified 2026-11-19: every catch site in claudetto and claudetto-you-should-know writes its error to the debug log through a fault() helper; claudetto compact.test.ts and you-should-know fault.test.ts each fail on a mutant without the log (claude plugin test: 42 and 63 pass, 0 fail).
-  Status: mitigated 2026-11-19: every catch site logs through fault() (Verified line).
+  Status: mitigated 2026-11-20 (issue #52): every catch site in claudetto and claudetto-you-should-know binds its error and writes it to the debug log through fault(), except two that say why in a comment (settings.ts parseSettings, whose callers log the undefined result, and you-should-know fault.ts, the logger's own last-resort catch).
+  Verified: 2026-11-20, `git grep -nE "\.catch\(" -- plugins/ ':!*__tests__*' | grep -v "fault("` lists only catches whose handler calls fault() or swallow(), and the bare-catch grep lists only the two commented sites; `claude plugin test plugins/claudetto` on 2.1.327, 132 pass twice, including redact.test.ts "a scanner that throws leaves a debug line" and wall.test.ts "a failed HOME read leaves a debug line", which cover the last two sites (redact.ts:112, wall.ts:190).
 
 ## Verification and Honesty
 
@@ -51,6 +50,7 @@
   Actions: an instruction saying the agent need not obey that part of the system prompt got around it (reported by one user, not checked as a model behavior; on 2.1.327 a code search for `Should I continue?` and `just "continue?"` finds no system-prompt text that causes the reply).
   Trigger: a reply is only "continue?".
   Owner: kernel. Status: closed; code search, claude 2.1.327, 2026-11-18, cc-inspect search "Should I continue?": no hit, so no stock text causes a "continue?"-only reply.
+  Verified: 2026-11-20, claude 2.1.327, `grep -a -c "Should I continue?" ~/.local/share/claude/versions/2.1.327` -> 0 matches in the 2.1.327 binary, so no stock text causes a "continue?"-only reply.
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
 
 - [x] **RISK-004** Gate times out on every tool while the ledger read runs.
@@ -66,6 +66,7 @@
   - Trigger: a hook whose wait exceeds `next.budget.remainingMs`.
   - Owner: kernel
   - Status: closed; claude 2.1.327, 2026-11-18, `grep -rnE "PreToolUse|UserPromptSubmit|pin|decision:" plugins/claudetto/hooks` (non-test files): no hit, so the gate and its ledger read are gone.
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:742; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:743; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:744; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:745; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:746 (measured).
 
 
@@ -82,6 +83,7 @@
   - Trigger: a constraint in the prompt that no user message holds; a pinned line that names a branch or path the user did not name as a limit.
   - Owner: kernel
   - Status: closed; same grep (PreToolUse, UserPromptSubmit, pin): no hit, so no claudetto hook adds a constraint.
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09).
 
 - [x] **RISK-007** The pin hook reads the first call after a compaction resume as a user remark and denies it.
@@ -97,6 +99,7 @@
   - Trigger: a denial follows a compaction resume.
   - Owner: kernel
   - Status: closed; same grep: no pin hook in plugins/claudetto/hooks.
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Context Loss and Handover
@@ -114,6 +117,7 @@
   - Trigger: a reminder added with no test.
   - Owner: kernel
   - Status: closed; same grep: no UserPromptSubmit or PreToolUse reminder is injected, which is the cure (no blanket reminder).
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   - Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:32-36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:58; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:16; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:35; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:121; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:126.
   - Conflict: Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
 
@@ -130,6 +134,7 @@
   Actions: none beyond the settled decision.
   Trigger: n/a.
   Owner: kernel. Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto for `Stop` hooks that block: the only classic.Stop handler (renewal.ts:41) returns next(e) and blocks nothing, so no regex Stop check ships.
+  Verified: 2026-11-20, claude 2.1.327, `git grep -n 'classic.Stop"' -- plugins/ ':!*__tests__*'` -> one match, renewal.ts:46, whose body returns next(e) and blocks nothing (the status cites line 41; the handler now sits at line 46).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:11-13; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:33; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:34; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:95.
 
 ## Guards and Destructive Actions
@@ -145,6 +150,7 @@
   Actions: Repair in a `tool.call` handler; never reflow text in PreToolUse.
   Trigger: An `Edit` fails on `old_string` after a text-rewriting hook.
   Owner: kernel. Status: closed; same grep: no sentence-splitting or reflowing hook remains in plugins/claudetto/hooks.
+  Verified: 2026-11-20, claude 2.1.327, `git grep -niE "reflow|sentence-split|splitSentence" -- plugins/` -> no match.
   Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:51; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:141.
 
 ## Agent Conduct
@@ -166,6 +172,7 @@
   - Trigger: a gate denial or confirmation on a read-only command; a gate block on an edit that an earlier user message ordered.
   - Owner: kernel
   - Status: closed; same grep: no Bash gate exists in plugins/claudetto/hooks; guards-block gates carry their own risks.
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match; `git grep -niE "remark|network location|classify" -- plugins/ ':!*__tests__*'` -> no match.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (claudetto on Claude Code 2.1.319); observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
 - [x] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
@@ -198,6 +205,7 @@
   Trigger: a hook text inside a nested run.
   Owner: kernel.
   Status: closed; same grep: no UserPromptSubmit hook in plugins/claudetto/hooks.
+  Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 
@@ -240,7 +248,6 @@
   - Owner: kernel
   - Status: closed for claudetto's own guards; the hook fail-open rule stays a fact of core. Reported on 2.1.312 with 10 hooks.
   - Verified: claude 2.1.327, 2026-11-19. Closing argument: claudetto's deny guards are settings `permissions.deny` and sandbox rules that core enforces, not hooks, so a crashed or missing hook cannot turn them off (plugins/claudetto/hooks/guards/rules.ts DENY, and the `registerGuards` comment in guards.ts: "the settings rules need none, because Claude Code enforces them"). A paired run shows core enforcing the rule: `claude -p --model claude-sonnet-5-5 --permission-mode bypassPermissions --settings '{"permissions":{"deny":["Bash(git push --force*)"]}}'` on "run `echo hi && git push --force origin main`" returned `permission_denials` of length 1, and neither command ran, also inside the `&&` compound and under bypassPermissions (reports/2026-11-19-research/risks-kernel/run.sh seed w1, 1 run, -e.03). The only guard hooks are the memory hold (memory.ts) and the Bash wrap (shell.ts). The wrap (shell.ts `registerShell`) rewrites a command only when `1tool.check` on the model's own command returns `allow`; any other verdict runs it unwrapped, so the dialog, saved rules and deny rules see the model's command; its `.catch` logs through `fault` and calls `next(e)` with the original event, so a throw runs the command unwrapped. Tests: guards/shell.test.ts (3 pass: wrapped when allowed, unwrapped when the check says ask, limit 0). Two throwaway tests in a copy under $TMPDIR: a `tool.check` handler that throws let the call reach the tool as written (pass); with a `deny` verdict the call reached no tool run at all, neither wrapped nor unwrapped (my expectation of an unwrapped run failed, and the outcome is the stronger one: the engine refused the call). The wrap and the hold lose only convenience (stdin closed, time limit, memory floor) when they fail; neither is a deny guard. Residual: a user-added `Bash(...)` deny pattern still misses alternate command forms (core matching, not a hook), as the Cause lists.
-  - Status: open. Reported on 2.1.312 with 10 hooks.
   - Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19 (the judge verdict there is "rejected" for the claim as a claudetto fact; the exit-code rule itself is the documented behaviour); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:28; not located: the 2.1.305 unknown-type line and the PostToolUse exit-2 line; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326>; external/2026-10-17/export-Your deny rule for git push doesn't stop -git -C . push-. Four ways Claude Code guards silently do n.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5tbps/>); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:19; external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:40; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:69; external/2026-11-03/reddit.com-r-claudeai-comments-1xjaly2-tested-10-claude-code-hooks-in-a-20261103T145135Z.md:67 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjaly2/tested_10_claude_code_hooks_in_a_throwaway/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:792 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>) (release notes).
 
 ## Guards and Sandbox
@@ -258,6 +265,7 @@
   - Trigger: A denial of `git log` or `git status` after a message with no task; a denial with that reason while a work order stands; a user message that mixes a question with an instruction; A gate block on an edit that an earlier user message ordered.
   - Owner: kernel
   - Status: closed; same grep: no hook classifies a user message as remark or work.
+  - Verified: 2026-11-20, claude 2.1.327, `git grep -niE "remark|classify" -- plugins/ ':!*__tests__*'` -> no match, and the grep for PreToolUse|UserPromptSubmit in non-test plugin sources -> no match.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51; reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048 (reported, user, 2026-11-13).
 
 ## Conduct and Product Risks from Chunk c05
@@ -292,6 +300,7 @@
   Trigger: A pinned line names a branch or path that the user did not name as a limit.
   Owner: kernel
   Status: closed; same grep: no pin hook.
+  Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269, observed in transcript, 2026-11-09.
 
 ## Conduct
@@ -378,6 +387,7 @@
   Trigger: A file name shares a hyphen prefix with another.
   Owner: kernel
   Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` restricted to source files: no hyphenated file family in plugins/claudetto/hooks (files: builtins/, handover/, settings/).
+  Verified: 2026-11-20, claude 2.1.327, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` -> no output.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (state: 91 files; reported, user: unacceptable); measured, 2026-11-16
 
 ## Product and Tooling
@@ -394,7 +404,8 @@
   - Actions: Say each instruction once.
   - Trigger: Two prompt lines cover one case.
   - Owner: kernel
-  - Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto`: no output style or prompt text file exists, so no two prompt rules conflict.
+  - Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5; the one overlap found in the shipped prompts was measured and resolves the way the text says.
+  - Verified: 2026-11-20, read of plugins/claudetto/output-styles/claudetto.md and agents/*.md: the ask rules (style lines 8 and 16) and Heracles' "ask only when you cannot go on" cover different readers (main session, subagent); the defect line ("fix it at its cause", style line 20) and the scope line (style line 36) both cover a bug in a sibling repository, and with both present Sonnet 5.5 on claude 2.1.327 followed the scope line in 6 of 6 runs (reports/2026-11-20-research/register-probes/README.md, probes 12 and 19).
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
 - [x] **RISK-481** A mod model call fails at a usage limit and the hook throws.
@@ -410,6 +421,7 @@
   - Trigger: a hook error that names a usage limit.
   - Owner: kernel
   - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: 25 pass, including "session.compact > a failed fork falls back to the transcript extract". The test does not log once per window.
+  - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > a failed fork falls back to the transcript extract" and "session.compact > a throwing fork leaves one debug line and still hands over".
   - Source: reports/2026-11-18-research/surface.md:59 (release notes, claude 2.1.327, 2026-11-18).
 
 - [x] **RISK-488** A Bash call hangs for 120 seconds on stdin.
@@ -425,4 +437,5 @@
   - Trigger: a Bash result that says it was moved to the background after 120 s.
   - Owner: kernel
   - Status: closed 2026-11-19. `hooks/guards/stdin.ts` runs each Bash command as `{ cmd\n} </dev/null`; the model's command stays in history, so the cache prefix holds. Probe on 2.1.327 (cc-inspect cli, Bash `cat <<EOF >/dev/null … EOF; wc -l`): vanilla moved the call to the background and did not end in 60 s; with the plugin `wc -l` printed 0 in the same second. An emptied glob variable (CTX-838) now reads EOF the same way.
+  - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> 130 pass, 0 fail, including "stdin guard > reads stdin from /dev/null and keeps a heredoc intact"; the guard is plugins/claudetto/hooks/guards/shell/stdin.ts:10 (the status cites hooks/guards/stdin.ts, which does not exist); `bash` on `{ cat <<EOF >/dev/null ... EOF; wc -l } </dev/null` -> prints 0 and exits 0.
   - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.

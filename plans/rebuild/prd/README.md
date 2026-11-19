@@ -8574,295 +8574,121 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Source: external/2026-11-18/reddit.com-r-promptengineering-comments-1xwnfr7-i-always-started-prompt-20261117T182552Z.md:31-38,96-102 (url: <https://www.reddit.com/r/PromptEngineering/comments/1xwnfr7/i_always_started_prompts_with_you_are_an_expert_i/>); reports/2026-11-18-research/dossier.md:114; prd/reply.md REQ-REPLY-134.
   Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
 
-- [x] **OUT-2105** Out (needs a paid model run or a benchmark; moved from RISK-230 in plans/rebuild/risk-register/reply.md): Claude uses habit over the repo, or a workaround in place of a fix.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2105** Returned to the register as RISK-230 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2106** Out (needs a paid model run or a benchmark; moved from RISK-231 in plans/rebuild/risk-register/reply.md): Claude writes jargon names and low-value tests.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2106** Returned to the register as RISK-231 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2107** Out (needs a paid model run or a benchmark; moved from RISK-232 in plans/rebuild/risk-register/reply.md): Claude blamed "the sandbox" for a pty failure without checking what enforced it, and misread the local time zone (F9).
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2413.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2107** Returned to the register as RISK-232 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2108** Out (needs a paid model run or a benchmark; moved from RISK-238 in plans/rebuild/risk-register/reply.md): The agent names a fix for a failure from a guess and ignores that the step worked before.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2693; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/d9e65e3e-7eda-4061-b888-f957adb96dd2.jsonl:2713, reported, user, 2026-11-09.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2108** Returned to the register as RISK-238 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2109** Out (needs a paid model run or a benchmark; moved from RISK-242 in plans/rebuild/risk-register/reply.md): Named forbidden words reappear in output.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-22/reddit.com-r-chatgpt-comments-1tpk1qk-how-to-avoid-the-pink-elephant-pa-20261022T004323Z.md:439 (url: <https://www.reddit.com/r/ChatGPT/comments/1tpk1qk/how_to_avoid_the_pink_elephant_paradox/>).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2109** Returned to the register as RISK-242 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2110** Out (needs a paid model run or a benchmark; moved from RISK-253 in plans/rebuild/risk-register/reply.md): Unfounded pushback and pedantry.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xeiso3-why-does-claude-never-want-to-w-20261026T064416Z.md:33 (url: <https://www.reddit.com/r/Anthropic/comments/1xeiso3/why_does_claude_never_want_to_write_rust/>) (reported); external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>) (reported)
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2110** Returned to the register as RISK-253 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2111** Out (needs a paid model run or a benchmark; moved from RISK-255 in plans/rebuild/risk-register/reply.md): Credit misassignment.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/specs/claim-check/spec.md:15,97,102
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2111** Returned to the register as RISK-255 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2112** Out (needs a paid model run or a benchmark; moved from RISK-257 in plans/rebuild/risk-register/reply.md): Style leak and verbosity.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:19 (reported); external/2026-10-31/reddit.com-r-claude-comments-1xf2o8a-why-does-claude-write-in-such-conv-20261031T083623Z.md:418 (url: <https://www.reddit.com/r/claude/comments/1xf2o8a/why_does_claude_write_in_such_convoluted_sentences/>) (reported)
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2112** Returned to the register as RISK-257 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2113** Out (needs a paid model run or a benchmark; moved from RISK-258 in plans/rebuild/risk-register/reply.md): Comment inflation.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/>) (reported). Not located: the quoted system-prompt line itself.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2113** Returned to the register as RISK-258 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2114** Out (needs a paid model run or a benchmark; moved from RISK-260 in plans/rebuild/risk-register/reply.md): Agent repeats a stale status and asks again for a step the user already did.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2114** Returned to the register as RISK-260 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2115** Out (needs a paid model run or a benchmark; moved from RISK-261 in plans/rebuild/risk-register/reply.md): Agent treats a denied or cancelled prompt as the user's decision.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30631`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30657`).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2115** Returned to the register as RISK-261 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2116** Out (needs a paid model run or a benchmark; moved from RISK-263 in plans/rebuild/risk-register/reply.md): Over-deferral: doable work is handed back to the user.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:25,37; openspec/changes/archive/2026-11-16-2-1-323/design.md:19; openspec/changes/archive/2026-11-16-2-1-323/proposal.md:8; external/please-use-me-often/agent-terms/TERMS-OF-SERVICE.md:283; reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2034`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2129`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2820`); reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3260`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3430`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:6389`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:259`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25664`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26099`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:26102`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36218`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:36574`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:1395`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:2622`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; observed in transcript, 2026-11-13; observed in transcript, 2026-11-14; reported, user, 2026-11-13; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36278; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36369; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37351; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14604; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6321; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:48 (three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:794 (measured); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313 (reported, user, 2026-11-11); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/5709ef73-f884-4289-b648-44eab2b84d3b.jsonl:11313; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2567, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1257, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7834, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:7915, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9489, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:9668, reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:8, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:7696, reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-16 04:41 UTC, do all but a login yourself (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8321); reported, user, 2026-11-14 02:48 UTC, nobody asked you to defer to the user (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31470): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (reported, user, 2026-11-11).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2116** Returned to the register as RISK-263 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2117** Out (needs a paid model run or a benchmark; moved from RISK-265 in plans/rebuild/risk-register/reply.md): Asking leave to fix its own bug.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:36,50; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2117** Returned to the register as RISK-265 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2118** Out (needs a paid model run or a benchmark; moved from RISK-266 in plans/rebuild/risk-register/reply.md): An agent asks the user for a choice that is the agent's own, or leaves a question open that it can research.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:981, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:11422, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:7257, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:2442, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2118** Returned to the register as RISK-266 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2119** Out (needs a paid model run or a benchmark; moved from RISK-268 in plans/rebuild/risk-register/reply.md): The agent ships a change and names a remaining risk it introduced.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, reported, user, 2026-11-11.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2119** Returned to the register as RISK-268 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2120** Out (needs a paid model run or a benchmark; moved from RISK-272 in plans/rebuild/risk-register/reply.md): The agent invents a website URL and a home-made format.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2120** Returned to the register as RISK-272 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2121** Out (needs a paid model run or a benchmark; moved from RISK-273 in plans/rebuild/risk-register/reply.md): The agent installs a needed library into a temp folder and leaves it there.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2121** Returned to the register as RISK-273 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2122** Out (needs a paid model run or a benchmark; moved from RISK-274 in plans/rebuild/risk-register/reply.md): Agent keeps writing after the user says stop.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37361; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37375; unresolved: the old plan item names no source; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:44 records a hook that blocked a subagent after a mid-turn message, a different fault; observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2122** Returned to the register as RISK-274 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2123** Out (needs a paid model run or a benchmark; moved from RISK-275 in plans/rebuild/risk-register/reply.md): The agent pins an older dependency to make a branch pass.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2123** Returned to the register as RISK-275 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2124** Out (needs a paid model run or a benchmark; moved from RISK-276 in plans/rebuild/risk-register/reply.md): The agent ends a reply with a note on what it has not done.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6502; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2124** Returned to the register as RISK-276 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2125** Out (needs a paid model run or a benchmark; moved from RISK-277 in plans/rebuild/risk-register/reply.md): The agent states what a source says without reading the dossier first.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2125** Returned to the register as RISK-277 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2126** Out (needs a paid model run or a benchmark; moved from RISK-280 in plans/rebuild/risk-register/reply.md): The agent leaves the user's scope to work in other repos.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:2234 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1536 (observed in transcript, 2026-11-14).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2126** Returned to the register as RISK-280 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2127** Out (needs a paid model run or a benchmark; moved from RISK-281 in plans/rebuild/risk-register/reply.md): The agent ends its turn with startable steps undone while a worker runs.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1435 (reported, user, 2026-11-14).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2127** Returned to the register as RISK-281 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2128** Out (needs a paid model run or a benchmark; moved from RISK-282 in plans/rebuild/risk-register/reply.md): The agent installs a dependency into a temp folder and leaves it there.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2128** Returned to the register as RISK-282 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2129** Out (needs a paid model run or a benchmark; moved from RISK-283 in plans/rebuild/risk-register/reply.md): The agent invents an identifier or a format where a standard exists.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2129** Returned to the register as RISK-283 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2130** Out (needs a paid model run or a benchmark; moved from RISK-284 in plans/rebuild/risk-register/reply.md): The agent reads Claude documentation through WebFetch.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2130** Returned to the register as RISK-284 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2131** Out (needs a paid model run or a benchmark; moved from RISK-285 in plans/rebuild/risk-register/reply.md): The agent picks a method for ease where the user gave none.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7362 (reported, user, 2026-11-16).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2131** Returned to the register as RISK-285 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2132** Out (needs a paid model run or a benchmark; moved from RISK-286 in plans/rebuild/risk-register/reply.md): Agent invents unrequested files and treats its own notes as evidence.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7493); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10615) (observed in transcript, 2026-11-16).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2132** Returned to the register as RISK-286 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2133** Out (needs a paid model run or a benchmark; moved from RISK-287 in plans/rebuild/risk-register/reply.md): Agent invents wording, order, or priority and attributes it to the user.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10891); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:11008) (reported, user, 2026-11-16).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2133** Returned to the register as RISK-287 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2134** Out (needs a paid model run or a benchmark; moved from RISK-288 in plans/rebuild/risk-register/reply.md): Agent removes or disables a feature on its own judgment.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12 (reported, user, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186; reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186) (observed in transcript, 2026-11-10).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2134** Returned to the register as RISK-288 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2135** Out (needs a paid model run or a benchmark; moved from RISK-290 in plans/rebuild/risk-register/reply.md): The agent states a guess, a cause, or an advice as fact, with no check behind it.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:51; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:432 (the push is inferred from the reflog entry); plugins/claudetto/hooks/hygiene/branches.ts:175@088a227c (cited by the source as the only push); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186 (reported, user, 2026-11-10); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1186); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2135** Returned to the register as RISK-290 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2136** Out (needs a paid model run or a benchmark; moved from RISK-291 in plans/rebuild/risk-register/reply.md): Agent skips files the user points at.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1446) (reported, user, 2026-11-10; observed in transcript, 2026-11-10).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2136** Returned to the register as RISK-291 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2137** Out (needs a paid model run or a benchmark; moved from RISK-292 in plans/rebuild/risk-register/reply.md): Agent shows sycophancy, laziness, flow stops, and model inference in place of objective checks.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2137** Returned to the register as RISK-292 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2138** Out (needs a paid model run or a benchmark; moved from RISK-294 in plans/rebuild/risk-register/reply.md): The agent lists decisions for the user without the context to decide.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:927, reported, user, 2026-11-09 (reported, user, 2026-11-09).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2138** Returned to the register as RISK-294 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2139** Out (needs a paid model run or a benchmark; moved from RISK-295 in plans/rebuild/risk-register/reply.md): The agent installs a needed dependency into a temp folder and leaves it there.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2139** Returned to the register as RISK-295 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2140** Out (needs a paid model run or a benchmark; moved from RISK-296 in plans/rebuild/risk-register/reply.md): The agent invents a website URL for a schema $id.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2140** Returned to the register as RISK-296 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2141** Out (needs a paid model run or a benchmark; moved from RISK-299 in plans/rebuild/risk-register/reply.md): An agent stops and reports while the user's open issues remain.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, latest instructions); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10452 (handoff of 2026-11-15, goal); reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2141** Returned to the register as RISK-299 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2142** Out (needs a paid model run or a benchmark; moved from RISK-304 in plans/rebuild/risk-register/reply.md): The model pads a correct answer with an objection it invented.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:153; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:159; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:171; external/2026-10-26/reddit.com-r-claudeai-comments-1xfa39o-is-claude-the-least-yesman-llm-20261026T061325Z.md:305 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfa39o/is_claude_the_least_yesman_llm/>).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2142** Returned to the register as RISK-304 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2143** Out (needs a paid model run or a benchmark; moved from RISK-305 in plans/rebuild/risk-register/reply.md): The model opens with "One small pushback...." or closes with "All your issues were addressed ... except these 3 things".
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:59; external/2026-10-27/reddit.com-r-claude-comments-1xg4caj-it-would-not-be-a-day-that-ends-in-20261027T065403Z.md:67 (url: <https://www.reddit.com/r/claude/comments/1xg4caj/it_would_not_be_a_day_that_ends_in_y_without/>).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2143** Returned to the register as RISK-305 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2144** Out (needs a paid model run or a benchmark; moved from RISK-306 in plans/rebuild/risk-register/reply.md): A rule "when you agree, add the strongest opposing view" turns into a template.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xft259-if-your-challenge-my-assumptions-20261028T061202Z.md:65 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft259/if_your_challenge_my_assumptions_instruction/>).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2144** Returned to the register as RISK-306 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2145** Out (needs a paid model run or a benchmark; moved from RISK-310 in plans/rebuild/risk-register/reply.md): Verbal tics fill replies: "load-bearing", a favourite emoji as sign-off at the end of every message, "Don't overthink this" on greetings, and the Opus 5 style ("The reframe that changes everything", counts such as 79/79 and 139/139 gates with "CLOSED", "I won't let this go unsaid", "thats on me", ending "For now, get some rest").
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 1), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:121; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:37; external/2026-11-11/reddit.com-r-claudexplorers-comments-1spqf7f-claudeisms-i-love-20261111T180126Z.md:49 (url: <https://www.reddit.com/r/claudexplorers/comments/1spqf7f/claudeisms_i_love/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:108; external/2026-11-13/reddit.com-r-claudeai-comments-1xtyq0y-fable-52-wakes-up-opus-55-20261112T231243Z.md:116 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtyq0y/fable_52_wakes_up_opus_55/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:278; external/2026-11-10/reddit.com-r-claudeai-comments-1xs2wdl-fable-52-review-here-is-whats-ac-20261110T093116Z.md:282 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xs2wdl/fable_52_review_here_is_whats_actually_different/>).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2145** Returned to the register as RISK-310 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2146** Out (needs a paid model run or a benchmark; moved from RISK-333 in plans/rebuild/risk-register/reply.md): A corrective instruction against a conduct fault swings the agent to the opposite fault.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:136; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:158 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>)
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2146** Returned to the register as RISK-333 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2147** Out (needs a paid model run or a benchmark; moved from RISK-335 in plans/rebuild/risk-register/reply.md): A question or casual remark is taken as an instruction to act.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1xl33ox-why-is-claude-so-narcissist-20261102T083024Z.md:123 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xl33ox/why_is_claude_so_narcissist/>); external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:465 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xr0drc/whats_the_one_prompt_you_keep_coming_back_to/>)
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2147** Returned to the register as RISK-335 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2148** Out (needs a paid model run or a benchmark; moved from RISK-337 in plans/rebuild/risk-register/reply.md): The agent takes a handoff or goal file as orders.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: the user transcript lines cited above (user orders, 2026-11-16); those logs are absent from this machine and were not re-read.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2148** Returned to the register as RISK-337 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2149** Out (needs a paid model run or a benchmark; moved from RISK-338 in plans/rebuild/risk-register/reply.md): The agent narrates between tool calls and comments on its own replies.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:57; reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4204): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (reported, one user: "meta-commentary and needless narration").
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2149** Returned to the register as RISK-338 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2150** Out (needs a paid model run or a benchmark; moved from RISK-339 in plans/rebuild/risk-register/reply.md): The agent opens by agreeing or apologising, and confesses and promises, even in the reply meant to list that fault.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:16 (read; three reports); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:53; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10917); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10928); reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401); reported, user, 2026-11-09 22:09 UTC, no padding, validation, or narration of faults (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7); reported, user, 2026-11-10 09:34 UTC, no meta-commentary or needless narration (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:2379); reported, user, 2026-11-16 14:20 UTC, no announcing of actions (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6264): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480 (the user: "that is yet another fault" after the handoff lists the opener) (reported, two instances).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2150** Returned to the register as RISK-339 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2151** Out (needs a paid model run or a benchmark; moved from RISK-340 in plans/rebuild/risk-register/reply.md): The agent ends a reply by asking the user to direct the work.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2151** Returned to the register as RISK-340 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2152** Out (needs a paid model run or a benchmark; moved from RISK-341 in plans/rebuild/risk-register/reply.md): The agent quotes the user verbatim in files.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported: Reddit text pasted by the user, one report); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:102.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2152** Returned to the register as RISK-341 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2153** Out (needs a paid model run or a benchmark; moved from RISK-342 in plans/rebuild/risk-register/reply.md): The agent ends on work it says it will do next, though it could do it now.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:54 (reported).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2153** Returned to the register as RISK-342 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2154** Out (needs a paid model run or a benchmark; moved from RISK-354 in plans/rebuild/risk-register/reply.md): Agent removes a rule the user asked for when a hook rejects it.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:30577`).
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2154** Returned to the register as RISK-354 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2155** Out (needs a paid model run or a benchmark; moved from RISK-355 in plans/rebuild/risk-register/reply.md): An agent reports a defect it found and leaves it unfixed.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:2009, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/005f897e-696d-45c7-8536-2d1019b8ec96.jsonl:8110, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/1aab3c4c-5aef-4ee2-9d3e-3723fd904152.jsonl:1824, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/335fc9c0-d833-41fc-99d0-5a40c6908df4.jsonl:314, reported, user, 2026-11-12.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2155** Returned to the register as RISK-355 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2156** Out (needs a paid model run or a benchmark; moved from RISK-356 in plans/rebuild/risk-register/reply.md): An agent stalls on environment friction or leaves doable tasks unticked.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f4b7e436-da1a-46f3-b8ef-6591f00dfe9e.jsonl:3068, observed in transcript, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f5645ffc-f2a4-4514-aa8c-329a8175b38b.jsonl:506, reported, user, 2026-11-12.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2156** Returned to the register as RISK-356 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2157** Out (needs a paid model run or a benchmark; moved from RISK-357 in plans/rebuild/risk-register/reply.md): An agent invents a project-specific format or identifier where an industry standard exists.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2157** Returned to the register as RISK-357 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2158** Out (needs a paid model run or a benchmark; moved from RISK-358 in plans/rebuild/risk-register/reply.md): An agent proves a setup in a temporary folder and leaves the project without it.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/39e93978-aee6-46bb-be40-431b82dc06d7.jsonl:587, reported, user, 2026-11-11.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2158** Returned to the register as RISK-358 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2159** Out (needs a paid model run or a benchmark; moved from RISK-361 in plans/rebuild/risk-register/reply.md): The agent reports a defect, leftover, or open part instead of fixing it.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2159** Returned to the register as RISK-361 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2160** Out (needs a paid model run or a benchmark; moved from RISK-363 in plans/rebuild/risk-register/reply.md): The agent tells the user to run a command in a way that cannot take effect.
-  Basis: read (risk register entry); no shipped control (Likelihood 1, Impact 2), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/6eb2e7bc-a3e8-44cd-9518-3d662e2e9dbe.jsonl:378; reported, user, 2026-11-10.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2160** Returned to the register as RISK-363 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2161** Out (needs a paid model run or a benchmark; moved from RISK-371 in plans/rebuild/risk-register/reply.md): The agent leaves a defect unfixed and stops to report.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 3), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: reported, user, 2026-11-15 00:58 UTC, leave no defect unfixed (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:3748); reported, user, 2026-11-15 01:21 UTC, leave nothing open unless the user asked (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:4798): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:8215.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2161** Returned to the register as RISK-371 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2162** Out (needs a paid model run or a benchmark; moved from RISK-372 in plans/rebuild/risk-register/reply.md): A cleanup removes features or adds bloat, or works around the code and its architecture.
-  Basis: read (risk register entry); no shipped control (Likelihood 2, Impact 4), and a cure needs at least 10 runs per arm against vanilla (ADR-0177).
-  Source: reported, user, 2026-11-14 23:21 UTC, clean up the architecture without removing features (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
-  Verified: git grep -nEi -e 'pushback|opener|sycophan|narrat|apolog|padding|loose end|plain english' -- plugins -> 0 conduct hits (2 UI-padding hits only), 2026-11-19.
+- [x] **OUT-2162** Returned to the register as RISK-372 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 #### Architecture Triage
 
@@ -9687,13 +9513,9 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: measured (vanilla and a hook prototype, 2.1.327, Sonnet 5.5 and Opus 5.5, 5 headless runs per trap, model and arm, 70 runs, $4.19, 2026-11-18): `trap-hang` and `trap-flaky` admitted; `trap-flag`, `trap-prompt` and `trap-lock` failed 0 of 10 on vanilla and are not admitted until a harder arm makes them fire. A second batch of 40 runs ($5.09) admitted `trap-hang2` (vanilla's hung test lived 126–142 s in 9 of 10 runs and 722 s in one) and the mutant measure of `trap-loop` (vanilla's suite hung in 10 of 10), and rejected `trap-loop`'s loop measure (0 of 10 vanilla failures). The `tmux` arm ran `trap-hang` 30 times ($4.13, runs-tmux/, driven by tmuxrun.py, which accepts the folder trust dialog with Down and then Enter, because "No, exit" is preselected). Vanilla lost 335 s on Sonnet and 346 s on Opus with no leak. The hook arm without a prompt rule lost 192 s and 194 s, again with no leak. The arm with the "bound every wait" rule leaked twice, once by `pkill` and once by a perl alarm orphan, so a prompt rule can add a failure that the hook arm does not have. Status: missing at 088a227c.
   Source: reports/2026-11-18-research/incident-lab/README.md, score6.txt, runs6/, score7.txt, runs7/; ADR-0187.
 
-- [x] **OUT-2405** Out (the item is a third-party report with no probe; moved from RISK-423 in plans/rebuild/risk-register/verification.md): Fable runs fail in six ways reported in threads; no run here reproduces them, and Fable is never a subagent model (hooks/delegation/spawn.ts).
-  Basis: reported (model behaviour; Likelihood: 2).
-  Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
+- [x] **OUT-2405** Returned to the register as RISK-423 in risk-register/verification.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2406** Out (the item is a third-party report with no probe; moved from RISK-452 in plans/rebuild/risk-register/verification.md): Fable 5.2 refers to content that does not exist and says a write landed without checking it; two authors report it, no probe.
-  Basis: reported (product fault; Likelihood: 2).
-  Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
+- [x] **OUT-2406** Returned to the register as RISK-452 in risk-register/verification.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2407** Out (the part is not in plugins/; moved from RISK-458 in plans/rebuild/risk-register/verification.md): a `--plugin-dir` that does not resolve loads no plugin and exits 0; the cure belongs to a probe harness, which plugins/ does not ship.
   Basis: reported (Tooling; Likelihood: 4).
@@ -9841,65 +9663,13 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Owner: guards. Status: open.
   Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:526,761,763 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>); external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:33; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:37; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:47; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:123; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:128; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:132; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:136; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:150; external/2026-10-25/reddit.com-r-claude-comments-1xdj7e0-if-youre-wondering-whats-happening-20261024T141331Z.md:158 (url: <https://www.reddit.com/r/claude/comments/1xdj7e0/if_youre_wondering_whats_happening_with_your_disk/>).
 
-- [x] **OUT-2318** Out (the item is a third-party report with no probe; moved from RISK-041 in risk-register/guards.md): An approval prompt is taken as the control and the logged approval was never seen by the user.
-  Category: guards
-  Cause: The process that acts also records the user's yes; the user's own report says a permission rule to ask first was set.
-  Event: One user's report, field report kept as reported; a Windows manual-approval run cannot be probed on this Mac (anthropics/claude-code issue 108022 per the commenter): on Windows in manual approval mode, 9 PowerShell commands moved about 11 GB to the recycle bin; the log shows a yes per command that the user says never appeared, 3 recorded while the user was typing.
-  Consequence: User files are moved or deleted with no real consent.
-  Likelihood: 1
-  Impact: 4
-  Existing controls: none found at 088a227c for an approval seen-by-user check.
-  Response: mitigate
-  Actions: Treat the approval prompt as not the control: gate destructive actions separately and give the agent no delete or move permission.
-  Trigger: A destructive command logs an approval with no matching user turn.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-14/reddit.com-r-aiagents-comments-1xv9vw1-update-a-user-says-claude-code-m-20261113T195018Z.md:29,31,41,43 (url: <https://www.reddit.com/r/aiagents/comments/1xv9vw1/update_a_user_says_claude_code_moved_11gb_in/>).
+- [x] **OUT-2318** Returned to the register as RISK-041 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2319** Out (the item is a third-party report with no probe; moved from RISK-046 in risk-register/guards.md): The agent passes -r to ripgrep on macOS, where -r means replace.
-  Category: guards
-  Cause: Repeated instructions never stopped the agent from passing -r to ripgrep.
-  Event: One user reports a hook that silently strips -r from ripgrep calls; another keeps shims for many utilities and a re-read guard to cut duplicate tool use.
-  Consequence: A search that rewrites output instead of recursing.
-  Likelihood: 2
-  Impact: 2
-  Existing controls: none found at 088a227c (no ripgrep hook).
-  Response: mitigate
-  Actions: Strip -r from rg calls in a PreToolUse hook; keep a re-read guard.
-  Trigger: A Bash call runs `rg` with -r.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:117 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>).
+- [x] **OUT-2319** Returned to the register as RISK-046 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2320** Out (the item is a third-party report with no probe; moved from RISK-048 in risk-register/guards.md): A bare `-j` build flag exhausts the machine.
-  Category: guards
-  Cause: `cmake --build build -j` with no number started about 300 compiler processes.
-  Event: It used 49 GB and hard-hung the poster's machine, twice (reported, one poster).
-  Consequence: A hung machine and lost work.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: Plan rule: never bare -j.
-  Response: mitigate
-  Actions: Always pass a number, nproc at most; cap CMAKE_BUILD_PARALLEL_LEVEL at nproc divided by the session count.
-  Trigger: A build command with -j and no number.
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:31,55 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
+- [x] **OUT-2320** Returned to the register as RISK-048 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2321** Out (the item is a third-party report with no probe; moved from RISK-049 in risk-register/guards.md): In-session search skips gitignored files and "found nothing" is wrong.
-  Category: guards
-  Cause: The search tool inside a session skips gitignored files, so .env files and build output are never searched.
-  Event: A test with five planted strings in gitignored paths found one (measured by the poster's test).
-  Consequence: A removal on the strength of an empty search result.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: none found.
-  Response: mitigate
-  Actions: Before removing anything on the strength of an empty search, search the ignored paths too.
-  Trigger: A deletion justified by "no references found".
-  Owner: guards
-  Status: open
-  Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xx0wfy-five-ways-ten-parallel-claude-20261116T051245Z.md:37 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xx0wfy/five_ways_ten_parallel_claude_code_sessions_broke/>).
+- [x] **OUT-2321** Returned to the register as RISK-049 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2322** Out (the item describes a part that plugins/ does not ship; moved from RISK-054 in risk-register/guards.md): Injection and disclosure: the agent treats data as the user's message.
   Category: safety.
@@ -9914,91 +9684,17 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Owner: guards. Status: partial at 088a227c.
   Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:166; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:129; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:125; plugins/claudetto/hooks/features/secrets/scan.ts@088a227c. The outbound-header email case: not located by grep.
 
-- [x] **OUT-2323** Out (the item is a third-party report with no probe; moved from RISK-065 in risk-register/guards.md): Blind retry.
-  - Category: Agent behaviour.
-  - Cause: After a timeout the agent repeats the step; half the time it already went through; No idempotency, no memory of the denial, no state read before the second act.
-  - Event: Reported rule "never retry blind"; A timed-out step or an identical call after denial is retried (7 of 8 screenshot timeouts had the change already right); a Bash command repeated after two identical failures; the agent "cleans up" files it thinks unused; worktrees put in /tmp.
-  - Consequence: A duplicate post, payment, or send; Duplicate acts and lost files.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: Plan: two failed attempts then stop (a different rule).
-  - Response: mitigate.
-  - Actions: After a timeout check what happened first. Use proof from outside the agent (confirmation email, new database row, response status) and have the agent name which it saw. With none, embed a unique marker in the submission, reload and look for it: found means done, not found means safe to retry after slow saves land; otherwise say it could not confirm; tool.check denies an identical call after 2 denials naming the earlier reason (a different input passes); a retry guard pauses the third identical Bash command; make steps idempotent; a hook that denies a repeated call after a timeout until a state check ran; git diff --stat before cleanup on its own branch; a PreToolUse deny of irreversible actions.
-  - Trigger: A retry follows a timeout with no check; An identical Bash call runs a third time.
-  - Owner: guards
-  - Status: open.
-  - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:27,53,89; external/please-use-me-often/swe-worst-practices.md:130; external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>) (reported, "never retry blind"). Not located: the 7 of 8 screenshot timeouts.
+- [x] **OUT-2323** Returned to the register as RISK-065 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2324** Out (the item conflicts with a rule; moved from RISK-066 in risk-register/guards.md): Never-commit rule violated after a one-time authorization The reported remedy needs a constraint ledger, which the rules exclude.
-  Category: guards.
-  Cause: one per-task authorization collapses into permission for the whole session (a commenter's theory; the sandboxed fake-API probe cannot show a server-side authorization, so it stays a field report).
-  Event: "Never commit unless asked" is violated across Sonnet 4.5 and Opus 4.7 (#68724, #58883, #34774, #69151).
-  Consequence: user work committed without consent.
-  Likelihood: 2. Impact: 3.
-  Existing controls: tool.check items.
-  Response: mitigate.
-  Actions: the reported remedy is a deterministic tool.check gate with the user's words in the deny reason and an entry lifted only by the user; that needs a ledger, which is out of scope. Another route is the Stop text for commits (REQ in reply).
-  Trigger: a commit with no request from the user.
-  Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:15; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:59.
+- [x] **OUT-2324** Returned to the register as RISK-066 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2325** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-068 in risk-register/guards.md): Temp-folder residue: a dependency or setup proven under /tmp is left there and absent from the project.
-  Category: Agent behaviour.
-  Cause: Root-prompt wording points at /tmp: "Run checks where undoing is free, such as /tmp" (hypothesis); the agent installs a library only into a test folder, then reports it as done.
-  Event: The agent installed a probed dependency only under /tmp and left it; the user answered "nobody told you to put it in temp and leave it there"; the reply says the library is installed only in a temp folder, not in the project.
-  Consequence: A residue dependency stays outside the project; the project lacks the dependency; the user orders the install.
-  Likelihood: 1. Impact: 2.
-  Existing controls: plugins/claudetto/hooks/features/temp-cleanup/ at 088a227c (partial).
-  Response: mitigate.
-  Actions: Install the dependency into the project (eval dependency-into-project); temp-cleanup; after a probe passes, the agent applies the setup in the project.
-  Trigger: A dependency is installed under /tmp and not removed; a reply names a temp-only install.
-  Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:486,549,789; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/39e93978-aee6-46bb-be40-431b82dc06d7.jsonl:587, reported, user, 2026-11-11
+- [x] **OUT-2325** Returned to the register as RISK-068 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2326** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-073 in risk-register/guards.md): The agent asks the user for a token or a login while the repo `.env` already holds one, and makes throwaway credential files.
-  - Category: agent conduct.
-  - Cause: the agent does not check whether the repo-local `.env` has the field with a value, though it need not read the value.
-  - Event: the agent told the user to run `claude setup-token` and save the token to a new file in the home directory; later the paste flow stuck at the copy prompt, and the agent asked for `claude setup-token` again.
-  - Consequence: the user does login work twice; the new file is a throwaway that the user disallows; The user does login work twice; the new file is a proprietary throwaway that the user disallows.
-  - Likelihood: 2
-  - Impact: 3
-  - Existing controls: none.
-  - Response: mitigate
-  - Actions: check that `.env` holds a non-empty field without printing it, and use it; never create credential files; give a terminal command only after that check fails.
-  - Trigger: the agent plans a login step, or a token file, for a run that needs a token.
-  - Owner: guards
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1729 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1729, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:4134, reported, user, 2026-11-12 (reported, user, 2026-11-12).
+- [x] **OUT-2326** Returned to the register as RISK-073 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2327** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-075 in risk-register/guards.md): The agent asks for ANTHROPIC_API_KEY where the OAuth token is the way in.
-  Category: agent conduct.
-  Cause: a tool the agent wrote reads only an API key; the agent told the user to export it.
-  Event: the user was asked for an API key and called it a hazardous violation; the user wants the OAuth token used.
-  Consequence: a secret handled wrongly and an extra turn.
-  Likelihood: 1
-  Impact: 3
-  Existing controls: kernel secrets guard exists at 088a227c (read at 088a227c: `hooks/features/secrets/scan.ts` and `hooks/kernel/secrets.ts` redact secret values in tool results; no baseline rule stops a request for an API key or names the OAuth token).
-  Response: avoid
-  Actions: write each tool that calls a model to use the Claude Code OAuth token; never ask the user for an API key.
-  Trigger: a script that calls the Messages API.
-  Owner: guards
-  Status: open; no baseline control (see Existing controls).
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+- [x] **OUT-2327** Returned to the register as RISK-075 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2328** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-076 in risk-register/guards.md): A repo changes under an agent without its owner asking.
-  Category: agent conduct
-  Cause: Another session or agent committed to the same branch, switched the repo to a new dependency, and left a branch for CLA signatures and a stale pull request.
-  Event: The user finds the branch changed and a dependency swapped and says the other session is defunct and asks what is going on in the repo.
-  Consequence: User work lost or confused; an extra turn to restore the branch.
-  Likelihood: 1
-  Impact: 4
-  Existing controls: The handoff says: run git status and git log -5 before each commit; touch nothing unasked; no force push, PR close, or branch delete without asking.
-  Response: mitigate
-  Actions: claudetto shall tell an agent to run git status and git log before each commit, to touch no branch, pull request, or stash it did not make, and to ask before a force push or a delete.
-  Trigger: The handoff names another session on the same branch.
-  Owner: guards
-  Status: open
-  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, user corrections); reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664).
+- [x] **OUT-2328** Returned to the register as RISK-076 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2329** Out (the item describes a part that plugins/ does not ship; moved from RISK-078 in risk-register/guards.md): The agent copies a whole git repository folder, or makes worktrees on its own.
   Category: agent behaviour.
@@ -10014,35 +9710,9 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Status: Open.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:63; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:73; external/2026-10-28/reddit.com-r-claudeai-comments-1xeeclc-anyone-else-noticed-claude-makin-20261028T060729Z.md:75 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeeclc/anyone_else_noticed_claude_making_weird_decisions/>).
 
-- [x] **OUT-2330** Out (the item is a third-party report with no probe; moved from RISK-080 in risk-register/guards.md): Agents delete files they did not create (once 110).
-  Category: agent fault
-  Cause: The agent works in the shared checkout
-  Event: Files it did not create are deleted
-  Consequence: User work lost
-  Likelihood: 1 (one report)
-  Impact: 4
-  Existing controls: none found at 088a227c
-  Response: mitigate
-  Actions: Each agent works in its own clone and hooks refuse writes outside it; back up untracked and ignored work outside the agent's writable area (a clone does not hold it) and keep real secrets out of the clone
-  Trigger: A write outside the agent's clone
-  Owner: guards
-  Status: open
-  Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:39; external/2026-11-10/reddit.com-r-claudecode-comments-1xsfrvr-the-ways-coding-agents-broke-o-20261110T095743Z.md:75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsfrvr/the_ways_coding_agents_broke_our_codebase_and_the/>).
+- [x] **OUT-2330** Returned to the register as RISK-080 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2331** Out (the item is a third-party report with no probe; moved from RISK-081 in risk-register/guards.md): Classifier Gives Up On Authorized Delete.
-  Category: Agent behaviour.
-  Cause: The auto-mode classifier blocks and the model gives up at once.
-  Event: It blocked deletes the user had explicitly authorized.
-  Consequence: An extra turn.
-  Likelihood: 1. Impact: 2.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Update the classifier rules to tell it to prompt for approval instead of giving up when it hits a block.
-  Trigger: A classifier block on an authorized action.
-  Owner: guards.
-  Status: open.
-  Basis: reported.
-  Source: external/2026-11-06/reddit.com-r-claude-comments-1xmyvko-claude-will-delete-your-stuff-by-m-20261105T084900Z.md:186 (url: <https://www.reddit.com/r/claude/comments/1xmyvko/claude_will_delete_your_stuff_by_mistake_if_you/>).
+- [x] **OUT-2331** Returned to the register as RISK-081 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2332** Out (the item describes a part that plugins/ does not ship; moved from RISK-084 in risk-register/guards.md): Cleanup Of A Live Resource.
   Category: Agent behaviour.
@@ -10059,123 +9729,25 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: reported.
   Source: external/2026-11-06/reddit.com-r-claudeai-comments-1xnnvx8-each-of-my-agent-threads-gets-it-20261104T184152Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xnnvx8/each_of_my_agent_threads_gets_its_own_13_gb_copy/>).
 
-- [x] **OUT-2333** Out (the item is a third-party report with no probe; moved from RISK-086 in risk-register/guards.md): Identity Leak Into Requests And Commits.
-  Category: Agent behaviour.
-  Cause: A site convention (contact details in the User-Agent) or a default outranks the standing rule against sending the user's identity; the account email also sits in the system prompt (issue 81138 on anthropics/claude-code).
-  Event: The account email went into HTTP headers, commit author fields, and a Wikipedia and SEC EDGAR download User-Agent in Opus 5.5 auto mode, which the model called a technical detail, not data leaving the machine; project names went into User-Agent when probing open APIs; one user found the email by grep of ~/.claude/projects, and 36 such uses in one user's last month of conversation history. The rule against it was in context and nothing checked the command.
-  Consequence: The user's identity reaches outside services unasked.
-  Likelihood: 2. Impact: 4.
-  Existing controls: None found by git grep 088a227c for an email or User-Agent check.
-  Response: mitigate.
-  Actions: Ask whenever a service wants contact details. A PreToolUse hook on Bash, WebFetch (and a second prompt adds PowerShell, WebSearch) refuses a good number of calls, but the user cannot tell which leaks slip through; it misses an address written to a script by Write or Edit and run later, and misses base64 forms, so add Write|Edit to the matcher; the stated real fix is limiting which sites the agent can reach. A dummy-email web-fetch wrapper replaces the real email and marks incoming text as an external source. Honeytoken: a CLAUDE.md line to give a decoy email when a site asks to identify the user (not login); the agent complied, and a user-agent asking for contact information never required it to be valid.
-  Trigger: A tool call whose headers, URL, body, or script holds the account email or a project name.
-  Owner: guards.
-  Status: open.
-  Basis: reported, n>=6 anecdotes plus one session, no measurement.
-  Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:53,57,177,556,609,309,337,349,776 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>); external/2026-11-06/reddit.com-r-claudecode-comments-1xhqvzn-comment-19rsjcqyuqin7-20261106T080754Z.md:35,43,466,534 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhqvzn/comment/19rsjcqyuqin7/?context=3>).
+- [x] **OUT-2333** Returned to the register as RISK-086 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2334** Out (the item is a third-party report with no probe; moved from RISK-090 in risk-register/guards.md): A refactor hides a permission change in one diff.
-  Category: agent failure.
-  Cause: The agent pulled a helper into its own file, renamed a variable in a dozen places and left a support-impersonation override three ifs deep in authorize(); tests were green and half the diff looked like a helper rename.
-  Event: A refactor and a permission change land in one diff.
-  Consequence: A security-relevant change ships unreviewed.
-  Likelihood: 1 (one team).
-  Impact: 4 (a wrong result shipped).
-  Existing controls: None at 088a227c: "refactor" appears only in `agents/Heracles.md:9` and `agents/Metis.md:10`, as a note to mention refactors at the end of a report.
-  Response: mitigate.
-  Actions: Never mix a refactor with a permission change in one diff; tell the agent auth gets no cleanup, only the exact change; reject a file that comes out worse than it went in.
-  Trigger: A diff that touches authorization code and renames symbols together.
-  Owner: guards.
-  Status: open.
-  Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xft6w1-the-agent-cleaned-up-our-access-20261029T120116Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xft6w1/the_agent_cleaned_up_our_access_check_and_left/>)
+- [x] **OUT-2334** Returned to the register as RISK-090 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2335** Out (the item is a third-party report with no probe; moved from RISK-092 in risk-register/guards.md): The agent breaks one of the W5 forbidden practices.
-  Category: Agent behaviour.
-  Cause: The agent edits, skips, deletes or weakens tests (W5-1), special-cases inputs, hardcodes outputs, overrides `__eq__`, exits 0 to fake a pass (W5-2), fabricates (W5-3), covers up (W5-4), repairs destructively when surprised (W5-5), ignores constraints (W5-6), obeys instructions in content (W5-7), leaks secrets (W5-8), uses unverified dependencies (W5-9), claims done without build/tests (W5-10), creeps scope (W5-11), reinvents (W5-12), falls back silently (W5-13), guesses APIs or invents keys (W5-14), pushes through the impossible (W5-15), leaves noise and stray files (W5-16), ignores conventions (W5-17), flatters (W5-18).
-  Event: A task ends with a faked pass or a hidden change.
-  Consequence: Wrong result shipped or user work lost.
-  Likelihood: 2 (two or more reports).
-  Impact: 4 (a wrong result shipped or user work lost).
-  Existing controls: Prompt rules only; enforcement idea: deny edits under tests/CI diff.
-  Response: mitigate.
-  Actions: Keep the enforcement idea of denying edits under tests/CI diff lint; ask on destructive git; run `git status` at end of turn. Groups: tests (W5-1, W5-2); honesty (W5-3, W5-4); destructive repair when surprised (W5-5); constraints, content-borne instructions, secrets, dependencies (W5-6 to W5-9); done, scope, reinvention, fallbacks, guessed APIs, impossible tasks (W5-10 to W5-15); noise, conventions, sycophancy (W5-16 to W5-18).
-  Trigger: A test file or CI file appears in the diff of a non-test task.
-  Owner: guards.
-  Status: open.
-  Source: external/please-use-me-often/swe-worst-practices.md:170; external/please-use-me-often/swe-worst-practices.md:187.
+- [x] **OUT-2335** Returned to the register as RISK-092 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2336** Out (the item is a third-party report with no probe; moved from RISK-093 in risk-register/guards.md): Approval of one tool call hides an embedded effect.
-  Category: Safety.
-  Cause: Approval of one tool call is read as approval of each embedded effect (pipes, subshells, chains).
-  Event: One approved line hides `oc delete --all` or a secret read leaking into a log or commit three steps later.
-  Consequence: A destructive effect or a leaked secret.
-  Likelihood: 2 (reported, issue 46828).
-  Impact: 5 (a secret leaked or data destroyed).
-  Existing controls: Claude Code parses a Bash command for its `permissions` rules; setup writes `autoMode.hard_deny` for loss and secrets; baseline partial: features/secrets, protected, kernel/shell at 088a227c.
-  Response: mitigate.
-  Actions: Split pipes, subshells and chains; deny or ask when any segment is destructive or reaches out; keep the read pile (`cat .env`, `printenv`, keychain) on the same list as the destroy pile.
-  Trigger: A chain with a destructive or secret-reading segment gets one approval.
-  Owner: guards.
-  Status: open.
-  Basis: reported (issue 46828).
-  Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:199; openspec/changes/archive/2026-11-16-2-1-323/specs/permission-policy/spec.md:97.
+- [x] **OUT-2336** Returned to the register as RISK-093 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2337** Out (the item is a third-party report with no probe; moved from RISK-094 in risk-register/guards.md): The agent trusts a rejection text after a rejected or interrupted write.
-  - Category: Agent behaviour.
-  - Cause: The rejected write had already landed (session 2a80f39f); A rejected or interrupted write may already have landed ("The command that you rejected had already written the file", session `2a80f39f` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)).
-  - Event: The agent believes "command rejected" and retries or reports nothing written; The agent re-does or abandons a write on a false rejection.
-  - Consequence: A duplicate write or a false "not written" claim; Duplicate or lost writes.
-  - Likelihood: 1
-  - Impact: 3
-  - Existing controls: Engine 2.1.319 cancelled-call texts ("Nothing refused it; re-run it if still needed" vs "stopped while running, not refused before it ran") cover the fault without a hook; 2.1.326: the cancelled-call texts are present (code search "Nothing refused it", claude 2.1.326: chunk-4xhk2fyb.js@1288 (2.1.327), @2515); the 2.1.326 release notes also fix background agents being told the user refused a tool call after Ctrl+C twice at the exit dialog or an interface crash.
-  - Response: mitigate.
-  - Actions: A PostToolUse or tool.call hook after a rejected or interrupted write that injects the file's current state, or a Stop check requiring a Read of the target before a "not written" claim; After a reject or interrupt, Read the target before trusting the rejection text.
-  - Trigger: A rejected or interrupted write is followed by a retry with no Read; A write tool result says rejected or interrupted.
-  - Owner: guards
-  - Status: open (missing at 088a227c).
-  - Source: no source states that a rejected write had already landed (Dropped (2026-11-18) for that detail); the program's interrupted-call texts are verified on 2.1.327: "Nothing refused it; re-run it if still needed" at chunk-4xhk2fyb.js@1288 and "Check whether it took effect before relying on it" at chunk-4xhk2fyb.js@4200; the cited session 2a80f39f is named at external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88 for a different episode (approval words in the agent's own edits); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:138; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:88; chunk-4xhk2fyb.js@1288 (claude 2.1.327 binary); <https://github.com/anthropics/claude-code/releases/tag/v2.1.327> (release notes).
+- [x] **OUT-2337** Returned to the register as RISK-094 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2338** Out (the item is a third-party report with no probe; moved from RISK-096 in risk-register/guards.md): The agent searches the `openspec/` deletion, transcripts, and `~/.Trash` unasked, then repeats it in another form.
-  Category: conduct. Cause: the agent widens a search past what the user named. Event: it looks into the `openspec/` deletion, transcripts, and `~/.Trash`, and again in another form.
-  Consequence: a wasted session and an unwanted read of user data. Likelihood: 1. Impact: 3. Existing controls: none found.
-  Response: mitigate. Actions: look only at what the user names; give the cure a mechanism.
-  Trigger: a read or search outside the paths the user named. Owner: guards. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
+- [x] **OUT-2338** Returned to the register as RISK-096 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2339** Out (the item is a third-party report with no probe; moved from RISK-098 in risk-register/guards.md): The agent runs `cd` in place of using absolute paths.
-  Category: conduct. Cause: relative habit. Event: a `cd` before a command.
-  Consequence: a compound command refused whole; an extra turn. Likelihood: 1. Impact: 1. Existing controls: none found.
-  Response: mitigate. Actions: use absolute paths.
-  Trigger: a command that starts with `cd`. Owner: guards. Status: open.
-  Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
+- [x] **OUT-2339** Returned to the register as RISK-098 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2340** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-099 in risk-register/guards.md): The agent deletes things nobody asked it to remove.
-  Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
-  Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
-  Response: mitigate. Actions: remove only what the user names.
-  Trigger: a delete of a file or export the user did not name. Owner: guards. Status: open.
-  Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The clause about restoring sections on an unchecked claim was dropped on 2026-11-18: no source line holds it.
+- [x] **OUT-2340** Returned to the register as RISK-099 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2341** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-100 in risk-register/guards.md): The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
-  Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
-  Consequence: an extra turn. Likelihood: 4. Impact: 1. Existing controls: none; no documented setting turns the shadow off.
-  Response: mitigate. Actions: record the userland once (grep is ugrep, BSD tools); use `perl` for context windows.
-  Trigger: "exceeds complexity limits". Owner: guards. Status: open.
-  Source: `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:616` (measured, 24 calls; probe P-D10.22). Not rechecked: macOS `cat -A`, which BSD `cat` lacks.
+- [x] **OUT-2341** Returned to the register as RISK-100 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2342** Out (the item is a third-party report with no probe; moved from RISK-101 in risk-register/guards.md): Injected text in repo or web content steers the agent, and benign work is refused.
-  Category: product failure.
-  Cause: repo and web content is untrusted (a wiki page carried injection text aimed at agents); an injection detector flagged 4 benign subagent reports that quoted docs.
-  Event: the agent follows injected text, or refuses benign work (localhost security testing, a DB connection to a feature env, harness reminders read as injections).
-  Consequence: a wasted session or a wrong result shipped.
-  Likelihood: 2. Impact: 4.
-  Existing controls: the CONSENT and UNTRUSTED texts (partial).
-  Response: mitigate.
-  Actions: treat repo and web content as untrusted (a read-only tour first, an acceptance test first); a curl-based fetch script with a headless-Chrome fallback keeps pages out of context; the coordinator spot-checks flagged reports.
-  Trigger: fetched content that addresses the agent.
-  Owner: guards.
-  Status: open.
-  Source: external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:9.
+- [x] **OUT-2342** Returned to the register as RISK-101 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2343** Out (the item describes a part that plugins/ does not ship; moved from RISK-102 in risk-register/guards.md): A paid job runs twice or its watcher never sees success.
   Category: agent failure.
@@ -10206,35 +9778,9 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   - Status: open. Corrected: at 088a227c the sweep removes only `<root>/-<project>/<session>` folders older than `sessionDays ?? days ?? host.days` days and skips live sessions (`hygiene/sweep.ts:143-170`); `sessionTempCleanup` (`temp-cleanup/cleanup.ts:48-70`) removes only the ended session's own folder. No 60-minute rule and no `.created-by-claudetto` marker exist in baseline code (grep finds none), so the cause and the Existing controls text above describe a later tree; the idle-minutes claim stays the agent's guess.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (reported, user, 2026-11-13).
 
-- [x] **OUT-2345** Out (the refusal this item asks for is not built: a refusal of every piped check is conduct the agent can route around, and ADR-0190 ships a conduct line only with a measured gain, which needs a paid model run; the shipped control is `gateCommit` (plugins/claudetto/hooks/guards/shell/commit.ts, tested in commit.test.ts), which prepends `set -o pipefail` to every command that commits or pushes, so a piped check chained before the commit stops it, tracked by RISK-045 and RISK-104; moved from RISK-111 in risk-register/guards.md): A check piped to `tail` hides a failed exit code.
-  - Category: agent conduct.
-  - Cause: the agent ran `<check> | tail` without `set -o pipefail`.
-  - Event: a failed check exited 0 through the pipe; none was chained to a commit.
-  - Consequence: a broken check could pass a commit step.
-  - Likelihood: 1
-  - Impact: 4
-  - Existing controls: later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail 088a227c -- plugins` (no match); Later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail` at 088a227c.
-  - Response: mitigate
-  - Actions: refuse a check piped to `tail`, `head`, or `grep` without `pipefail` (the user's list for 2.1.321).
-  - Trigger: a command line pipes a test or lint command into `tail`.
-  - Owner: guards
-  - Status: open.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/d21b8a3c-f9ed-4529-894d-f27c09158b69.jsonl:5363, reported, user, 2026-11-10 (reported, user, 2026-11-10).
+- [x] **OUT-2345** Returned to the register as RISK-111 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2346** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-116 in risk-register/guards.md): The agent acts, and then checks, on a claim about a cause it has no proof for, outside its task.
-  - Category: conduct
-  - Cause: The agent blames a tool for a change in the user's file and starts to restore the file, with no check and no task for it.
-  - Event: The agent plans to restore two project sections it says adopt deleted. The user says it was not tasked to restore them and has no proof. The agent then runs a check of the claim, and the user says it was not tasked to check either.
-  - Consequence: An edit of user content on a guess, and a turn spent on work nobody asked for.
-  - Likelihood: 1 (one report)
-  - Impact: 3
-  - Existing controls: none found.
-  - Response: mitigate
-  - Actions: A rule that the agent stays inside the task: it names an unrelated finding in its report and does not act on it, and it states a cause only after a check that the task covers.
-  - Trigger: An edit or a check with no link to the user's request.
-  - Owner: guards
-  - Status: open
-  - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:569; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/2ce7ce0c-4b81-402a-97df-21c1718fc541.jsonl:588, reported, user, 2026-11-09.
+- [x] **OUT-2346** Returned to the register as RISK-116 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2347** Out (the item describes a part that plugins/ does not ship; moved from RISK-486 in risk-register/guards.md): The disk fills and builds, caches and Claude Code itself fail.
   - Category: environment.
@@ -10313,49 +9859,11 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Owner: cost. Status: open.
   Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:163; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:142 (about 191 threads). Not located: the 94% session $2.88 and the days-for-hours estimate quotes.
 
-- [x] **OUT-2355** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-379 in risk-register/cost.md): The agent asks the user for `ANTHROPIC_API_KEY`.
-  - Category: conduct.
-  - Cause: a paid-run tool that the agent wrote read only the API key and stopped when it was unset; a paid-run tool read the API key and stopped when it was unset.
-  - Event: the agent told the user to export the key; the user called this a hazardous violation and said to use the OAuth token; the agent told the user to export the key; the user called this hazardous and said to use the OAuth token.
-  - Consequence: a secret handled in chat; a run billed to the API instead of the login; an extra turn.
-  - Likelihood: 1
-  - Impact: 3
-  - Existing controls: at 088a227c the paid handover probe asks for `CLAUDE_CODE_OAUTH_TOKEN` and the claim-check launcher drops the API key (`CHANGELOG.md:286`); a kernel secrets guard exists at 088a227c but redacts secret values in tool results (`hooks/features/secrets/scan.ts`, `hooks/kernel/secrets.ts`); no baseline rule stops a request for an API key or names the OAuth token (grep for `ANTHROPIC_API_KEY|OAUTH` finds only `setup/changes.ts:92` and `kernel/secrets.ts:13`).
-  - Response: mitigate.
-  - Actions: claudetto shall make the agent use the OAuth login and write each tool that calls a model to use the Claude Code OAuth token; claudetto shall make the agent use the OAuth login and never ask the user for an API key.
-  - Trigger: the text `ANTHROPIC_API_KEY is not set` in a tool result; a script that calls the Messages API.
-  - Owner: cost
-  - Status: partly done.
-  - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; `CHANGELOG.md:286` at 088a227c; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
+- [x] **OUT-2355** Returned to the register as RISK-379 in risk-register/cost.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2356** Out (the item is a third-party report with no probe; moved from RISK-383 in risk-register/cost.md): Subagent Cache Goes Cold.
-  Category: Cost.
-  Cause: Subagents default to a 5-minute cache TTL against 1 hour on the main thread.
-  Event: A subagent that waits on a nested subagent, is resumed, or blocks on a build or test over 5 minutes goes cold. One commenter saw +40% usage. Cache creation bills 1.25x input at 5 minutes and 2x at 60 minutes. One cache bust in a 400k subagent transcript can cost more than running at 60 minutes, and iterative-test subagents may bust 10-20 times.
-  Consequence: Spend.
-  Likelihood: 1. Impact: 3.
-  Existing controls: None known at 088a227c.
-  Response: mitigate.
-  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
-  Trigger: A subagent turn that waits more than 5 minutes.
-  Owner: cost. Status: open.
-  Basis: reported, one user.
-  Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:380,388,392-397 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>)
+- [x] **OUT-2356** Returned to the register as RISK-383 in risk-register/cost.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2357** Out (the item is a third-party report with no probe; moved from RISK-384 in risk-register/cost.md): An orchestrator picks the top model and effort for a big audit skill and burns the limits.
-  Category: agent failure.
-  Cause: An orchestrator told to run a Cloudflare security-audit skill with its recommended model and effort chose Fable High and ran unattended; a second user needed three 5-hour sessions even on Sonnet. A commenter adds that a skill that fans out into subagents re-reads context at full cost, since subagents get about a 5-minute prompt cache against about 1 hour for the main session on a subscription plan.
-  Event: A large audit skill runs with the top model and effort, fanned out into subagents.
-  Consequence: Three 5-hour limits and 50 percent of the weekly tokens went to 11 percent of the task.
-  Likelihood: 2 (two users).
-  Impact: 3 (a wasted session or spend).
-  Existing controls: None at 088a227c: only the agent files fix effort (Artemis high on Haiku; Metis, Athena, Heracles medium on Sonnet, `plugins/claudetto/agents/*.md:4-5`@088a227c); no rule names an audit skill.
-  Response: mitigate.
-  Actions: Build a lightweight architecture map (signatures, exports, data flow) kept as one summary, then audit one file at a time against it; use a cheaper model for the bulk file-by-file passes and the top model for the final cross-file review; run /context and turn off unused MCP servers.
-  Trigger: A skill that fans out into subagents, or an orchestrator that picks the top effort without asking.
-  Owner: cost.
-  Status: open.
-  Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
+- [x] **OUT-2357** Returned to the register as RISK-384 in risk-register/cost.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 - [x] **OUT-2358** Out (the item describes a part that plugins/ does not ship; moved from RISK-385 in risk-register/cost.md): A session resumed after the cache TTL re-sends and re-writes its whole context at the write premium. plugins/ ships no stale-session prompt hook or cold-return cost display.
   - Category: cost.
@@ -10372,20 +9880,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   - Status: open.
   - Source: external/export--clear vs -compact.jsonl:59. The 15-40% figure: not located; external/2026-11-10/reddit.com-r-claudeai-comments-1xsgul7-does-anyone-other-than-opus-and-20261110T093148Z.md:44 (900k session) (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgul7/does_anyone_other_than_opus_and_fable_actually/>); external/export--clear vs -compact.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wl4c13/clear_vs_compact/>). The 15% and 0% to 40% figures were not located by grep.
 
-- [x] **OUT-2359** Out (the cure is conduct text, which plugins/ does not ship (ADR-0190 ships a conduct line only with a measured gain, and that needs a paid model run); moved from RISK-061 in risk-register/guards.md): Agent interrupts the user's screen to capture or test.
-  - Category: conduct.
-  - Cause: The agent raises windows, sends keystrokes, or opens a visible app to take screenshots or captures while the user works; The agent grants system permissions with osascript clicks in System Settings.
-  - Event: The user's main screen is taken over; the user asks for hidden or background capture; The UI scripting captured the user's Discord window once; the handoff then bans UI scripting of the screen.
-  - Consequence: The user's current work is interrupted; Private screen content read; a wrong click changes system settings.
-  - Likelihood: 2
-  - Impact: 5
-  - Existing controls: A handoff rule only; the sandbox blocks osascript for Apple Events in some sessions.
-  - Response: mitigate.
-  - Actions: Add a reply rule: capture hidden, off-screen, or in the background; never raise a window, press a key, or drive the live screen. Offer an env switch in the project when the app needs one; claudetto shall deny osascript UI scripting of the screen and tell the agent to ask the user for the physical action.
-  - Trigger: A command that opens a visible window, posts a key event, or brings an app forward; The agent runs osascript with System Events.
-  - Owner: guards
-  - Status: open.
-  - Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:762`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:4489`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4706`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, Done list); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, Rules and Decisions); observed in transcript, 2026-11-14.
+- [x] **OUT-2359** Returned to the register as RISK-061 in risk-register/guards.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
 #### Architecture Triage, Remainder
 
@@ -10732,25 +10227,13 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Basis: measured (CTX-836: workers ran up to 2,052 requests and 592 minutes with up to 22 compactions). Compaction is core behaviour; the only plugin-visible knob in 2.1.327 is the `autoCompactWindow` setting (chunk-ja5z738t.js@279536). Status: missing at 088a227c.
   Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836; OUT-757.
 
-- [x] **OUT-2773** Out (ADR-0177: the decay shows after 30-40 messages and after compaction, so it needs multi-hour sessions that no run of minutes can show; moved from RISK-250 in risk-register/reply.md): claudetto shall keep the few must-follow user rules in force across a long session and after compaction, by re-injecting them at SessionStart on compact and at UserPromptSubmit, and by a hook or lint for each recurring broken rule.
-  Acceptance: over a dogfood day of at least 40 messages with one compaction, a rule set in the first message is broken no more often than with the re-injection off. Verification: measurement of transcripts.
-  Basis: cited (Claude Code treats memory files as context and not as enforced configuration, and names a PreToolUse hook as the control that holds regardless of the model: <https://code.claude.com/docs/en/memory>, read 2026-11-19). Controls that exist: the deny rules and sandbox lists in `plugins/claudetto/hooks/guards/wall/rules.ts`, and the handover text that asks a manual `/compact` to keep the user's corrections, refusals and consents word for word. Status: missing at 088a227c.
-  Source: risk-register/reply.md RISK-250.
+- [x] **OUT-2773** Returned to the register as RISK-250 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2774** Out (ADR-0177 and ADR-0190: on its fault prompt the default lean prompt tied with the full prompt, 0 of 3 skipped-hook commits in each arm, so no restated rule ships; moved from RISK-343 in risk-register/reply.md): claudetto shall restate the rules the full system prompt holds and the lean prompt of Sonnet 5.5 omits (task references, abstraction, planning documents, hook skipping, injection flags) in the root prompt through `prompt.compose`.
-  Acceptance: on stored prompts that tempt each omitted rule, the lean prompt plus the restated text breaks the rule less often than the lean prompt alone, over at least 10 runs per arm. Verification: test.
-  Basis: measured (2.1.327 probe, 2026-11-19: the default request holds 6,005 bytes of system text and 30,468 of tool text, `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` gives 27,551 and 46,531; the full prompt holds "NEVER skip hooks" at chunk-m14bt1pz.js@1829485; on a repo with a failing pre-commit hook both arms used no `--no-verify`, no `-n` and no hook edit in 3 of 3 runs, and the full prompt cost $0.168-0.175 a run against $0.056-0.061). Only the hook-skipping rule was probed. Status: missing at 088a227c.
-  Source: risk-register/reply.md RISK-343; reports/2026-11-19-research/risks-reply.
+- [x] **OUT-2774** Returned to the register as RISK-343 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2775** Out (ADR-0177: the pile of 89 self-written memories builds over many sessions, so no run of minutes can show a gain; moved from RISK-485 in risk-register/reply.md): claudetto shall stop the agent from writing memories with no source, from attributing a self-written memory to the user, and from keeping more memories than a cap.
-  Acceptance: over a dogfood fortnight, every new memory line carries a source and none records a user opinion, and the memory index stays under its cap. Verification: measurement of memory files.
-  Basis: cited (vanilla 2.1.327 loads only the first 200 lines or 25KB of `MEMORY.md`, reminds the agent to shorten the index near the limit, and turns auto memory off with `autoMemoryEnabled: false` or `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`: <https://code.claude.com/docs/en/memory>, read 2026-11-19). REQ-REPLY-139 in prd/reply.md holds the rule for what enters a memory file. Status: missing at 088a227c.
-  Source: risk-register/reply.md RISK-485.
+- [x] **OUT-2775** Returned to the register as RISK-485 in risk-register/reply.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 
-- [x] **OUT-2776** Out (ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 bumped the version in 3 of 3 Sonnet 5.5 runs when the repo's CONTRIBUTING names the bump script and the style line tied at 3 of 3, so no line ships (reports/2026-11-19-research/risks-verification, scenario C); moved from RISK-445 in risk-register/verification.md): claudetto's rules shall have the agent bump the version at the start of a release cycle, before it installs or tests a build.
-  Acceptance: in a repo whose release recipe leaves the bump to the agent, the transcript shows the bump script run before the install. Verification: demonstration.
-  Basis: user decision. Status: missing at 088a227c. The release recipe belongs to each project (a bump script and a CONTRIBUTING line, as in ADR-0049, or an install recipe that bumps); claudetto's own `just bump` and `just release` already run it (REQ-VERIFICATION-089). A global line cannot know a project's version file or scheme.
-  Source: risk-register/verification.md RISK-445; reports/2026-11-19-research/risks-verification.
+- [x] **OUT-2776** Returned to the register as RISK-445 in risk-register/verification.md on 2026-11-20 (issue #52), because Out removed a live fault from the count.
 - [x] **OUT-2777** Out (ADR-0177 and ADR-0190: core 2.1.327 already returns a named error for a wrong tool name or bad input and the model corrects it on the next turn, and vanilla Sonnet 5.5 made 0 wrong calls in 4 of 4 natural tool runs, so no hook or line beats it (reports/2026-11-19-research/risks-verification, scenario D and the bad-input probe); moved from RISK-462 in risk-register/verification.md): claudetto shall stop an agent from calling a tool by a wrong name or with wrong input.
   Acceptance: a call to a tool name that does not exist, or with a wrong input field, returns an error that names the fault and the next call succeeds. Verification: demonstration.
   Basis: cited (claude 2.1.327 chunk-m14bt1pz.js offset 4533596 returns `Error: No such tool available: <name>` for an unknown name and `InputValidationError` for bad input; offset 4714646 raises the unknown-tool error and logs it). Status: missing at 088a227c. The grader-field and recipe-argument causes are project code, fixed in those files.

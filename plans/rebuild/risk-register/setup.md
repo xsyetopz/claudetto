@@ -43,7 +43,8 @@
   Response: avoid.
   Actions: Keep the variable out of the written env set; a setup test pins its absence.
   Trigger: A setup change adds `CLAUDE_CODE_SCRIPT_CAPS` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`.
-  Owner: setup. Status: Open.
+  Owner: setup. Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
+  Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
   Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-57bg7pbc.js@8656 (2.1.327); `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: verified on 2.1.327: when the variable is set, the mode becomes `default` and a notice reads `Permission mode forced to default`, chunk-rthqjjhy.js@3900. Dropped (2026-11-18) for the old plan's P223 source: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [x] **RISK-397** Setup leaves retired rules installed.
@@ -159,7 +160,8 @@
   - Actions: State the general cause first and fix it for every tool of that class.
   - Trigger: A fix named after one tool for a fault in a shared layer.
   - Owner: setup
-  - Status: open.
+  - Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
+  - Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
   - Source: observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14535.
 
 - [x] **RISK-404** A claudetto MCP tool disconnects in a session.
@@ -192,7 +194,8 @@
   Actions: always set a dummy ANTHROPIC_AUTH_TOKEN beside ANTHROPIC_BASE_URL. The same setup names ANTHROPIC_MODEL (line 103).
   Trigger: ANTHROPIC_BASE_URL in an environment with no ANTHROPIC_AUTH_TOKEN.
   Owner: setup.
-  Status: Open.
+  Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 5 = 5, at or below 5.
+  Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 5.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:129; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:103 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [x] **RISK-406** A plugin whose hook modifies tool output is held in Anthropic directory review.
@@ -276,6 +279,7 @@
   - Status: open (Existing controls: partial at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
   Status: closed: outside claudetto (OUT-866, ADR-0190), as the first Status line says.
+  Verified: 2026-11-19, claude 2.1.327, `git grep -n -F /reload-plugins -- plugins/` -> 1 hit, hooks/settings/start.ts:36, which only tells the user to run /reload-plugins; no claudetto code reloads a plugin.
 
 - [x] **RISK-411** The user's settings keep the retired _TEXT key.
   Verified: test, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: 'removes a retired reminder text and keeps one the user wrote' passes; the fill removes CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT only when it equals one of the two retired texts.
@@ -328,7 +332,8 @@
   Actions: the CON items on settings edits and reverts.
   Trigger: a settings write or a revert with no user step.
   Owner: setup.
-  Status: open.
+  Status: mitigated 2026-11-20 (issue #52): the fill makes Claude Code ask before an edit of the user settings file and before `git reset --hard`, `git stash`, `git clean` and `git branch -D`, so a settings change or a revert needs the user's approval.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/guards/wall/__tests__/fill.test.ts pins the ask list; hooks/guards/wall/rules.ts:47-60 holds `Bash(git reset --hard*)`, `Edit(~/.claude/settings.json)` and `Write(~/.claude/settings.json)` as ask rules.
   Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [x] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
