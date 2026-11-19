@@ -1,0 +1,12 @@
+a-1 cost=0.0732 "learn: The new dogfood README is committed only because we force-added it past .gitignore, so later edits to it or new files in `reports/` won't be tracked automatically.\ntag: Heads up\nexplain:\n**Force-added file in an ignored folder**\n- `.gitignore` tells git to skip files in `reports/`, so a new f"
+a-2 cost=0.0732 'learn: The new dogfood README sits in the gitignored reports/ folder and was force-added, so later files there will not be tracked automatically.\ntag: Heads up\nexplain:\n**Only the README in reports/ is tracked**\n- **.gitignore** tells git to skip matching files, and `reports/` is on that list.\n- To '
+a-3 cost=0.0631 'learn: none'
+a-4 cost=0.0685 'learn: none'
+a-5 cost=0.0706 'learn: none'
+a-6 cost=0.0690 'learn: The README on both branches sits in the gitignored `reports/` folder and was force-added, so the commits exist but git will not track later edits to new files there.\ntag: Heads up\nexplain:\n**Force-added files in ignored folders**\n`.gitignore` only stops git from automatically adding new files'
+b-1 cost=0.0707 'learn: The reports/ folder is gitignored, so the force-added README is now tracked, but other files you add there will not be tracked automatically.\ntag: Heads up\nexplain:\n**Force-added file in an ignored folder**\n- **.gitignore** tells git to skip matching paths when you add files. `reports/` is on'
+b-2 cost=0.0706 'learn: The dogfood README now sits in a gitignored `reports/` folder, so it was force-added and later edits may not show in git status.\ntag: Heads up\nexplain:\n**Force-added file in an ignored folder**\n`reports/` is listed in `.gitignore`, so git normally skips everything in it. We committed the READ'
+b-3 cost=0.0687 'learn: none'
+b-4 cost=0.0036 'learn: none'
+b-5 cost=0.0654 'learn: none'
+b-6 cost=0.0750 'learn: The dogfood README exists only because of a force-add on a gitignored folder, so other branches and clones will not see it unless forced too.\ntag: Heads up\nexplain:\n**Gitignored reports need force-adding every time**\n`reports/` is listed in .gitignore, so git normally refuses to track files t'

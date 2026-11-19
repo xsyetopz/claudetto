@@ -53,3 +53,19 @@
   Verified: dogfood, claude 2.1.327, 2026-11-19, clone at ba45d6dcf, same isolated config: during a register audit the card "Many risk entries have no Likelihood or Status line, and some have two Status lines" fired; a parse of plans/rebuild/risk-register/*.md in that tree -> 102 entries with neither line (each a one-line "Moved Out as OUT-N" entry) and 42 with two or more Status lines. Second sample; 0 false of 2.
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 160 pass, 0 fail.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19
+
+- [x] **RISK-510** A you-should-know card states how a tool behaves from the model's belief, and the belief is false (issue #65).
+  Category: you-should-know
+  Cause: The propose prompt ties only an absence claim to evidence in the session (RISK-500); a claim about how a tool behaves can rest on what the model remembers.
+  Event: Dogfood, claude 2.1.327, 2026-11-20, clone at fea3d5562: after a force-added commit under the gitignored `reports/`, a Heads up card said later edits to that file would be silently ignored; `git status --short` after an edit printed ` M` for it.
+  Consequence: The user is told a false fact and may act on it.
+  Likelihood: 2
+  Impact: 2
+  Existing controls: The confidence bullet in `hooks/request/propose-text.ts` asks for confidence and says to reply learn: none when evidence is incomplete; the person can dismiss the card.
+  Response: accept
+  Actions: none; recount false cards in later dogfood rounds.
+  Trigger: A second false tool-behaviour card in dogfood.
+  Owner: you-should-know
+  Status: accepted 2026-11-20; Likelihood 2 × Impact 2 = 4, and the only candidate did not beat the current prompt.
+  Verified: 2026-11-20, claude 2.1.327, claude-sonnet-5-5, replay of the propose request on the dogfood session, 6 per arm, $0.913 (reports/2026-11-20-research/ysk-tool-claim): current prompt 1 false card of 6 replies, with a sentence tying tool-behaviour claims to session output 2 false of 6.
+  Source: issue #65.
