@@ -471,3 +471,18 @@
   - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2, and no candidate beats vanilla.
   - Verified: 2026-11-20, zsh 5.9 probe: `a=ab; echo ${a^^}` gives `bad substitution` under zsh and under /bin/bash 3.2; `setopt ksh_arrays` turns `false | true; echo "exit ${pipestatus[1]}"` into `exit 0` (reports/2026-11-20-research/zsh/README.md).
   - Source: issue #61.
+- [x] **RISK-511** The engine holds a Bash command for approval when it holds a zsh parameter flag (`${(f)...}`) or a nested expansion (`${${f:t}%.ts}`), because its rm check cannot parse it (issue #67).
+  - Category: host behaviour.
+  - Cause: the 2.1.327 dangerous-rm check flags a command it cannot read the way the shell will (`unparsed_line`, byte 140788288 of the 2.1.327 binary) and asks, even when nothing is deleted.
+  - Event: dogfood at 0ac2486b5, 2026-11-20: a file-list command using `${(f)...}` and `${f:t:r}` asked for approval in auto mode, with an auto-block countdown.
+  - Consequence: one approval prompt in an interactive session, or one blocked call and a plain-syntax rewrite in an unattended one.
+  - Likelihood: 1
+  - Impact: 2
+  - Existing controls: the engine tells the model that a command that deletes nothing can be resent in syntax bash and zsh both read.
+  - Response: accept.
+  - Actions: none. A prompt line steering away from zsh-only forms cannot show a measured gain at this rate.
+  - Trigger: more than 5 commands with these forms in a week.
+  - Owner: kernel
+  - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2.
+  - Verified: 2026-11-20, probe on 2.1.327 (Haiku 5.5, $0.009): `${(f)...}` and `${${f:t}%.ts}` blocked; `${f:t:r}`, `print -l` and `basename` not blocked. Transcripts 2026-11-17 to 2026-11-19: 10 of 18,864 Bash commands used a flag or nested expansion, and 2 results carry the block message (reports/2026-11-20-research/zsh-parse/README.md).
+  - Source: issue #67.

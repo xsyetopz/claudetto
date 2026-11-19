@@ -45,3 +45,20 @@ Probe: `run.sh start`, claude 2.1.327, Sonnet 5.5, auto mode, claudetto and clau
 - Turn 2 made a side branch from HEAD~1, committed there, and answered the ancestry and conflict questions from `git merge-base --is-ancestor` and `git merge-tree`. Both answers matched a recheck (issue #48, RISK-502).
 - New fault: a you-should-know card said that later edits to the force-added file would be silently ignored, which is false (issue #65, RISK-510, accepted on a replay in reports/2026-11-20-research/ysk-tool-claim).
 - The status line read `claude-sonnet-5-5 | ctx 4% | 7d 40% | cache 99%` after turn 2.
+
+## Dogfood at 37b7f8200, 2026-11-20
+
+Probe: `run.sh start`, same setup. Turn 1 asked for a surrogate-pair test for the code-point cutter in claudetto-you-should-know, run alone, then committed.
+
+- The agent chose `fitLine` (hooks/text/fit.ts, iterates by code point), added `fitLine("a😀b", 3)` -> `"a…"`, ran only that file from a scratch copy (`claude plugin test` takes a folder, per `--help`), and committed 78e1d4061 with the co-author trailer. It reported that it did not run the typecheck or the full suite.
+- A Heads up card said the function cuts by UTF-16 units and already has a surrogate-pair test. That holds for `sliceUnitsHead` (hooks/text/text.ts, test at hooks/text/__tests__/text.test.ts:17), so the card is true.
+- New fault: the agent put the test in hooks/__tests__/behaviour.test.ts next to the existing `fitLine` test and named the departure from CONTRIBUTING.md:34. The repo had taught that placement: behaviour.test.ts and rules.test.ts held single-module unit tests. Issue #66 moved them beside their modules (0ac2486b5).
+- The status line read `claude-sonnet-5-5 | ctx 5% | 7d 40% | cache 96%`.
+
+## Dogfood at 0ac2486b5, 2026-11-20
+
+Probe: `run.sh start`, same setup.
+
+- Turn 1 asked which claudetto hooks run on SessionStart and what they write. The answer named the `hooks.json` env-file line and `registerStart` (plugins/claudetto/hooks/settings/start.ts:19). It said start.ts writes user settings (line 31) and the `setup.filled` store key (line 32). All three claims match the code. `claude plugin test plugins/claudetto` gave 132 pass, 0 fail, and the agent named the checks it did not run.
+- Turn 2 kept a file list in a shell variable. The agent used `${(f)...}` and `${f:t:r}`, and the engine's rm check asked for approval although nothing was deleted (issue #67, RISK-511, accepted). After approval, the answer was correct: one file, `instructions.ts`, 96 lines, imported by `git/__tests__/instructions.test.ts`.
+- The status line read `claude-sonnet-5-5 | ctx 5% | 7d 41% | cache 99%`.
