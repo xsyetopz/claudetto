@@ -83,6 +83,7 @@
   Basis: cited. Status: partial at 088a227c (plugin.json default and setup.test.ts deny rule exist; `git grep denyRead 088a227c` finds nothing, so the sandbox `denyRead` is not written). claude 2.1.327: sandbox.filesystem.denyRead present (chunk-ja5z738t.js@115660).
   Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:125; plugins/claudetto/.claude-plugin/plugin.json:89@088a227c; plugins/claudetto/hooks/features/setup/setup.test.ts:66@088a227c.
   Verified: claude 2.1.327, 2026-11-18. protectedPaths defaults to ~/.claudetto-holdout (plugin.json userConfig); fill.test.ts pins the Read deny and both sandbox entries. The Read mechanism is the one measured for .env. The holdout path itself was not probed, because this session may not read it.
+  Verified: PASS: rules.ts DENY_READ plus a test that asserts the rule is written; caveat: no live Read denial by Claude Code (holdout rule). Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Commit Attribution
 
@@ -108,6 +109,7 @@
   Basis: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded). Status: have at 088a227c (`plugins/claudetto/hooks/features/setup/command-rules.ts:12-13`).
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules: push each green commit to the feature branch, never force).
   Verified: claude 2.1.327, 2026-11-18. cc-inspect cli: vanilla ran a force push; with the force-push deny rules (long and short flag) both and the compound init-then-force-push were denied. fill.test.ts pins that a plain push is not denied.
+  Verified: PASS: the test asserts --force, -f and middle-wildcard deny and that a plain push is not denied; caveat: no real call. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Sandbox
 

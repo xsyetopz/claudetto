@@ -11,12 +11,14 @@
   Acceptance: no such key in the written settings, or `totalTokensReminder` "off". Verification: inspection.
   Basis: cited. `totalTokensReminder` takes off, infinite, fixed, countdown, padded-countdown (default padded-countdown with the capability, else off); `totalTokensReminderBudget` is an integer, unset; `totalTokensReminderAfterUserTurn` false is valid; `breakReminder` is opt-in, unset or `{"enabled": false}`. Status: missing at 088a227c (no match for these keys under plugins).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:793.
+  Verified: PASS: grep of plugins/ for the five removed keys finds 0 hits (re-run from B-setup report, HEAD b5f6510b4). Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 - [x] **REQ-SETUP-008** claudetto shall set `showClearContextOnPlanAccept` true and leave `plansDirectory`, `bashEditDiffEnabled`, `respondToBashCommands`, `askUserQuestionTimeout`, and `dialogExpiry` unset.
   Acceptance: the written settings hold `showClearContextOnPlanAccept: true` and none of the five other keys. Verification: inspection.
   Basis: cited, by the user's rule that a default-off feature stays unset; the defaults are in section 3. Status: partial at 088a227c (`settings.ts:172` sets `showClearContextOnPlanAccept: true`; the five keys appear nowhere in plugins).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:732; plugins/claudetto/hooks/features/setup/settings.ts:172@088a227c.
   Verified: probe, claude 2.1.327, 2026-11-18, `claude -p hi --plugin-dir plugins/claudetto` with a temp CLAUDE_CONFIG_DIR: settings.json gained `showClearContextOnPlanAccept: true`; the five keys appear nowhere in hooks/settings/defaults.ts@abed830ed.
+  Verified: PASS: hooks/settings/defaults.ts sets showClearContextOnPlanAccept true; the other five keys have 0 hits; plugin test 105 pass, binary 2.1.327. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Builtin Disable
 
@@ -26,6 +28,7 @@
   Acceptance: after a drift, user settings hold `false` for every id in the constant and the user sees the notice; a launch after the write loads no builtin. The ids include `cc-plugin-privacy@builtin`. Verification: probe.
   Basis: user decision, 2026-11-16; measured. Status: partial at 088a227c (settings.ts:63-77 `BUILTIN_PLUGINS_OFF` lists 11 ids and no `cc-plugin-privacy@builtin`; no session-start drift repair; `git grep -n privacy 088a227c -- plugins` finds no privacy id)
   Source: user decision, 2026-11-16; probe: cc-inspect `cli`, claude 2.1.325, a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call, 2026-11-16 (old plan); see [ADR-0057](../adr/0057-builtin-disable-in-user-settings.md); user answer through AskUserQuestion, 2026-11-16 18:04 UTC, all 14 builtins off, perl allowed with a diff hook, settings rewritten (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5034); probe, `claude` 2.1.325, 2026-11-16, cc-inspect `cli` `--settings` with all 14 ids `false` gave `[]` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).; probe: claude 2.1.327, 2026-11-18, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: the first run logged "claudetto turned off 13 builtin plugin(s)" and wrote all 13 ids `false`; the second run loaded 0 `@builtin` hooks modules
+  Verified: PASS: `$C plugin test plugins/claudetto` 105 pass (hooks/builtins/builtins.test.ts included), binary 2.1.327, 2026-11-19. Probe: cc-inspect cli `-p go` request holds the plugin-authoring builtin skill; with --settings setting all 13 `@builtin` ids false, the request holds none, so a launch with those values loads no builtin.
 
 ## Tool Text Keeps the Shorter Text
 
@@ -69,6 +72,7 @@
   Basis: measured. Status: have at 088a227c. Claude 2.1.327: `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` is present (chunk-2ew0jg68.js@10909); on 2.1.327 the seven-tool deny removes 12,857 bytes from a `-p` request (fake-API probe); EnterPlanMode and ExitPlanMode are already absent in `-p` mode, so five of the seven were confirmed removed.
   Source: openspec/specs/surface-trim/spec.md:48; openspec/specs/surface-trim/spec.md:147; plugins/claudetto/hooks/features/surface/trim.ts:3-7@088a227c.
   Verified: probe, claude 2.1.327, 2026-11-18, fake API on :18431: after the fill the next `-p` request held 9 tools and 31,781 bytes, the seven denied tools absent (abed830ed). Revised: ExitPlanMode stays allowed, because a plan the user starts with shift-tab is presented through it, so seven tools are denied.
+  Verified: PASS: cc-inspect cli with --settings carrying the 7-tool deny list: the first request lacked Workflow, ScheduleWakeup and ReportFindings (Cron* deferred); caveat: not the claudetto-written file. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Temp Folder Rule
 
@@ -77,6 +81,7 @@
   Acceptance: The written `sandbox` group holds `/private/var/folders` in `allowWrite` and `xcrun_db*` in `denyWrite`. Verification: inspection.
   Basis: measured. Status: missing at 088a227c.
   Source: plugins/claudetto/hooks/features/setup/settings.ts:211@088a227c (no `var/folders` in plugins/); openspec/specs/sandbox/spec.md:164.
+  Verified: PASS: guards/rules.ts:93 ALLOW_WRITE includes /private/var/folders and :81 holds the xcrun_db* deny pattern. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Setup Rules to Keep
 
@@ -100,9 +105,10 @@
 
 - [x] **REQ-SETUP-044** claudetto shall carry one version constant: each `plugin.json` `engines["claude-code"]` = `">=2.1.327"` (revised 2026-11-18: the `minimumVersion` settings write is out, because it only stops downgrades on the stable channel, chunk-ja5z738t.js@285180); no hook or mod checks the running version; claudetto runs `claude plugin validate` for the type check of a TypeScript hooks module.
   Verified: grep and plugin validate, claude 2.1.327, 2026-11-18, `claude plugin validate plugins/claudetto` passes (warning: no marketplace install line in the README) and plugin.json holds `engines["claude-code"]` ">=2.1.327"; the `minimumVersion` write is dropped (it only stops downgrades on the stable channel, chunk-ja5z738t.js@285180) and no hook checks the version.
-  Acceptance: Fill mode keeps a user value (even higher); replace mode overwrites. Claude Code refuses git/remote install below the floor with `claude update` advice; local or `--plugin-dir` installs load with a note (`>=9.0.0` still loaded under `--plugin-dir`, prediction failed). On 2.1.327 a probe confirms the local case: `plugin install q@mk` with engines `>=9.0.0` loaded with the note "needs Claude Code >=9.0.0, this is 2.1.327, but loads anyway because it's read from a local folder". The refusal for git or remote sources is verified in code only (message chunk-dfwkett1.js@7698; checks chunk-m14bt1pz.js@949377, @950266) and was not run. Verification: test; probe.
+  Acceptance: all three `plugin.json` files carry `engines["claude-code"]` `">=2.1.327"`, `claude plugin validate` passes, and no hook reads the running version. Decision: the `minimumVersion` write is dropped (revision of 2026-11-18 in the requirement text), so the fill and replace modes no longer exist. Claude Code refuses git/remote install below the floor with `claude update` advice; local or `--plugin-dir` installs load with a note (`>=9.0.0` still loaded under `--plugin-dir`, prediction failed). On 2.1.327 a probe confirms the local case: `plugin install q@mk` with engines `>=9.0.0` loaded with the note "needs Claude Code >=9.0.0, this is 2.1.327, but loads anyway because it's read from a local folder". The refusal for git or remote sources is verified in code only (message chunk-dfwkett1.js@7698; checks chunk-m14bt1pz.js@949377, @950266) and was not run. Verification: test; probe.
   Basis: reported; measured. `minimumVersion` gives no warning and only guards updates (probe 2.2); the setting `requiredMinimumVersion` exits at startup when older, which `minimumVersion` is not (present in 2.1.326: chunk-ja5z738t.js@285180 (2.1.327); `minimumVersion` is present on 2.1.327 at chunk-ja5z738t.js@285052, `requiredMinimumVersion` at @285180). Replaces the earlier floor 2.1.316-2.1.318 with a SessionStart `source=startup` `$.ui.log` warning when running below the floor (none on resume; removed as "Warn Once at Start"). A spec Purpose still says 2.1.316 while requirements say 2.1.323: stale prose. Status: have at 088a227c (settings.ts:19 MINIMUM_VERSION, :146; plugins/*/.claude-plugin/plugin.json hold engines >=2.1.323 in all 3).
   Source: openspec/specs/version-floor/spec.md:8; openspec/specs/version-floor/spec.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1454; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:768; plugins/claudetto/hooks/features/setup/settings.ts:19@088a227c; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>); openspec/changes/archive/2026-11-16-2-1-323/design.md:30.
+  Verified: PASS (acceptance rewritten, option 2): `$C plugin validate` passes for plugins/claudetto, plugins/claudetto-openspec (warnings) and plugins/claudetto-you-should-know; all three plugin.json hold engines claude-code >=2.1.327; grep of plugins/*/hooks for version reads and minimumVersion finds none; binary 2.1.327, 2026-11-19.
 
 ## Pinned Tool Versions
 
@@ -111,6 +117,7 @@
   Acceptance: git grep SCANNER_VERSION finds no hit. Verification: inspection.
   Basis: cited. Status: have at 088a227c (git grep SCANNER_VERSION finds no hit).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:382@088a227c9^ (task 18.39, the cleanup tool `mo` pinned at 1.68.0 in the tool list).
+  Verified: PASS: git grep SCANNER_VERSION under plugins/ finds 0 hits. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Alias Pinning
 
@@ -125,6 +132,7 @@
   Acceptance: both keys are written; `MAX_MCP_OUTPUT_TOKENS` sits in `env` because it is read from process env. Measured: a 20,000-char Bash print gives a 2,258-char preview plus a path to saved output; `MAX_MCP_OUTPUT_TOKENS=2000` cut a 40,000-char MCP result. At a 10,000 cap on 2.1.327 (fake API, reports/2026-11-18-research/handover-probes/mcp-spill/): 20,000 chars entered whole, 60,000 chars sent a token-count request first, and 200,000 chars became a file notice that asks the model to read the whole file. Verification: test.
   Basis: measured (2.1.323 research probes); cited (Claude Code warns on an MCP result past 10,000 tokens). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:57; plugins/claudetto/hooks/features/setup/settings.ts:137@088a227c.
+  Verified: PASS: defaults.ts bashOutputMaxChars 8000 and MAX_MCP_OUTPUT_TOKENS "10000"; the test asserts 8000 through DEFAULTS. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 ## Env Keys
 
@@ -142,6 +150,7 @@
   Acceptance: a normal run raises no avoidable permission prompt. Verification: demonstration.
   Basis: user decision, 2026-11-14. Status: partial at 088a227c.
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
+  Verified: PASS: cc-inspect cli, binary 2.1.327, 2026-11-19: with the sandbox block (enabled, autoAllowBashIfSandboxed, allowUnsandboxedCommands, excludedCommands claude *, allowWrite /private/var/folders) a Bash file-creating call ran (result done_0); with no settings the same call was not run.
 
 ## Auto Mode
 
