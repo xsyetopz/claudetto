@@ -35,3 +35,19 @@
   Status: closed. Obsolete: the digest and its log are gone (ADR-0114), so a denied call cannot be logged as one that ran.
   Verified: grep -rnE "called \{|logOutcome|digest" plugins/claudetto-you-should-know/hooks finds no code match, claude 2.1.327, 2026-11-18.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:2433; observed in transcript, 2026-11-16
+
+- [x] **RISK-500** A you-should-know card claims something is absent from a file after the session showed only part of it.
+  Category: you-should-know
+  Cause: The propose prompt asked for complete evidence but did not say that an absence claim needs the whole file, so a partial Read or a grep slice passed as proof of absence.
+  Event: A card stated that a file lacked something the file held outside the shown slice.
+  Consequence: The user is told a false fact.
+  Likelihood: 3
+  Impact: 2
+  Existing controls: The confidence bullet in `hooks/propose-text.ts` says an absence claim rests on the file's full text appearing in the session; `prompt.test.ts` pins it.
+  Response: mitigate
+  Actions: Keep the sentence and its test; count false absence cards in the next dogfood run.
+  Trigger: A card whose claim is that something is missing.
+  Owner: you-should-know
+  Status: mitigated 2026-11-19 (issue #46); live effect not measured.
+  Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 160 pass, 0 fail.
+  Source: observed in a dogfood session on 2.1.327, 2026-11-19

@@ -148,3 +148,11 @@ test("the propose prompt fills the frame and the lists: nothing yet when empty, 
 	expect(two).toContain("- ONE\n- TWO");
 	expect(two.split("(nothing yet)")).toHaveLength(1);
 });
+
+test("the propose prompt holds an absence claim to the file's full text", () => {
+	// Act
+	const prompt = proposePrompt([], []);
+
+	// Assert
+	expect(prompt).toContain("absent from a file rests on the file's full text appearing in the session");
+});
