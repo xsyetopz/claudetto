@@ -127,10 +127,12 @@
 - [x] **REQ-GUARDS-074** Moved Out as OUT-2313: the item describes a part that plugins/ does not ship.
 
 - [x] **REQ-GUARDS-076** claudetto shall claim that a path is protected against Bash writers only when the sandbox is on. With the sandbox off, a `permissions.deny` rule `Edit(path/**)` stops only the Edit tool. With the sandbox on, the sandbox merges `Edit(...)` deny paths into its write deny list (CTX-845).
-  Acceptance: setup text and rule files that name a protected path either require `sandbox.enabled` true or state that Bash writers are not stopped. A test plants a redirect, `tee`, `cp` and `sed -i` against the path, plus one write to an allowed neighbour path. It checks each result's exit code and text, not `is_error`. Verification: test.
+  Acceptance: setup text and rule files that name a protected path either require `sandbox.enabled` true or state that Bash writers are not stopped. A probe plants a redirect, `tee`, `cp` and `sed -i` against the path, plus one write to an allowed neighbour path. It checks each result's exit code and text, not `is_error`. Verification: probe.
+  Decision: plugin tests cannot start a shell (hooks modules import only their own files and "claude-code"), so the writers are checked by a cc-inspect probe.
   Basis: measured (CTX-845: with the sandbox off, all four writers wrote; with it on, all four failed with "Operation not permitted"). One commenter claimed the deny rule alone catches redirects and `tee`; the probe did not confirm that. Status: missing at 088a227c.
   Source: reports/2026-11-18-research/surface-probes/settings-probes.md; arc42/03_context_and_scope/sandbox.md CTX-845; external/2026-11-18/reddit.com-r-claudecode-comments-1xyk5mb-my-hook-blocked-claude-from-ed-20261117T224954Z.md:149 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xyk5mb/my_hook_blocked_claude_from_editing_migrations/>); reports/2026-11-18-research/dossier.md:84.
   Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true only when unset; fill.test.ts pins that a user's false is kept. cc-inspect cli: redirect, tee and cp into a denyWrite path each exited 1 Operation not permitted, the neighbour write exited 0. The sed -i case hit a missing file, so it is unproven. The sandbox-off result is not re-run.
+  Verified: probe, claude 2.1.327, 2026-11-19, cc-inspect cli with sandbox on and denyWrite on a temp folder: the redirect exited 1 with Operation not permitted, and after redirect, tee, cp and sed -i the walled file still read orig while the neighbour write read x. plugins/claudetto/README.md protectedPaths row now states that denyWrite stops shell writers only while sandbox.enabled is true.
 
 ## Code Mode Compatibility
 

@@ -83,7 +83,7 @@ Three options in the plugin settings tune the hooks:
 
 | Option | Effect |
 | --- | --- |
-| `protectedPaths` | Folders no session may read or write (default: the held-out eval folder). The fill adds a `Read` deny rule and sandbox `denyRead` and `denyWrite` for each, and a Bash call that names one, also through a glob, a variable or a `cd` to home, is refused. An empty list turns the check off. |
+| `protectedPaths` | Folders no session may read or write (default: the held-out eval folder). The fill adds a `Read` deny rule and sandbox `denyRead` and `denyWrite` for each, and a Bash call that names one, also through a glob, a variable or a `cd` to home, is refused. An empty list turns the check off. The `denyWrite` entry stops shell writers (`>`, `tee`, `cp`, `sed -i`) only while `sandbox.enabled` is true; with the sandbox off, only the `Read` deny and the Bash check apply. |
 | `memoryFreeMinPercent` | A new `Bash`, `Monitor` or `Agent` call is refused while free memory (`memory_pressure -Q`) is under this percent (default 20; 0 turns it off). A failed read never blocks. |
 | `bashTimeLimitMinutes` | The wall-time limit under Shell Commands. |
 
