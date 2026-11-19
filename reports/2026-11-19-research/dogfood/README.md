@@ -71,3 +71,12 @@ Probe: `run.sh start`, same setup. One turn ran the release checks.
 - `bun tools/check-register.ts`: 436 items, 0 in every category. The agent listed ten items at Likelihood 3 or higher whose first Status reads open or partial, and showed that each one's last Status is settled. RISK-262 and RISK-264 read "mitigated 2026-11-19".
 - `bunx tsc --noEmit` failed with TS6053 in both plugins. `run.sh` loaded the plugins from the plug clone, so the generated types existed only there. The agent said so, typechecked a stand-in copy (exit 0), and did not start a second session. Issue #68: `start` now also loads claudetto-openspec and copies the types into the working repo. After that, tsc exits 0 in both plugins of the repo clone.
 - A Heads up card said the tsc errors come from generated type files missing from the repo. That is true.
+
+## Dogfood at e91de4382, 2026-11-20 (final round)
+
+Probe: `run.sh start`, all three plugins loaded, types copied into the working repo (issue #68).
+
+- Turn 1 ran the release checks in the session and read the test logs as well as the exit codes. `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, exit 0 every time. `bunx tsc --noEmit` exited 0 in claudetto and in claudetto-you-should-know. `bun tools/check-register.ts` read 436 items, found 0 in every category, and exited 0. No risk at Likelihood 3 or higher is unsettled.
+- Turn 2 added a width-1 `fitLine` test. It went into `hooks/text/__tests__/fit.test.ts`, beside the module (issue #66 path). The suite gave 161 pass, 0 fail, and commit 07618def4 carries the co-author trailer.
+- No new fault was seen.
+- Outside the session, a fresh clone of e91de4382 with the session-written types gave the same results: three plugins passing twice, both tsc runs exit 0, register exit 0.
