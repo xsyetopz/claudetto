@@ -33,24 +33,24 @@ export function fillGuards(next: Json, added: string[], walls: readonly string[]
 	const wallDeny = walls.map((wall) => `Read(${wallRule(wall)}/**)`);
 	next["permissions"] = {
 		...permissions,
-		deny: union(permissions["deny"], [...DENY, ...wallDeny], "deny", added),
-		ask: union(permissions["ask"], ASK, "ask", added),
+		deny: union(permissions["deny"], [...DENY, ...wallDeny], "permissions.deny", added),
+		ask: union(permissions["ask"], ASK, "permissions.ask", added),
 	};
 	const sandbox = group(next["sandbox"]);
 	const filesystem = group(sandbox["filesystem"]);
 	const network = group(sandbox["network"]);
 	defaults(sandbox, { enabled: true, autoAllowBashIfSandboxed: true, allowUnsandboxedCommands: true }, "sandbox.", added);
 	defaults(network, { allowAllUnixSockets: true, allowLocalBinding: true }, "sandbox.network.", added);
-	network["allowMachLookup"] = union(network["allowMachLookup"], ["*"], "sandbox allowMachLookup", added);
-	filesystem["allowWrite"] = union(filesystem["allowWrite"], ALLOW_WRITE, "sandbox allowWrite", added);
-	filesystem["denyWrite"] = union(filesystem["denyWrite"], [...DENY_WRITE, ...walls], "sandbox denyWrite", added);
-	filesystem["denyRead"] = union(filesystem["denyRead"], [...DENY_READ, ...walls], "sandbox denyRead", added);
+	network["allowMachLookup"] = union(network["allowMachLookup"], ["*"], "sandbox.network.allowMachLookup", added);
+	filesystem["allowWrite"] = union(filesystem["allowWrite"], ALLOW_WRITE, "sandbox.filesystem.allowWrite", added);
+	filesystem["denyWrite"] = union(filesystem["denyWrite"], [...DENY_WRITE, ...walls], "sandbox.filesystem.denyWrite", added);
+	filesystem["denyRead"] = union(filesystem["denyRead"], [...DENY_READ, ...walls], "sandbox.filesystem.denyRead", added);
 	filesystem["allowRead"] = union(
 		filesystem["allowRead"],
 		["~/Library/Keychains/login.keychain-db"],
-		"sandbox allowRead",
+		"sandbox.filesystem.allowRead",
 		added,
 	);
-	sandbox["excludedCommands"] = union(sandbox["excludedCommands"], EXCLUDED, "sandbox excludedCommands", added);
+	sandbox["excludedCommands"] = union(sandbox["excludedCommands"], EXCLUDED, "sandbox.excludedCommands", added);
 	next["sandbox"] = { ...sandbox, filesystem, network };
 }

@@ -105,5 +105,7 @@ describe("fill notice", () => {
 		expect(notice.length).toBeLessThan(2000);
 		expect(notice).toContain("outputStyle");
 		expect(notice).toMatch(/permissions\.deny \(\d+ entries\)/);
+		expect(notice.match(/permissions\.deny/g)?.length).toBe(1);
+		expect(notice).not.toMatch(/(^|, )(deny|ask|sandbox) \(/);
 	});
 });
