@@ -80,3 +80,11 @@ Probe: `run.sh start`, all three plugins loaded, types copied into the working r
 - Turn 2 added a width-1 `fitLine` test. It went into `hooks/text/__tests__/fit.test.ts`, beside the module (issue #66 path). The suite gave 161 pass, 0 fail, and commit 07618def4 carries the co-author trailer.
 - No new fault was seen.
 - Outside the session, a fresh clone of e91de4382 with the session-written types gave the same results: three plugins passing twice, both tsc runs exit 0, register exit 0.
+
+## Dogfood at 7f9a43bad, 2026-11-20 (final round)
+
+Probe: `run.sh start`, same setup. Before the session, a fresh clone of 7f9a43bad loaded all three plugins in its own interactive session, so core wrote the types there. On that clone, `claude plugin test` passed twice for each plugin (132, 1, 160 pass, 0 fail), `bunx tsc --noEmit` exited 0 in both plugins, and `bun tools/check-register.ts` exited 0.
+
+- Turn 1 ran the release checks in the session. `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, exit 0 every time. `bunx tsc --noEmit` exited 0 in both plugins. `bun tools/check-register.ts` read 436 items and exited 0, with no unsettled risk at Likelihood 3 or higher.
+- Turn 2 committed on a new branch `side` and on the starting branch, both editing the same line. Then it asked whether `side` is an ancestor and whether a merge would conflict. The prompt named a root README.md, which does not exist, and the agent asked which README to edit instead of guessing. Both commits, 21174e8b8 and 52fda00e3, carry the co-author trailer (issue #47). The agent answered "not an ancestor" and "would conflict", citing `git merge-base --is-ancestor` (exit 1) and `git merge-tree --write-tree` (exit 1). An outside rerun of both commands gave the same exits (issue #48). The tree stayed clean, and nothing was merged.
+- No new fault was seen.
