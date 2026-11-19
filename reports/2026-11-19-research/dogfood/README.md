@@ -62,3 +62,12 @@ Probe: `run.sh start`, same setup.
 - Turn 1 asked which claudetto hooks run on SessionStart and what they write. The answer named the `hooks.json` env-file line and `registerStart` (plugins/claudetto/hooks/settings/start.ts:19). It said start.ts writes user settings (line 31) and the `setup.filled` store key (line 32). All three claims match the code. `claude plugin test plugins/claudetto` gave 132 pass, 0 fail, and the agent named the checks it did not run.
 - Turn 2 kept a file list in a shell variable. The agent used `${(f)...}` and `${f:t:r}`, and the engine's rm check asked for approval although nothing was deleted (issue #67, RISK-511, accepted). After approval, the answer was correct: one file, `instructions.ts`, 96 lines, imported by `git/__tests__/instructions.test.ts`.
 - The status line read `claude-sonnet-5-5 | ctx 5% | 7d 41% | cache 99%`.
+
+## Dogfood at c6a1f1214, 2026-11-20
+
+Probe: `run.sh start`, same setup. One turn ran the release checks.
+
+- `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail in every run.
+- `bun tools/check-register.ts`: 436 items, 0 in every category. The agent listed ten items at Likelihood 3 or higher whose first Status reads open or partial, and showed that each one's last Status is settled. RISK-262 and RISK-264 read "mitigated 2026-11-19".
+- `bunx tsc --noEmit` failed with TS6053 in both plugins. `run.sh` loaded the plugins from the plug clone, so the generated types existed only there. The agent said so, typechecked a stand-in copy (exit 0), and did not start a second session. Issue #68: `start` now also loads claudetto-openspec and copies the types into the working repo. After that, tsc exits 0 in both plugins of the repo clone.
+- A Heads up card said the tsc errors come from generated type files missing from the repo. That is true.
