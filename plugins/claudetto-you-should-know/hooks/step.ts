@@ -1,8 +1,8 @@
-/** The turn steps: every sixth one may ask the model for a note to show. */
+/** The turn steps: the third and every sixth one may ask the model for a note to show. */
 
 import type { EngineInterface, On } from "claude-code";
 
-import { CHECK_EVERY, CLEAR_AFTER_PROMPTS, LOOKS_TO_SKIP_MAX } from "./constants";
+import { CHECK_EVERY, FIRST_CHECK, CLEAR_AFTER_PROMPTS, LOOKS_TO_SKIP_MAX } from "./constants";
 import { looksToSkipAfter } from "./backoff";
 import { runCheck } from "./check";
 import type { Ctx } from "./context";
@@ -22,8 +22,8 @@ import {
 
 export type StepAt = { readonly turnId: string; readonly index: number };
 
-/** True on the steps that may start a check: the sixth, twelfth and so on. */
-export const isCheckStep = (index: number): boolean => index > 0 && index % CHECK_EVERY === 0;
+/** True on the steps that may start a check: the third, then the sixth, twelfth and so on. */
+export const isCheckStep = (index: number): boolean => index === FIRST_CHECK || (index > 0 && index % CHECK_EVERY === 0);
 
 async function setView($: EngineInterface, id: string, view: undefined): Promise<void> {
 	const rows = await $.store.get("sessions");

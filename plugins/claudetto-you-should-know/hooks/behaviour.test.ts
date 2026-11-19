@@ -52,9 +52,9 @@ describe("looksToSkipAfter", () => {
 });
 
 describe("isCheckStep gating", () => {
-	test("fires only on steps 6 and 12 of 0..13", () => {
+	test("fires only on steps 3, 6 and 12 of 0..13", () => {
 		const fired = Array.from({ length: 14 }, (_, i) => i).filter(isCheckStep);
-		expect(fired).toEqual([6, 12]);
+		expect(fired).toEqual([3, 6, 12]);
 	});
 });
 

@@ -430,6 +430,7 @@
   Basis: reported. Status: done 2026-11-19: in an interactive dogfood session on 2.1.327 the note "Heads up · retry.test.js times its own busy-wait loop and never calls any retry code, so a seeded, always-green version would prove nothing." showed at 23:20:42 while the agent was still probing seeds, before its edit and commit of retry.test.js (1 of 1 sessions; debug log `$.model.fork` 6572 ms, then `ui.render` above-prompt).
   Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
   Decision: ADR-0190, an earlier first check at step 3, then every 6th step; the prompt and note texts stay verbatim. Open until a dogfood session shows the note before the work.
+  Verified: the ADR-0190 first check at step 3 was missing (step.ts fired on 6, 12 only; found by re-verification 2026-11-19). isCheckStep now fires on 3, 6, 12, … (step.test.ts, behaviour.test.ts failed first: 134 pass, 2 fail; after the fix 136 pass, 0 fail, claude plugin test plugins/claudetto-you-should-know on claude 2.1.328 test harness). The timing claim rests on the 2026-11-19 dogfood note before the work.
 
 ## Claude Code 2.1.326 Mod Rendering
 

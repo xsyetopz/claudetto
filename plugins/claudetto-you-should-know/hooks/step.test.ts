@@ -7,8 +7,9 @@ describe("isCheckStep", () => {
 		expect(isCheckStep(0)).toBe(false);
 	});
 
-	test("fires on every sixth step", () => {
-		expect([1, 2, 3, 4, 5, 7, 11].some(isCheckStep)).toBe(false);
+	test("fires first on step 3, then on every sixth step", () => {
+		expect(isCheckStep(3)).toBe(true);
+		expect([1, 2, 4, 5, 7, 9, 11].some(isCheckStep)).toBe(false);
 		expect([6, 12, 18].every(isCheckStep)).toBe(true);
 	});
 });

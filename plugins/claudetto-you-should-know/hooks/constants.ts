@@ -1,5 +1,7 @@
 /** Fixed limits, keys, and plain strings of the you-should-know plugin. */
 
+/** The first check comes early, because notes that wait for step 6 arrive after the work they concern (ADR-0190). */
+export const FIRST_CHECK = 3;
 export const CHECK_EVERY = 6;
 export const CLEAR_AFTER_PROMPTS = 2;
 export const CHECKS_KEPT = 3;
