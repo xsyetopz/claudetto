@@ -17,6 +17,7 @@
   Basis: cited. Status: partial at 088a227c (settings.ts:93 enabledPlugins).
   Source: openspec/specs/setup/spec.md:214; plugins/claudetto/hooks/features/setup/settings.ts:93@088a227c; chunk-m14bt1pz.js@4830970 (claude 2.1.327 binary, read 2026-11-18); `chunk-wqb2b4v0.js@4661039` (claude 2.1.325 binary) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
   Verified: source already on 2.1.327.
+  Verified: PASS: claude-platform is registered at chunk-syz79m2z.js@1754; 'cc-plugin-claude-platform' has 0 hits. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
 - [x] **CTX-439** Vanilla launch: the init `plugins` list holds `agents-md`, `privacy`, `plugin-authoring`; traces are the skill text in request 1 and `plugins/store/cc-plugin-agents-md_builtin-*.json`. On 2.1.325 `--settings` with `{"enabledPlugins":{"cc-plugin-plugin-authoring@builtin":false}}` removes `plugin-authoring`, which vanilla finds in request 1; a project `.claude/settings.json` disables agents-md and plugin-authoring; a plugin-shipped `settings.json` does not; `claude plugin list --json` on vanilla prints `[]`.
   Acceptance: rerun of the probe prints the same list. Verification: probe. The probe table reproduces. Verification: probe.
