@@ -362,7 +362,7 @@
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
 
 - [x] **RISK-493** The first-run settings notice is cut off on the terminal.
-  Verified: dogfood, claude 2.1.327, 2026-11-19: a fresh config dir drew core's warning `$.ui.log: a text (3163 characters) is drawn up to its first 2000 on the terminal`; after the fix, the test "counts list entries per key so a first fill fits the 2000 characters the terminal draws" passes (72 of 72 in `claude plugin test`).
+  Verified: dogfood, claude 2.1.327, 2026-11-19: a fresh config dir drew core's warning `$.ui.log: a text (3163 characters) is drawn up to its first 2000 on the terminal`; after the fix, the test "counts list entries per key so a first fill fits the 2000 characters the terminal draws" passes (72 of 72 in `claude plugin test`). The notice names keys by full path (`permissions.deny`, `sandbox.filesystem.allowWrite`) since c286bcb81, because the dogfood showed bare `deny` and `sandbox` labels. The `⚠ claudetto:` prefix on the line is core’s: a minimal plugin `stp` whose hook logs "plain line" drew `⚠ stp: stp: plain line` on 2.1.327 (dogfood probe, 2026-11-19), so claudetto cannot drop it and keeps the notice text plain.
   Category: Defect.
   Cause: `hooks/settings/start.ts` joined every added list entry into one `$.ui.log` line, and the terminal draws 2000 characters of it.
   Event: the person sees a truncated list of what claudetto changed in their settings.
