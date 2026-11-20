@@ -1,0 +1,46 @@
+{
+	"name": "claudetto",
+	"version": "0.0.0",
+	"private": true,
+	"workspaces": {
+		"packages": [],
+		"catalog": {
+			"@types/bun": "1.4.5",
+			"@types/node": "26.6.6",
+			"eslint-plugin-jsdoc": "65.5.0",
+			"markdownlint-cli2": "0.24.2",
+			"markdownlint-rule-title-case-style": "0.4.3",
+			"oxlint": "1.94.0",
+			"oxlint-tsgolint": "7.0.2007",
+			"typescript": "7.0.2"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"format": "bun fmt",
+		"format:check": "bun fmt --check",
+		"guard": "just typescript::guard",
+		"lint": "just lint",
+		"lint:fix": "just lint-fix",
+		"test": "bun test --pass-with-no-tests",
+		"typecheck": "bun check",
+		"verify": "bun run --sequential format:check typecheck lint guard test"
+	},
+	"devDependencies": {
+		"@types/bun": "catalog:",
+		"@types/node": "catalog:",
+		"eslint-plugin-jsdoc": "catalog:",
+		"markdownlint-cli2": "catalog:",
+		"markdownlint-rule-title-case-style": "catalog:",
+		"oxlint": "catalog:",
+		"oxlint-tsgolint": "catalog:",
+		"typescript": "catalog:"
+	},
+	"overrides": {
+		"@types/node": "26.6.6"
+	},
+	"engines": {
+		"bun": ">=1.4.5"
+	},
+	"packageManager": "bun@1.4.5"
+}

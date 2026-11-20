@@ -37,7 +37,7 @@ hooks/
 - Run one plugin's tests with `claude plugin test plugins/<plugin>`; repository tooling tests run with
   `bun test --timeout 60000 tools`.
 
-## Before a pull request
+## Before a Pull Request
 
 - `just verify` validates, checks gating hooks for `.catch`, typechecks and tests every shipped plugin. It
   must pass.

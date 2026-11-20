@@ -1,0 +1,31 @@
+{
+	"$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/v0.24.0/schema/markdownlint-cli2-config-schema.json",
+	"globs": ["**/*.md"],
+	"gitignore": true,
+	// A repo without a .gitignore must not have its dependencies linted or fixed.
+	"ignores": [
+		"**/node_modules/**",
+		"**/target/**",
+		"**/.build/**",
+		".claude/**",
+		"openspec/**",
+		"reports/**"
+	],
+	// A custom rule must be named here to load.
+	"customRules": ["markdownlint-rule-title-case-style"],
+	"config": {
+		"default": true,
+		// Lines wrap where the writer breaks them; prose is not reflowed.
+		"line-length": false,
+		// A changelog repeats Added, Changed, and Fixed under each version.
+		"no-duplicate-heading": {
+			"siblings_only": true
+		},
+		"table-column-style": {
+			"style": "compact"
+		},
+		"title-case-style": {
+			"case": "title"
+		}
+	}
+}

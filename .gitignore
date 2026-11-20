@@ -56,7 +56,6 @@ node_modules
 .env
 .env.*
 !.env.example
-*.bak
 *.log
 *.tmp
 *.swp
@@ -94,11 +93,16 @@ node_modules
 .idea/httpRequests
 *.iws
 .zed/
+
+# Coding agents' worktrees: whole checkouts that a formatter or linter walking the tree
+# would check again.
+.claude/worktrees/
 # <<< bedrock
 
 # >>> typescript-bedrock
 # Adapted from github/gitignore@41862c8 (CC0-1.0): Node.
-node_modules/
+# No slash: a worktree may link its node_modules to the main checkout's.
+node_modules
 dist/
 coverage/
 .nyc_output/
@@ -118,3 +122,6 @@ coverage/
 # Stryker work copy and reports of `just mutate`.
 /.stryker-tmp/
 /reports/mutation/
+
+# Plugin eval results (ADR-0193).
+/plugins/claudetto-spec/evals/results/

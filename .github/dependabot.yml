@@ -1,0 +1,22 @@
+version: 2
+updates:
+
+# >>> bedrock
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+# <<< bedrock
+
+# >>> typescript-bedrock
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      bun-dependencies:
+        patterns: ["*"]
+# <<< typescript-bedrock

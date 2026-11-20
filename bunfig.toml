@@ -1,0 +1,60 @@
+# Bun 1.4.5+ configuration. Reference: https://bun.com/docs/runtime/bunfig
+
+# No `.env` file is loaded, so no developer secret reaches a test, script, or hook.
+env = false
+telemetry = false
+
+[install]
+exact = true
+linker = "isolated"
+# Never install a missing package while a script runs; `bun install` is the only way in.
+auto = "disable"
+saveTextLockfile = true
+
+[run]
+# Scripts and `#!/usr/bin/env node` binaries (such as oxlint) run on Bun, even where Node.js is installed.
+bun = true
+# One shell syntax on Linux, macOS, and Windows.
+shell = "bun"
+noOrphans = true
+
+[test]
+randomize = true
+coverage = true
+coverageSkipTestFiles = true
+# The threshold is enforced only while the `text` reporter is on.
+coverageReporter = ["text", "lcov"]
+coverageThreshold = { lines = 0, functions = 0 }
+# Agent worktrees and spec drafts hold copies of the tests.
+pathIgnorePatterns = [".claude/**", "openspec/**", "plugins/**", "reports/**"]
+
+[fmt]
+useTabs = true
+tabWidth = 2
+printWidth = 80
+semi = true
+singleQuote = false
+# Bedrock keeps no trailing comma in any language that lets it choose.
+trailingComma = "none"
+endOfLine = "lf"
+sortImports = true
+sortPackageJson = { sortScripts = true }
+ignorePatterns = [
+	# bedrock keeps its marked blocks at one indent, which the YAML formatter moves.
+	".github/dependabot.yml",
+	"**/coverage/",
+	"**/dist/",
+	"**/*.gen.*",
+	"**/*.md",
+	"**/*.mdx",
+	# Cargo.toml and friends follow rustfmt's style in a repo that also has Rust.
+	"**/*.toml",
+	"**/target/",
+	".claude/",
+	"openspec/"
+]
+
+# YAML cannot use tabs. Markdown is left to markdownlint, which keeps tables compact.
+[[fmt.overrides]]
+files = ["*.yml", "*.yaml"]
+options = { useTabs = false }
