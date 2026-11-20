@@ -195,5 +195,6 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0189](../adr/0189-block-scope-over-vanilla.md) | Build Ten Blocks Over Vanilla 2.1.327; OpenSpec Stays Out | accepted | 2026-11-18 |
 | [ADR-0190](../adr/0190-triage-decisions-by-agent.md) | Triage Choices Settled by the Rebuild Agent | accepted | 2026-11-18 |
 | [ADR-0191](../adr/0191-commit-trailer-credits-an-account.md) | The Commit Trailer Credits Claude's Account | accepted | 2026-11-19 |
-| [ADR-0192](../adr/0192-claudetto-spec-replaces-openspec.md) | claudetto-spec Replaces claudetto-openspec | accepted | 2026-11-21 |
+| [ADR-0192](../adr/0192-claudetto-spec-replaces-openspec.md) | `claudetto-spec` Replaces `claudetto-openspec` | accepted | 2026-11-21 |
 | [ADR-0193](../adr/0193-plugin-evals-with-integrity-rules.md) | Plugin Evals Through `claude plugin eval`, Under Integrity Rules | accepted | 2026-11-21 |
+| [ADR-0194](../adr/0194-standards-basis.md) | Two Standards Bases: The Claude Code Harness and Open Industry Standards | accepted | 2026-11-21 |
