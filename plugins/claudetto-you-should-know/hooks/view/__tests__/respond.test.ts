@@ -5,7 +5,11 @@ import { expect, test } from "claude-code/testing";
 import { rowsOf } from "../../session/rows";
 import { newCtx } from "../../shared/context";
 import { actionsFor } from "../actions";
-import { RESPOND_BLOCKED, RESPOND_NOT_FILLED } from "../draft";
+import {
+	RESPOND_BLOCKED,
+	RESPOND_MAYBE_FILLED,
+	RESPOND_NOT_FILLED
+} from "../draft";
 
 const LINE = "Tests run in order.";
 
@@ -39,7 +43,7 @@ const hookEngine = async ($: Engine, on: On): Promise<EngineInterface> => {
 const engine = async (
 	$: Engine,
 	on: On,
-	fill: { isFilled: boolean; refusal?: "dialog" | "no_composer" }
+	fill: { isFilled: boolean; refusal?: "dialog" | "no_composer" | "unanswered" }
 ) => {
 	const real = await hookEngine($, on);
 	const kept = new Map<string, unknown>();
@@ -119,6 +123,21 @@ test("Chat refused for another reason toasts the not-filled text (REQ-055)", asy
 
 	// Assert
 	expect(seen.toasts).toEqual([RESPOND_NOT_FILLED]);
+	expect(seen.submitted).toEqual([]);
+});
+
+test("Chat refused with no app answering toasts that the note may be in the box and submits nothing (REQ-055)", async ($$, on) => {
+	// Arrange
+	const { $, seen } = await engine($$, on, {
+		isFilled: false,
+		refusal: "unanswered"
+	});
+
+	// Act
+	await actionsFor($, "s1", newCtx()).respond(LINE, [card], "Heads up");
+
+	// Assert
+	expect(seen.toasts).toEqual([RESPOND_MAYBE_FILLED]);
 	expect(seen.submitted).toEqual([]);
 });
 

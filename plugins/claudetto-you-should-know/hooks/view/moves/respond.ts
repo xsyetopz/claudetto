@@ -10,6 +10,7 @@ import {
 	replacing,
 	RESPOND_BLOCKED,
 	RESPOND_BOX_BUSY,
+	RESPOND_MAYBE_FILLED,
 	RESPOND_NOT_FILLED,
 	respondDraft
 } from "../draft";
@@ -18,9 +19,15 @@ import type { State } from "./state";
 /** Tells the person why the box refused the draft; the card stays so they can try again. */
 function toastRefusal(
 	$: EngineInterface,
-	refusal: "no_composer" | "dialog" | undefined
+	refusal: "no_composer" | "dialog" | "unanswered" | undefined
 ): void {
-	$.ui.toast(refusal === "dialog" ? RESPOND_BLOCKED : RESPOND_NOT_FILLED);
+	// `unanswered` (2.1.330): an app was asked and none answered, so the text may have landed.
+	const text = {
+		dialog: RESPOND_BLOCKED,
+		unanswered: RESPOND_MAYBE_FILLED,
+		no_composer: RESPOND_NOT_FILLED
+	}[refusal ?? "no_composer"];
+	$.ui.toast(text);
 	$.ui.invalidate("ui.render");
 }
 
