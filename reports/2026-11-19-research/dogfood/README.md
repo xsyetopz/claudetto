@@ -129,3 +129,22 @@ risks: 436; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 - No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
 - The session agent wrote and committed the section above. A fresh clone of 72796b825 outside the session gave the same test counts twice, with no timeout, and tsc and register exit 0.
 - New fault: the agent called `Monitor` with a ToolSearch input (`select:Monitor`) and got core's InputValidationError, then waited with a Bash loop (session 1c9f6d80; issue #76, RISK-512, accepted at Likelihood 1 × Impact 1).
+
+## Dogfood at 5d1f30e46, 2026-11-20 (final round)
+
+Checks run from a clean tree at 5d1f30e46.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 99, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
