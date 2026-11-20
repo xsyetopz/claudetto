@@ -191,3 +191,5 @@ risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 
 - reports/ paths cited under plans/rebuild: 99 distinct, 99 exist in this clone, 0 missing.
 - No test failed and the two runs of each plugin matched, so nothing was flaky.
+- Outside check of session c7e93c52: 13 tool calls, 2 errored. One was the deferred-tool slip (`Monitor` called with `select:Monitor`), a repeat of RISK-512; follow-up issue #79 rechecked its rate (first `Monitor` call a slip in 34 of 186 sessions, never repeated) and kept it accepted. The other was core's block on a foreground `sleep 100`, the known RISK-187. `bunx tsc` ran sandboxed with no registry denial this time (RISK-513).
+- Between rounds, the RISK-507 recheck (#64) ran on the releases already on disk: 2.1.328 and 2.1.329 still resend the fork's last message as a string (reports/2026-11-20-research/fork-recheck).
