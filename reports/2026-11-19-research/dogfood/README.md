@@ -279,3 +279,43 @@ Outside check, made after the session's commit:
 - Session d2ace84e: 12 tool calls, 2 errored. A `grep -c` loop exited 1 on a file with no match, which is grep's documented exit for zero matches, not a fault. The first `gh` call was denied `api.github.com`; the session reran it with that host in `allowed_domains`. The denial is the sandbox's per-command network allowance, which ADR-0188 still described as `allowedDomains ["*"]`, so issue #81 widened RISK-513 to every unlisted host and corrected the ADR (c578d6ac3).
 - `gh` found the repo through the clone's `github` remote with no slug given, which verifies the fix for #80 (1ff2c04a2).
 - One new ticket (#81), so another round follows.
+
+## Dogfood at 3f72b84bf, 2026-11-20
+
+Clean tree, claude plugin test run twice per plugin.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 438 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 100 distinct paths, 0 missing | 0 |
+| `gh issue list --state open` (xsyetopz/claudetto) | 1 open issue: #64 | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+
+Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 81 (read only, `gh issue view`, exit 0 each):
+
+- Closed, status:done, a comment starting with "Resolution": 43 44 47 48 51 52 57 59 60 61 62 63 65 66 67 68 69 70 71 72 75 76 77 78 79 80 81
+- #64: OPEN, status:blocked, no Resolution comment
+- #73 and #74 are open Dependabot pull requests, not issues: no status label, no comments, no Resolution comment. `gh issue list` does not list them.
+
+Outside check: not run for this round.
