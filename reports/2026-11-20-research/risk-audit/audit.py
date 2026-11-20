@@ -4,6 +4,8 @@ usage: python3 -I audit.py <risk-register-dir> [--all]
 Prints every risk at Likelihood 3 or higher, every risk that fails a check, and with --all every risk.
 A check fails when the last Status names no settled state, when the entry has no Verified line,
 or when the Response line contradicts the Status (a "transfer" response on a "mitigated" risk, say).
+The last two lines give the count per settled state, read from each risk's last Status
+(an inline one too) or its "Moved Out as" title, and the totals.
 Exits 1 when any risk fails a check.
 """
 import glob
@@ -34,10 +36,14 @@ def entries(path):
         }
 
 
+def state_of(e):
+    tail = re.sub(r"^.*?Status:\**\s*", "", e["status"]).lower()
+    return next((s for s in SETTLED if tail.startswith(s)), "moved out" if e["moved"] else None)
+
+
 def problems(e):
     found = []
-    tail = re.sub(r"^.*?Status:\**\s*", "", e["status"]).lower()
-    state = next((s for s in SETTLED if tail.startswith(s)), "moved out" if e["moved"] else None)
+    state = state_of(e)
     if state is None:
         found.append("last Status names no settled state")
     if e["verified"] == 0 and not e["moved"]:
@@ -57,7 +63,10 @@ def main():
             mark = "FAIL " + "; ".join(issues) if issues else "ok"
             print(f"{e['id']} [{e['file']}] L{e['L']} Response={e['response'] or '-'} Verified={e['verified']} {mark}\n    {e['status'] or '(moved out in title)'}")
     high = [e for e in rows if e["L"] >= 3]
-    print(f"risks: {len(rows)}; at Likelihood 3 or higher: {len(high)}; failing a check: {bad}")
+    counts = {s: sum(state_of(e) == s for e in rows) for s in SETTLED}
+    counts["unsettled"] = sum(state_of(e) is None for e in rows)
+    print("per state: " + ", ".join(f"{s} {n}" for s, n in counts.items()))
+    print(f"risks: {len(rows)}; at Likelihood 3 or higher: {len(high)}; unsettled at Likelihood 3 or higher: {sum(state_of(e) is None for e in high)}; failing a check: {bad}")
     sys.exit(1 if bad else 0)
 
 
