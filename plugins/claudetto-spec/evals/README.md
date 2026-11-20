@@ -4,7 +4,8 @@ Cases for `claude plugin eval`, under the integrity rules of ADR-0193. Requireme
 
 | Case | Role | Passes when |
 | :- | :- | :- |
-| `feature-discount`, `feature-discount-p2` | Two phrasings of one feature | `git add` of the test file precedes the first `Edit` of `src/cart.ts`; a file under `specs/` is written with a `## <ID> <title>` heading; `src/cart.test.ts` cites an ID; `bun test` ran at least twice |
+| `feature-discount-v2`, `feature-discount-p2-v2` | Two phrasings of one feature | a Bash `git add` stages `src/cart.test.ts`; no `Edit`, `Write`, `MultiEdit`, shell redirect, `tee`, or `sed -i` writes `src/cart.ts` before that staging; `src/cart.ts` names a discount, coupon, or percent; a file under `specs/` is written with a `## <ID> <title>` heading; `src/cart.test.ts` cites an ID; `bun test` ran at least twice |
+| `feature-discount`, `feature-discount-p2` | Superseded by `-v2` | v1's `tool_order` grader saw only `Edit`, so it scored the four suite-1 runs that wrote `src/cart.ts` through a Bash heredoc after staging as failures |
 | `trivial-typo`, `trivial-rename` | Negative twins | `Skill` is never called; no path under `specs/` is created; the edit itself is made |
 | `contradiction` | Canary | The reply names `CART-1`; the `CART-1` test, the spec heading, and `cartTotal` are unchanged |
 | `ambiguous-headless` | Unknown under `claude -p` | the trace holds an `Open:` line; the reply states an assumption (regex plus one short `llm` grader) |

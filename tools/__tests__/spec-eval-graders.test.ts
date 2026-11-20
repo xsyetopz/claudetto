@@ -2,84 +2,15 @@ import { expect, test } from "bun:test";
 import { mkdtemp, readdir, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-
 // ADR-0193 rule 3: each regex grader of the claudetto-spec eval suite has a
 // known-good and a known-bad sample, and the pattern must reject the bad one.
 
-const evalsDir = join(
-	import.meta.dir,
-	"..",
-	"..",
-	"plugins",
-	"claudetto-spec",
-	"evals"
-);
-
-interface Grader {
-	flags: string;
-	match: string;
-	pattern: string;
-	type: string;
-}
-
-interface Sample {
-	bad: string;
-	good: string;
-}
-
-function text(value: unknown): string {
-	return typeof value === "string" ? value : "";
-}
-
-function toGrader(front: unknown): Grader {
-	const fields = new Map(Object.entries(front ?? {}));
-	return {
-		flags: text(fields.get("flags")),
-		match: text(fields.get("match")),
-		pattern: text(fields.get("pattern")),
-		type: text(fields.get("type"))
-	};
-}
-
-async function readGrader(
-	dir: string,
-	file: string
-): Promise<[string, Grader]> {
-	const body = await readFile(join(dir, file), "utf8");
-	const front = /^---\n(?<yaml>[\s\S]*?)\n---/u.exec(body)?.groups?.["yaml"];
-	return [file.replace(/\.md$/u, ""), toGrader(Bun.YAML.parse(front ?? ""))];
-}
-
-async function loadGraders(): Promise<Map<string, Grader>> {
-	const entries = await readdir(evalsDir, { withFileTypes: true });
-	const cases = entries.filter(
-		(entry) => entry.isDirectory() && !entry.name.startsWith(".")
-	);
-	const perCase = await Promise.all(
-		cases.map(async (entry) => {
-			const dir = join(evalsDir, entry.name, "graders");
-			const names = await readdir(dir);
-			const files = names.filter((f) => f.endsWith(".md"));
-			const pairs = await Promise.all(files.map((f) => readGrader(dir, f)));
-			return pairs.map(([name, grader]): [string, Grader] => [
-				`${entry.name}/${name}`,
-				grader
-			]);
-		})
-	);
-	return new Map(perCase.flat());
-}
-
-/** Applies a regex grader the way the docs define `match`: JavaScript regex, only the grader's own flags. */
-function passes(grader: Grader, sample: string): boolean {
-	const exact = /^count:(?<n>\d+)$/u.exec(grader.match)?.groups?.["n"];
-	if (exact !== undefined) {
-		const all = new RegExp(grader.pattern, `${grader.flags}g`);
-		return [...sample.matchAll(all)].length === Number(exact);
-	}
-	const found = new RegExp(grader.pattern, grader.flags).test(sample);
-	return grader.match === "not_contains" ? !found : found;
-}
+import {
+	evalsDir,
+	loadGraders,
+	passes,
+	type Sample
+} from "./spec-eval-graders";
 
 const featureSamples: [string, Sample][] = [
 	[
@@ -101,6 +32,42 @@ const featureSamples: [string, Sample][] = [
 		{
 			bad: 'test("applies the percent", () => {\n\t// DISC-1\n});\n',
 			good: 'test("DISC-1 applies the percent", () => {\n});\n'
+		}
+	]
+];
+
+// Trace fragments shaped like `claude plugin eval` trace lines (2.1.330). The skill
+// text itself says "`git add` the test files", so only a Bash tool input may count.
+const skillDecoy = String.raw`{"type":"tool_result","content":"Launching skill: claudetto-spec:spec\n4. Red: run them failing, then git add the test files."}`;
+const stageTests = String.raw`{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"bun test src/cart.test.ts; git add src/cart.test.ts","description":"Stage red tests"}}`;
+const heredocImpl = String.raw`{"type":"tool_use","id":"t2","name":"Bash","input":{"command":"cat >> src/cart.ts <<'EOF'\nexport function applyDiscount() {}\nEOF"}}`;
+const editImpl = String.raw`{"type":"tool_use","id":"t3","name":"Edit","input":{"replace_all":false,"file_path":"/private/tmp/e-X/home/cwd/src/cart.ts","old_string":"a","new_string":"b"}}`;
+const writeTest = String.raw`{"type":"tool_use","id":"t4","name":"Write","input":{"file_path":"/private/tmp/e-X/home/cwd/src/cart.test.ts","content":"test(\"DISC-1\", () => {});"}}`;
+const sedImpl = String.raw`{"type":"tool_use","id":"t5","name":"Bash","input":{"command":"sed -i '' 's/a/b/' src/cart.ts"}}`;
+
+/** Traces that write `src/cart.ts` before the tests are staged; `staged-before-impl` must fail each. */
+const unstagedImplTraces = [
+	[skillDecoy, writeTest, editImpl, stageTests],
+	[skillDecoy, writeTest, heredocImpl, stageTests],
+	[skillDecoy, writeTest, sedImpl],
+	[writeTest, editImpl]
+].map((lines) => lines.join("\n"));
+
+const v2Samples: [string, Sample][] = [
+	[
+		"impl-written",
+		{
+			bad: "export function cartTotal(items: Item[]): number {\n\treturn 0;\n}\n",
+			good: "export function applyCoupon(total: number, pct: number): number {\n\treturn total;\n}\n"
+		}
+	],
+	[
+		"staged-before-impl",
+		{
+			bad: unstagedImplTraces[1] ?? "",
+			good: [skillDecoy, writeTest, stageTests, heredocImpl, editImpl].join(
+				"\n"
+			)
 		}
 	]
 ];
@@ -179,6 +146,11 @@ const samples = new Map<string, Sample>([
 			`${name}/${grader}`,
 			sample
 		])
+	),
+	...["feature-discount-v2", "feature-discount-p2-v2"].flatMap((name) =>
+		[...featureSamples, ...v2Samples].map(
+			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
+		)
 	)
 ]);
 
@@ -216,6 +188,34 @@ test.each(withSamples)("$key rejects its bad sample", ({ grader, sample }) => {
 	expect(result).toBe(false);
 });
 
+test.each(unstagedImplTraces)(
+	"staged-before-impl rejects an implementation written before staging: %#",
+	(trace) => {
+		// Arrange
+		const grader = graders.get("feature-discount-v2/staged-before-impl");
+		// Act
+		const result = grader === undefined ? true : passes(grader, trace);
+		// Assert
+		expect(result).toBe(false);
+	}
+);
+
+test("the v2 feature cases share their graders", async () => {
+	// Arrange
+	const dirs = ["feature-discount-v2", "feature-discount-p2-v2"];
+	// Act
+	const listings = await Promise.all(
+		dirs.map(async (d) => {
+			const dir = join(evalsDir, d, "graders");
+			const listed = await readdir(dir);
+			const names = listed.toSorted();
+			return Promise.all(names.map((n) => readFile(join(dir, n), "utf8")));
+		})
+	);
+	// Assert
+	expect(listings[0]).toEqual(listings[1]);
+});
+
 test("the contradiction scaffold writes the exact text the unchanged-test grader expects", async () => {
 	// Arrange
 	const dir = await mkdtemp(join(tmpdir(), "spec-eval-"));
@@ -241,6 +241,8 @@ test("the shared scaffold is identical in every case that uses it", async () => 
 		"ambiguous-headless",
 		"feature-discount",
 		"feature-discount-p2",
+		"feature-discount-v2",
+		"feature-discount-p2-v2",
 		"trivial-rename",
 		"trivial-typo"
 	];
