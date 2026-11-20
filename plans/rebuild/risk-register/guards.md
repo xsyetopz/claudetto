@@ -1056,12 +1056,15 @@
 
 - [x] **RISK-098** The agent runs `cd` in place of using absolute paths.
   Category: conduct. Cause: relative habit. Event: a `cd` before a command.
-  Consequence: a compound command refused whole; an extra turn. Likelihood: 1. Impact: 1. Existing controls: none found.
+  Consequence: a compound command refused whole; an extra turn. Likelihood: 2. Impact: 1. Existing controls: none found.
   Response: mitigate. Actions: use absolute paths.
   Trigger: a command that starts with `cd`. Owner: guards.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 1 = 1, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 1.
+  Source: dogfood session 42befa61 at ae4ea6359, claude 2.1.327, 2026-11-20 (issue #71). `cd plugins/claudetto && bunx tsc --noEmit` moved the shell, so later relative paths in the same batch failed ("no such file or directory", "Module not found"). The agent reran from absolute paths and reported the first failure.
+  Status: accepted 2026-11-20 (issue #71): Likelihood 2 × Impact 1 = 2, at or below 5. The main session's shell keeps its working directory between calls by engine design, and claudetto does not change it. The cost is one extra turn, and the reported results stayed correct.
+  Verified: 2026-11-20, scan of the 87 top-level dogfood transcripts in the isolated config (`-private-tmp-claude-501-df-repo`, `-fin2-repo`; 665 Bash calls), counting results with `cd:1: no such file or directory` or `Module not found "tools/`: 2 sessions (2ac0f4b6, 42befa61), 3 failed calls, each after a relative `cd`; both sessions recovered in the next turn.
 
 - [x] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
