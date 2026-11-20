@@ -117,4 +117,4 @@ coverage/
 
 # Stryker work copy and reports of `just mutate`.
 /.stryker-tmp/
-/reports/
+/reports/mutation/

@@ -1,0 +1,10 @@
+Probe I: SessionStart source after /compact and /clear, claude 2.1.327, 2026-11-18.
+
+Tool: cc-inspect `code cli`, version 2.1.327, args ["--settings","<project-dir>/s.json"], prompts ["one","/compact","two","/clear","three"].
+s.json: SessionStart and PreCompact command hooks; each runs `python3 -I -c` that appends selected stdin JSON keys
+(SessionStart: hook_event_name, source, model, agent_type; PreCompact: all keys but transcript_path, cwd, session_id)
+to /private/tmp/claude-501/hprobe/ss.log.
+
+Result (hooks.log beside this file), in order:
+SessionStart source "startup" (model null); PreCompact trigger "manual", custom_instructions null;
+SessionStart source "compact" (model "claude-opus-5-5"); SessionStart source "clear" (model null).
