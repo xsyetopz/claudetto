@@ -7,6 +7,9 @@ describe("shell guard", () => {
 		// Arrange: the plugin registers its own hooks; this stub stands in for the tool.
 		on("process.run", () => ({ value: { exitCode: 0, stdout: "System-wide memory free percentage: 50%\n", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }));
 		on("tool.check", () => ({ decision: "allow" }) as never);
+		// The commit trailer guard reads these on every commit; unset, the builtin git block is on and it stands aside.
+		on("env.get", () => ({ value: undefined }) as never);
+		on("settings.read", () => ({ value: {} }) as never);
 		const seen: string[] = [];
 		on("tool.call", { tool: "Bash" }, (_$, e) => {
 			if (e.tool === "Bash") seen.push(e.command);
