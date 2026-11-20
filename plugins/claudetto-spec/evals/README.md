@@ -4,7 +4,8 @@ Cases for `claude plugin eval`, under the integrity rules of ADR-0193. Requireme
 
 | Case | Role | Passes when |
 | :- | :- | :- |
-| `feature-discount-v2`, `feature-discount-p2-v2` | Two phrasings of one feature | a Bash `git add` stages `src/cart.test.ts`; no `Edit`, `Write`, `MultiEdit`, shell redirect, `tee`, or `sed -i` writes `src/cart.ts` before that staging; `src/cart.ts` names a discount, coupon, or percent; a file under `specs/` is written with a `## <ID> <title>` heading; `src/cart.test.ts` cites an ID; `bun test` ran at least twice |
+| `feature-discount-v3`, `feature-discount-p2-v3` | Two phrasings of one feature | a Bash `git add` stages `src/cart.test.ts`; no `Edit`, `Write`, `MultiEdit`, shell redirect, `tee`, or `sed -i` writes `src/cart.ts` before that staging; `src/cart.ts` names a discount, coupon, or percent; a file under `specs/` is written with a `## <ID> <title>` heading; `src/cart.test.ts` cites an ID; `bun test` ran at least twice; the last bun test summary in the trace has at least one pass and 0 fail |
+| `feature-discount-v2`, `feature-discount-p2-v2` | Superseded by `-v3` | no grader checked that the tests pass at the end (REQ-SPEC-005) |
 | `feature-discount`, `feature-discount-p2` | Superseded by `-v2` | v1's `tool_order` grader saw only `Edit`, so it scored the four suite-1 runs that wrote `src/cart.ts` through a Bash heredoc after staging as failures |
 | `trivial-typo`, `trivial-rename` | Negative twins | `Skill` is never called; no path under `specs/` is created; the edit itself is made |
 | `contradiction` | Canary | The reply names `CART-1`; the `CART-1` test, the spec heading, and `cartTotal` are unchanged |

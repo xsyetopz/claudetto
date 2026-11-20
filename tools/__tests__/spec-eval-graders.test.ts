@@ -72,6 +72,20 @@ const v2Samples: [string, Sample][] = [
 	]
 ];
 
+// Bun prints its summary either mid-output or at the start of a tool result string.
+const redRun = String.raw`{"type":"tool_result","content":"(fail) DISC-1\n\n 0 pass\n 1 fail\n 1 error\nRan 1 test"}`;
+const greenRun = String.raw`{"type":"tool_result","content":" 6 pass\n 0 fail\n 11 expect() calls\nRan 6 tests"}`;
+
+const v3Samples: [string, Sample][] = [
+	[
+		"tests-pass-at-end",
+		{
+			bad: [redRun, greenRun, redRun].join("\n"),
+			good: [redRun, greenRun].join("\n")
+		}
+	]
+];
+
 const trivialSpecs: Sample = { bad: "specs/cart.md\n", good: "README.md\n" };
 
 const samples = new Map<string, Sample>([
@@ -151,6 +165,11 @@ const samples = new Map<string, Sample>([
 		[...featureSamples, ...v2Samples].map(
 			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
 		)
+	),
+	...["feature-discount-v3", "feature-discount-p2-v3"].flatMap((name) =>
+		[...featureSamples, ...v2Samples, ...v3Samples].map(
+			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
+		)
 	)
 ]);
 
@@ -200,12 +219,15 @@ test.each(unstagedImplTraces)(
 	}
 );
 
-test("the v2 feature cases share their graders", async () => {
+test.each([
+	["feature-discount-v2", "feature-discount-p2-v2"],
+	["feature-discount-v3", "feature-discount-p2-v3"]
+])("the phrasings %s and %s share their graders", async (first, second) => {
 	// Arrange
-	const dirs = ["feature-discount-v2", "feature-discount-p2-v2"];
+	const pair = [first, second];
 	// Act
 	const listings = await Promise.all(
-		dirs.map(async (d) => {
+		pair.map(async (d) => {
 			const dir = join(evalsDir, d, "graders");
 			const listed = await readdir(dir);
 			const names = listed.toSorted();
@@ -243,6 +265,8 @@ test("the shared scaffold is identical in every case that uses it", async () => 
 		"feature-discount-p2",
 		"feature-discount-v2",
 		"feature-discount-p2-v2",
+		"feature-discount-v3",
+		"feature-discount-p2-v3",
 		"trivial-rename",
 		"trivial-typo"
 	];
