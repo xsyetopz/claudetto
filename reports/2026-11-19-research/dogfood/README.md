@@ -273,3 +273,9 @@ Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 80 (read only, `gh issue view`
 - #64: OPEN, status:blocked, no Resolution comment
 - #80: OPEN, status:in-progress, no Resolution comment
 - #73 and #74 are open Dependabot pull requests, not issues: no status label, no comments, no Resolution comment. `gh issue list` does not list them.
+
+Outside check, made after the session's commit:
+
+- Session d2ace84e: 12 tool calls, 2 errored. A `grep -c` loop exited 1 on a file with no match, which is grep's documented exit for zero matches, not a fault. The first `gh` call was denied `api.github.com`; the session reran it with that host in `allowed_domains`. The denial is the sandbox's per-command network allowance, which ADR-0188 still described as `allowedDomains ["*"]`, so issue #81 widened RISK-513 to every unlisted host and corrected the ADR (c578d6ac3).
+- `gh` found the repo through the clone's `github` remote with no slug given, which verifies the fix for #80 (1ff2c04a2).
+- One new ticket (#81), so another round follows.
