@@ -193,3 +193,43 @@ risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 - No test failed and the two runs of each plugin matched, so nothing was flaky.
 - Outside check of session c7e93c52: 13 tool calls, 2 errored. One was the deferred-tool slip (`Monitor` called with `select:Monitor`), a repeat of RISK-512; follow-up issue #79 rechecked its rate (first `Monitor` call a slip in 34 of 186 sessions, never repeated) and kept it accepted. The other was core's block on a foreground `sleep 100`, the known RISK-187. `bunx tsc` ran sandboxed with no registry denial this time (RISK-513).
 - Between rounds, the RISK-507 recheck (#64) ran on the releases already on disk: 2.1.328 and 2.1.329 still resend the fork's last message as a string (reports/2026-11-20-research/fork-recheck).
+
+## Dogfood at 362326e98, 2026-11-20 (final round)
+
+Run from a clean tree at HEAD 362326e98.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 438 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 100 distinct paths, 0 missing | 0 |
+| `gh issue list --repo xsyetopz/claudetto --state open` | 1 open issue | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+
+The repo has no GitHub remote (origin is a local path), so the issue list used the explicit slug xsyetopz/claudetto.
+
+Outside check, made after the session's commit:
+
+- Session 69f630f9: 12 tool calls, 1 errored: the first `gh issue list`, because the test clone's only remote is a local path. That comes from how the round clones the repo, not from claudetto; the session asked for the slug and then ran the read with `api.github.com` allowed for that one command, as the minimal sandbox intends (ADR-0188).
+- The 100 cited paths against 99 in earlier rounds: 9e053590e added `reports/2026-11-20-research/fork-recheck/run.sh` to RISK-507, the only new path.
+- No new fault, so this is the final round. The commit that records it changes only this README, so the final HEAD's code, plans and register are the tree checked here.
