@@ -1357,17 +1357,18 @@
 - [x] **RISK-486** Moved Out as OUT-2347: the item describes a part that plugins/ does not ship.
 
 - [x] **RISK-506** A masked tool result still stores the raw secret in the transcript's structured record (issue #59).
-  - Category: engine limit.
-  - Cause: Claude Code 2.1.327 builds the tool-result row with its structured `toolUseResult` beside the model-facing content (chunk-m14bt1pz.js@4545258, `toolUseResult:Xt?DKe(...)`), and the `session.append` hook claudetto masks with reaches only the content; the hook types call the structured record stored as made.
+  - Category: guards.
+  - Cause: Claude Code 2.1.327 builds the tool-result row with its structured `toolUseResult` beside the model-facing content (chunk-m14bt1pz.js@4545258, `toolUseResult:Xt?DKe(...)`), and the `session.append` hook claudetto masked with reaches only the content; the hook types call the structured record stored as made. A `tool.call` hook that returns its own `{ result }` replaces the record: core validates it, maps it for the model and records it in the transcript (ToolCallResult in the plugin types).
   - Event: in the batch-11 env2 runs of 2026-11-19, the model saw the env values masked while `toolUseResult.stdout` in the session JSONL held them raw, in 6 of 6 runs.
   - Consequence: a secret the model never read sits in plain text in `~/.claude/projects/*.jsonl`.
   - Likelihood: 2
   - Impact: 4
-  - Existing controls: claudetto masks the content the model reads (hooks/guards/redact/redact.ts) and denies reads of `.env` files and credential folders, so most secrets never reach a tool result.
-  - Response: transfer.
-  - Actions: recheck on each Claude Code release whether a plugin hook can rewrite `toolUseResult`, and mask it there when one can.
-  - Trigger: a Claude Code release.
+  - Existing controls: claudetto masks the tool's record at `tool.call` (hooks/guards/redact/redact.ts, record.ts), so the content and `toolUseResult` both hold the masked value; an errored call returns a `deny` with the masked text. `session.append` still masks rows the `tool.call` hook did not. Reads of `.env` files and credential folders are denied.
+  - Response: mitigate.
+  - Actions: done; the `tool.call` hook masks the record (issue #63).
+  - Trigger: a session file that holds a value the model read masked.
   - Owner: guards
-  - Status: transferred 2026-11-20 (issue #59): the engine site is located and no plugin surface on 2.1.327 reaches it; recheck-on-release ticket #63 carries the check.
+  - Status: mitigated 2026-11-20 (issue #63): the 2026-11-20 transfer (issue #59) missed the `tool.call` result surface, which 2.1.327 already has.
   - Verified: 2026-11-20, cc-inspect code search of claude 2.1.327 for `toolUseResult:`: the row is built at chunk-m14bt1pz.js@4545258 from the tool's own output, apart from the content the append hook rewrites; the 2026-11-19 batch-11 env2 runs (fixtures in reports/2026-11-19-research/goal/fixtures227.sh, observation in issue #59) show the raw value in the structured record.
-  - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts:123 (engine-limit note).
+  - Verified: 2026-11-20, reports/2026-11-20-research/redact-record/run.sh on claude 2.1.327, Haiku, a printed token, an errored command and an env-style file Read: raw values in `toolUseResult` vanilla 3 of 3, claudetto 0 of 3 in 2 of 2 runs ($0.0108); `claude plugin test plugins/claudetto` 149 pass, 0 fail, twice.
+  - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts (registerRedact); issue #63.

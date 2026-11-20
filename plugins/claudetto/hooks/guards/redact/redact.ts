@@ -1,5 +1,6 @@
 import type { EngineInterface, On } from "claude-code";
 import { fault } from "../../shared/fault";
+import { answerText, maskAnswer } from "./record";
 
 export const MASK = "[REDACTED]";
 
@@ -68,7 +69,7 @@ export const redact = (text: string, secrets: readonly string[], shapes: boolean
 	return out;
 };
 
-type Block = { type: string; text?: string; content?: unknown };
+type Block = { type: string; text?: string; content?: unknown; tool_use_id?: string };
 
 /** The text of one tool_result block: a string content, or its text parts joined. */
 export const blockText = (block: Block): string => {
@@ -109,21 +110,38 @@ const envSecrets = async ($: EngineInterface): Promise<string[]> => {
 const scan = async ($: EngineInterface, text: string): Promise<string[] | undefined> => {
 	const config = `${$.plugin.root}/hooks/guards/redact/betterleaks.toml`;
 	const argv = ["betterleaks", "stdin", "--no-banner", "-c", config, "-f", "json", "-r", "-", "--exit-code", "0", "-l", "error"];
-	const run = await $.process.run(argv, { stdin: text, timeoutMs: 10_000 }).catch((err: unknown) => (fault($, "redact scan", err), undefined));
-	return run?.exitCode === 0 ? findings(run.stdout) : undefined;
+	try {
+		const run = await $.process.run(argv, { stdin: text, timeoutMs: 10_000 });
+		return run.exitCode === 0 ? findings(run.stdout) : undefined;
+	} catch (error: unknown) {
+		fault($, "redact scan", error);
+		return undefined;
+	}
 };
 
+/** Builds the mask for one text: env-file values plus scanner findings, or SHAPES when the scanner is missing or fails. */
+const maskFor = async ($: EngineInterface, text: string): Promise<(t: string) => string> => {
+	const values = await envSecrets($).catch((error: unknown) => (fault($, "redact env read", error), []));
+	const found = await scan($, text);
+	return (t: string): string => redact(t, [...values, ...(found ?? [])], found === undefined);
+};
+
+/** The SHAPES-only mask a failed hook falls back to, so a fault never passes raw output. */
+const shapesOnly = (t: string): string => redact(t, [], true);
+
 /**
- * Masks secrets in every tool result before the model reads it (RISK-227, issue #54).
+ * Masks secrets in every tool result before the model reads it and before the
+ * transcript stores it (RISK-227, issue #54; RISK-506, issue #63).
  * Measured on 2.1.327 (2026-11-19): vanilla hands `cat .env` output to the model
  * verbatim. With values masked, the agent can load an env file into a command
  * (`set -a; . ./.env; set +a; ./check.sh`) without learning the secret, so a missing
  * variable that a file in reach supplies is no reason to stop.
  *
- * Engine limit (2.1.327, issue #59): the row's structured record (`toolUseResult.stdout`)
- * is stored as made and is outside a hook's reach (SessionAppendInput in the plugin
- * types), so the transcript file keeps the raw value while the model reads the masked
- * `content`. Remove this note once `session.append` lets a hook rewrite that record.
+ * The `tool.call` hook masks the tool's record itself, so the session file's
+ * `toolUseResult` holds the masked value too: `session.append` rewrites only a row's
+ * content and stores that record as made (SessionAppendInput). The `session.append`
+ * hook stays for the rows the `tool.call` hook did not mask, and skips the ones it did,
+ * which saves a second scan.
  *
  * Two sources, because each misses what the other holds: betterleaks (466 default rules
  * plus betterleaks.toml) finds key shapes by pattern and entropy, about 0.1 s per result
@@ -132,17 +150,32 @@ const scan = async ($: EngineInterface, text: string): Promise<string[] | undefi
  * built-in SHAPES stand in. A fault still masks with SHAPES rather than pass raw output.
  */
 export function registerRedact(on: On): void {
+	const masked = new Set<string>();
+	// A pattern for every tool, because the engine allows a plugin one `tool.call` hook
+	// without a matcher and the memory hold holds it (load check, 2.1.327).
+	on("tool.call", { tool: /^/u }, async ($, e, next) => {
+		const answer = await next(e);
+		const text = answerText(answer);
+		if (text === "") return answer;
+		const out = maskAnswer(answer, await maskFor($, text));
+		if (e.tool_use_id !== undefined) masked.add(e.tool_use_id);
+		return out;
+	}).catch(async ($, e, next) => {
+		fault($, "redact", next.error);
+		// Replay-safe: with `next.called` this resolves to the tool's settled answer without running it again.
+		return maskAnswer(await next(e), shapesOnly);
+	});
 	on("session.append", { door: "tool-result" }, async ($, e, next) => {
-		const text = e.message.content.map((block) => blockText(block as Block)).join("\n");
+		const blocks = e.message.content as Block[];
+		const fresh = blocks.filter((block) => block.type === "tool_result" && !masked.delete(block.tool_use_id ?? ""));
+		const text = fresh.map(blockText).join("\n");
 		if (text === "") return next(e);
-		const values = await envSecrets($).catch((error: unknown) => (fault($, "redact env read", error), []));
-		const found = await scan($, text);
-		const mask = (t: string): string => redact(t, [...values, ...(found ?? [])], found === undefined);
-		const content = e.message.content.map((block) => mapBlock(block as Block, mask)) as typeof e.message.content;
+		const mask = await maskFor($, text);
+		const content = blocks.map((block) => (fresh.includes(block) ? mapBlock(block, mask) : block)) as typeof e.message.content;
 		return next({ ...e, message: { ...e.message, content } });
 	}).catch(($, e, next) => {
 		fault($, "redact", next.error);
-		const content = e.message.content.map((block) => mapBlock(block as Block, (t) => redact(t, [], true))) as typeof e.message.content;
+		const content = e.message.content.map((block) => mapBlock(block as Block, shapesOnly)) as typeof e.message.content;
 		return next({ ...e, message: { ...e.message, content } });
 	});
 }

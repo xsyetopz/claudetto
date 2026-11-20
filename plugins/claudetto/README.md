@@ -83,7 +83,7 @@ It also removes a `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` that an earlier claude
 
 The fill adds permission rules that Claude Code enforces: reads of `.env` files (not `.env.example` or `.env.sample`) and credential folders are denied, `git push --force` and `-f` are denied, a `git config` or `-c` that sets a hooks path is denied, and `git stash`, `git reset --hard`, `git clean`, `git branch -D`, tag pushes, `pkill`, `killall` and edits of the user settings file ask first. It turns the sandbox on with `autoAllowBashIfSandboxed`, denies sandboxed writes to shell start-up files, `~/.ssh`, `~/.gitconfig` and plugin and hook folders, and denies sandboxed reads of credential folders.
 
-Before the model reads a tool result, claudetto masks the values of the project's env-style files and the secrets that `betterleaks` finds, or a set of built-in key shapes when `betterleaks` is not installed. On Claude Code 2.1.327 a hook reaches only the text the model reads: the session file in `~/.claude/projects` still stores the tool's raw output in its `toolUseResult` record.
+Before the model reads a tool result, claudetto masks the values of the project's env-style files and the secrets that `betterleaks` finds, or a set of built-in key shapes when `betterleaks` is not installed. It masks the tool's own record, so the session file in `~/.claude/projects` stores the masked value too: in a run with a printed token, an errored command and an env-style file read, vanilla left 3 of 3 values raw in the session file and claudetto 0 of 3, in 2 of 2 runs. A masked error result reaches the model wrapped in `<tool_use_error>`.
 
 Four options in the plugin settings tune the hooks:
 

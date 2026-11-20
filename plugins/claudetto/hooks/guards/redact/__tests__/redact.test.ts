@@ -144,6 +144,50 @@ describe("tool-result redaction", () => {
 		expect(JSON.stringify(session.appended())).not.toContain("ghp_abcdefghijklmnopqrstuvwxyz0123");
 	});
 
+	test("a tool call's record comes back masked, so the transcript stores the masked value", async ($, on) => {
+		// Arrange: a project with one .env file; core answers `cat .env` with the raw record.
+		on("session.root", () => ({ value: "/repo" }));
+		on("fs.exists", (_$, e) => ({ value: e.path === "/repo" }));
+		on("fs.list", () => ({ value: [{ name: ".env", kind: "file", size: ENV.length, mtimeMs: 0 }] as never }));
+		on("fs.read", () => ({ value: ENV }) as never);
+		on("process.run", () => ({ value: { ...RUN, stdout: "[]" } }));
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		on("tool.call", { tool: "Bash" }, () => ({ ref: 1, result: { stdout: "API_TOKEN=abc123xyz789", stderr: "" }, text: "API_TOKEN=abc123xyz789" }) as never);
+
+		// Act
+		const answer = await $.tool.call({ tool: "Bash", command: "cat .env" });
+
+		// Assert
+		expect(answer).toEqual({ result: { stdout: `API_TOKEN=${MASK}`, stderr: "" } } as never);
+	});
+
+	test("a row whose call was masked at the tool call is not scanned a second time", async ($, on) => {
+		// Arrange
+		const session = mock.session(on);
+		on("session.root", () => ({ value: "/repo" }));
+		on("fs.exists", () => ({ value: false }));
+		const scans: string[] = [];
+		on("process.run", (_$, e) => {
+			if (e.argv[0] === "betterleaks") scans.push(e.init?.stdin ?? "");
+			return { value: { ...RUN, stdout: "[]" } };
+		});
+		on("tool.check", () => ({ decision: "allow" }) as never);
+		on("tool.call", { tool: "Bash" }, () => ({ ref: 1, result: { stdout: "ok" }, text: "ok" }) as never);
+
+		// Act
+		await $.tool.call({ tool: "Bash", command: "true", tool_use_id: "t9" });
+		await $.session.append({
+			door: "tool-result",
+			uuid: "u9",
+			origin: { kind: "tool", tool: "Bash" },
+			message: { type: "user", role: "user", content: [{ type: "tool_result", tool_use_id: "t9", content: "ok" }] },
+		});
+
+		// Assert
+		expect(scans).toEqual(["ok"]);
+		expect(JSON.stringify(session.appended())).toContain("ok");
+	});
+
 	test("masks 1,000 results of 10 KB in under 500 ms", () => {
 		// Arrange
 		const values = envValues(ENV);
