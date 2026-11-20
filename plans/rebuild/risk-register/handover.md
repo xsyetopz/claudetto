@@ -445,4 +445,5 @@
   - Owner: handover
   - Status: transferred 2026-11-20 (issue #60): the engine site is located, the cost at the renewal threshold measured 0, and recheck-on-release ticket #64 carries the check.
   - Verified: 2026-11-19, claude 2.1.327, fake-API request bodies and the paid runs above (issue #60); Likelihood 1 × Impact 2 = 2.
+  - Verified: rechecked 2026-11-20 on 2.1.328 and 2.1.329 (issue #64), free: `reports/2026-11-20-research/fork-recheck/run.sh` shows the fork's copy of the parent's last message is still a string where the parent sent a cached one-block list, on 2.1.327 (control), 2.1.328 and 2.1.329.
   - Source: issue #60.
