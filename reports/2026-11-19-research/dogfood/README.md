@@ -171,3 +171,23 @@ risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 - No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
 - The session committed this section with plain `git add` and `git commit`, which confirms the fix for #77; its commit was applied here by cherry-pick.
 - New observation: the sandbox denied `registry.npmjs.org` when `bunx` fetched typescript. It was seen once before, about a day earlier (session 4ccbdaa3), and cost one extra call. Issue #78, accepted as RISK-513 (Likelihood 2 × Impact 1). Since the round found something new, it is not the final one.
+
+## Dogfood at 326721a50, 2026-11-20
+
+Checks run from a clean tree at 326721a50.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- reports/ paths cited under plans/rebuild: 99 distinct, 99 exist in this clone, 0 missing.
+- No test failed and the two runs of each plugin matched, so nothing was flaky.
