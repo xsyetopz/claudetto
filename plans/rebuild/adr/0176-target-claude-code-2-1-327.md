@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0195
 date: 2026-11-18
 ---
 # Target Claude Code 2.1.327

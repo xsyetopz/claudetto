@@ -1,6 +1,6 @@
 # Claudetto Rebuild Plan
 
-The plan for claudetto on Claude Code 2.1.329 (planned on 2.1.327; ADR-0192 and ADR-0193 retarget it). Four standards split it; each file answers one question, and each item lives in one file only.
+The plan for claudetto on Claude Code 2.1.329 (planned on 2.1.327; ADR-0195 retargets it). Four standards split it; each file answers one question, and each item lives in one file only.
 
 ## Layout
 
