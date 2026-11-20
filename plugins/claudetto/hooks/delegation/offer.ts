@@ -1,4 +1,5 @@
 import type { On } from "claude-code";
+
 import { fault } from "../shared/fault";
 
 /**
@@ -8,7 +9,12 @@ import { fault } from "../shared/fault";
  * carries.
  */
 export function registerOffer(on: On): void {
-	on("agent.offer", (_$, e, next) => (e.source === "built-in" && e.agent !== "fork" ? { isOffered: false } : next(e))).catch(
-		($, e, next) => (fault($, "agent offer", next.error), next(e)),
-	);
+	on("agent.offer", (_$, e, next) =>
+		e.source === "built-in" && e.agent !== "fork"
+			? { isOffered: false }
+			: next(e)
+	).catch(($, e, next) => {
+		fault($, "agent offer", next.error);
+		return next(e);
+	});
 }

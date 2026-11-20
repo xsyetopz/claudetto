@@ -5,7 +5,8 @@ import { requestOf, statuslineEdit } from "../command";
 describe("statusline edit text", () => {
 	test("carries the user's request from the stock text", () => {
 		// Arrange
-		const stock = 'Create an Agent with subagent_type "statusline-setup" and the prompt "show git branch"';
+		const stock =
+			'Create an Agent with subagent_type "statusline-setup" and the prompt "show git branch"';
 
 		// Act and Assert
 		expect(requestOf(stock)).toBe("show git branch");

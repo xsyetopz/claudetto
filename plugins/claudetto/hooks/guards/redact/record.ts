@@ -11,16 +11,28 @@ const BINARY = new Set(["base64"]);
  * @param mask Rewrites one string.
  * @returns `value` itself when no string changed, so the caller can tell a masked record by identity.
  */
-export const maskRecord = (value: unknown, mask: (text: string) => string): unknown => {
-	if (typeof value === "string") return mask(value);
+export const maskRecord = (
+	value: unknown,
+	mask: (text: string) => string
+): unknown => {
+	if (typeof value === "string") {
+		return mask(value);
+	}
 	if (Array.isArray(value)) {
 		const out = value.map((item: unknown) => maskRecord(item, mask));
 		return out.some((item, i) => item !== value[i]) ? out : value;
 	}
-	if (value === null || typeof value !== "object") return value;
+	if (value === null || typeof value !== "object") {
+		return value;
+	}
 	const entries = Object.entries(value);
-	const out = entries.map(([key, item]) => [key, BINARY.has(key) ? item : maskRecord(item, mask)] as const);
-	return out.some(([, item], i) => item !== entries[i]?.[1]) ? Object.fromEntries(out) : value;
+	const out = entries.map(
+		([key, item]) =>
+			[key, BINARY.has(key) ? item : maskRecord(item, mask)] as const
+	);
+	return out.some(([, item], i) => item !== entries[i]?.[1])
+		? Object.fromEntries(out)
+		: value;
 };
 
 /**
@@ -36,21 +48,36 @@ export const maskRecord = (value: unknown, mask: (text: string) => string): unkn
  * @param mask Rewrites one string.
  * @returns `answer` itself when nothing was masked, so core keeps its own messages and flags.
  */
-export const maskAnswer = (answer: ToolCallResult, mask: (text: string) => string): ToolCallResult => {
-	if (answer.deny !== undefined) return answer;
+export const maskAnswer = (
+	answer: ToolCallResult,
+	mask: (text: string) => string
+): ToolCallResult => {
+	if (answer.deny !== undefined) {
+		return answer;
+	}
 	if (answer.isError === true) {
 		const text = answer.text ?? "";
 		const masked = mask(text);
 		return masked === text ? answer : { deny: masked };
 	}
-	const result = maskRecord(answer.result, mask) as typeof answer.result;
-	if (result === answer.result) return answer;
-	return answer.context === undefined ? { result } : { result, context: answer.context };
+	const result = maskRecord(answer.result, mask);
+	if (result === answer.result) {
+		return answer;
+	}
+	return answer.context === undefined
+		? { result }
+		: { result, context: answer.context };
 };
 
 /** The text a scanner reads for one answer: core's model-facing text, else the record as JSON; empty on a deny. */
 export const answerText = (answer: ToolCallResult): string => {
-	if (answer.deny !== undefined) return "";
-	if (answer.text !== undefined) return answer.text;
-	return typeof answer.result === "string" ? answer.result : (JSON.stringify(answer.result) ?? "");
+	if (answer.deny !== undefined) {
+		return "";
+	}
+	if (answer.text !== undefined) {
+		return answer.text;
+	}
+	return typeof answer.result === "string"
+		? answer.result
+		: (JSON.stringify(answer.result) ?? "");
 };

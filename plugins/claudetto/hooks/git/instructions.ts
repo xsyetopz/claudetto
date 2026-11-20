@@ -1,5 +1,7 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
+
 import { fault } from "../shared/fault";
+import { fieldOf } from "../shared/field";
 
 /**
  * How Claude Code 2.1.327 reads `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, in any
@@ -11,9 +13,14 @@ const FALSY = /^(?:0|false|no|off)$/iu;
 
 /** The env's verdict on the builtin block, or the setting when the env has none. */
 async function builtinSwitch($: EngineInterface): Promise<boolean | undefined> {
-	const value = (await $.env.get("CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS"))?.trim() ?? "";
-	if (TRUTHY.test(value)) return false;
-	if (FALSY.test(value)) return true;
+	const raw = await $.env.get("CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS");
+	const value = raw?.trim() ?? "";
+	if (TRUTHY.test(value)) {
+		return false;
+	}
+	if (FALSY.test(value)) {
+		return true;
+	}
 	const setting = await $.settings.read({ key: "includeGitInstructions" });
 	return typeof setting === "boolean" ? setting : undefined;
 }
@@ -44,12 +51,17 @@ export async function builtinGitForced($: EngineInterface): Promise<boolean> {
 }
 
 /** Whether claudetto's `includeGitInstructions` option is on; it is opt-out. */
-export const ownGitOn = (options: PluginOptions): boolean => options["includeGitInstructions"] !== false;
+export const ownGitOn = (options: PluginOptions): boolean =>
+	options["includeGitInstructions"] !== false;
 
 /** One attribution bullet: a single line inline, several lines as a block below. */
 const ending = (place: string, text: unknown): string[] => {
-	if (typeof text !== "string" || text.trim() === "") return [];
-	return text.includes("\n") ? [`- End each ${place} with these lines:\n${text}`] : [`- End each ${place} with the line \`${text}\`.`];
+	if (typeof text !== "string" || text.trim() === "") {
+		return [];
+	}
+	return text.includes("\n")
+		? [`- End each ${place} with these lines:\n${text}`]
+		: [`- End each ${place} with the line \`${text}\`.`];
 };
 
 /**
@@ -61,9 +73,8 @@ const ending = (place: string, text: unknown): string[] => {
  * @param attribution The `attribution` setting as read.
  * @returns The block, starting with a blank line.
  */
-export const gitBlock = (attribution: unknown): string => {
-	const lines = attribution !== null && typeof attribution === "object" ? (attribution as { commit?: unknown; pr?: unknown }) : {};
-	return [
+export const gitBlock = (attribution: unknown): string =>
+	[
 		"",
 		"",
 		"# Git",
@@ -71,10 +82,9 @@ export const gitBlock = (attribution: unknown): string => {
 		"- Commit or push when the user asks, on a new branch when the current one is the default branch.",
 		"- Keep files that likely hold secrets (`.env`, `credentials.json`, `.claude/settings.local.json`) out of commits, and warn the user when they ask to commit one.",
 		"- Write `@name` only for a real GitHub login you mean to notify, because GitHub notifies it; put roles, placeholders and code in backticks.",
-		...ending("commit message", lines.commit),
-		...ending("pull request description", lines.pr),
+		...ending("commit message", fieldOf(attribution, "commit")),
+		...ending("pull request description", fieldOf(attribution, "pr"))
 	].join("\n");
-};
 
 /** The session-start notice when both claudetto's and the builtin git instructions are on. */
 export const GIT_CONFLICT =
@@ -86,11 +96,21 @@ export const GIT_CONFLICT =
  * and session start reports the conflict.
  */
 export function registerGit(on: On, options: PluginOptions = {}): void {
-	if (!ownGitOn(options)) return;
+	if (!ownGitOn(options)) {
+		return;
+	}
 	on("tool.describe", { tool: "Bash" }, async ($, e, next) => {
 		const result = await next(e);
-		if (await builtinGitOn($)) return result;
+		if (await builtinGitOn($)) {
+			return result;
+		}
 		const attribution = await $.settings.read({ key: "attribution" });
-		return { ...result, description: `${result.description}${gitBlock(attribution)}` };
-	}).catch(($, e, next) => (fault($, "git instructions", next.error), next(e)));
+		return {
+			...result,
+			description: `${result.description}${gitBlock(attribution)}`
+		};
+	}).catch(($, e, next) => {
+		fault($, "git instructions", next.error);
+		return next(e);
+	});
 }

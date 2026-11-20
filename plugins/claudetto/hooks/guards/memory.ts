@@ -1,4 +1,5 @@
 import type { On, PluginOptions } from "claude-code";
+
 import { fault } from "../shared/fault";
 
 const HELD = new Set(["Bash", "Monitor", "Agent"]);
@@ -12,7 +13,12 @@ export const freeShare = (text: string): number | undefined => {
 
 /** The hold's floor in percent; a missing or invalid option gives the default, 0 turns the hold off. */
 export const floor = (value: unknown): number =>
-	typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100 ? value : DEFAULT_MIN;
+	typeof value === "number" &&
+	Number.isFinite(value) &&
+	value >= 0 &&
+	value <= 100
+		? value
+		: DEFAULT_MIN;
 
 /** The reason a call waits, written as the next step because the model reads it. */
 export const reason = (free: number, min: number): string =>
@@ -25,11 +31,20 @@ export const reason = (free: number, min: number): string =>
  */
 export function registerMemory(on: On, options: PluginOptions = {}): void {
 	const min = floor(options["memoryFreeMinPercent"]);
-	if (min === 0) return;
+	if (min === 0) {
+		return;
+	}
 	on("tool.call", async ($, e, next) => {
-		if (!HELD.has(e.tool)) return next(e);
+		if (!HELD.has(e.tool)) {
+			return next(e);
+		}
 		const run = await $.process.run(["memory_pressure", "-Q"]);
 		const free = run.exitCode === 0 ? freeShare(run.stdout) : undefined;
-		return free !== undefined && free < min ? { deny: reason(free, min) } : next(e);
-	}).catch(($, e, next) => (fault($, "memory hold", next.error), next(e)));
+		return free !== undefined && free < min
+			? { deny: reason(free, min) }
+			: next(e);
+	}).catch(($, e, next) => {
+		fault($, "memory hold", next.error);
+		return next(e);
+	});
 }

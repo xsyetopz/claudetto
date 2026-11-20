@@ -1,5 +1,5 @@
 /** Matches a command that records or publishes work. */
-const PUBLISH = /\bgit\b[^|;&\n]*?\s(?:commit|push)\b/;
+const PUBLISH = /\bgit\b[^|;&\n]*?\s(?:commit|push)\b/u;
 
 /**
  * Makes a failing check stop a commit or push chained after it through a pipe.

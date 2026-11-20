@@ -7,18 +7,34 @@ import { lacksTrailer, trailerLines } from "../trailer";
 const LINE = "Co-Authored-By: Claude <noreply@anthropic.com>";
 
 /** Stands in for the engine's settings and env, and records each command that ran; a null env fails every read. */
-const engine = (on: On, settings: Record<string, unknown>, env: Record<string, string> | null = {}) => {
+const engine = (
+	on: On,
+	settings: Record<string, unknown>,
+	env: Record<string, string> | null = {}
+) => {
 	const ran: string[] = [];
-	on("settings.read", () => ({ value: settings }) as never);
+	on("settings.read", () => ({ value: settings }));
 	on("env.get", (_$, e) => {
-		if (env === null) throw new Error("env unavailable");
-		return { value: env[e.name] } as never;
+		if (env === null) {
+			throw new Error("env unavailable");
+		}
+		return { value: env[e.name] };
 	});
-	on("process.run", () => ({ value: { exitCode: 0, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false } }) as never);
-	on("tool.check", () => ({ decision: "allow" }) as never);
+	on("process.run", () => ({
+		value: {
+			exitCode: 0,
+			stdout: "",
+			stderr: "",
+			isStdoutTruncated: false,
+			isStderrTruncated: false
+		}
+	}));
+	on("tool.check", () => ({ decision: "allow" }));
 	on("tool.call", { tool: "Bash" }, (_$, e) => {
-		if (e.tool === "Bash") ran.push(e.command);
-		return { result: "ok" } as never;
+		if (e.tool === "Bash") {
+			ran.push(e.command);
+		}
+		return { result: "ok" };
 	});
 	return ran;
 };
@@ -41,7 +57,7 @@ describe("commit trailer check", () => {
 			`git commit -m "Fix" -m "${LINE}"`,
 			`git commit -q -am "One\n\n${LINE}" && git commit -m "Two" -m "${LINE}"`,
 			`git commit -F - <<'EOF'\nFix\n\n${LINE}\nEOF`,
-			`git -C repo commit -m"Fix" -m "${LINE}"`,
+			`git -C repo commit -m"Fix" -m "${LINE}"`
 		];
 
 		// Act
@@ -53,7 +69,10 @@ describe("commit trailer check", () => {
 
 	test("one commit of two without the line is caught", () => {
 		// Act
-		const lacks = lacksTrailer(`git commit -m "One" -m "${LINE}"; git commit -m "Two"`, [LINE]);
+		const lacks = lacksTrailer(
+			`git commit -m "One" -m "${LINE}"; git commit -m "Two"`,
+			[LINE]
+		);
 
 		// Assert
 		expect(lacks).toBe(true);
@@ -61,7 +80,14 @@ describe("commit trailer check", () => {
 
 	test("a commit with no message in the command, or one reusing a message, is let through", () => {
 		// Arrange
-		const commands = ["git commit", "git commit -F msg.txt", "git commit --amend --no-edit", "git commit --fixup HEAD~1", "git commit-tree HEAD^{tree} -m x", "git log --grep commit -m"];
+		const commands = [
+			"git commit",
+			"git commit -F msg.txt",
+			"git commit --amend --no-edit",
+			"git commit --fixup HEAD~1",
+			"git commit-tree HEAD^{tree} -m x",
+			"git log --grep commit -m"
+		];
 
 		// Act
 		const lacks = commands.map((command) => lacksTrailer(command, [LINE]));
@@ -72,10 +98,15 @@ describe("commit trailer check", () => {
 
 	test("every line of a multi-line attribution is required", () => {
 		// Arrange
-		const lines = trailerLines({ commit: "Assisted-by: X\n\nSigned-off-by: Y" });
+		const lines = trailerLines({
+			commit: "Assisted-by: X\n\nSigned-off-by: Y"
+		});
 
 		// Act
-		const lacks = lacksTrailer(`git commit -m "Fix" -m "Assisted-by: X"`, lines);
+		const lacks = lacksTrailer(
+			`git commit -m "Fix" -m "Assisted-by: X"`,
+			lines
+		);
 
 		// Assert
 		expect(lines).toEqual(["Assisted-by: X", "Signed-off-by: Y"]);
@@ -86,10 +117,15 @@ describe("commit trailer check", () => {
 describe("commit trailer guard", () => {
 	test("refuses a commit without the line before it runs and names the line to add", async ($, on) => {
 		// Arrange
-		const ran = engine(on, { includeGitInstructions: false, attribution: { commit: LINE } });
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
 
 		// Act
-		const result = await $.tool.call({ tool: "Bash", command: `git commit -am "Fix"` }).catch((error: unknown) => error);
+		const result = await $.tool
+			.call({ tool: "Bash", command: `git commit -am "Fix"` })
+			.catch((error: unknown) => error);
 
 		// Assert
 		expect(ran).toEqual([]);
@@ -98,10 +134,16 @@ describe("commit trailer guard", () => {
 
 	test("runs a commit that carries the line", async ($, on) => {
 		// Arrange
-		const ran = engine(on, { includeGitInstructions: false, attribution: { commit: LINE } });
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
 
 		// Act
-		await $.tool.call({ tool: "Bash", command: `git commit -m "Fix" -m "${LINE}"` });
+		await $.tool.call({
+			tool: "Bash",
+			command: `git commit -m "Fix" -m "${LINE}"`
+		});
 
 		// Assert
 		expect(ran.some((command) => command.includes("git commit"))).toBe(true);
@@ -109,8 +151,12 @@ describe("commit trailer guard", () => {
 
 	test("a failed settings read lets the commit run with the shell guards still applied", async ($, on) => {
 		// Arrange
-		const ran = engine(on, { includeGitInstructions: false, attribution: { commit: LINE } }, null);
-		on("ui.log", () => ({ value: undefined }) as never);
+		const ran = engine(
+			on,
+			{ includeGitInstructions: false, attribution: { commit: LINE } },
+			null
+		);
+		on("ui.log", () => ({ value: undefined }));
 		const command = "bun test | tail -3 && git commit -m x";
 
 		// Act

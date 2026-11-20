@@ -18,19 +18,41 @@ export const BUILTIN_IDS: readonly string[] = [
 	"cc-plugin-diff",
 	"cc-plugin-you-should-know",
 	"cc-plugin-easel",
-	"claude-platform",
+	"claude-platform"
 ];
 
-export type Repair = { readonly text: string; readonly drifted: readonly string[] };
+export interface Repair {
+	readonly text: string;
+	readonly drifted: readonly string[];
+}
 
 /** Sets every builtin id to `false` in the settings text; undefined when the text is not a JSON object. */
-export const repairSettings = (text: string | undefined): Repair | undefined => {
-	const held = text === undefined || text.trim() === "" ? {} : parseSettings(text);
-	if (held === undefined) return undefined;
-	const enabled = isRecord(held["enabledPlugins"]) ? held["enabledPlugins"] : {};
-	const drifted = BUILTIN_IDS.map((id) => `${id}@builtin`).filter((key) => enabled[key] !== false);
-	if (drifted.length === 0) return { text: text ?? "", drifted };
-	const next = { ...held, enabledPlugins: { ...enabled, ...Object.fromEntries(drifted.map((key) => [key, false])) } };
-	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, drifted };
+export const repairSettings = (
+	text: string | undefined
+): Repair | undefined => {
+	const held =
+		text === undefined || text.trim() === "" ? {} : parseSettings(text);
+	if (held === undefined) {
+		return undefined;
+	}
+	const enabled = isRecord(held["enabledPlugins"])
+		? held["enabledPlugins"]
+		: {};
+	const drifted = BUILTIN_IDS.map((id) => `${id}@builtin`).filter(
+		(key) => enabled[key] !== false
+	);
+	if (drifted.length === 0) {
+		return { text: text ?? "", drifted };
+	}
+	const next = {
+		...held,
+		enabledPlugins: {
+			...enabled,
+			...Object.fromEntries(drifted.map((key) => [key, false]))
+		}
+	};
+	return {
+		text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`,
+		drifted
+	};
 };
-

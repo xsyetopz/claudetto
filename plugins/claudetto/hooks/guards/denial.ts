@@ -1,5 +1,20 @@
 import type { On, ToolCheckResult } from "claude-code";
+
 import { fault } from "../shared/fault";
+
+/** What a deny names as its source: the rule, else the hook, else the setting. */
+const sourceOf = (verdict: ToolCheckResult): string | undefined => {
+	if (verdict.rule !== undefined) {
+		return `the permission rule \`${verdict.rule}\` in the settings`;
+	}
+	if (verdict.hook !== undefined) {
+		return `a ${verdict.hook} hook`;
+	}
+	if (verdict.setting !== undefined) {
+		return `the \`${verdict.setting}\` setting`;
+	}
+	return undefined;
+};
 
 /**
  * Names the source of a deny that no person made, from core's structured verdict.
@@ -8,16 +23,13 @@ import { fault } from "../shared/fault";
  * @returns The sentence to add to the model's error, or undefined when the verdict is not a deny or names no source.
  */
 export const denialSource = (verdict: ToolCheckResult): string | undefined => {
-	if (verdict.decision !== "deny") return undefined;
-	const source =
-		verdict.rule !== undefined
-			? `the permission rule \`${verdict.rule}\` in the settings`
-			: verdict.hook !== undefined
-				? `a ${verdict.hook} hook`
-				: verdict.setting !== undefined
-					? `the \`${verdict.setting}\` setting`
-					: undefined;
-	return source === undefined ? undefined : `Denied by ${source}; no permission prompt was shown and no person declined it.`;
+	if (verdict.decision !== "deny") {
+		return undefined;
+	}
+	const source = sourceOf(verdict);
+	return source === undefined
+		? undefined
+		: `Denied by ${source}; no permission prompt was shown and no person declined it.`;
 };
 
 /**
@@ -35,7 +47,16 @@ export function registerDenial(on: On): void {
 	on("tool.check", async (_$, e, next) => {
 		const verdict = await next(e);
 		const source = denialSource(verdict);
-		if (source === undefined) return verdict;
-		return { ...verdict, reason: verdict.reason === undefined ? source : `${verdict.reason} ${source}` };
-	}).catch(($, e, next) => (fault($, "denial source", next.error), next(e)));
+		if (source === undefined) {
+			return verdict;
+		}
+		return {
+			...verdict,
+			reason:
+				verdict.reason === undefined ? source : `${verdict.reason} ${source}`
+		};
+	}).catch(($, e, next) => {
+		fault($, "denial source", next.error);
+		return next(e);
+	});
 }

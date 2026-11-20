@@ -3,12 +3,15 @@ import type { EngineInterface } from "claude-code";
 /** The user settings file: `$CLAUDE_CONFIG_DIR/settings.json`, else `~/.claude/settings.json`. */
 export async function userSettingsPath($: EngineInterface): Promise<string> {
 	const config = await $.env.get("CLAUDE_CONFIG_DIR");
-	if (config !== undefined && config !== "") return `${config}/settings.json`;
+	if (config !== undefined && config !== "") {
+		return `${config}/settings.json`;
+	}
 	return `${await $.env.get("HOME")}/.claude/settings.json`;
 }
 
 /** The indent a settings file already uses, so a rewrite keeps its layout. */
-export const indentOf = (text: string): string => /\n([ \t]+)"/u.exec(text)?.[1] ?? "\t";
+export const indentOf = (text: string): string =>
+	/\n([ \t]+)"/u.exec(text)?.[1] ?? "\t";
 
 export type Json = Record<string, unknown>;
 

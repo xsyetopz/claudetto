@@ -1,12 +1,12 @@
 import type { On, PluginOptions } from "claude-code";
 
-import { registerGuards } from "./guards/guards";
-import { registerGit } from "./git/instructions";
-import { registerTrailer } from "./git/trailer";
-import { registerPerl } from "./edit/perl";
-import { registerTabs } from "./edit/tabs";
 import { registerOffer } from "./delegation/offer";
 import { registerSpawn } from "./delegation/spawn";
+import { registerPerl } from "./edit/perl";
+import { registerTabs } from "./edit/tabs";
+import { registerGit } from "./git/instructions";
+import { registerTrailer } from "./git/trailer";
+import { registerGuards } from "./guards/guards";
 import { registerClear } from "./handover/clear";
 import { registerCompact } from "./handover/compact";
 import { registerRenewal } from "./handover/renewal";

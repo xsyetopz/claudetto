@@ -12,7 +12,7 @@ const spawn = (model: string): AgentSpawnInput => ({
 	model,
 	parentModel: "claude-opus-5-5",
 	background: false,
-	fork: false,
+	fork: false
 });
 
 describe("agent.spawn model bar", () => {
@@ -22,10 +22,14 @@ describe("agent.spawn model bar", () => {
 
 		// Act
 		const results = await Promise.all(
-			["opus", "claude-opus-5-5", "fable", "claude-fable-5-2"].map((model) => $.agent.spawn(spawn(model))),
+			["opus", "claude-opus-5-5", "fable", "claude-fable-5-2"].map((model) =>
+				$.agent.spawn(spawn(model))
+			)
 		);
 
 		// Assert
-		for (const r of results) expect(r.deny).toMatch(/sonnet/u);
+		for (const r of results) {
+			expect(r.deny).toMatch(/sonnet/u);
+		}
 	});
 });

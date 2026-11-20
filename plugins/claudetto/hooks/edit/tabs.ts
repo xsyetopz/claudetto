@@ -1,8 +1,9 @@
 import type { On } from "claude-code";
+
 import { fault } from "../shared/fault";
 
 /** Drops one leading tab from each line that has one. */
-const dropTab = (text: string): string => text.replace(/^\t/gmu, "");
+const dropTab = (text: string): string => text.replaceAll(/^\t/gmu, "");
 
 /**
  * The Edit strings with the Read prefix's tab taken out, or undefined when
@@ -20,12 +21,25 @@ const dropTab = (text: string): string => text.replace(/^\t/gmu, "");
  * @param all Whether the call replaces every occurrence.
  * @returns Both strings with one tab dropped per line, or undefined.
  */
-export const readPrefixFix = (file: string, oldText: string, newText: string, all: boolean): { old: string; new: string } | undefined => {
+export const readPrefixFix = (
+	file: string,
+	oldText: string,
+	newText: string,
+	all: boolean
+): { old: string; new: string } | undefined => {
 	const lines = oldText.split("\n").filter((line) => line !== "");
-	if (lines.length === 0 || !lines.every((line) => line.startsWith("\t")) || file.includes(oldText)) return undefined;
+	if (
+		lines.length === 0 ||
+		!lines.every((line) => line.startsWith("\t")) ||
+		file.includes(oldText)
+	) {
+		return undefined;
+	}
 	const old = dropTab(oldText);
 	const count = file.split(old).length - 1;
-	return count === 1 || (all && count > 1) ? { old, new: dropTab(newText) } : undefined;
+	return count === 1 || (all && count > 1)
+		? { old, new: dropTab(newText) }
+		: undefined;
 };
 
 /** The note the model reads after a fixed Edit, so its next Edit drops the tab itself. */
@@ -40,11 +54,28 @@ export const TAB_NOTE =
  */
 export function registerTabs(on: On): void {
 	on("tool.call", { tool: "Edit" }, async ($, e, next) => {
-		if (e.tool !== "Edit" || !e.old_string.startsWith("\t")) return next(e);
+		if (e.tool !== "Edit" || !e.old_string.startsWith("\t")) {
+			return next(e);
+		}
 		const file = await $.fs.read(e.file_path);
-		const fix = typeof file === "string" ? readPrefixFix(file, e.old_string, e.new_string, e.replace_all === true) : undefined;
-		if (fix === undefined) return next(e);
+		const fix =
+			typeof file === "string"
+				? readPrefixFix(
+						file,
+						e.old_string,
+						e.new_string,
+						e.replace_all === true
+					)
+				: undefined;
+		if (fix === undefined) {
+			return next(e);
+		}
 		const r = await next({ ...e, old_string: fix.old, new_string: fix.new });
-		return r.deny !== undefined || r.isError === true ? r : { ...r, context: [...(r.context ?? []), TAB_NOTE] };
-	}).catch(($, e, next) => (fault($, "edit tab fix", next.error), next(e)));
+		return r.deny !== undefined || r.isError === true
+			? r
+			: { ...r, context: [...(r.context ?? []), TAB_NOTE] };
+	}).catch(($, e, next) => {
+		fault($, "edit tab fix", next.error);
+		return next(e);
+	});
 }

@@ -1,14 +1,16 @@
 import type { On } from "claude-code";
-import { fault } from "../shared/fault";
 
 import { userSettingsPath } from "../settings/settings";
+import { fault } from "../shared/fault";
 
 const TAIL = 'the prompt "';
 
 /** The user's request closes the stock text in quotes; a text without that shape is the request itself. */
 export const requestOf = (stock: string): string => {
 	const at = stock.lastIndexOf(TAIL);
-	if (at === -1) return stock;
+	if (at === -1) {
+		return stock;
+	}
 	const tail = stock.slice(at + TAIL.length);
 	return tail.endsWith('"') ? tail.slice(0, -1) : tail;
 };
@@ -26,6 +28,11 @@ Read @${file}, then write \`statusLine\` as { "type": "command", "command": "<sh
 /** Rewrites the built-in `/statusline` prompt; a skill of the same name from elsewhere passes through. */
 export function registerStatuslineCommand(on: On): void {
 	on("skill.prompt", { skill: "statusline" }, async ($, e, next) =>
-		e.source === "built-in" ? { text: statuslineEdit(e.text, await userSettingsPath($)) } : next(e),
-	).catch(($, e, next) => (fault($, "status line", next.error), next(e)));
+		e.source === "built-in"
+			? { text: statuslineEdit(e.text, await userSettingsPath($)) }
+			: next(e)
+	).catch(($, e, next) => {
+		fault($, "status line", next.error);
+		return next(e);
+	});
 }

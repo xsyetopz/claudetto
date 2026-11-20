@@ -1,4 +1,5 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
+
 import { fault } from "../shared/fault";
 
 /**
@@ -6,7 +7,20 @@ import { fault } from "../shared/fault";
  * command position: first, after a separator, or run by `xargs`, `find -exec` or
  * a loop or `if` body, because a rename is usually `git grep -l x | xargs perl -pi`.
  */
-export const PERL_EDIT = /(?:^|[;&|({]|\b(?:do|then|else|xargs(?:\s+-\S+)*)|-exec)\s*perl\s+(?:-\S*\s+)*-\S*i/;
+export const PERL_EDIT =
+	/(?:^|[;&|({]|\b(?:do|then|else|xargs(?:\s+-\S+)*)|-exec)\s*perl\s+(?:-\S*\s+)*-\S*i/u;
+
+/** The `git diff --stat` of the files, as printed. */
+async function diffStat($: EngineInterface, files: string[]): Promise<string> {
+	const { stdout } = await $.process.run([
+		"git",
+		"diff",
+		"--stat",
+		"--",
+		...files
+	]);
+	return stdout;
+}
 
 /** Files whose `git diff --numstat` line differs between `before` and `after`. */
 export const touched = (before: string, after: string): string[] => {
@@ -33,16 +47,26 @@ export const note = (stat: string): string =>
  */
 export function registerPerl(on: On): void {
 	on("tool.call", { tool: "Bash" }, async ($, e, next) => {
-		if (e.tool !== "Bash" || !PERL_EDIT.test(e.command)) return next(e);
+		if (e.tool !== "Bash" || !PERL_EDIT.test(e.command)) {
+			return next(e);
+		}
 		const numstat = async (): Promise<string> => {
 			const r = await $.process.run(["git", "diff", "--numstat"]);
 			return r.exitCode === 0 ? r.stdout : "";
 		};
 		const before = await numstat();
 		const r = await next(e);
-		if (r.deny !== undefined || r.isError === true) return r;
+		if (r.deny !== undefined || r.isError === true) {
+			return r;
+		}
 		const files = touched(before, await numstat());
-		const stat = files.length === 0 ? "No tracked file changed." : (await $.process.run(["git", "diff", "--stat", "--", ...files])).stdout;
+		const stat =
+			files.length === 0
+				? "No tracked file changed."
+				: await diffStat($, files);
 		return { ...r, context: [...(r.context ?? []), note(stat)] };
-	}).catch(($, e, next) => (fault($, "perl diff", next.error), next(e)));
+	}).catch(($, e, next) => {
+		fault($, "perl diff", next.error);
+		return next(e);
+	});
 }

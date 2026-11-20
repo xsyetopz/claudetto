@@ -1,4 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
+
 import { fault } from "../shared/fault";
 
 /**
@@ -18,8 +19,15 @@ const MAX_RESUMES = 2;
 const WINDOW_MS = 10 * 60_000;
 
 /** Raises the native error-stop notice. */
-async function notify($: EngineInterface, error: string, details?: string): Promise<void> {
-	await $.ui.notify(`The turn stopped on an API error (${error})${details ? `: ${details}` : ""}. Reply to retry.`, { title: "claudetto" });
+async function notify(
+	$: EngineInterface,
+	error: string,
+	details?: string
+): Promise<void> {
+	await $.ui.notify(
+		`The turn stopped on an API error (${error})${details === undefined || details === "" ? "" : `: ${details}`}. Reply to retry.`,
+		{ title: "claudetto" }
+	);
 }
 
 /**
@@ -39,24 +47,42 @@ export function registerStopNotice(on: On): void {
 	on("classic.StopFailure", async ($, e, next) => {
 		// Marked before next(e) so the turn.complete that follows sees it.
 		const now = Date.now();
-		while (resumed.length > 0 && now - (resumed[0] ?? 0) > WINDOW_MS) resumed.shift();
-		cut = e.last_assistant_message?.trim().endsWith(CUT_TAIL) === true && resumed.length < MAX_RESUMES;
+		while (resumed.length > 0 && now - (resumed[0] ?? 0) > WINDOW_MS) {
+			resumed.shift();
+		}
+		cut =
+			e.last_assistant_message?.trim().endsWith(CUT_TAIL) === true &&
+			resumed.length < MAX_RESUMES;
 		const result = await next(e);
-		if (!cut) await notify($, e.error, e.error_details);
+		if (!cut) {
+			await notify($, e.error, e.error_details);
+		}
 		return result;
-	}).catch(($, e, next) => (fault($, "stop notice", next.error), next(e))); // A failed notice must not change the stop.
+		// A failed notice must not change the stop.
+	}).catch(($, e, next) => {
+		fault($, "stop notice", next.error);
+		return next(e);
+	});
 	on("turn.complete", { reason: "error" }, async ($, e, next) => {
 		const result = await next(e);
-		if (!cut || e.agentId !== undefined) return result;
+		if (!cut || e.agentId !== undefined) {
+			return result;
+		}
 		cut = false;
-		if ((await $.session.surfaces()).length === 0) {
+		const surfaces = await $.session.surfaces();
+		if (surfaces.length === 0) {
 			// A -p run has core's own recovery; a cut that reaches here exhausted it.
 			await notify($, "server_error", "the response was cut mid-stream");
 			return result;
 		}
 		resumed.push(Date.now());
 		// The prompt enters once the session is idle, after this hook returns, so it is not awaited.
-		void $.prompt.submit({ text: RESUME_TEXT }).catch((err: unknown) => fault($, "cut resume", err));
+		void $.prompt.submit({ text: RESUME_TEXT }).catch((error: unknown) => {
+			fault($, "cut resume", error);
+		});
 		return result;
-	}).catch(($, e, next) => (fault($, "cut resume", next.error), next(e)));
+	}).catch(($, e, next) => {
+		fault($, "cut resume", next.error);
+		return next(e);
+	});
 }

@@ -1,11 +1,18 @@
 import type { On } from "claude-code";
-import { describe, expect, test, type TestBody } from "claude-code/testing";
+import {
+	describe,
+	expect,
+	mock,
+	test,
+	type TestBody
+} from "claude-code/testing";
 
 import { RESUME_TEXT } from "../stop";
 
-const CUT = "API Error: Connection lost mid-response. The response above may be incomplete.";
+const CUT =
+	"API Error: Connection lost mid-response. The response above may be incomplete.";
 
-const watch = (on: On, surfaces: readonly ("terminal")[] = ["terminal"]) => {
+const watch = (on: On, surfaces: readonly "terminal"[] = ["terminal"]) => {
 	const sent: string[] = [];
 	const submitted: string[] = [];
 	on("classic.StopFailure", () => ({}));
@@ -21,16 +28,24 @@ const watch = (on: On, surfaces: readonly ("terminal")[] = ["terminal"]) => {
 		submitted.push(e.text);
 		return { text: e.text };
 	});
-	return { sent, submitted };
+	// The clock's settle lets the unawaited continuation land.
+	const { settle } = mock.clock(on);
+	return { sent, submitted, settle };
 };
 
-const ERROR_END = { answer: "", durationMs: 1, isAborted: false, turnId: "t1", reason: "error" } as const;
-
-// The plugin lib has no timer types; the macrotask lets the unawaited continuation land.
-const settle = () => new Promise<void>((resolve) => (globalThis as unknown as { setTimeout: (f: () => void, ms: number) => void }).setTimeout(resolve, 0));
+const ERROR_END = {
+	answer: "",
+	durationMs: 1,
+	isAborted: false,
+	turnId: "t1",
+	reason: "error"
+} as const;
 
 const cutTurn = async ($: Parameters<TestBody>[0]) => {
-	await $.classic.StopFailure({ error: "server_error", last_assistant_message: CUT });
+	await $.classic.StopFailure({
+		error: "server_error",
+		last_assistant_message: CUT
+	});
 	await $.turn.complete(ERROR_END);
 };
 
@@ -40,7 +55,10 @@ describe("stop notice", () => {
 		const { sent, submitted } = watch(on);
 
 		// Act
-		await $.classic.StopFailure({ error: "rate_limit", error_details: "529 overloaded" });
+		await $.classic.StopFailure({
+			error: "rate_limit",
+			error_details: "529 overloaded"
+		});
 
 		// Assert
 		expect(sent.length).toBe(1);
@@ -62,7 +80,7 @@ describe("stop notice", () => {
 
 	test("a cut mid-response in a drawn session submits one continuation instead of a notice", async ($, on) => {
 		// Arrange
-		const { sent, submitted } = watch(on);
+		const { sent, submitted, settle } = watch(on);
 
 		// Act
 		await cutTurn($);
@@ -75,10 +93,12 @@ describe("stop notice", () => {
 
 	test("a third cut in a row notifies, so a dead link never loops", async ($, on) => {
 		// Arrange
-		const { sent, submitted } = watch(on);
+		const { sent, submitted, settle } = watch(on);
 
 		// Act
-		for (let i = 0; i < 3; i++) await cutTurn($);
+		await cutTurn($);
+		await cutTurn($);
+		await cutTurn($);
 		await settle();
 
 		// Assert
@@ -88,7 +108,7 @@ describe("stop notice", () => {
 
 	test("a cut in a -p run is left to core's own recovery", async ($, on) => {
 		// Arrange
-		const { sent, submitted } = watch(on, []);
+		const { sent, submitted, settle } = watch(on, []);
 
 		// Act
 		await cutTurn($);

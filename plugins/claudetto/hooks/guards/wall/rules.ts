@@ -14,7 +14,7 @@ export const CREDENTIALS: readonly string[] = [
 	"~/.config/gcloud/**",
 	"~/.netrc",
 	"~/.git-credentials",
-	"~/Library/Keychains/**",
+	"~/Library/Keychains/**"
 ];
 
 /** Env files hold secrets; `.env.example` and `.env.sample` stay readable. */
@@ -24,7 +24,7 @@ export const ENV_FILES: readonly string[] = [
 	"**/.env.development",
 	"**/.env.production",
 	"**/.env.staging",
-	"**/.env.test",
+	"**/.env.test"
 ];
 
 export const DENY: readonly string[] = [
@@ -38,7 +38,7 @@ export const DENY: readonly string[] = [
 	"Bash(git *push* -f *)",
 	// A hooks override makes a check pass without the repo's hooks (RISK-467); git config keys ignore case.
 	"Bash(git config *core.*ooks*ath*)",
-	"Bash(git *-c core.*ooks*ath*)",
+	"Bash(git *-c core.*ooks*ath*)"
 ];
 
 /** Prompts for actions that lose work or end other processes; each one asks, none is blocked. */
@@ -57,7 +57,7 @@ export const ASK: readonly string[] = [
 	"Bash(pkill *)",
 	"Bash(killall *)",
 	"Edit(~/.claude/settings.json)",
-	"Write(~/.claude/settings.json)",
+	"Write(~/.claude/settings.json)"
 ];
 
 /** Files that run later, plus plugin and hook folders: a sandboxed shell may not write them (ADR-0159, RISK-091). */
@@ -78,7 +78,7 @@ export const DENY_WRITE: readonly string[] = [
 	"~/bin",
 	"~/.claude/plugins",
 	"~/.claude/hooks",
-	"/private/var/folders/**/xcrun_db*",
+	"/private/var/folders/**/xcrun_db*"
 ];
 
 export const DENY_READ: readonly string[] = [
@@ -87,13 +87,25 @@ export const DENY_READ: readonly string[] = [
 	"~/.azure",
 	"~/.config/gcloud",
 	"~/.netrc",
-	"~/.git-credentials",
+	"~/.git-credentials"
 ];
 
-export const ALLOW_WRITE: readonly string[] = ["~/", "/Volumes/", "/private/tmp", "/opt/homebrew", "/private/var/folders"];
+export const ALLOW_WRITE: readonly string[] = [
+	"~/",
+	"/Volumes/",
+	"/private/tmp",
+	"/opt/homebrew",
+	"/private/var/folders"
+];
 
 /** Commands that cannot run inside the sandbox (ADR-0159); `claude *` starts its own sandbox (ADR-0188). */
-export const EXCLUDED: readonly string[] = ["ps *", "top *", "sysctl *", "launchctl list", "claude *"];
+export const EXCLUDED: readonly string[] = [
+	"ps *",
+	"top *",
+	"sysctl *",
+	"launchctl list",
+	"claude *"
+];
 
 /** The walls a user keeps from every session; `~/.claudetto-holdout` holds the held-out eval set (REQ-GUARDS-058). */
 export const WALLS: readonly string[] = ["~/.claudetto-holdout"];

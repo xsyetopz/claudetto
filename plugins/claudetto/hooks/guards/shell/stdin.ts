@@ -7,4 +7,5 @@
  * @param command The Bash command as the model wrote it.
  * @returns The command wrapped in a group that reads stdin from /dev/null.
  */
-export const closeStdin = (command: string): string => `{ ${command}\n} </dev/null`;
+export const closeStdin = (command: string): string =>
+	`{ ${command}\n} </dev/null`;

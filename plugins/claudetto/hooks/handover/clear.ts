@@ -1,7 +1,8 @@
 import type { On } from "claude-code";
+
+import { fault } from "../shared/fault";
 import { resetRenewal } from "./renewal";
 import { isOff, PENDING, writeHandover } from "./writer";
-import { fault } from "../shared/fault";
 
 const BLOCK = "claudetto:handover";
 
@@ -12,20 +13,39 @@ const BLOCK = "claudetto:handover";
  */
 export function registerClear(on: On): void {
 	on("command.run", async ($, e, next) => {
-		if (e.command !== "clear" || e.origin.kind === "plugin" || (await isOff($))) return next(e);
+		if (
+			e.command !== "clear" ||
+			e.origin.kind === "plugin" ||
+			(await isOff($))
+		) {
+			return next(e);
+		}
 		const { text } = await writeHandover($);
 		await $.store.set(PENDING, text);
 		return next(e);
-	}).catch(($, e, next) => (fault($, "clear", next.error), next(e)));
-	on("session.end", async (_$, e, next) => {
-		if (e.reason === "clear") resetRenewal();
+	}).catch(($, e, next) => {
+		fault($, "clear", next.error);
+		return next(e);
+	});
+	on("session.end", (_$, e, next) => {
+		if (e.reason === "clear") {
+			resetRenewal();
+		}
 		return next(e);
 	});
 	on("prompt.context", async ($, e, next) => {
 		const result = await next(e);
 		const text = await $.store.get(PENDING);
-		if (typeof text !== "string" || text === "") return result;
+		if (typeof text !== "string" || text === "") {
+			return result;
+		}
 		await $.store.delete(PENDING);
-		return { ...result, blocks: [...result.blocks.filter((b) => b.name !== BLOCK), { name: BLOCK, text }] };
+		return {
+			...result,
+			blocks: [
+				...result.blocks.filter((b) => b.name !== BLOCK),
+				{ name: BLOCK, text }
+			]
+		};
 	});
 }

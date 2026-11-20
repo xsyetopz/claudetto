@@ -1,20 +1,27 @@
 import type { EngineInterface, ModelUsage } from "claude-code";
-import { compose, extract, FORK_PROMPT } from "./text";
+
 import { fault } from "../shared/fault";
+import { compose, extract, FORK_PROMPT } from "./text";
 
 /** A written handover and, when a fork wrote it, what the fork cost. */
-export type Handover = { text: string; usage?: ModelUsage };
+export interface Handover {
+	text: string;
+	usage?: ModelUsage;
+}
 
 /** The store key of the handover a `/clear` left for the next first request. */
 export const PENDING = "handover.pending";
 
 /** Reads one env knob as set (non-empty) or not. */
-export async function isSet(value: Promise<string | undefined>): Promise<boolean> {
-	return Boolean((await value)?.trim());
+export async function isSet(
+	value: Promise<string | undefined>
+): Promise<boolean> {
+	const text = await value;
+	return Boolean(text?.trim());
 }
 
 /** True when `CLAUDETTO_DISABLE_HANDOVER` turns every handover path off. */
-export async function isOff($: EngineInterface): Promise<boolean> {
+export function isOff($: EngineInterface): Promise<boolean> {
 	return isSet($.env.get("CLAUDETTO_DISABLE_HANDOVER"));
 }
 
@@ -22,11 +29,15 @@ export async function isOff($: EngineInterface): Promise<boolean> {
  * Reads one settings knob of the handover, the mirror of a compaction key
  * (`autoHandoverEnabled` for `autoCompactEnabled`); undefined when unset.
  */
-export async function knob($: EngineInterface, key: "autoHandoverEnabled" | "autoHandoverWindow" | "precomputeHandoverEnabled"): Promise<unknown> {
+export async function knob(
+	$: EngineInterface,
+	key:
+		"autoHandoverEnabled" | "autoHandoverWindow" | "precomputeHandoverEnabled"
+): Promise<unknown> {
 	try {
 		return await $.settings.read({ key });
-	} catch (err) {
-		fault($, "handover setting", err);
+	} catch (error) {
+		fault($, "handover setting", error);
 		return undefined;
 	}
 }
@@ -36,15 +47,19 @@ export async function knob($: EngineInterface, key: "autoHandoverEnabled" | "aut
  * the full switch turns the automatic paths off.
  */
 export async function isAutoOff($: EngineInterface): Promise<boolean> {
-	return (await isOff($)) || (await isSet($.env.get("CLAUDETTO_DISABLE_AUTO_HANDOVER"))) || (await knob($, "autoHandoverEnabled")) === false;
+	return (
+		(await isOff($)) ||
+		(await isSet($.env.get("CLAUDETTO_DISABLE_AUTO_HANDOVER"))) ||
+		(await knob($, "autoHandoverEnabled")) === false
+	);
 }
 
 async function git($: EngineInterface, argv: string[]): Promise<string> {
 	try {
 		const r = await $.process.run(["git", ...argv]);
 		return r.exitCode === 0 ? r.stdout.trim() : "";
-	} catch (err) {
-		fault($, "git", err);
+	} catch (error) {
+		fault($, "git", error);
 		return "";
 	}
 }
@@ -64,14 +79,19 @@ export async function writeHandover($: EngineInterface): Promise<Handover> {
 			body = r.text;
 			usage = r.usage;
 		}
-	} catch (err) {
+	} catch (error) {
 		// An API error takes the fallback like nothing-to-fork does.
-		fault($, "handover fork", err);
+		fault($, "handover fork", error);
 	} finally {
-		$.ui.status(undefined);
+		$.ui.status(void 0);
 	}
-	if (body === "") body = extract(await $.session.messages());
+	if (body === "") {
+		body = extract(await $.session.messages());
+	}
 	const head = await git($, ["rev-parse", "--short", "HEAD"]);
 	const status = await git($, ["status", "--short"]);
-	return { text: compose(body, head, status), ...(usage === undefined ? {} : { usage }) };
+	return {
+		text: compose(body, head, status),
+		...(usage === undefined ? {} : { usage })
+	};
 }

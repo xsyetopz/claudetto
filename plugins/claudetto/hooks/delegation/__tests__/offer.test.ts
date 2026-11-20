@@ -12,7 +12,7 @@ describe("agent.offer", () => {
 			agent: "Explore",
 			description: "Fast read-only search",
 			source: "built-in",
-			provider: { plugin: "engine", tier: "core" },
+			provider: { plugin: "engine", tier: "core" }
 		});
 
 		// Assert

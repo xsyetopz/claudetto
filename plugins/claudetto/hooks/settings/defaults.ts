@@ -1,6 +1,6 @@
 import { fillGuards } from "../guards/wall/fill";
 import { WALLS } from "../guards/wall/rules";
-import { type Json, indentOf, isRecord, parseSettings } from "./settings";
+import { indentOf, isRecord, type Json, parseSettings } from "./settings";
 
 /**
  * Defaults written only where the user's settings leave a key unset. Each entry
@@ -50,7 +50,7 @@ export const DEFAULTS: Json = {
 		CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "3",
 		CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
 		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
-		MAX_MCP_OUTPUT_TOKENS: "10000",
+		MAX_MCP_OUTPUT_TOKENS: "10000"
 	},
 	permissions: {
 		// One perl call makes many edits in place of many Edit calls (ADR-0097); edit/perl.ts shows its diff.
@@ -63,9 +63,9 @@ export const DEFAULTS: Json = {
 			"CronCreate",
 			"CronDelete",
 			"CronList",
-			"EnterPlanMode",
-		],
-	},
+			"EnterPlanMode"
+		]
+	}
 };
 
 /**
@@ -74,7 +74,7 @@ export const DEFAULTS: Json = {
  */
 export const RETIRED_REMINDER_TEXTS: readonly string[] = [
 	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.",
-	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call.",
+	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call."
 ];
 
 /**
@@ -88,12 +88,22 @@ export const RETIRED_ALLOWS: readonly string[] = ["Bash(claude -p *)"];
  * host credits an `Assisted-by` line to an account, so the fill replaces one equal
  * to an entry with CO_AUTHOR; a trailer the user wrote is kept.
  */
-export const RETIRED_COMMIT_TRAILERS: readonly string[] = ["Assisted-by: Claude Code"];
+export const RETIRED_COMMIT_TRAILERS: readonly string[] = [
+	"Assisted-by: Claude Code"
+];
 
-export type Fill ={ readonly text: string; readonly added: readonly string[] };
+export interface Fill {
+	readonly text: string;
+	readonly added: readonly string[];
+}
 
 /** Merges defaults into held: scalars when unset, records by key, arrays by missing entry. */
-const merge = (held: Json, defaults: Json, path: string, added: string[]): Json => {
+const merge = (
+	held: Json,
+	defaults: Json,
+	path: string,
+	added: string[]
+): Json => {
 	const out: Json = { ...held };
 	for (const [key, value] of Object.entries(defaults)) {
 		const here = path === "" ? key : `${path}.${key}`;
@@ -104,8 +114,9 @@ const merge = (held: Json, defaults: Json, path: string, added: string[]): Json 
 			}
 		} else if (Array.isArray(value)) {
 			if (current === undefined || Array.isArray(current)) {
-				const kept = Array.isArray(current) ? (current as unknown[]) : [];
-				const missing = value.filter((entry) => !kept.includes(entry));
+				const kept: unknown[] = Array.isArray(current) ? current : [];
+				const wanted: unknown[] = value;
+				const missing = wanted.filter((entry) => !kept.includes(entry));
 				if (missing.length > 0) {
 					out[key] = [...kept, ...missing];
 					added.push(...missing.map((entry) => `${here} ${String(entry)}`));
@@ -119,40 +130,84 @@ const merge = (held: Json, defaults: Json, path: string, added: string[]): Json 
 	return out;
 };
 
-/** Adds each default the settings text lacks; undefined when the text is not a JSON object. */
-export const fillSettings = (text: string | undefined, walls: readonly string[] = WALLS): Fill | undefined => {
-	const held = text === undefined || text.trim() === "" ? {} : parseSettings(text);
-	if (held === undefined) return undefined;
-	const added: string[] = [];
-	const next = merge(held, DEFAULTS, "", added);
+/** Drops a reminder text an earlier release wrote, so core's own text applies again. */
+const dropRetiredReminder = (next: Json, added: string[]): void => {
 	const env = next["env"];
 	if (
 		isRecord(env) &&
 		typeof env["CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"] === "string" &&
-		RETIRED_REMINDER_TEXTS.includes(env["CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"])
+		RETIRED_REMINDER_TEXTS.includes(
+			env["CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"]
+		)
 	) {
 		const { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: _retired, ...rest } = env;
 		next["env"] = rest;
 		added.push("removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
 	}
+};
+
+/** Drops the allow entries an earlier release wrote and a later one retired. */
+const dropRetiredAllows = (next: Json, added: string[]): void => {
 	const permissions = next["permissions"];
-	if (isRecord(permissions) && Array.isArray(permissions["allow"])) {
-		const allow = permissions["allow"] as unknown[];
-		const retired = allow.filter((entry) => typeof entry === "string" && RETIRED_ALLOWS.includes(entry));
-		if (retired.length > 0) {
-			next["permissions"] = { ...permissions, allow: allow.filter((entry) => !retired.includes(entry)) };
-			added.push(...retired.map((entry) => `removed permissions.allow ${String(entry)}`));
-		}
+	if (!isRecord(permissions) || !Array.isArray(permissions["allow"])) {
+		return;
 	}
+	const allow: unknown[] = permissions["allow"];
+	const retired = allow.filter(
+		(entry) => typeof entry === "string" && RETIRED_ALLOWS.includes(entry)
+	);
+	if (retired.length > 0) {
+		next["permissions"] = {
+			...permissions,
+			allow: allow.filter((entry) => !retired.includes(entry))
+		};
+		added.push(
+			...retired.map((entry) => `removed permissions.allow ${String(entry)}`)
+		);
+	}
+};
+
+/** Replaces a commit trailer an earlier release wrote with the current one. */
+const replaceRetiredTrailer = (next: Json, added: string[]): void => {
 	const attribution = next["attribution"];
-	if (isRecord(attribution) && typeof attribution["commit"] === "string" && RETIRED_COMMIT_TRAILERS.includes(attribution["commit"])) {
+	if (
+		isRecord(attribution) &&
+		typeof attribution["commit"] === "string" &&
+		RETIRED_COMMIT_TRAILERS.includes(attribution["commit"])
+	) {
 		next["attribution"] = { ...attribution, commit: CO_AUTHOR };
 		added.push(`replaced attribution.commit ${attribution["commit"]}`);
 	}
-	fillGuards(next, added, walls);
-	if (added.length === 0) return { text: text ?? "", added };
-	return { text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`, added };
 };
+
+/** Adds each default the settings text lacks; undefined when the text is not a JSON object. */
+export const fillSettings = (
+	text?: string,
+	walls: readonly string[] = WALLS
+): Fill | undefined => {
+	const held =
+		text === undefined || text.trim() === "" ? {} : parseSettings(text);
+	if (held === undefined) {
+		return undefined;
+	}
+	const added: string[] = [];
+	const next = merge(held, DEFAULTS, "", added);
+	dropRetiredReminder(next, added);
+	dropRetiredAllows(next, added);
+	replaceRetiredTrailer(next, added);
+	fillGuards(next, added, walls);
+	if (added.length === 0) {
+		return { text: text ?? "", added };
+	}
+	return {
+		text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`,
+		added
+	};
+};
+
+/** Whether a fill entry reports a removal or a replacement, not a set default. */
+const isChange = (entry: string): boolean =>
+	entry.startsWith("removed ") || entry.startsWith("replaced ");
 
 /**
  * The fill notice, with list entries counted per key, because the terminal
@@ -163,8 +218,7 @@ export const fillSettings = (text: string | undefined, walls: readonly string[] 
  * @returns One line naming each set key, the count of entries added per list, and each removal or replacement on its own.
  */
 export const fillNotice = (path: string, added: readonly string[]): string => {
-	const isChange = (entry: string): boolean => entry.startsWith("removed ") || entry.startsWith("replaced ");
-	const removals = added.filter(isChange);
+	const removals = added.filter((entry) => isChange(entry));
 	const sets = added.filter((entry) => !isChange(entry));
 	const groups = new Map<string, string[]>();
 	for (const entry of sets) {
@@ -172,18 +226,26 @@ export const fillNotice = (path: string, added: readonly string[]): string => {
 		groups.set(key, [...(groups.get(key) ?? []), entry]);
 	}
 	const named = [...groups.values()].map((entries) =>
-		entries.length === 1 ? entries[0] : `${entries[0]?.split(" ", 1)[0]} (${entries.length} entries)`,
+		entries.length === 1
+			? entries[0]
+			: `${entries[0]?.split(" ", 1)[0]} (${entries.length} entries)`
 	);
 	const parts: string[] = [];
-	if (sets.length > 0) parts.push(`set ${sets.length} unset default(s): ${named.join(", ")}`);
-	if (removals.length > 0) parts.push(removals.join(", "));
+	if (sets.length > 0) {
+		parts.push(`set ${sets.length} unset default(s): ${named.join(", ")}`);
+	}
+	if (removals.length > 0) {
+		parts.push(removals.join(", "));
+	}
 	return `claudetto changed ${path}: ${parts.join("; ")}.`;
 };
 
 /** FNV-1a hash of a text, as eight hex digits; the hooks worker has no crypto global to rely on. */
 export const fillVersion = (text: string): string => {
-	let hash = 0x811c9dc5;
-	for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 0x01000193) >>> 0;
+	let hash = 2_166_136_261;
+	for (let i = 0; i < text.length; i++) {
+		hash = Math.imul(hash ^ (text.codePointAt(i) ?? 0), 16_777_619) >>> 0;
+	}
 	return hash.toString(16).padStart(8, "0");
 };
 
@@ -193,4 +255,6 @@ export const fillVersion = (text: string): string => {
  * any change to a default or a guard rule starts a new fill; a hand-bumped
  * number was missed when the git -C rules landed (#41).
  */
-export const FILL_VERSION = fillVersion(fillSettings(undefined, [])?.text ?? "");
+export const FILL_VERSION = fillVersion(
+	fillSettings(undefined, [])?.text ?? ""
+);

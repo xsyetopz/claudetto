@@ -1,15 +1,19 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
+
 import { fault } from "../shared/fault";
+import { fieldOf } from "../shared/field";
 import { builtinGitOn, ownGitOn } from "./instructions";
 
 /** Matches each `git commit` call, past global flags such as `-C dir`; `commit-tree` and the like do not match. */
 const COMMIT = /\bgit\b(?:\s+-[Cc]\s+\S+|\s+--[\w-]+=\S+)*\s+commit\b(?!-)/gu;
 
 /** A message written in the command itself: `-m`, `-am`, `--message`, or `-F -` with a here-document. */
-const INLINE = /\s(?:-[a-zA-Z]*m|--message)(?:[\s="']|$)|\s(?:-F|--file)[\s=]+-(?:\s|$)/u;
+const INLINE =
+	/\s(?:-[a-zA-Z]*m|--message)(?:[\s="']|$)|\s(?:-F|--file)[\s=]+-(?:\s|$)/u;
 
 /** A commit that keeps or builds its message from another commit, so the command holds no message to check. */
-const REUSE = /\s(?:--no-edit|-[Cc]|--reuse-message|--reedit-message|--fixup|--squash)(?:[\s=]|$)/u;
+const REUSE =
+	/\s(?:--no-edit|-[Cc]|--reuse-message|--reedit-message|--fixup|--squash)(?:[\s=]|$)/u;
 
 /**
  * The lines `attribution.commit` asks for, one per non-blank line.
@@ -18,8 +22,13 @@ const REUSE = /\s(?:--no-edit|-[Cc]|--reuse-message|--reedit-message|--fixup|--s
  * @returns The lines each commit message must hold; empty when none is set.
  */
 export const trailerLines = (attribution: unknown): string[] => {
-	const commit = attribution !== null && typeof attribution === "object" ? (attribution as { commit?: unknown }).commit : undefined;
-	return typeof commit === "string" ? commit.split("\n").map((line) => line.trim()).filter(Boolean) : [];
+	const commit = fieldOf(attribution, "commit");
+	return typeof commit === "string"
+		? commit
+				.split("\n")
+				.map((line) => line.trim())
+				.filter(Boolean)
+		: [];
 };
 
 /**
@@ -36,7 +45,11 @@ export const lacksTrailer = (command: string, lines: string[]): boolean => {
 	const starts = [...command.matchAll(COMMIT)].map((match) => match.index);
 	return starts.some((start, i) => {
 		const part = command.slice(start, starts[i + 1] ?? command.length);
-		return INLINE.test(part) && !REUSE.test(part) && lines.some((line) => !part.includes(line));
+		return (
+			INLINE.test(part) &&
+			!REUSE.test(part) &&
+			lines.some((line) => !part.includes(line))
+		);
 	});
 };
 
@@ -46,7 +59,9 @@ export const trailerReason = (lines: string[]): string =>
 
 /** The lines each commit must hold while claudetto's git block is the one sent; none while the builtin block is on. */
 async function requiredLines($: EngineInterface): Promise<string[]> {
-	if (await builtinGitOn($)) return [];
+	if (await builtinGitOn($)) {
+		return [];
+	}
 	return trailerLines(await $.settings.read({ key: "attribution" }));
 }
 
@@ -59,13 +74,25 @@ async function requiredLines($: EngineInterface): Promise<string[]> {
  * (ADR-0025). It applies only while claudetto's git block replaces the builtin one.
  */
 export function registerTrailer(on: On, options: PluginOptions = {}): void {
-	if (!ownGitOn(options)) return;
+	if (!ownGitOn(options)) {
+		return;
+	}
 	on("tool.call", { tool: "Bash" }, async ($, e, next) => {
-		if (e.tool !== "Bash" || !/\bcommit\b/u.test(e.command)) return next(e);
+		if (e.tool !== "Bash" || !/\bcommit\b/u.test(e.command)) {
+			return next(e);
+		}
 		// A failed read is logged here and the call passes on, because a fault
 		// answered by .catch drops the rewrites of the guards that ran before it,
 		// pipefail among them (probe, 2.1.327).
-		const lines = await requiredLines($).catch((error: unknown) => (fault($, "commit trailer", error), []));
-		return lines.length > 0 && lacksTrailer(e.command, lines) ? { deny: trailerReason(lines) } : next(e);
-	}).catch(($, e, next) => (fault($, "commit trailer", next.error), next(e)));
+		const lines = await requiredLines($).catch((error: unknown) => {
+			fault($, "commit trailer", error);
+			return [];
+		});
+		return lines.length > 0 && lacksTrailer(e.command, lines)
+			? { deny: trailerReason(lines) }
+			: next(e);
+	}).catch(($, e, next) => {
+		fault($, "commit trailer", next.error);
+		return next(e);
+	});
 }
