@@ -400,7 +400,7 @@
   - Likelihood: 2
   - Impact: 2
   - Existing controls: none.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Say each instruction once.
   - Trigger: Two prompt lines cover one case.
   - Owner: kernel

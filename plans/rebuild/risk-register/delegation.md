@@ -170,7 +170,7 @@
   Consequence: a wrong result ships on a false premise.
   Likelihood: 1. Impact: 3.
   Existing controls: none located.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: agent files keep low effort for narrow retrieval only; a read-only reviewer subagent checks before use.
   Trigger: a low-effort subagent used for a decision.
   Owner: delegation. Status: open.
@@ -234,7 +234,7 @@
   Consequence: user work is changed against a refusal.
   Likelihood: 1. Impact: 4.
   Existing controls: none found in the source.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: each brief carries every correction and rejection so far; a delegate that meets a rejection stops and reports in the first line.
   Trigger: a brief lacks the rejections of the session.
   Owner: delegation.
@@ -395,7 +395,7 @@
   - Likelihood: 1
   - Impact: 3
   - Existing controls: none.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: drop `Bash` from reviewers that only read.
   - Trigger: a read-only agent with `Bash`.
   - Owner: delegation

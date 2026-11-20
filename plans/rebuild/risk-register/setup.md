@@ -40,7 +40,7 @@
   Consequence: Permission mode falls back to default and a Bash command containing a cap substring is miscounted.
   Likelihood: 1. Impact: 3.
   Existing controls: Setup writes none (correct at 088a227c).
-  Response: avoid.
+  Response: accept; planned before settlement: avoid.
   Actions: Keep the variable out of the written env set; a setup test pins its absence.
   Trigger: A setup change adds `CLAUDE_CODE_SCRIPT_CAPS` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`.
   Owner: setup. Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
@@ -156,7 +156,7 @@
   - Likelihood: 2
   - Impact: 2
   - Existing controls: None found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: State the general cause first and fix it for every tool of that class.
   - Trigger: A fix named after one tool for a fault in a shared layer.
   - Owner: setup
@@ -190,7 +190,7 @@
   Consequence: the login token leaks to the URL's server.
   Likelihood: 1. Impact: 5.
   Existing controls: none at 088a227c. A fake-API probe on 2.1.327 (`code cli`, login oauth, no ANTHROPIC_AUTH_TOKEN, 2026-11-18) ran, but the report does not expose request headers, so whether the login token reaches the base URL is open; a probe needs request-header capture.
-  Response: avoid.
+  Response: accept; planned before settlement: avoid.
   Actions: always set a dummy ANTHROPIC_AUTH_TOKEN beside ANTHROPIC_BASE_URL. The same setup names ANTHROPIC_MODEL (line 103).
   Trigger: ANTHROPIC_BASE_URL in an environment with no ANTHROPIC_AUTH_TOKEN.
   Owner: setup.

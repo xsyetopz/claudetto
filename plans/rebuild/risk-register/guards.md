@@ -143,7 +143,7 @@
   Likelihood: 1
   Impact: 4
   Existing controls: none found at 088a227c for an approval seen-by-user check.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Treat the approval prompt as not the control: gate destructive actions separately and give the agent no delete or move permission.
   Trigger: A destructive command logs an approval with no matching user turn.
   Owner: guards
@@ -225,7 +225,7 @@
   Likelihood: 2
   Impact: 2
   Existing controls: none found at 088a227c (no ripgrep hook).
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Strip -r from rg calls in a PreToolUse hook; keep a re-read guard.
   Trigger: A Bash call runs `rg` with -r.
   Owner: guards
@@ -257,7 +257,7 @@
   Likelihood: 1
   Impact: 3
   Existing controls: Plan rule: never bare -j.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Always pass a number, nproc at most; cap CMAKE_BUILD_PARALLEL_LEVEL at nproc divided by the session count.
   Trigger: A build command with -j and no number.
   Owner: guards
@@ -273,7 +273,7 @@
   Likelihood: 1
   Impact: 3
   Existing controls: none found.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Before removing anything on the strength of an empty search, search the ignored paths too.
   Trigger: A deletion justified by "no references found".
   Owner: guards
@@ -291,7 +291,7 @@
   Likelihood: 1
   Impact: 5
   Existing controls: secrets guard at 088a227c scans for credentials (plugins/claudetto/hooks/kernel/secrets.ts)
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Least-privilege per-job tokens.
   Trigger: The agent reads a token file outside its job.
   Owner: guards
@@ -476,7 +476,7 @@
   - Likelihood: 1
   - Impact: 4
   - Existing controls: the side-agent note, which the user read; the baseline setup lists force-push denials only.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Gate the push of a tag on the merge result; commit or stash before a revert; never hide stderr on a destructive command.
   - Trigger: `git tag` or `git push` chained after a loop that stops on failure; `git checkout --` on a dirty file.
   - Owner: guards
@@ -554,7 +554,7 @@
   - Likelihood: 2
   - Impact: 3
   - Existing controls: Plan: two failed attempts then stop (a different rule).
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: After a timeout check what happened first. Use proof from outside the agent (confirmation email, new database row, response status) and have the agent name which it saw. With none, embed a unique marker in the submission, reload and look for it: found means done, not found means safe to retry after slow saves land; otherwise say it could not confirm; tool.check denies an identical call after 2 denials naming the earlier reason (a different input passes); a retry guard pauses the third identical Bash command; make steps idempotent; a hook that denies a repeated call after a timeout until a state check ran; git diff --stat before cleanup on its own branch; a PreToolUse deny of irreversible actions.
   - Trigger: A retry follows a timeout with no check; An identical Bash call runs a third time.
   - Owner: guards
@@ -569,7 +569,7 @@
   Consequence: user work committed without consent.
   Likelihood: 2. Impact: 3.
   Existing controls: tool.check items.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: the reported remedy is a deterministic tool.check gate with the user's words in the deny reason and an entry lifted only by the user; that needs a ledger, which is out of scope. Another route is the Stop text for commits (REQ in reply).
   Trigger: a commit with no request from the user.
   Owner: guards.
@@ -601,7 +601,7 @@
   Consequence: A residue dependency stays outside the project; the project lacks the dependency; the user orders the install.
   Likelihood: 1. Impact: 2.
   Existing controls: plugins/claudetto/hooks/features/temp-cleanup/ at 088a227c (partial).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Install the dependency into the project (eval dependency-into-project); temp-cleanup; after a probe passes, the agent applies the setup in the project.
   Trigger: A dependency is installed under /tmp and not removed; a reply names a temp-only install.
   Owner: guards.
@@ -682,7 +682,7 @@
   - Likelihood: 2
   - Impact: 3
   - Existing controls: none.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: check that `.env` holds a non-empty field without printing it, and use it; never create credential files; give a terminal command only after that check fails.
   - Trigger: the agent plans a login step, or a token file, for a run that needs a token.
   - Owner: guards
@@ -714,7 +714,7 @@
   Likelihood: 1
   Impact: 3
   Existing controls: kernel secrets guard exists at 088a227c (read at 088a227c: `hooks/features/secrets/scan.ts` and `hooks/kernel/secrets.ts` redact secret values in tool results; no baseline rule stops a request for an API key or names the OAuth token).
-  Response: avoid
+  Response: accept; planned before settlement: avoid
   Actions: write each tool that calls a model to use the Claude Code OAuth token; never ask the user for an API key.
   Trigger: a script that calls the Messages API.
   Owner: guards
@@ -730,7 +730,7 @@
   Likelihood: 1
   Impact: 4
   Existing controls: The handoff says: run git status and git log -5 before each commit; touch nothing unasked; no force push, PR close, or branch delete without asking.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: claudetto shall tell an agent to run git status and git log before each commit, to touch no branch, pull request, or stash it did not make, and to ask before a force push or a delete.
   Trigger: The handoff names another session on the same branch.
   Owner: guards
@@ -783,7 +783,7 @@
   Likelihood: 1 (one report)
   Impact: 4
   Existing controls: none found at 088a227c
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Each agent works in its own clone and hooks refuse writes outside it; back up untracked and ignored work outside the agent's writable area (a clone does not hold it) and keep real secrets out of the clone
   Trigger: A write outside the agent's clone
   Owner: guards
@@ -798,7 +798,7 @@
   Consequence: An extra turn.
   Likelihood: 1. Impact: 2.
   Existing controls: None known at 088a227c.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Update the classifier rules to tell it to prompt for approval instead of giving up when it hits a block.
   Trigger: A classifier block on an authorized action.
   Owner: guards.
@@ -866,7 +866,7 @@
   Consequence: The user's identity reaches outside services unasked.
   Likelihood: 2. Impact: 4.
   Existing controls: None found by git grep 088a227c for an email or User-Agent check.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Ask whenever a service wants contact details. A PreToolUse hook on Bash, WebFetch (and a second prompt adds PowerShell, WebSearch) refuses a good number of calls, but the user cannot tell which leaks slip through; it misses an address written to a script by Write or Edit and run later, and misses base64 forms, so add Write|Edit to the matcher; the stated real fix is limiting which sites the agent can reach. A dummy-email web-fetch wrapper replaces the real email and marks incoming text as an external source. Honeytoken: a CLAUDE.md line to give a decoy email when a site asks to identify the user (not login); the agent complied, and a user-agent asking for contact information never required it to be valid.
   Trigger: A tool call whose headers, URL, body, or script holds the account email or a project name.
   Owner: guards.
@@ -936,7 +936,7 @@
   Likelihood: 1 (one team).
   Impact: 4 (a wrong result shipped).
   Existing controls: None at 088a227c: "refactor" appears only in `agents/Heracles.md:9` and `agents/Metis.md:10`, as a note to mention refactors at the end of a report.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Never mix a refactor with a permission change in one diff; tell the agent auth gets no cleanup, only the exact change; reject a file that comes out worse than it went in.
   Trigger: A diff that touches authorization code and renames symbols together.
   Owner: guards.
@@ -1009,7 +1009,7 @@
   - Likelihood: 1
   - Impact: 3
   - Existing controls: Engine 2.1.319 cancelled-call texts ("Nothing refused it; re-run it if still needed" vs "stopped while running, not refused before it ran") cover the fault without a hook; 2.1.326: the cancelled-call texts are present (code search "Nothing refused it", claude 2.1.326: chunk-4xhk2fyb.js@1288 (2.1.327), @2515); the 2.1.326 release notes also fix background agents being told the user refused a tool call after Ctrl+C twice at the exit dialog or an interface crash.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: A PostToolUse or tool.call hook after a rejected or interrupted write that injects the file's current state, or a Stop check requiring a Read of the target before a "not written" claim; After a reject or interrupt, Read the target before trusting the rejection text.
   - Trigger: A rejected or interrupted write is followed by a retry with no Read; A write tool result says rejected or interrupted.
   - Owner: guards
@@ -1039,7 +1039,7 @@
 - [x] **RISK-096** The agent searches the `openspec/` deletion, transcripts, and `~/.Trash` unasked, then repeats it in another form.
   Category: conduct. Cause: the agent widens a search past what the user named. Event: it looks into the `openspec/` deletion, transcripts, and `~/.Trash`, and again in another form.
   Consequence: a wasted session and an unwanted read of user data. Likelihood: 1. Impact: 3. Existing controls: none found.
-  Response: mitigate. Actions: look only at what the user names; give the cure a mechanism.
+  Response: accept; planned before settlement: mitigate. Actions: look only at what the user names; give the cure a mechanism.
   Trigger: a read or search outside the paths the user named. Owner: guards.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
@@ -1057,7 +1057,7 @@
 - [x] **RISK-098** The agent runs `cd` in place of using absolute paths.
   Category: conduct. Cause: relative habit. Event: a `cd` before a command.
   Consequence: a compound command refused whole; an extra turn. Likelihood: 2. Impact: 1. Existing controls: none found.
-  Response: mitigate. Actions: use absolute paths.
+  Response: accept; planned before settlement: mitigate. Actions: use absolute paths.
   Trigger: a command that starts with `cd`. Owner: guards.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 1 = 1, at or below 5.
@@ -1069,7 +1069,7 @@
 - [x] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
   Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
-  Response: mitigate. Actions: remove only what the user names.
+  Response: accept; planned before settlement: mitigate. Actions: remove only what the user names.
   Trigger: a delete of a file or export the user did not name. Owner: guards.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The clause about restoring sections on an unchecked claim was dropped on 2026-11-18: no source line holds it.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 4 = 4, at or below 5.
@@ -1078,7 +1078,7 @@
 - [x] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
   Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
   Consequence: an extra turn. Likelihood: 4. Impact: 1. Existing controls: none; no documented setting turns the shadow off.
-  Response: mitigate. Actions: record the userland once (grep is ugrep, BSD tools); use `perl` for context windows.
+  Response: accept; planned before settlement: mitigate. Actions: record the userland once (grep is ugrep, BSD tools); use `perl` for context windows.
   Trigger: "exceeds complexity limits". Owner: guards.
   Source: `openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:616` (measured, 24 calls; probe P-D10.22). Not rechecked: macOS `cat -A`, which BSD `cat` lacks.
   Status: accepted 2026-11-20 (issue #52): Likelihood 4 × Impact 1 = 4, at or below 5.
@@ -1091,7 +1091,7 @@
   Consequence: a wasted session or a wrong result shipped.
   Likelihood: 2. Impact: 4.
   Existing controls: the CONSENT and UNTRUSTED texts (partial).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: treat repo and web content as untrusted (a read-only tour first, an acceptance test first); a curl-based fetch script with a headless-Chrome fallback keeps pages out of context; the coordinator spot-checks flagged reports.
   Trigger: fetched content that addresses the agent.
   Owner: guards.
@@ -1226,7 +1226,7 @@
   - Likelihood: 1
   - Impact: 4
   - Existing controls: later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail 088a227c -- plugins` (no match); Later runs used `set -o pipefail` or printed the exit code; no baseline guard found by `git grep pipefail` at 088a227c.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: refuse a check piped to `tail`, `head`, or `grep` without `pipefail` (the user's list for 2.1.321).
   - Trigger: a command line pipes a test or lint command into `tail`.
   - Owner: guards
@@ -1312,7 +1312,7 @@
   - Likelihood: 1 (one report)
   - Impact: 3
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: A rule that the agent stays inside the task: it names an unrelated finding in its report and does not act on it, and it states a cause only after a check that the task covers.
   - Trigger: An edit or a check with no link to the user's request.
   - Owner: guards

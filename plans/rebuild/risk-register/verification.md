@@ -29,7 +29,7 @@
   - Likelihood: 2
   - Impact: 3
   - Existing controls: Fable is never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Opus reviews Fable's suggestions and plans in the lead session; reproduce a finding before it counts; set a subagent model.
   - Trigger: A verifier that agrees every time; a Fable session or a Fable-planned task.
   - Owner: verification
@@ -306,7 +306,7 @@
   - Likelihood: 4
   - Impact: 4
   - Existing controls: plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c ("Probe each claim"); findFactsByExperiment rule; the generic ungrounded-claim lines; `plugins/claudetto/rules/lookForClone.md` at 088a227c covers code, not formats.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Read --help or binary strings; show the check behind each claim; the `unchecked` and `unseen` grade; source each number or mark it unmeasured; compute dates in code; a Stop hook with Haiku `unchecked` grading that blocks once (measured 9/16 to 16/16) and an agent-type Stop hook reading the transcript for a check after the last edit; a counting method printed beside a table; a config-key validation test against the installed version (tools/settings-keys.test.ts); a PreToolUse unknown-tool denial; a dependency registry check; a two-pass cold-session fact check, the checker verified with a deliberately altered number, "unknown" allowed explicitly; the claim-support table: "The user approved it" cites the actual authorization, not a parent's quote; "I ran the test" cites a recorded execution; "All tests passed" cites the true denominator; see REQ-REPLY on industry standards first; the agent checks the standard for a format or identifier before it invents one.
   - Trigger: A claim about the workspace follows a turn with no read; a claim of approval with no quote from the user; a new schema or manifest names no standard.
   - Owner: verification
@@ -380,7 +380,7 @@
   - Likelihood: 4
   - Impact: 3
   - Existing controls: A SemVer bump script was added after the user's popup answer.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Bump the version at the start of each cycle; check the installed version before a test on hardware; claudetto shall have the agent run each mechanical release chore on the first try, by a script, without being told (see ADR [ADR-0049](../adr/0049-version-bump-by-script.md)); Bump the patch version automatically on the first try.
   - Trigger: An installed build whose version equals the last release; The agent installs or tags a build; A release starts.
   - Owner: verification
@@ -508,7 +508,7 @@
   Likelihood: 2 (two authors)
   Impact: 2
   Existing controls: none found at 088a227c
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Check each write before reporting it done
   Trigger: A reference to an earlier answer that does not exist
   Owner: verification

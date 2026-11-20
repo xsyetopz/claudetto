@@ -90,7 +90,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: wasted turns; a defect that returns.
   Likelihood: 2. Impact: 3.
   Existing controls: the Mod route removes general-purpose from the offered list (probe m-b0).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: read the repo's scripts before a build or test command; pick agent types only from the session's offered list; fix a failing test or bug at its root cause.
   Trigger: a build or test command that the repo's scripts do not define.
   Owner: reply.
@@ -105,7 +105,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: code a reader must check for no gain.
   Likelihood: 1. Impact: 1.
   Existing controls: none named.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: name a file by its job; add a test only when it fails on a user-visible break.
   Trigger: a new file or test with no user-visible purpose.
   Owner: reply.
@@ -120,7 +120,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: a wrong diagnosis and an extra turn.
   Likelihood: 1. Impact: 2.
   Existing controls: none named.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: name the enforcer by a check (process start time, profile, settings sources) before blaming one; convert a local time to UTC with the zone offset.
   Trigger: a cause named with no check.
   Owner: reply.
@@ -138,7 +138,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1 (one report)
   - Impact: 2
   - Existing controls: the user rule "read the source or run a probe before you state a fact about a tool".
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: A rule that a failure of a step that passed before starts with the diff between the passing and the failing run.
   - Trigger: A report that says a fix and names a cause with no run behind it.
   - Owner: reply
@@ -156,7 +156,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2
   Impact: 2
   Existing controls: none at 088a227c
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: State the wanted output positively with examples (47 votes top comment); throw the context away and restart when it leaks.
   Trigger: An avoid-list word appears in a reply.
   Owner: reply
@@ -174,7 +174,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 5
   - Impact: 3
   - Existing controls: `plugins/claudetto/hooks/features/prompt/texts.ts` (partial); the constraint ledger of the old change is not rebuilt (settled: no constraint ledger; user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); the decay numbers at plan line 641 and the prefix-file rule at line 1322.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: lint/hook at the point of use; hard rules in hooks; a hook or Stop check per recurring case; SessionStart-on-compact and UserPromptSubmit re-injection of the few must-follow rules (violations 10 to 3, reported); the extractor must not read a task fragment as a constraint (a task phrase about renaming an export blocked an edit). The old cure "constraint ledger (39/48 -> 48/48; read-only 1/8 -> 8/8)" is Out under the settled [ADR-0075](../adr/0075-no-constraint-ledger.md) decision (user decision, recorded in the 2026-11-17 handover (day of decision not recorded)); state each layout rule where the subagent gets it; test recurrence. Mitigation research the plan lacks: Instruction Hierarchy (2404.13208), MemGPT paging (2310.08560), MEM1 constant-size memory (2506.15841).
   - Trigger: a rule set early that a later call breaks; a repeat of a banned pattern.
   - Owner: reply
@@ -210,7 +210,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: The user loses turns to argument and gets a correct rewrite late.
   Likelihood: 2. Impact: 2.
   Existing controls: None.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Profile or measure before judging, list assumptions, keep one short stance block, restart a stuck moralising session.
   Trigger: A refusal of a user-requested change that carries no measurement.
   Owner: reply.
@@ -240,7 +240,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: The user is quoted for words they never said; a settled definition is lost.
   Likelihood: 2. Impact: 3.
   Existing controls: claim-check fault `credited` counts each AskUserQuestion answer as the user's words (spec at 088a227c^).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Stop codes `credited` and `unseen` (held-out recall 12/12, 0/30 false flags after rewording; first 10/19); replace a term everywhere and credit the user's definition; a pinned glossary.
   Trigger: A reply attributes a label to the user that the transcript does not show.
   Owner: reply.
@@ -272,7 +272,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: Replies cost reading time and hide the answer.
   Likelihood: 2. Impact: 2.
   Existing controls: Concise output style.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Define concise positively, keep a keep-list, use the humanizer skill, write README for humans and AGENTS.md for agents. The `jargon` Stop code was removed in change 2.
   Trigger: A reply to a one-line question exceeds 100 words.
   Owner: reply.
@@ -287,7 +287,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: Comments grow with each edit.
   Likelihood: 1. Impact: 2.
   Existing controls: None.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: A global CLAUDE.md line restating the default and the wanted behaviour, plus a fence line separating it from the system prompt; a comment rule in the plugin prompt.
   Trigger: New code carries comments copied from neighbours.
   Owner: reply.
@@ -316,7 +316,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: none at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Read the user's last answer before the next-step line. Report status that changed this turn only.
   - Trigger: Two consecutive replies with the same paragraph.
   - Owner: reply
@@ -332,7 +332,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: none at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: Treat a denied or cancelled call as no answer; ask again plainly. Do not guess a cause for a cancel; the user said the two identical rows caused it, not the agent's rule breach.
   - Trigger: A reply that cites a tool denial as the user's choice.
   - Owner: reply
@@ -368,7 +368,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 5
   - Impact: 3
   - Existing controls: grader `doable_step_left` (read, not run); a hand-off rule exists in the old plan; none for the pattern. A command that needs a real terminal, such as a paid probe with a login, is rightly handed over; claudetto's temp-cleanup guard at 088a227c; no rule on approval; The handoff carried the rule 'do the work myself; ask the user only for physical actions'; EVIDENCE prompt text: run each step yourself; the claim "The agent defers and offers instead of doing" is have at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: A Stop-time grader `deferred` and `options` fault, block once; a Stop check rejecting a handoff with no failed attempt or named hard block; a `What I Need From You` form check allowing only a command the agent cannot run; an autonomy contract (try once, same-user prior work in scope) loaded at SessionStart (survives /clear) naming the few real hand-offs (pushes, deletions outside tree, policy, .env); an output style limiting a command bullet to one per reply; a Stop check dropping repeated items; ask only through AskUserQuestion; a fork handoff returning context in the same step; the `unfixed` claim check blocking once; a SessionStart hook printing branch, log, and lock owner with a rule defining "not mine" as another human or a live session; Add a reply rule: do each step you can run yourself, install and build included. Ask the user only for a physical action, and ask in the same turn instead of recording a blocker. Do not name the user as the owner of a task that waits for other people's hardware; the agent handles the friction itself, such as killing and reinstalling its own project app, and does every task part that needs no missing hardware; claudetto shall make the agent run the check and fix the defect it found, and ask only for what the user alone holds; read a source whole, in parts if it is long; fix a defect found in the user's repository at its cause without asking; run the experiment; attempt a command before handing it back; hand over only what needs a login, hardware, a product choice, or an account it lacks, as a ready command; run the command outside the sandbox when it is safe, and do each review itself; hand over only what needs a login, hardware, or a product choice; Make the agent run each step it can run, stop its own stuck tasks, resolve blockers it listed, and hand over only what needs a terminal or an account it lacks, as a ready command; Probe each fact that a command can show before the report. Delete the session's own temp folders without asking; claudetto shall carry the rule 'do all work yourself, ask the user only for a physical action' in the reply rules and in each handoff (see ADR [ADR-0042](../adr/0042-agent-does-the-work-itself.md)); Do each step in scope and each step the agent would offer; deleting temp folders needs no approval; the CON item "an agent shall do each step itself".
   - Trigger: A reply lists a step the agent could run; A final reply that holds "run this", "you need to", or "Blocker:" for a step the agent has a tool for; a reply says a task waits on a step the agent can take; a final reply or a report line that holds "not checked", untested, blocked, or needs approval for a check or step the agent can run; a source over the read limit; a defect the agent found in its own work; a reply that asks the user for a step the agent can run; a reply with a "What I Need" list; a `!` command or a review request in a final reply; a turn ends with a request to the user for a step that a tool call could do; a final reply that holds "not checked" for a check the agent can run; A report line that says untested, blocked, or needs approval for a step the agent can run; The agent asks the user to run a command, install, or check something that a tool call can do; A reply holds 'if you want' or asks approval for a command inside the sandbox; a final report with a step list for the user beyond a login.
   - Owner: reply
@@ -402,7 +402,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: scopeEditsToGoal rule.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: A tool.call hook denying AskUserQuestion under a no-questions constraint; a Decider guard on each question (denial when asking leave to fix a defect the agent caused); fix a defect found in the user's repository at its cause without asking.
   - Trigger: AskUserQuestion fires after a no-questions instruction; a defect the agent found in its own work.
   - Owner: reply
@@ -418,7 +418,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: none found at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: see the ADR `[ADR-0053](../adr/0053-agent-decides-in-scope-choices.md)`; the agent picks the most pragmatic long-term option, researches what sources answer, and reports the choice.
   - Trigger: a reply asks for sign-off on a choice inside the task's scope.
   - Owner: reply
@@ -449,7 +449,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: none found at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: claudetto shall make the agent remove a risk it finds in its own change before it reports, and report only a risk it cannot remove.
   - Trigger: a report section named remaining risk for a risk the change introduced.
   - Owner: reply
@@ -516,7 +516,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 3
   - Existing controls: none found at 088a227c; the findFactsByExperiment rule asks for a run before a fact.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: claudetto shall make the agent use the industry-standard form for a schema id and a manifest, or an identifier from the project's real remote, look up the standard format before a new file format, and never invent a URL; claudetto shall make the agent use the industry-standard form for a schema id and a manifest, and not invent a URL.
   - Trigger: a `.invalid` host in a written file; a new schema or manifest.
   - Owner: reply
@@ -532,7 +532,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: none.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: claudetto shall make the agent install a needed dependency into the project and record it, or report that the sandbox blocks it; use temp only when the user asks; claudetto shall make the agent install a needed dependency into the project, or report that the sandbox blocks it.
   - Trigger: an install into a temp path; a missing library found during a task.
   - Owner: reply
@@ -564,7 +564,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 3
   - Existing controls: none known.
-  - Response: avoid
+  - Response: accept; planned before settlement: avoid
   - Actions: keep the target version the task names; when a check fails on it, fix the cause or report it; do not downgrade.
   - Trigger: a failing install or guard after a version bump.
   - Owner: reply
@@ -580,7 +580,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 1
   - Existing controls: none known.
-  - Response: avoid
+  - Response: accept; planned before settlement: avoid
   - Actions: end a research reply after the findings and sources; add status only when the user asks.
   - Trigger: a research report.
   - Owner: reply
@@ -596,7 +596,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: findFactsByExperiment rule.
-  - Response: avoid
+  - Response: accept; planned before settlement: avoid
   - Actions: search the dossiers under external/, clawdipedia-docs, and the web before an answer about models and effort.
   - Trigger: a question about models, effort, or Claude Code behaviour.
   - Owner: reply
@@ -665,7 +665,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: a rule "While an agent runs, do each step that does not wait on its result" at `plugins/claudetto/hooks/features/prompt/texts.ts:27@088a227c`.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: keep the rule in the prompt; test it with an eval.
   - Trigger: an end of turn with a step that does not need the worker's result.
   - Owner: reply
@@ -681,7 +681,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: install a needed dependency into the project.
   - Trigger: an install path outside the project.
   - Owner: reply
@@ -697,7 +697,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 3
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: take an industry-standard format and a real identifier; read the git remote before an id.
   - Trigger: a placeholder host or an ad hoc format in a new file.
   - Owner: reply
@@ -713,7 +713,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: read Claude platform docs through `clawdipedia-docs`.
   - Trigger: a WebFetch of a Claude docs host.
   - Owner: reply
@@ -729,7 +729,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 3
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: choose the method the user ordered, or the one that serves the goal; ease is not a reason.
   - Trigger: "easier" as the reason for a choice in a report.
   - Owner: reply
@@ -745,7 +745,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 3
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: [CC-063](../arc42/08_concepts/fact-rules.md) (provenance of each artifact and claim); the user wants any agent self-report checked against git changes and tool records.
   - Trigger: a new file the user did not request.
   - Owner: reply
@@ -761,7 +761,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 2
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: [CC-078](../arc42/08_concepts/scope-and-simplicity.md) (invent no order, priority, file, format, or wording; use the user's words).
   - Trigger: a numbered or ranked list in agent output with no user list behind it.
   - Owner: reply
@@ -777,7 +777,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 3
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: [CON-013](../arc42/02_architecture_constraints/user-rules.md) (small code, no reduced features); a removal needs a measured reason or a user decision.
   - Trigger: a diff that turns off or deletes a user-visible feature with no user instruction.
   - Owner: reply
@@ -810,7 +810,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 2
   - Impact: 4
   - Existing controls: the `<evidence>` block in the root prompt (`plugins/claudetto/hooks/texts.ts:12-14` at `088a227c^`, read); the FAFO rule in the user's global rules; no hook.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: name each claim's basis; read the source; [CC-061](../arc42/08_concepts/fact-rules.md) (FAFO: hypothesis, prediction, check, result; a claim with no run is a hypothesis); state a fact only after a check; on a failure, find the cause by experiment; say beforehand that a long or paid run starts; a cause stays unnamed until a check shows it.
   - Trigger: a claim with no tool result in the turn; a cause or status claim with no command or file read behind it; an unexplained event; A reply gives a cause with no run behind it.
   - Owner: reply
@@ -826,7 +826,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 2
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: ADR [ADR-0029](../adr/0029-read-pointed-at-files-in-slices.md) (read the slices needed; never claim a read not done).
   - Trigger: a reply that cites a pointed-at source whose Read does not appear in the transcript.
   - Owner: reply
@@ -874,7 +874,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1
   - Impact: 1
   - Existing controls: none.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: each open decision names what it changes, the options, and a default.
   - Trigger: a report lists a decision in fewer than two sentences.
   - Owner: reply
@@ -890,7 +890,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 1
   Impact: 2
   Existing controls: none known.
-  Response: avoid
+  Response: accept; planned before settlement: avoid
   Actions: install a needed dependency into the project and record it; use temp only when the user asks.
   Trigger: a missing library found during a task.
   Owner: reply
@@ -906,7 +906,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 1
   Impact: 3
   Existing controls: findFactsByExperiment rule asks for a run before a fact.
-  Response: avoid
+  Response: accept; planned before settlement: avoid
   Actions: use an identifier from the project's real remote or an industry standard; look up the standard format before a new file format; never invent a URL.
   Trigger: a new schema or manifest.
   Owner: reply
@@ -939,7 +939,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2
   Impact: 2
   Existing controls: The handoff lists the open issues and the user's latest words.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: claudetto shall have the agent work every open issue the user named before it reports, and list in the report only what a blocker holds.
   Trigger: The user lists open issues and the agent replies without a fix.
   Owner: reply
@@ -973,7 +973,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: an extra turn and doubt about a correct answer.
   Likelihood: 2. Impact: 2.
   Existing controls: none at 088a227c (grep of `plugins/` for "pushback" and "objection" finds no rule or hook).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: one user added a specific instruction to check whether the user already covered the argument before pushing back.
   Trigger: a pushback on a point the prompt already holds.
   Owner: reply.
@@ -1003,7 +1003,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: false objections in each reply.
   Likelihood: 1. Impact: 2.
   Existing controls: none at 088a227c (grep of `plugins/` for "opposing view" and "pushback" finds no rule or hook).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: a stricter rule: no label, state only the concern, state only facts the agent checked.
   Trigger: the same opener on consecutive replies.
   Owner: reply.
@@ -1019,7 +1019,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2 (two or more reports; the Opus 5 list is satire, not measured)
   Impact: 1
   Existing controls: none found at 088a227c
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: The reply style bans these phrases
   Trigger: A tic in a reply
   Owner: reply
@@ -1037,7 +1037,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2 (two reports).
   Impact: 2 (an extra turn).
   Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: Not stated in the source; test each conduct line against the opposite fault before it ships.
   Trigger: A rule that tells the agent how to relate to the user in one word.
   Owner: reply.
@@ -1054,7 +1054,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: an unwanted change committed; an extra turn.
   Likelihood: 1. Impact: 3.
   Existing controls: None at 088a227c (grep of `plugins/` found no matching rule or hook).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: state expectations clearly; interrupt at the first divergence and restate that it is a discussion with no call for action; say "I'm only asking, don't change anything yet" or open with "Discussion:"; replay the ambiguous question as a regression case that checks the saved limit stays unchanged.
   Trigger: an edit or a command after a message that asked a question or made a remark with no instruction.
   Owner: reply.
@@ -1092,7 +1092,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 4
   - Impact: 4
   - Existing controls: The goal text, quoted in each handoff, says the goal outranks the handoff.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: only the user's own messages set work; `/goal` belongs to the user; give the cure a mechanism (a hook, a deny, a Stop check, or a subagent context); check each step against the user's standing orders and the goal file; act on a user order the first time; never assume the user is absent; keep the goal text at or under 4000 characters, and the user asks for a rewrite of the goal without a "user is asleep" condition; Make the handoff re-read the user's latest order first; see REQ-HANDOVER on the goal outranking the handoff; Mark each handoff as context; tell the agent that only the user's own messages are orders.
   - Trigger: a tool call that follows a handoff or goal file with no user message between; a step that edits a file the user ordered restructured; The user's latest message conflicts with a handoff Next item; A turn starts from a handoff and the agent acts on its Next list.
   - Owner: reply
@@ -1108,7 +1108,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 5
   - Impact: 2
   - Existing controls: the `Concise` output style; `REGISTER_BLOCK` in `plugins/claudetto/hooks/texts.ts:256@088a227c`; CORE prompt; Concise style; reminder set to 0; the claim "The agent narrates, opens with an acknowledgement, or ends asking for direction" is partial at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: text between calls holds a finding, a result, or an error; give the cure a mechanism; Remove the reminder text; name only the wanted behaviour; [REQ-REPLY-034](../prd/reply.md) (each sentence states a done step or found fact).
   - Trigger: text between two tool calls that holds none of the three; A reply carries a sentence that is not work; a reply sentence that announces a coming action.
   - Owner: reply
@@ -1124,7 +1124,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 4
   - Impact: 2
   - Existing controls: `REGISTER_BLOCK` (`plugins/claudetto/hooks/texts.ts:256@088a227c`); the model-graded fault `names_own_mistake_without_result` (`plugins/claudetto/hooks/decider/questions.ts:159@088a227c`, source at `088a227c^`, read, not run); output style says to open with the checked fact; no hook stops it; baseline `texts.ts:15` asks to open each reply of a disputed turn with the checked fact.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: open with the checked fact; no regex Stop check (user decision, 2026-11-16); [REQ-REPLY-088](../prd/reply.md) (open with a checked fact; prompts name only the wanted behaviour); ADR [ADR-0104](../adr/0104-no-regex-stop-check.md) bars a word-match Stop check; keep the fact-first opener text of baseline `texts.ts:15` and put any agreement after the fact.
   - Trigger: a reply whose first sentence agrees, apologises, or confesses; a reply whose first sentence validates the user; a reply of a disputed or corrected turn that opens with agreement.
   - Owner: reply
@@ -1135,7 +1135,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 - [x] **RISK-340** The agent ends a reply by asking the user to direct the work.
   Category: conduct. Cause: no rule ends a reply on the result. Event: a closing question that hands the choice to the user.
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: none found.
-  Response: mitigate. Actions: end on the result or the blocker.
+  Response: accept; planned before settlement: mitigate. Actions: end on the result or the blocker.
   Trigger: a reply that ends in a question to the user with work still doable. Owner: reply.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
@@ -1144,7 +1144,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 - [x] **RISK-341** The agent quotes the user verbatim in files.
   Category: conduct. Cause: the agent keeps the user's words as the spec. Event: a user quote in a plan file, then a narrow reading of it.
   Consequence: a narrowed or distorted instruction. Likelihood: 1. Impact: 2. Existing controls: none found. The rule that no plan file quotes the user verbatim is settled (user decision, 2026-11-16).
-  Response: avoid. Actions: paraphrase; name the decision and its date.
+  Response: accept; planned before settlement: avoid. Actions: paraphrase; name the decision and its date.
   Trigger: a quoted user sentence in a plan file. Owner: reply.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported: Reddit text pasted by the user, one report); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:102.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
@@ -1153,7 +1153,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 - [x] **RISK-342** The agent ends on work it says it will do next, though it could do it now.
   Category: conduct. Cause: no Stop check on a closing promise. Event: a reply that names next work and stops.
   Consequence: an extra turn. Likelihood: 1. Impact: 2. Existing controls: grader `doable_step_left` (read, not run).
-  Response: mitigate. Actions: do the work now or name the blocker; no regex Stop check (user decision, 2026-11-16).
+  Response: accept; planned before settlement: mitigate. Actions: do the work now or name the blocker; no regex Stop check (user decision, 2026-11-16).
   Trigger: a reply that ends on a future-tense work statement. Owner: reply.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:54 (reported).
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
@@ -1166,7 +1166,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: a wrong result shipped.
   Likelihood: 3. Impact: 3.
   Existing controls: none found (`SIMPLE_SYSTEM_PROMPT` is in no file under plugins/ at 088a227c).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: restate those rules in a rules file or hook; `prompt.compose` gives one system prompt per model: the default body for other models, a shared core for Opus 5.5.
   Trigger: a session on a 5.5 model with the lean prompt.
   Owner: reply.
@@ -1324,7 +1324,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 1
   Impact: 3
   Existing controls: the side-agent note and an AskUserQuestion prompt.
-  Response: mitigate
+  Response: accept; planned before settlement: mitigate
   Actions: Move a rejected rule to a place the hook accepts; delete a user-requested rule only on the user's word.
   Trigger: An edit that deletes a rule the same session added.
   Owner: reply
@@ -1339,7 +1339,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: the user spends another turn to order the fix.
   Likelihood: 2. Impact: 2.
   Existing controls: `plugins/claudetto/rules/scopeEditsToGoal.md` at 088a227c says to fix each defect found.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: keep the rule in the shipped rules; the cure is that the agent fixes each defect it finds, including one that came from another commit, and sends workers for parallel slices.
   Trigger: a final reply names a defect with no fix or no reason that only the user holds.
   Owner: reply.
@@ -1354,7 +1354,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: a wasted wait and an extra turn for the user to grant what the agent already had.
   Likelihood: 2. Impact: 2.
   Existing controls: none found at 088a227c.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: the agent handles the friction itself, such as killing and reinstalling its own project app, and does every task part that needs no missing hardware.
   Trigger: a reply says a task waits on a step the agent can take.
   Owner: reply.
@@ -1369,7 +1369,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: the user judges the work unusable and orders a redo.
   Likelihood: 1. Impact: 3.
   Existing controls: `plugins/claudetto/rules/lookForClone.md` at 088a227c covers code, not formats.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: see REQ-REPLY on industry standards first; the agent checks the standard for a format or identifier before it invents one.
   Trigger: a new schema or manifest names no standard.
   Owner: reply.
@@ -1384,7 +1384,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: the project lacks the dependency; the user orders the install.
   Likelihood: 1. Impact: 2.
   Existing controls: none found at 088a227c.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: after a probe passes, the agent applies the setup in the project.
   Trigger: a reply names a temp-only install.
   Owner: reply.
@@ -1433,7 +1433,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Consequence: an extra turn for each defect, and work sits idle while the user is away.
   Likelihood: 2. Impact: 2.
   Existing controls: the lead prompt says "Finish what each report left" (plugins/claudetto/hooks/features/prompt/texts.ts:32@088a227c).
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: claudetto shall make the agent fix each defect it finds at its cause, including leftovers it made (remote branches, worktrees, stale entries), and ask only for what the user alone holds (rule from the user; see the REQ in prd/reply.md).
   Trigger: a final report that names a defect, leftover, or open part the agent could fix.
   Owner: reply.
@@ -1473,7 +1473,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 1 (one report)
   - Impact: 2
   - Existing controls: none found.
-  - Response: mitigate
+  - Response: accept; planned before settlement: mitigate
   - Actions: A rule that the agent hands over a command only when it knows where the user runs it and that it takes effect there; an environment variable needs a restart or a separate terminal, and the agent says so first.
   - Trigger: An agent message that asks the user to set an environment variable or a login at the prompt.
   - Owner: reply
@@ -1613,7 +1613,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2.
   Impact: 3.
   Existing controls: the Stop hook repeats the goal.
-  Response: mitigate.
+  Response: accept; planned before settlement: mitigate.
   Actions: the REQ-REPLY item "keep working through its goal".
   Trigger: a reply with a report while items remain open.
   Owner: reply.
@@ -1629,7 +1629,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 2.
   Impact: 4.
   Existing controls: none at baseline.
-  Response: avoid.
+  Response: accept; planned before settlement: avoid.
   Actions: the three CON items on cleanup, no workaround, and small code with full features.
   Trigger: a diff that deletes a tested feature.
   Owner: reply.
@@ -1645,7 +1645,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 3
   - Impact: 3
   - Existing controls: none at 088a227c.
-  - Response: mitigate.
+  - Response: accept; planned before settlement: mitigate.
   - Actions: REQ-REPLY-139.
   - Trigger: a memory line with no source or a recorded user opinion.
   - Owner: reply
@@ -1709,7 +1709,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Likelihood: 4 (was 2; README scale 4 = reproduced in two or more runs: vanilla Opus 5.5 r497a 6 of 6, shipped style Sonnet 5.5 5 of 18)
   - Impact: 2
   - Existing controls: the case-outcome line (RISK-496) asks for a run on each claimed outcome; the renamed helper and its width test in claudetto-you-should-know.
-  - Response: accept
+  - Response: mitigate; planned before settlement: accept
   - Actions: none; no style line can beat the shipped style on the measure below (ADR-0177).
   - Trigger: A second dogfood or probe run where a defect fix makes a caller's tested or documented result worse.
   - Owner: reply
