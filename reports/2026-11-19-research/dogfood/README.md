@@ -371,4 +371,8 @@ Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 83 (read only, `gh issue view`
 
 The `gh` calls printed `deny network-outbound cafe.github.com:443` (the telemetry host of issue #83) and still returned every result.
 
-Outside check: not run in this round.
+Outside check, made after the session's commit:
+
+- Session 0c7e9db1: 10 tool calls, 0 errored. The first command printed `upper=1 lower=1`, so the env-file `TRAPDEBUG` from f03a8e3e7 fills `PIPESTATUS` in a live 2.1.327 session (issue #82); in round 3f72b84bf the same form printed nothing. The test batch read its codes with `${pipestatus[1]}` and got 0 each time.
+- The first `gh issue list` was denied `api.github.com` and was rerun with that host allowed for the command (RISK-513); the later `gh` calls hit the telemetry denial of issue #83 and returned every result. Both are recorded risks, not new faults.
+- No new fault, so this is the final round. The commit that adds this check changes only this README, so the code, plans and register at the final HEAD are the tree checked here.
