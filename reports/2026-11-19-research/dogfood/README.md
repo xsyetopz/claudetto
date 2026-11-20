@@ -318,4 +318,8 @@ Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 81 (read only, `gh issue view`
 - #64: OPEN, status:blocked, no Resolution comment
 - #73 and #74 are open Dependabot pull requests, not issues: no status label, no comments, no Resolution comment. `gh issue list` does not list them.
 
-Outside check: not run for this round.
+Outside check, made after the session's commit:
+
+- Session ba07e0d8: 10 tool calls, 0 errored. Its first test batch used `${PIPESTATUS[0]}`, which zsh leaves empty, so each line read `exit ` and the session reran all six plugin tests. That is a new fault: issue #82, fixed in f03a8e3e7 (RISK-514).
+- Its `gh issue view` loop printed `deny network-outbound cafe.github.com:443` twice and still returned every issue. The host takes gh's telemetry: issue #83, recorded under RISK-513 in 3dba9cd57.
+- Two new tickets, so another round follows.
