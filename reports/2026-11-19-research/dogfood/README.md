@@ -99,3 +99,12 @@ Probe: `run.sh start` setup on a fresh clone of 6fa79cf66, claude 2.1.327, Sonne
 - Turn 3 repeated the two-commit task. Both commits carry the co-author trailer, and the answers matched `git merge-base --is-ancestor` (exit 1) and `git merge-tree --write-tree` (exit 1).
 - Turn 4 kept two paths in `F` and ran `wc -l $F` unquoted; zsh split it into two arguments (81 and 209 lines). Turn 5 changed "licence" in 3 ADR files with one `git grep -l | xargs perl -pi` call and no `Edit` call, and said that its case-sensitive match left a capitalised form unchecked.
 - No new fault was seen.
+
+## Dogfood at e6909b79f, 2026-11-20
+
+Probe: `run.sh start` setup on a fresh clone of e6909b79f, which adds only the notes above to 6fa79cf66; session 48207af4.
+
+- Outside the session, the fresh clone gave claudetto 149 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, twice each, with no test timeout; `bunx tsc --noEmit` exited 0 in both plugins and `bun tools/check-register.ts` exited 0.
+- Turn 1 ran the same checks in the session plus `audit.py --all`: every exit 0, 436 risks printed, each `ok`. 5 tool calls, 0 errored results.
+- The per-status figures in that answer were the agent's own count, because `audit.py` printed none. Issue #75 makes the script print them.
+- No new fault was seen in the plugins.
