@@ -1,6 +1,6 @@
 # Claudetto
 
-claudetto is a Claude Code 2.1.327 plugin that keeps only what measurably beats vanilla Claude Code.
+claudetto is a Claude Code 2.1.329 plugin that keeps only what measurably beats vanilla Claude Code.
 
 ## Install
 

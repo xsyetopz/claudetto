@@ -9,7 +9,7 @@
 	"homepage": "https://github.com/xsyetopz/claudetto",
 	"license": "MIT",
 	"engines": {
-		"claude-code": ">=2.1.327"
+		"claude-code": ">=2.1.329"
 	},
 	"keywords": ["learning", "tips"],
 	"types": "./types/state.d.ts",
