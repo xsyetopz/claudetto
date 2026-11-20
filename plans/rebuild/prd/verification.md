@@ -3,7 +3,7 @@
 ## Probe Harness Pattern
 
 - [x] **REQ-VERIFICATION-030** claudetto shall probe with a real `claude` against a fake Messages API (no paid tokens) with settings in the run's own config dir, a tmux TUI harness for interactive dialogs, and `claude plugin test` (fires real hook events with no session, model, or network; mods since 2.1.287). `claude -p` with a relative `--plugin-dir` silently loads nothing.
-  Verified: fake-API probe and plugin test, claude 2.1.327, 2026-11-18, `claude -p hi --plugin-dir <abs path> --output-format stream-json --verbose` with ANTHROPIC_BASE_URL=http://127.0.0.1:9 and an empty CLAUDE_CONFIG_DIR: init lists claudetto@inline and no paid call is made; `claude plugin test plugins/claudetto`: 25 pass, 0 fail; the same -p run with a missing relative --plugin-dir lists plugins [] and a non-empty plugin_errors (exit 1), so a harness can detect it. The tmux harness is ADR-0187's.
+  Verified: fake-API probe and plugin test, claude 2.1.327, 2026-11-18, `claude -p hi --plugin-dir <abs path> --output-format stream-json --verbose` with ANTHROPIC_BASE_URL=<http://127.0.0.1:9> and an empty CLAUDE_CONFIG_DIR: init lists claudetto@inline and no paid call is made; `claude plugin test plugins/claudetto`: 25 pass, 0 fail; the same -p run with a missing relative --plugin-dir lists plugins [] and a non-empty plugin_errors (exit 1), so a harness can detect it. The tmux harness is ADR-0187's.
   Acceptance: A probe run against the fake API completes with no paid tokens. Verification: probe.
   Basis: measured. Status: partial at 088a227c.
   Source: tools/fake-api/usage.ts@088a227c; claude 2.1.327: `--plugin-dir` present (chunk-nj3089xn.js@517). Not located: the old-plan lines that gave the harness pattern.
@@ -16,7 +16,7 @@
 ## Red Baseline and Validator Test
 
 - [x] **REQ-VERIFICATION-059** claudetto shall record the `just check` baseline and shall test `claude plugin validate --strict --json` for `hasCatch:false` and a second gating hook.
-  Acceptance: `just verify` fails on a plugin whose `claude plugin validate --json` report has a gating hook with `hasCatch:false`. Verification: test (tools/__tests__/check-catch.test.ts).
+  Acceptance: `just verify` fails on a plugin whose `claude plugin validate --json` report has a gating hook with `hasCatch:false`. Verification: test (tools/**tests**/check-catch.test.ts).
   Basis: measured. Status: partial at 088a227c (tools/validator.ts, tools/guard-catch.test.ts exist).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/tasks.md:38; tools/validator.ts:1@088a227c.
   Verified: claude 2.1.327, 2026-11-18, `claude plugin validate plugins/claudetto --strict` failed on the six gating hooks without `.catch` before commit 67e9597ab and passes after it; `just verify` runs it before each push, so no repo-own validator test is kept.

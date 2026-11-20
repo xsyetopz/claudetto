@@ -69,7 +69,6 @@
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:742; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:743; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:744; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:745; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:746 (measured).
 
-
 - [x] **RISK-006** A hook adds constraints the user never gave.
   - Category: product fault (hook).
   - Cause: the constraint hook adds "do not delete branch 2-1-319" and "leave alone package.json" to each user message; the pin hook matched an OpenSpec folder name after the user wrote that release 2-1-319 is out, and pinned "Do not delete branch 2-1-319" as the user's words, though no such branch exists.
@@ -155,8 +154,6 @@
 
 ## Agent Conduct
 
-
-
 ## Hooks, Gates, and Notices
 
 - [x] **RISK-013** The claudetto gate blocks real work or asks a person on a harmless command.
@@ -208,10 +205,7 @@
   Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
-
 ## Environment, Accounts, and Marketplace
-
-
 
 ## Long Run Stops on Error
 
@@ -231,12 +225,11 @@
   - Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto` from plugins/: exit 0, 115 pass, 0 fail, including "stop notice > a cut mid-response in a drawn session submits one continuation instead of a notice".
   - Verified: tick-audit rerun 2026-11-19: an interactive 2.1.327 session against a local stub that cut the first stream showed "API Error: Connection lost mid-response", then `classic.StopFailure` and one `$.prompt.submit` from claudetto, and the stub served the resumed answer ("RESUMED-AFTER-CUT") with no typed "continue" -> PASS.
 
-
 ## Safeguards and Guards
 
 - [x] **RISK-020** Guard hooks fail open.
   - Category: guard bypass.
-  - Cause: only exit 2 blocks; exit 1 is non-blocking; the agent can edit settings; Bash bypasses file-tool denies; A hook crash prints to stderr and lets the call through (2.1.326 release notes: a crashed Node or Python hook's error is now shown in full, Ctrl+O up to 10,000 characters; the call still goes through: verified on 2.1.327 by a probe with a PreToolUse hook that throws (exit 1) on a Bash call, where the Bash call completed with is_error false and the program printed only the warning `hook_no_verdict`, chunk-m14bt1pz.js@1187243; https://clawdipedia.cc/extend/hooks/input-and-output [Documented]: any exit code other than 2 is a non-blocking error and the action continues); in 2.1.305+ an unknown hook `type` (for example `"script"`) disables the whole settings file; frontmatter and matcher keys in the wrong case are ignored silently; `Bash(git push *)` misses `git -C . push` and quoted forms; `Bash(rm *)` misses `bash -c`; a deny rule on deleting files names one command, so Claude deleted a file three times by another route (git rm, then node) while saying it lacked permission; shell edits bypass an Edit hook; a `Read` deny covers only file tools, not `cat`; denying Edit and Write does not stop Bash file writes; `$CLAUDE_TOOL_INPUT` is not set (input arrives as JSON on stdin); only exit 2 blocks, exit 1 is non-blocking, so a hook that crashes on parse lets the call through; a hook without `chmod +x` blocks nothing; a Stop hook running tests must check `stop_hook_active`; a UserPromptSubmit key blocker still writes the original prompt to the transcript (reported on 2.1.312); a block regex `--force` also matches `--force-with-lease`; a command can be a script the agent just wrote; MCP calls need a separate guard; a planner session with Edit and Write denied still pushed because "only I push" lived in CLAUDE.md.
+  - Cause: only exit 2 blocks; exit 1 is non-blocking; the agent can edit settings; Bash bypasses file-tool denies; A hook crash prints to stderr and lets the call through (2.1.326 release notes: a crashed Node or Python hook's error is now shown in full, Ctrl+O up to 10,000 characters; the call still goes through: verified on 2.1.327 by a probe with a PreToolUse hook that throws (exit 1) on a Bash call, where the Bash call completed with is_error false and the program printed only the warning `hook_no_verdict`, chunk-m14bt1pz.js@1187243; <https://clawdipedia.cc/extend/hooks/input-and-output> [Documented]: any exit code other than 2 is a non-blocking error and the action continues); in 2.1.305+ an unknown hook `type` (for example `"script"`) disables the whole settings file; frontmatter and matcher keys in the wrong case are ignored silently; `Bash(git push *)` misses `git -C . push` and quoted forms; `Bash(rm *)` misses `bash -c`; a deny rule on deleting files names one command, so Claude deleted a file three times by another route (git rm, then node) while saying it lacked permission; shell edits bypass an Edit hook; a `Read` deny covers only file tools, not `cat`; denying Edit and Write does not stop Bash file writes; `$CLAUDE_TOOL_INPUT` is not set (input arrives as JSON on stdin); only exit 2 blocks, exit 1 is non-blocking, so a hook that crashes on parse lets the call through; a hook without `chmod +x` blocks nothing; a Stop hook running tests must check `stop_hook_active`; a UserPromptSubmit key blocker still writes the original prompt to the transcript (reported on 2.1.312); a block regex `--force` also matches `--force-with-lease`; a command can be a script the agent just wrote; MCP calls need a separate guard; a planner session with Edit and Write denied still pushed because "only I push" lived in CLAUDE.md.
   - Event: a hook crashes, never fires, or is disabled by the agent; A guard is off with no sign; a forbidden action runs, or a guard hook fails open or over-blocks.
   - Consequence: a guarded action runs with no notice; A guarded call runs unchecked; user work lost or a secret leaked; a wrong result shipped.
   - Likelihood: 2
@@ -268,7 +261,7 @@
   - Verified: 2026-11-20, claude 2.1.327, `git grep -niE "remark|classify" -- plugins/ ':!*__tests__*'` -> no match, and the grep for PreToolUse|UserPromptSubmit in non-test plugin sources -> no match.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51; reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048 (reported, user, 2026-11-13).
 
-## Conduct and Product Risks from Chunk c05
+## Conduct and Product Risks From Chunk C05
 
 - [x] **RISK-022** The agent does work it was not tasked to do, and investigates a user remark instead of answering it.
   - Category: Conduct
@@ -484,7 +477,7 @@
   - Trigger: more than 5 commands with these forms in a week.
   - Owner: kernel
   - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2.
-  - Verified: 2026-11-20, probe on 2.1.327 (Haiku 5.5, $0.009): `${(f)...}` and `${${f:t}%.ts}` blocked; `${f:t:r}`, `print -l` and `basename` not blocked. Transcripts 2026-11-17 to 2026-11-19: 10 of 18,864 Bash commands used a flag or nested expansion, and 2 results carry the block message (reports/2026-11-20-research/zsh-parse/README.md).
+  - Verified: 2026-11-20, probe on 2.1.327 (Haiku 5.5, $0.009): `${(f)...}` and `${${f:t}%.ts}` blocked; `${f:t:r}`,`print -l` and `basename` not blocked. Transcripts 2026-11-17 to 2026-11-19: 10 of 18,864 Bash commands used a flag or nested expansion, and 2 results carry the block message (reports/2026-11-20-research/zsh-parse/README.md).
   - Source: issue #67.
 
 - [x] **RISK-512** The model calls a deferred tool with ToolSearch's input (`select:<name>`) under the deferred tool's own name, before its schema is loaded (issue #76).
@@ -508,7 +501,7 @@
 - [x] **RISK-514** zsh leaves bash's `${PIPESTATUS[0]}` empty without an error, so a command that reports an exit code that way prints none (issue #82).
   - Category: host behaviour.
   - Cause: zsh names the array `pipestatus` and indexes it from 1; it has no `PIPESTATUS`, and an unset name expands to nothing. RISK-508 and RISK-509 cover `${pipestatus[1]}` only.
-  - Event: dogfood at 3f72b84bf, 2026-11-20, session ba07e0d8: `claude plugin test ... | tail -8; echo "exit ${PIPESTATUS[0]}"` printed `exit ` six times, and the session reran all six plugin tests to capture the codes.
+  - Event: dogfood at 3f72b84bf, 2026-11-20, session ba07e0d8: `claude plugin test ... | tail -8; echo "exit ${PIPESTATUS[0]}"` printed `exit` six times, and the session reran all six plugin tests to capture the codes.
   - Consequence: a missing exit code, then a rerun, or a result reported without its code.
   - Likelihood: 3
   - Impact: 2

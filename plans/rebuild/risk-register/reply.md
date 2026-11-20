@@ -226,7 +226,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Likelihood: 3. Impact: 2.
   Existing controls: None at 088a227c.
   Response: mitigate.
-  Actions: Typed Stop questions per fault, scored on stored replies and shipped at >=80% precision and recall, run through Decider (five shipped questions, any yes blocks once, stop_hook_active passes); a <register> block in the output style; a bug-report reply recipe; run the lead on a different model. A Stop check on self-referential confession text by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
+  Actions: Typed Stop questions per fault, scored on stored replies and shipped at >=80% precision and recall, run through Decider (five shipped questions, any yes blocks once, stop_hook_active passes); a `<register>` block in the output style; a bug-report reply recipe; run the lead on a different model. A Stop check on self-referential confession text by pattern is out (see OUT item on regex Stop checks; user decision, 2026-11-16).
   Trigger: A reply opens with an apology or names its own mistake with no result.
   Owner: reply. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; neither arm apologised or praised in 3 of 3 Sonnet 5.5 runs of the cure 9 probe, and the line tied (reports/2026-11-19-research/conduct).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed neither arm apologised or praised in 3 of 3; line tied, rerun 0 of 6 answers apologise or praise; script score style 1/3, vanilla 0/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
@@ -1255,7 +1255,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: closed. The port recreates the builtin's behaviour and UI, and the builtin has no such fault. Verified: the builtin `cc-plugin-you-should-know@builtin` (chunk-nvx1z6pc.js@6583, scan block) registers six hooks, `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach` and `session.end`, and none for tool calls; the string `AskUserQuestion` occurs in no offset of that chunk (cc-inspect `code` search over all modules, 2026-11-19). `plugins/claudetto-you-should-know` registers the same six (`grep 'on("'` over `hooks/*.ts`, tests excluded), holds no `deny`, `permissionDecision`, `PreToolUse` or `AskUserQuestion` text (`git grep`), so it cannot deny an `Edit` or a `Write` and has no popup branch to read. The fault belonged to the earlier hook that watched tool calls, which the port does not rebuild.
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:782 (measured).
 
-## Agent Conduct
+## Agent Conduct RISK-351
 
 - [x] **RISK-351** The agent speaks about itself, to soothe, or to please when the user wants work only.
   - Category: agent conduct.
@@ -1603,7 +1603,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, process slip); observed in transcript, 2026-11-12; observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (audit: "0/12 to 11/12", `design.md` L75 and L77, `df3d38d6`, `00a08195`).
 
-## Conduct Faults from the Rearchitecture Sessions
+## Conduct Faults From the Rearchitecture Sessions
 
 - [x] **RISK-371** The agent leaves a defect unfixed and stops to report.
   Category: agent conduct.

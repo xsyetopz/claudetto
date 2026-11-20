@@ -2,7 +2,7 @@
 status: accepted
 date: recorded in openspec/changes/2-1-325-rearchitecture/design.md:410,412 (day of decision not recorded)
 ---
-# Docker and pass@k Not Adopted for Grading
+# Docker and Pass@k Not Adopted for Grading
 
 ## Context and Problem Statement
 

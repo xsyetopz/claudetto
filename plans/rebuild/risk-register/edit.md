@@ -22,9 +22,7 @@
 
 ## Code and Prose Edits
 
-
 ## Self-Written Helper Scripts
-
 
 ## Edit
 

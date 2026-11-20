@@ -3,7 +3,7 @@ status: accepted
 date: recorded in openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:560 (day of decision not recorded)
 ---
 
-# Zsh Options through the Env File
+# Zsh Options Through the Env File
 
 ## Context and Problem Statement
 

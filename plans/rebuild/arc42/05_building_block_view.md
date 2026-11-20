@@ -12,7 +12,7 @@
 
 - [x] **BB-004** Moved Out as OUT-2549: past-session or machine-state count.
 
-## claudetto-openspec Plugin
+## Claudetto-Openspec Plugin
 
 - [x] **BB-005** Moved Out as OUT-2550: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 
@@ -66,7 +66,7 @@
   Acceptance: `git show 088a227c:plugins/claudetto/hooks/features/stop-notice/stop-notice.ts` shows it. Verification: inspection.
   Basis: cited. Status: have at 088a227c.
   Source: plugins/claudetto/hooks/features/stop-notice/stop-notice.ts:10@088a227c.
-  Verified: claude plugin test plugins/claudetto -> 54 pass incl. hooks/notice/__tests__/stop.test.ts (2.1.327, 2026-11-19).
+  Verified: claude plugin test plugins/claudetto -> 54 pass incl. hooks/notice/**tests**/stop.test.ts (2.1.327, 2026-11-19).
 
 - [x] **BB-026** Moved Out as OUT-2570: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 
@@ -128,15 +128,15 @@
 
 - [x] **BB-046** Moved Out as OUT-2589: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 
-## Setup
+## Setup BB-047
 
 - [x] **BB-047** Moved Out as OUT-2590: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 
-## Delegation
+## Delegation BB-048
 
 - [x] **BB-048** Moved Out as OUT-2591: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 
-## Kernel
+## Kernel BB-049 to BB-050
 
 - [x] **BB-049** Moved Out as OUT-2592: the item describes a part of the 088a227c tree that the rebuild dropped; describes a part that plugins/ does not ship.
 

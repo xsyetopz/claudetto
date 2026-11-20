@@ -34,7 +34,8 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:91; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:69; Clawdipedia capture 541cf9e, Claude Code 2.1.312 (27 Oct 2026), read through clawdipedia-docs.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: 2.1.327 binary has all of MessageDisplay, PostModelSwitch, UserPromptExpansion, StopFailure, PermissionDenied; subagent spawn depth default n=3 (cc-inspect read chunk-ja9j7x1x.js@150, CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH); concurrent subagents ECt=20; 33-event count and effort scale offsets not re-counted
 
-## Hooks and Events
+## Hooks and Events CTX-625
+
   Verified: cc-inspect surface, claude 2.1.327, 2026-11-19: hook-event lists 33 names; the permission-mode part was not rechecked.
 
 - [x] **CTX-625** Mod API limits measured on 2.1.325; re-measured on 2.1.327 for one: from `turn.complete` under `-p`, `$.session.compact()` throws "not available in a headless (-p / SDK) session yet: compaction here runs inside a turn (a /compact prompt)" (cc-inspect cli with a plugin under `--plugin-dir`, fake API, 2026-11-18). The mid-turn throw, the interactive PTY compaction and the 13-29 s fork time are kept as measured on 2.1.325; the interactive ones need a PTY session, and `session.compact` and `model.fork` are present in the 2.1.327 surface: `$.session.compact()` mid-turn throws "a turn is running"; from `turn.complete` under `-p` it throws "not available in a headless (-p / SDK) session yet"; interactive works and the module's `session.compact` hears it; the test kit gives a plugin's own call neither trigger nor messages; `$.model.fork` takes effort only, no model; fork handoffs take 13-29 s each. A plugin-started compaction is rejected headless (reported). Hook modules have no `process`; a throwing hook logs `session.compact hook skipped`. Also: from a `turn.step` hook the call throws "a turn is running"; from `turn.complete` in an interactive PTY session it compacts and runs the `$.model.fork` handoff. In the test kit a `turn.complete` stub must answer with the plain result `{ text: "done" }` (the `{ value }` form gives "no implementation") and a compaction stub must leave at least one message.
@@ -43,7 +44,8 @@
   Source: openspec/changes/2-1-325-rearchitecture/design.md:64; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Age handoff probes 1-3; scripts in `/private/tmp/claude-501/probe-age/`, types at `.claude-plugin/types/claude-code/index.d.ts:3064-3069`).
   Verified: re-run on claude 2.1.327, 2026-11-19: binary 2.1.327 contains "not available in a headless (-p / SDK) session yet: compaction here runs inside a turn (a /compact prompt); catch it and carry on" and "a turn is running"; 13-29 s fork time and PTY behaviour NOT RE-RUN (interactive); "session.compact hook skipped" literal not found (only "hook skipped" 5 hits), so that sub-claim is unconfirmed
 
-## Hooks and Events
+## Hooks and Events CTX-627
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: "not available in a headless" is in the bundle (2 hits); the behaviour stays as measured on the earlier version named in the fact and was not rerun.
 
 - [x] **CTX-627** Hook data (2.1.326 events present, binary string search: PermissionDenied, SubagentStop, Stop): Stop rows hold this turn's tool results with `isError`, no denial field; a permission-rule denial has fixed text, a mod's is its reason in `<tool_use_error>`; `PermissionDenied` supports only `retry`; `SubagentStopHookInput` has `last_assistant_message`, `agent_id`, `stop_hook_active`; `classic.SubagentStop` settles twice per subagent; a rule ending `:*` reads as a legacy prefix, so `Bash(git push * :**)` denies `git push origin :branch`; `deny Agent(Plan)` blocks only the built-in `Plan`; nested Seatbelt `sandbox_apply` fails with exit 71 under any outer deny rule; "No deferred tool marker found in the resumed session" comes from `--resume` with an empty prompt that plugin text taught.
@@ -51,7 +53,8 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:363; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:248; openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:186; openspec/specs/claim-check/spec.md:10; openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:91; the `deny Agent(Plan)` fact: unresolved, not found by grep.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: 2.1.327 binary has PermissionDenied, SubagentStop, last_assistant_message, stop_hook_active; "No deferred tool marker found" x2; the type name SubagentStopHookInput is 0 hits (minified), and the :* prefix, Agent(Plan) and exit-71 claims not re-run
 
-## Hooks and Events
+## Hooks and Events CTX-635 to CTX-853
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: PermissionDenied (43 hits), isReadOnly (108), and agent_type (99) are in the bundle; the behaviour stays as measured on the earlier version named in the fact and was not rerun.
 
 - [x] **CTX-635** A builtin hooks module keeps running after its plugin is disabled in settings: `cc-plugin-agents-md@builtin` still settled `tool.call`, `prompt.submit`, and `turn.*` (lead, headless), because the hooks hot-reload on a `userSettings` change runs only when its tier snapshot changed (`chunk-wqb2b4v0.js@4789330` (claude 2.1.325); verified on 2.1.327 at chunk-m14bt1pz.js@5033944: the settings subscriber reloads only when the source is `policySettings`, or `userSettings` with a changed tier snapshot (`hookHotReloadTierSnapshot`), or admission text is pending, and otherwise logs nothing or "Plugin hooks: skipping reload, plugin-affecting settings unchanged" (@5034449 to @5034703)). After a settings write that disables a builtin, the watcher reads settings 1.2 to 1.5 s later and skills and commands vanish (`yY()` re-reads, `chunk-yjs2ay06.js@72522`, claude 2.1.325; on 2.1.327 the re-read is `xhe`, chunk-dafpvz32.js@80491); the hooks module stays because the hot reload runs only when the tier snapshot changed; the interactive unload, the relaunch, the headless refusal, and the loaded modules are in the neighbouring items.
@@ -131,11 +134,11 @@
   Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: 0, 1 and 0 hook runs across the three arms (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## External Sweep, 2026-11-18
+
   Verified: source already on 2.1.327.
 
 - [x] **CTX-880** Plain stdout of an exit-0 hook becomes context only on `UserPromptSubmit`, `UserPromptExpansion`, `SessionStart` and `PostModelSwitch` (documented, Claude Code 2.1.327). A `UserPromptSubmit` hook that prints a short requirements file puts the original ask and constraints in front of the model every turn; each print adds tokens to every turn and sits after the cached prefix.
-  Basis: cited (https://clawdipedia.cc/extend/hooks/input-and-output, Documented badge, 2.1.327); the per-turn requirements use is reported (third-party).
-  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xmpmg8-starting-today-my-hook-forcing-c-20261103T145340Z.md:114; https://clawdipedia.cc/extend/hooks/input-and-output.
+  Basis: cited (<https://clawdipedia.cc/extend/hooks/input-and-output>, Documented badge, 2.1.327); the per-turn requirements use is reported (third-party).
+  Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xmpmg8-starting-today-my-hook-forcing-c-20261103T145340Z.md:114; <https://clawdipedia.cc/extend/hooks/input-and-output>.
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: docs lookup of the stdout-as-context event list not completed (read_page section fetch failed); static only: UserPromptExpansion, PostModelSwitch present in 2.1.327 binary
-

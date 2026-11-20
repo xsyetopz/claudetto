@@ -2,8 +2,6 @@
 
 ## Sandbox and Seatbelt
 
-## Sandbox and Seatbelt
-
 - [x] **CTX-092** The built-in sandbox routes git's ssh through its own proxy: `env` shows `GIT_SSH_COMMAND=ssh ... -o ProxyCommand=...SRT_SSH_PROXY_COMMAND...`, a CONNECT. Bare ssh and `core.sshCommand` are held for approval. `@anthropic-ai/sandbox-runtime` was read and not used because it starts a second proxy
   Basis: read.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:242; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:249.
@@ -23,7 +21,7 @@
   Verified: source already on 2.1.327.
   Verified: PASS: a file written in the sandbox was readable unsandboxed and the reverse. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
-## Sandbox and Seatbelt
+## Sandbox and Seatbelt CTX-097
 
 - [x] **CTX-097** Linux bubblewrap: a missing allowWrite path (such as /Volumes/) is skipped ("Skipping non-existent write path"). A missing denyWrite path gets /dev/null or an empty folder mounted to block its creation. An unresolvable link fails closed with /dev/null. The 2.1.326 release notes say the Bash sandbox on Linux and WSL now creates some missing `--add-dir` folders before each sandboxed command. launchctl list does not exist on Linux, and whether ps, top, and sysctl fail under bubblewrap is not claimed: bubblewrap runs only on Linux and WSL, and this plan was checked on macOS, so that part needs a Linux host.
   Basis: read from the 2.1.319 source; no Linux run.
@@ -31,11 +29,7 @@
   Verified: binary string search, claude 2.1.327, 2026-11-19: "[Sandbox Linux] Skipping non-existent write path" is present.
   Verified: PASS: cc-inspect code search, binary 2.1.327, 2026-11-19: the literal '[Sandbox Linux] Skipping non-existent write path' is in the bundle; no Linux host, so the behaviour stays as read.
 
-## Sandbox and Seatbelt
-
-## Sandbox and Seatbelt
-
-## Sandbox and Seatbelt
+## Sandbox and Seatbelt CTX-104 to CTX-105
 
 - [x] **CTX-104** A sandboxed Bash command `just install-dev` failed with "unable to spawn process '/usr/bin/derq'", and passed with `dangerouslyDisableSandbox: true`.
   Basis: observed in transcript; the failure did not recur on 2.1.327: `/usr/bin/derq` exists and spawns inside the sandbox (a call with bad arguments exits 64, cc-inspect cli with `sandbox.enabled`, 2026-11-18), so the spawn failure belongs to that project's `just install-dev` run and is kept as reported. Status: unchecked at 088a227c.
@@ -65,4 +59,4 @@
   Basis: measured (five nested runs; three unnested probes, 2026-11-18; code read). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/incident-lab/runs/hang-sonnet.jsonl (nested); reports/2026-11-18-research/incident-lab/sandbox-probe.txt (unnested); ADR-0188.
   Verified: source already on 2.1.327.
-  Verified: PASS (static plus tests): hooks/settings/__tests__/defaults.test.ts:35-36 asserts sandbox.autoAllowBashIfSandboxed true and excludedCommands contains 'claude *'; `$C plugin test plugins/claudetto` 105 pass 0 fail, binary 2.1.327, 2026-11-19. The nested-sandbox EPERM was not rebuilt (it needs a nested claude -p).
+  Verified: PASS (static plus tests): hooks/settings/**tests**/defaults.test.ts:35-36 asserts sandbox.autoAllowBashIfSandboxed true and excludedCommands contains 'claude *'; `$C plugin test plugins/claudetto` 105 pass 0 fail, binary 2.1.327, 2026-11-19. The nested-sandbox EPERM was not rebuilt (it needs a nested claude -p).

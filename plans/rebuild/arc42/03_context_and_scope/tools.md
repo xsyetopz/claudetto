@@ -2,31 +2,13 @@
 
 ## Tools and Output
 
-## Tools and Output
-
 - [x] **CTX-187** Bash output past the cap goes to a file and Claude gets a 2,000-char preview plus the path. The head-and-tail preview (1,500-char tail) is behind server gate `tengu_quiet_pike`, default false, so no setting turns it on and the model sees no tail (D5: the model reported a wrong last line). One 30000-line output costs 23,768 cache-write tokens against 8,168 at cap 4000, about 15,600 prompt tokens
   Basis: measured, haiku-5-5, one run each.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:902.
   Verified: binary string search, claude 2.1.327, 2026-11-19: tengu_quiet_pike is present.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: tengu_quiet_pike read as Qt("tengu_quiet_pike",!1) (default false) in 2.1.327 binary, with tail constant iye=1500 and "output cut here; the full output was saved to a file"; 2,000-char preview and 23,768-token measurements NOT RE-RUN
 
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
-
-## Tools and Output
+## Tools and Output CTX-215 to CTX-837
 
 - [x] **CTX-215** `sleep` chains are blocked in a Bash call; the agent waits with `run_in_background` or an `until` loop with a timeout.
   Acceptance: a `sleep 240; cat file` call is refused; an `until` loop with a timeout runs. Verification: probe.
@@ -48,4 +30,3 @@
   Source: chunk-m14bt1pz.js@3706491 (claude 2.1.327, cc-inspect `code search` "< /dev/null", 2026-11-18); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e/subagents/agent-ac34edb36528989f5.jsonl:24-26.
   Verified: source already on 2.1.327.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: "< /dev/null" literal x7 in 2.1.327 binary; heredoc/redirect exception and 120 s timeout not re-run
-

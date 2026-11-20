@@ -1,12 +1,4 @@
-# system-prompt
-
-## System Prompt and Context
-
-## System Prompt and Context
-
-## System Prompt and Context
-
-## System Prompt and Context
+# System-Prompt
 
 ## System Prompt and Context
 
@@ -16,11 +8,9 @@
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: quotes a commenter; third-party text, nothing local to run
 
-## System Prompt and Context
+## System Prompt and Context CTX-268 to CTX-269
 
-## System Prompt and Context
-
-- [x] **CTX-268** The engine adds "<style> output style is active. Remember to follow..." every turn unless the style is default (22,320 `output_style` rows, about 20 tokens each, estimated). Only built-in styles carry `turnReminder`. The plugin style frontmatter allows only name, description, keep-coding-instructions, force-for-plugin, so a plugin style cannot change or empty it.
+- [x] **CTX-268** The engine adds "`<style>` output style is active. Remember to follow..." every turn unless the style is default (22,320 `output_style` rows, about 20 tokens each, estimated). Only built-in styles carry `turnReminder`. The plugin style frontmatter allows only name, description, keep-coding-instructions, force-for-plugin, so a plugin style cannot change or empty it.
   Basis: reported (read from `chunk-2x9ma4k7.js`, claude 2.1.325 binary, a module absent from the 2.1.325 install; counted). Status: confirmed in 2.1.326 at `chunk-m14bt1pz.js@5903876 (2.1.327)` (reminder text, with the fallback "Remember to follow the specific guidelines for this style." when `turnReminder` is unset) and built-in styles carrying `turnReminder` at `chunk-m14bt1pz.js@1056565 (2.1.327)`; counts are from 2.1.323 logs.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:649.
   Verified: binary string search, claude 2.1.327, 2026-11-19: "output style is active" turn reminder text is present.
@@ -31,4 +21,3 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:645.
   Verified: binary string search, claude 2.1.327, 2026-11-19: tengu_hushed_lark is present.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: silent_turn_reminder x13, tengu_hushed_lark x3, silentSince/turnsSinceLastReminder/remindersInStretch fields present in 2.1.327 binary; 5-message window, 3 fires, 60 s and the row counts not verified
-

@@ -1,4 +1,4 @@
-# models-effort
+# Models-Effort
 
 ## Models and Effort
 
@@ -9,7 +9,8 @@
   Verified: tick audit 2026-11-19: not re-run, because the check needs a paid run, a subscription meter or an interactive session; the tick rests on the 2.1.327 measurement named in Basis.
   Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: free arms on three models and one paid CLAUDE_CODE_DISABLE_THINKING run ($0.0017) (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
-## Models and Effort
+## Models and Effort CTX-736
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: rejects_disabled_thinking (4 hits), alwaysThinkingEnabled (15), and MAX_THINKING_TOKENS (8) are in the bundle; the adaptive result of each setting stays as measured with paid runs and is not rerun.
 
 - [x] **CTX-736** Prompt cache mechanics: the prefix cache is keyed on model, system prompt, project context, and history; read costs about 0.1x, a 5m write 1.25x, a 1h write 2x; every hit resets the TTL; any change earlier in the prefix (MCP reconnect reordering tools, effort or model switch) invalidates from that point; a subscription main session defaults to a 1h TTL (drops to 5m over plan limit), the API per-token 5m; editing a prompt via `/rewind` is a hit; advisor calls re-send full context uncached. Tip: `/compact` before a break longer than the TTL. Docs cited: code.claude.com/docs/en/prompt-caching. Posts disagree on whether Pro gets 5 m or 1 h; anthropics/claude-code#46829 tracks it (reported).
@@ -18,13 +19,14 @@
   Source: external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:7; <https://code.claude.com/docs/en/prompt-caching> (not re-read); external/2026-10-11/export-How prompt caching works in Claude Code (and how to stop wasting tokens).jsonl:14 (url: <https://www.reddit.com/r/ClaudeAI/comments/1uih6w7/how_prompt_caching_works_in_claude_code_and_how/>).
   Verified: not re-run 2026-11-19: cached-docs and forum-report mechanics; nothing local to run (docs prompt-caching page not read)
 
-## Models and Effort
+## Models and Effort CTX-750 to CTX-851
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_PROMPT_CACHE_TTL (6 hits) and CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL (6) are in the bundle; the mechanics, TTL defaults by plan, and the Pro dispute stay cited or reported and are not claimed as verified.
 
 - [x] **CTX-750** Explore follows the main model. `CLAUDE_CODE_SUBAGENT_MODEL=haiku` needs `_FORCE=1` to cover Explore and Plan.
   Basis: cited (docs).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:26 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0kzbh/haiku_55_is_40x_cheaper_than_opus_55_your_explore/>.)
-  Verified: docs search (clawdipedia-docs subagent runtime and frontmatter pages), claude 2.1.327, 2026-11-19: CLAUDE_CODE_SUBAGENT_MODEL and CLAUDE_CODE_SUBAGENT_MODEL_FORCE are documented, the former choosing the subagent model after the per-call model and the agent field; the Explore and Plan coverage by _FORCE was not separately probed; binary string search finds both names (20 and 18 hits).
+  Verified: docs search (clawdipedia-docs subagent runtime and frontmatter pages), claude 2.1.327, 2026-11-19: CLAUDE_CODE_SUBAGENT_MODEL and CLAUDE_CODE_SUBAGENT_MODEL_FORCE are documented, the former choosing the subagent model after the per-call model and the agent field; the Explore and Plan coverage by_FORCE was not separately probed; binary string search finds both names (20 and 18 hits).
   Verified: not re-run 2026-11-19: Explore/Plan model routing not probed; static: CLAUDE_CODE_SUBAGENT_MODEL_FORCE x18 in 2.1.327 binary
 
 - [x] **CTX-847** On claude 2.1.327 the effort sent in `output_config.effort` resolves as follows:
@@ -45,5 +47,5 @@
   Verified: re-run on claude 2.1.327, 2026-11-19: code search `clear_thinking_20251015` on 2.1.327: chunk-m14bt1pz.js@1895932 `function nNn(e){let{hasThinking:n=!1,toolClearing:o}...if(n)u.push({type:"clear_thinking_20251015",keep:"all"})`; no plugin .ts file strips thinking blocks
 
 ## External Sweep, 2026-11-18
-  Verified: source already on 2.1.327.
 
+  Verified: source already on 2.1.327.

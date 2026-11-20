@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-18
 ---
-# Evidence before Reversing Finished Work
+# Evidence Before Reversing Finished Work
 
 ## Context and Problem Statement
 
@@ -25,4 +25,4 @@ Chosen: the evidence rule, as one root-prompt line. Before the model reverts, de
 - The rule must not turn into refusal: a warranted accusation with evidence leads to the fix. The test set includes warranted cases.
 - The numbers are from preprints on Claude-Sonnet-5 and Claude-Opus-5, not the 5.5 models; the claudetto effect has no number until the ADR-0177 test runs; the rule ships only if it beats vanilla there, and that run is the revisit check.
 
-Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P6 implications 1-5, P2, P10 implications 2-3; https://arxiv.org/pdf/2609.32616; https://arxiv.org/abs/2406.10162; https://arxiv.org/pdf/2602.23971.
+Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P6 implications 1-5, P2, P10 implications 2-3; <https://arxiv.org/pdf/2609.32616>; <https://arxiv.org/abs/2406.10162>; <https://arxiv.org/pdf/2602.23971>.

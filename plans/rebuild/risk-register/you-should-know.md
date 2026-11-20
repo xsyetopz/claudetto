@@ -57,7 +57,7 @@
 - [x] **RISK-510** A you-should-know card states how a tool behaves from the model's belief, and the belief is false (issue #65).
   Category: you-should-know
   Cause: The propose prompt ties only an absence claim to evidence in the session (RISK-500); a claim about how a tool behaves can rest on what the model remembers.
-  Event: Dogfood, claude 2.1.327, 2026-11-20, clone at fea3d5562: after a force-added commit under the gitignored `reports/`, a Heads up card said later edits to that file would be silently ignored; `git status --short` after an edit printed ` M` for it.
+  Event: Dogfood, claude 2.1.327, 2026-11-20, clone at fea3d5562: after a force-added commit under the gitignored `reports/`, a Heads up card said later edits to that file would be silently ignored; `git status --short` after an edit printed `M` for it.
   Consequence: The user is told a false fact and may act on it.
   Likelihood: 2
   Impact: 2

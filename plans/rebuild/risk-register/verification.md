@@ -35,7 +35,7 @@
   - Owner: verification
   - Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:132 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>); openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:23; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:28; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:30; openspec/changes/archive/2026-11-16-2-1-323/research/fable-vs-opus.md:35 (reported).
   - Status: accepted 2026-11-20 (issue #52): the subagent path is closed (claudetto pins subagents to Sonnet and denies Fable), and measured Fable runs do not reproduce an unchecked done or ungrounded claim.
-  - Verified: reports/2026-11-20-research/register-probes/fable-results.txt, Fable 5.2 on claude 2.1.327, 2026-11-20: cure 5 (grounded claim) and cure 6 (verified done) of reports/2026-11-19-research/conduct/run.sh, vanilla 6 of 6, style 6 of 6 after a rescore of two runs whose answers met the cure (one cited tool.py:4 and said "no JSON output is implemented", one ran the test 4 times and deleted the counter file); cost $2.79. Subagent pin: hooks/delegation/__tests__/spawn.test.ts passes.
+  - Verified: reports/2026-11-20-research/register-probes/fable-results.txt, Fable 5.2 on claude 2.1.327, 2026-11-20: cure 5 (grounded claim) and cure 6 (verified done) of reports/2026-11-19-research/conduct/run.sh, vanilla 6 of 6, style 6 of 6 after a rescore of two runs whose answers met the cure (one cited tool.py:4 and said "no JSON output is implemented", one ran the test 4 times and deleted the counter file); cost $2.79. Subagent pin: hooks/delegation/**tests**/spawn.test.ts passes.
 
 ## Guards
 
@@ -291,7 +291,7 @@
   - Impact: 3
   - Existing controls: Plan holds the pgrep error-as-negative fault.
   - Response: mitigate.
-  - Actions: Read a tool error as no result; check a lock or log before a second paid start; A per-job lock file with PID and owner; tool.check on kill and start paths requiring the lock-record check; a PostToolUseFailure hook that logs, marks state "unknown since <time>" and adds "state unknown, check another way"; the `unfixed` fault offered when the last Bash result is an error (held-out recall 12/12, 0/12 false). The `unfiled` fault was removed in change 2.
+  - Actions: Read a tool error as no result; check a lock or log before a second paid start; A per-job lock file with PID and owner; tool.check on kill and start paths requiring the lock-record check; a PostToolUseFailure hook that logs, marks state "unknown since `<time>`" and adds "state unknown, check another way"; the `unfixed` fault offered when the last Bash result is an error (held-out recall 12/12, 0/12 false). The `unfiled` fault was removed in change 2.
   - Trigger: A paid job starts while the log of another is still being written; A claim of absence follows a failed read.
   - Owner: verification
   - Status: closed.
@@ -663,7 +663,7 @@
   - Trigger: the error "No such tool available", or a graded question that fails in every run; The error appears.
   - Owner: verification
   - Status: open.
-  - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter `command` is missing; An unexpected parameter `cmd` was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
+  - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter`command` is missing; An unexpected parameter `cmd`was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
   Status: moved Out as OUT-2777 (Verified line).
 
@@ -770,7 +770,7 @@
   Trigger: a brief that asks a worker for a date from a summary. Owner: verification. Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
   Basis: observed in transcript, 2026-11-17. Source: the audit brief and worker output, deleted after the plan commit; the fix: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:12215.
 
-## Agent Conduct
+## Agent Conduct RISK-470
 
 - [x] **RISK-470** The agent lowers a pin or bypasses a check to turn a result green.
   Category: agent conduct.
@@ -873,7 +873,7 @@
   - Verified: 2026-11-20, claude 2.1.327, git ls-files | grep -i commitlint -> no match (exit 1); `ls .commitlintrc* commitlint.config.*` -> no such files.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
-## Conduct Faults from the Rearchitecture Sessions
+## Conduct Faults From the Rearchitecture Sessions
 
 - [x] **RISK-476** The agent words a reply or a test to game the plugin, or tests prose.
   Category: agent conduct.
@@ -968,7 +968,7 @@
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
-  - Source: reports/2026-11-18-research/papers.md P6; https://arxiv.org/pdf/2609.32616.
+  - Source: reports/2026-11-18-research/papers.md P6; <https://arxiv.org/pdf/2609.32616>.
 
 - [x] **RISK-504** A plugin test passes or fails on the machine's load, because it measures real time against a fixed limit.
   - Category: verification.

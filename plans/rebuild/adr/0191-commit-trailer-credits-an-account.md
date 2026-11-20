@@ -9,6 +9,7 @@ date: 2026-11-19
 claudetto's git instructions follow the Linux kernel's rules for AI agents: the agent never adds `Signed-off-by`, the human submitter reviews and certifies the change, and tool use is disclosed (`Documentation/process/coding-assistants.rst` and `generated-content.rst`, torvalds/linux master, read 2026-11-19). Setup filled `attribution.commit` with `Assisted-by: Claude Code` (REQ-GUARDS-063). That line discloses the tool, but no git host credits it to anyone, so the assistance never shows as a contributor.
 
 Facts, checked 2026-11-19:
+
 - GitHub counts a co-author only from a `Co-authored-by: name <email>` trailer whose email belongs to an account (docs.github.com, "Creating a commit with multiple authors").
 - GitLab writes co-authors in the same trailer form (`%{co_authored_by}`, docs.gitlab.com, "Commit message templates").
 - GitHub links `noreply@anthropic.com` to the `claude` login: GraphQL `Commit.authors` for cd87e6696 in this repository returns `{name: "Claude", user: {login: "claude"}}`.

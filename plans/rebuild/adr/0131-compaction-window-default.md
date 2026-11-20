@@ -16,8 +16,8 @@ Options posted: `autoCompactWindow=300000; CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=75` o
 
 - Keep both keys.
 - Stop writing both and keep the default window; only Haiku agents get a window.
-- 100000.
-- 200000.
+-      1.
+-      1.
 - Default window (about 967K).
 - A 200k window.
 - A 300k or 400k window.
@@ -42,4 +42,4 @@ Revisit when a pricing page is read.
 
 Evidence is measured by the authors on their own data, not controlled. 2.1.325: setting `autoCompactWindow`, `modelSettings.*.autoCompactWindow` 100000-1000000 or "auto", flag `--autocompact <auto|tokens>`, `/autocompact`, env `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, `autoCompactEnabled`, `DISABLE_AUTO_COMPACT` present. Baseline: partial (`setup/settings.ts` Haiku 100_000; `agents/Artemis.md`).
 
-Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:137; openspec/changes/archive/2026-11-16-2-1-323/tasks.md:52; openspec/specs/setup/spec.md:272; unresolved: the 200000 Haiku window is in no source; plugins/claudetto/hooks/features/setup/settings.ts:114@088a227c; the outside post is not named by the old plan; external/2026-11-06/reddit.com-r-anthropic-comments-1xo46kx-compacting-at-400k-instead-of-9-20261105T173015Z.md:37 (url: https://www.reddit.com/r/Anthropic/comments/1xo46kx/compacting_at_400k_instead_of_967k_cut_my_claude/); external/2026-10-17/export-Follow-up on the 56% re-reading post- a week of compacting at 200K halved re-reading, but the real s.jsonl:2 (https://www.reddit.com/r/ClaudeAI/comments/1x62hgo/); external/2026-10-12_p3/export-How's 1m context window now-.jsonl:2; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:134.
+Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:137; openspec/changes/archive/2026-11-16-2-1-323/tasks.md:52; openspec/specs/setup/spec.md:272; unresolved: the 200000 Haiku window is in no source; plugins/claudetto/hooks/features/setup/settings.ts:114@088a227c; the outside post is not named by the old plan; external/2026-11-06/reddit.com-r-anthropic-comments-1xo46kx-compacting-at-400k-instead-of-9-20261105T173015Z.md:37 (url: <https://www.reddit.com/r/Anthropic/comments/1xo46kx/compacting_at_400k_instead_of_967k_cut_my_claude/>); external/2026-10-17/export-Follow-up on the 56% re-reading post- a week of compacting at 200K halved re-reading, but the real s.jsonl:2 (<https://www.reddit.com/r/ClaudeAI/comments/1x62hgo/>); external/2026-10-12_p3/export-How's 1m context window now-.jsonl:2; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:134.

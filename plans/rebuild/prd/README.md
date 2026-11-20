@@ -1,4 +1,4 @@
-# claudetto Product Requirements
+# Claudetto Product Requirements
 
 The product requirements for the claudetto rebuild, in the outline of ISO/IEC/IEEE 29148:2018 clause 9.6. This file holds clauses 9.6.2 to 9.6.9; the block files hold the requirements of clauses 9.6.10 to 9.6.12.
 
@@ -574,12 +574,12 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:9; openspec/changes/2-1-325-rearchitecture/design.md:135 (cache keep-warm pings skipped: they cost tokens and need the 1 h cache); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:9. Not located: the `/w` skill thread.
   Verified: git grep -nEi -e 'keep-?warm|heartbeat|cron.?ping' -- plugins -> 0 hits (settings/defaults.ts sets CLAUDE_CODE_DISABLE_CRON 1 and denies the Cron tools), 2026-11-19.
 
-- [x] **OUT-095** claudetto shall not cut test and build output (first 40% and last 40% of maxTestOutputChars, default 8000, of each of stdout and stderr, with a marker and an output-<id>.txt file). Also: not carry the `bound-output` cut (`maxTestOutputChars`) or credit-wording and all-caps in grader/extraction prompts. `bound-output` cut (`maxTestOutputChars`): did not reduce output tokens (plugin 1,049.7 vs base 364.9 mean; extra output from denial-retry and Stop grader block; fired in 6/60 sessions as the model pipes tests through head/tail); credit-wording and shouted all-caps in grader/extraction prompts (no gain, closed label list "kind is exactly one word: task, dispute, question, remark" does the work, all-caps over-triggers). Measured.
+- [x] **OUT-095** claudetto shall not cut test and build output (first 40% and last 40% of maxTestOutputChars, default 8000, of each of stdout and stderr, with a marker and an output-`<id>`.txt file). Also: not carry the `bound-output` cut (`maxTestOutputChars`) or credit-wording and all-caps in grader/extraction prompts. `bound-output` cut (`maxTestOutputChars`): did not reduce output tokens (plugin 1,049.7 vs base 364.9 mean; extra output from denial-retry and Stop grader block; fired in 6/60 sessions as the model pipes tests through head/tail); credit-wording and shouted all-caps in grader/extraction prompts (no gain, closed label list "kind is exactly one word: task, dispute, question, remark" does the work, all-caps over-triggers). Measured.
   Acceptance: no bound-output hook exists; maxTestOutputChars is not a claudetto option; No `maxTestOutputChars` option exists; the closed label list does the work. Verification: inspection.
   Basis: measured.
   Status: have at 088a227c (`git grep -l maxTestOutputChars 088a227c -- plugins` finds 0 files).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/specs/run-limits/spec.md:63-86 (the spec of the cut); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:306 (18 paired sessions, 60 runs: output tokens per session, base mean 364.9, plugin 1,049.7, plugin with maxTestOutputChars 0 mean 845.6; the cut fired in 6 of 60 sessions; Mann-Whitney p < 0.0001; $6.73) and :324 (310 Bash calls with the plugin against 123 without; 7.33 turns per session against 3.05); plans/rebuild-curation.md:1411 (tuning that gave no gain); openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:306; openspec/changes/archive/2026-11-16-2-1-323/design.md:214.
-  Verified: git grep -nEi -e 'maxTestOutputChars|bound-output|output-<id>' -- plugins -> 0 hits (bashOutputMaxChars is the built-in key that OUT-016 names as the replacement), 2026-11-19.
+  Verified: git grep -nEi -e 'maxTestOutputChars|bound-output|output-`<id>`' -- plugins -> 0 hits (bashOutputMaxChars is the built-in key that OUT-016 names as the replacement), 2026-11-19.
 
 - [x] **OUT-096** claudetto shall not treat the narration-reminder env override as a cure: it is not significant (13/136 against 23/136, p=0.106; 24/204 against 31/204, p=0.385). It stays a cheap setting only (`CLAUDE_CODE_SILENT_TURN_REMINDER=0`).
   Basis: measured. Status: have at 088a227c (`plugins/claudetto/hooks/features/setup/settings.ts:188`).
@@ -648,6 +648,8 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Verified: git grep -nEi -e 'Codex|Gemini|GPT' -- plugins -> 0 hits, 2026-11-19.
 
 #### OpenSpec
+
+ADR-0192 brings the block back In as `prd/spec.md` under the name claudetto-spec; OUT-179 to OUT-181 stay as the record of the OpenSpec-parity aim it replaced (ADR-0192: parity and delta folders are not rebuilt).
 
 - [x] **OUT-179** Out (REQ-OPENSPEC-001, ADR-0189): the user chose not to build the openspec block over vanilla 2.1.327. claudetto-openspec shall match openspec@latest in core profile only, lighter than openspec, with Claude 5.5 optimised prompts, selective XML tags where they fit, and fixes for what SDD and TDD complaints in external/ show it does wrong.
   Acceptance: behaviour matches openspec@latest core profile; each complaint has a fix or a recorded reason. Verification: demonstration.
@@ -1073,7 +1075,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, one commenter (low confidence). Status: missing at 088a227c (git grep for periphery, knip, dead code finds no such hook).
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlr0pk-turning-a-repeated-review-find-20261102T184719Z.md:87 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlr0pk/turning_a_repeated_review_finding_into_a_written/>).
 
-- [x] **OUT-261** Out (REQ-DELEGATION-040, ADR-0177): project infrastructure outside the plugin. claudetto shall give each worktree its own environment: docker compose -p <branch> for containers, network and volumes, with ports from a per-worktree .env or derived from the branch name; a fresh database per branch built from migrations and seed, never a shared one; a per-branch preview deploy where the host has one; and one deploy and test worker that owns the shared environment, reports results per commit SHA and takes submissions from a queue while agents keep doing local checks.
+- [x] **OUT-261** Out (REQ-DELEGATION-040, ADR-0177): project infrastructure outside the plugin. claudetto shall give each worktree its own environment: docker compose -p `<branch>` for containers, network and volumes, with ports from a per-worktree .env or derived from the branch name; a fresh database per branch built from migrations and seed, never a shared one; a per-branch preview deploy where the host has one; and one deploy and test worker that owns the shared environment, reports results per commit SHA and takes submissions from a queue while agents keep doing local checks.
   Acceptance: Two worktrees run at once without a clash on containers, database or ports; only the final integration run on main stays serial. Verification: demonstration.
   Basis: reported, two commenters. Status: partial at 088a227c (plugins/claudetto/hooks/features/delegation/texts.ts:2@088a227c names isolation: "worktree"; no per-branch database or compose project).
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:105; external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:47 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlz2bs/how_do_you_manage_worktrees_when_your_agents_end/>).
@@ -1190,7 +1192,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured, claude 2.1.318 and 2.1.327 (stock tool sends 5,196 bytes). ADR-0127 supersedes the `ask` wrapper design (ADR-0122): the wrapper lost multi-question calls and previews, and deferral made the model deny it had the tool (ADR-0169). Status: missing in the rebuilt plugin (no `tool.describe` code under plugins/claudetto/hooks). Still open: confirm `tool.describe` takes effect on 2.1.327.
   Source: ADR-0127; plugins/claudetto/hooks/features/delegation/delegation.ts:17@088a227c.
 
-- [x] **OUT-751** Out (REQ-DELEGATION-009, ADR-0177): delegation conduct text ships only through an output style with a measured gain (ADR-0190), and none was measured. claudetto shall tell the lead to check each subagent or reviewer finding and do what the subagent skipped before it reports, in the root <delegation> text and in Concise rule 3; and shall instruct a lead that spawns workers to answer for every mistake a worker makes, to fix each one as its report arrives, and to resolve each item of a report list in parallel through workers.
+- [x] **OUT-751** Out (REQ-DELEGATION-009, ADR-0177): delegation conduct text ships only through an output style with a measured gain (ADR-0190), and none was measured. claudetto shall tell the lead to check each subagent or reviewer finding and do what the subagent skipped before it reports, in the root `<delegation>` text and in Concise rule 3; and shall instruct a lead that spawns workers to answer for every mistake a worker makes, to fix each one as its report arrives, and to resolve each item of a report list in parallel through workers.
   Acceptance: both texts hold the check instruction and the eval case check-relayed-findings passes; after a worker report names a defect, the lead's next action fixes it or briefs a worker to fix it, and the lead's final report names no worker defect left open. Verification: test and demonstration.
   Basis: cited; reported. Status: partial at 088a227c (git grep for relayed found nothing; the lead prompt says "Finish what each report left" in plugins/claudetto/hooks/features/prompt/texts.ts:32@088a227c; accountability for worker mistakes is missing).
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:92 (task 8.11); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/c5883be2-6429-490e-ac16-a07683670cd6.jsonl:318, user decision, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, user decision, 2026-11-12.
@@ -2450,7 +2452,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured. Status: partial at 088a227c (features/decide has`approval_` in decide.ts and DECIDE_GIVE_BACK in texts.ts; `git grep probabilities 088a227c -- plugins` finds hooks/kernel/decider/decider.ts:94-101 and decide.mock.ts, so the 0.75 pick rule is in code; decide.test.ts:177 holds a pick at 0.75; hooks/features/decide, hooks/kernel/decider; Jev named in claudetto-you-should-know).
   Source: openspec/specs/decide/spec.md:8; openspec/specs/decide/spec.md:37; openspec/specs/decide/spec.md:39; openspec/specs/decide/spec.md:43; openspec/specs/decide/spec.md:61; openspec/specs/decide/spec.md:75; openspec/specs/decide/spec.md:77; openspec/specs/decide/spec.md:108; openspec/specs/decide/spec.md:127; openspec/specs/decider/spec.md:20; openspec/specs/decider/spec.md:152; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/decider/spec.md:147; openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:407; plugins/claudetto/hooks/features/decide/decide.test.ts:177@088a227c; user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:490 (goal text, Rules); user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); `plugins/claudetto/.claude-plugin/plugin.json:68-84` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
-- [x] **OUT-433** Out (REQ-COST-024, OUT-070, OUT-024): the decide tool and `typesafeApiKey` are on the deletion list and no caller remains. claudetto shall register `mcp__claudetto__decide` through `$.tool.register` at `session.start` only when `TYPESAFE_API_KEY` is set in env (no userConfig `typesafeApiKey`; no key means no tool and no request to api.typesafe.ai). The request carries only question texts, option labels with descriptions, and fixed pick and approval texts (state `question_0`, `option_<j>: label - description`; no transcript, file, or path); other hooks reach Jev only through the Decider. Each try stops at 5,000 ms and a 400 or 422 is handed back after one try; the 2.1.319 spec retried only on 429 or 529, at most 3 tries, backoff 1,000 ms doubling, never retried a missed deadline and finished within 18 s (superseded by the one-try rule of the Decider item). A malformed call (no key, or `questions` not a non-empty list of entries with a string `question`) passes through unchanged. Failure never throws: "Jev gives no answer: <why>" plus give-back text. The reply is one line per question: in the 2.1.319 spec "Jev picks `X` for "Q" (probability 0.NN)." or "Jev gives no answer to "Q"." (the wording of `<name>` follows the decider name; baseline texts.ts:52 reads `The decider gives no answer to "..."`), and it ends with a give-back text (spec constant `JEV_GIVE_BACK`) that tells the model to decide it and state the assumption, or put it to the user with `AskUserQuestion`, when any question has no verdict.
+- [x] **OUT-433** Out (REQ-COST-024, OUT-070, OUT-024): the decide tool and `typesafeApiKey` are on the deletion list and no caller remains. claudetto shall register `mcp__claudetto__decide` through `$.tool.register` at `session.start` only when `TYPESAFE_API_KEY` is set in env (no userConfig `typesafeApiKey`; no key means no tool and no request to api.typesafe.ai). The request carries only question texts, option labels with descriptions, and fixed pick and approval texts (state `question_0`, `option_<j>: label - description`; no transcript, file, or path); other hooks reach Jev only through the Decider. Each try stops at 5,000 ms and a 400 or 422 is handed back after one try; the 2.1.319 spec retried only on 429 or 529, at most 3 tries, backoff 1,000 ms doubling, never retried a missed deadline and finished within 18 s (superseded by the one-try rule of the Decider item). A malformed call (no key, or `questions` not a non-empty list of entries with a string `question`) passes through unchanged. Failure never throws: "Jev gives no answer: `<why>`" plus give-back text. The reply is one line per question: in the 2.1.319 spec "Jev picks `X` for "Q" (probability 0.NN)." or "Jev gives no answer to "Q"." (the wording of `<name>` follows the decider name; baseline texts.ts:52 reads `The decider gives no answer to "..."`), and it ends with a give-back text (spec constant `JEV_GIVE_BACK`) that tells the model to decide it and state the assumption, or put it to the user with `AskUserQuestion`, when any question has no verdict.
   Acceptance: With no key the tool is absent; with a key a multi-question call answers one line per question; a reply with one pick and one miss shows both line forms and ends with the give-back text. Verification: test.
   Basis: reported. Status: have at 088a227c for the tool; partial for the reply wording (`plugins/claudetto/hooks/features/decide/texts.ts:52`; the spec's name is "Jev", the baseline says "The decider"). claude 2.1.327: `tool.register` present (code search, chunk-dafpvz32.js@3099).
   Source: openspec/specs/decide/spec.md:39; openspec/specs/decide/spec.md:53; openspec/specs/decide/spec.md:129; openspec/specs/decide/spec.md:134; plugins/claudetto/hooks/features/decide@088a227c; plugins/claudetto/hooks/features/decide/texts.ts:52@088a227c.
@@ -2610,7 +2612,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Conflict: Tool Text Keeps the Shorter Text.
 
 - [x] **OUT-456** Out (REQ-SETUP-002, ADR-0177): ADR-0177: the `disableBundledSkills` setting replaces the hook, and a probe shows the setting plus the Workflow deny cuts the first request 47,323 to 28,234 bytes with no hook on the hot path. claudetto shall remove the 18 prompt skills (`OFF_SKILLS`) from the listing through a `settings.read` hook that sets `skillOverrides[name]="off"` when no source is given, unless one of `.claude/skills`, `.claude/commands`, `<config>/skills`, `<config>/commands` holds the name (config = `CLAUDE_CONFIG_DIR` or `$HOME/.claude`); the user's own `/name`, own entry, and a skill the user or project holds stay. The hook runs 4 `$fs.list` calls in parallel, treats an unlistable folder as empty, uses no `$.session.cwd()` and no process, and stays fast because the engine does not wait for `settings.read` before request 1. It ships only together with the Workflow deny.
-  Acceptance: the listing holds 2 entries (loop 345, init 148), 493 bytes against stock 13 entries 6,183 bytes; a user `/name` prints 'Skill "<name>" is disabled via skillOverrides'; a call to an off skill is refused with 0 requests; with `workflow-authoring` off the Workflow tool inlines the skill's reference (3,503); hooks of 38.7 ms or less won 47/47, 66.7-90.6 ms lost 10/11. Verification: probe.
+  Acceptance: the listing holds 2 entries (loop 345, init 148), 493 bytes against stock 13 entries 6,183 bytes; a user `/name` prints 'Skill "`<name>`" is disabled via skillOverrides'; a call to an off skill is refused with 0 requests; with `workflow-authoring` off the Workflow tool inlines the skill's reference (3,503); hooks of 38.7 ms or less won 47/47, 66.7-90.6 ms lost 10/11. Verification: probe.
   Basis: measured, claude 2.1.318. A Mod `command.run { text }` blocks the user's `/name` (0 requests) but does not see the model's Skill call; a `tool.call` Skill guard returning `{ deny }` blocks that. The `settings.read` hook returns `{ ...r, value: {...s, skillOverrides} }` (`next(e)` resolves to `{ value: settings }`). `OFF_SKILLS` duplicates `disableBundledSkills`. Status: have at 088a227c (`withSkillOverrides`, plugins/claudetto/hooks/features/surface/surface.ts:44-58; `surface.ts:19`).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2906; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3372; openspec/changes/archive/2026-11-09-release-2-1-319/builtins-inventory.md:20; openspec/changes/archive/2026-11-09-release-2-1-319/specs/surface-trim/spec.md:43; openspec/specs/surface-trim/spec.md:280; plugins/claudetto/hooks/features/surface/surface.ts:44@088a227c; plugins/claudetto/hooks/features/surface/surface.ts:19@088a227c.
 
@@ -2666,7 +2668,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported (one user built about 20 PreToolUse checks behind a single bash shim; convergent). Status: partial at 088a227c (`plugins/claudetto/hooks/features/setup/auto-mode.ts`, `command-rules.ts`).
   Source: external/2026-09-29_p2/export-Recent rampant classification failiures.jsonl:16; openspec/specs/agent-conduct/spec.md:105.
 
-- [x] **OUT-467** Out (REQ-SETUP-020, ADR-0173): ADR-0173 shares download caches only; the `symlinkDirectories` offer stays out. The `baseRef` part rides with REQ-SETUP-008 (FILL). claudetto shall write `worktree.baseRef: "head"` when unset, so EnterWorktree and `isolation: worktree` start at the current branch tip (the default `fresh` branches from origin/<default>, so an agent worktree lacks branch-only work), and shall offer `worktree.symlinkDirectories` for git-ignored dependency folders at the project root with names WITHOUT a trailing slash in the `.gitignore` block, because `node_modules/` misses a symlink and `git add -A` stages it.
+- [x] **OUT-467** Out (REQ-SETUP-020, ADR-0173): ADR-0173 shares download caches only; the `symlinkDirectories` offer stays out. The `baseRef` part rides with REQ-SETUP-008 (FILL). claudetto shall write `worktree.baseRef: "head"` when unset, so EnterWorktree and `isolation: worktree` start at the current branch tip (the default `fresh` branches from origin/`<default>`, so an agent worktree lacks branch-only work), and shall offer `worktree.symlinkDirectories` for git-ignored dependency folders at the project root with names WITHOUT a trailing slash in the `.gitignore` block, because `node_modules/` misses a symlink and `git add -A` stages it.
   Acceptance: a setup write holds `worktree.baseRef: "head"`; the ignore block holds `node_modules` and no `node_modules/`. Guards: explicit paths never `-A`, `git ls-files | grep -E '^(node_modules|data)$'` empty, a pre-commit abort on mode 120000, `git check-ignore -v`. Verification: test.
   Basis: reported (a loss of a real 10 GB folder on merge). Status: have at 088a227c (`baseRef`, `symlinkDirectories`); the symlink-staging guard is missing.
   Source: openspec/specs/setup/spec.md:274; external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:8; external/2026-10-23/reddit.com-r-claudecode-comments-1xcenuk-psa-if-your-worktrees-symlink-20261022T122613Z.md:59 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xcenuk/psa_if_your_worktrees_symlink_node_modules_the/>); plugins/claudetto/hooks/features/setup/settings.ts:130@088a227c; plugins/claudetto/hooks/features/setup/changes.ts:13@088a227c.
@@ -2737,7 +2739,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:144 (`packages.ts:4-30` hard-codes `BUN_FOR_NPM`, `BUN_LOCKS`, and xmake).
 
 - [x] **OUT-481** Out (REQ-SETUP-061, ADR-0057): ADR-0057 and REQ-SETUP-011 supersede it: all builtins, `telemetry` and `privacy` included, go off. claudetto shall disable eleven built-in plugins as `cc-plugin-<name>@builtin` and shall leave the twelfth, `telemetry`, to `DISABLE_TELEMETRY` alone.
-  Acceptance: `hooks/setup/settings.test.ts`: eleven built-in plugins are off as cc-plugin-<name>@builtin; telemetry is off through DISABLE_TELEMETRY alone. Verification: test.
+  Acceptance: `hooks/setup/settings.test.ts`: eleven built-in plugins are off as cc-plugin-`<name>`@builtin; telemetry is off through DISABLE_TELEMETRY alone. Verification: test.
   Basis: read. Status: partial at 088a227c (plugins/claudetto/hooks/features/setup/settings.test.ts:51 holds the telemetry test).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:405.
   Conflicts with: all 14 builtins disabled, `privacy` included, enforced by rewriting user settings at session start (user decision, 2026-11-16).
@@ -3578,7 +3580,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, two users (Claude smooths over the nuance of why). Status: partial at 088a227c (plugins/claudetto/hooks/features/compaction/texts.ts holds Decisions and Ruled out sections but does not hand the why to the user).
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xco6yg-a-modern-ai-problem-with-a-cen-20261024T062321Z.md:107 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xco6yg/a_modern_ai_problem_with_a_centuryold_answer/>).
 
-- [x] **OUT-614** Out (REQ-HANDOVER-028, ADR-0177): a phase-paste template is a workflow, not a plugin behaviour. claudetto shall end each phase with a model-switch instruction and one paste line "<Project> - Phase <n> of <total>: <name> - START HERE <full handover path>", and name the new thread "<Project> - Phase <n>".
+- [x] **OUT-614** Out (REQ-HANDOVER-028, ADR-0177): a phase-paste template is a workflow, not a plugin behaviour. claudetto shall end each phase with a model-switch instruction and one paste line "`<Project>` - Phase `<n>` of `<total>`: `<name>` - START HERE `<full handover path>`", and name the new thread "`<Project>` - Phase `<n>`".
   Acceptance: the phase-end text holds the paste line with the full handover path. Verification: inspection.
   Basis: reported (prompt template). Status: missing at 088a227c (git grep for "START HERE" finds nothing).
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xg2z2v-any-tips-to-avoid-using-so-much-20261027T071936Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xg2z2v/any_tips_to_avoid_using_so_much_usage/>).
@@ -3674,7 +3676,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Source: external/2026-10-25_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261025T162138Z.md:67; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:62 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>); external/please-use-me-often/agent-failure-dossier/judged/handoff.jsonl:29; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; merged with plan:1158 (handoff fork replaces the built-in summary, have).
 
 - [x] **OUT-633** Out (REQ-HANDOVER-048, ADR-0184): the driver owns -p renewal, and a relaunch file with hops is a second renewal path. claudetto shall start a clean-break relaunch only when a relaunch file is armed, fresh (under 10 minutes), and under 10 hops, and shall refuse (exit 2) on an invalid handoff or running background tasks.
-  Acceptance: a wrapper relaunches `claude --name` with seed "claim and continue handoff <path>"; a Stop hook arms it; a detached killer SIGTERMs only when idle (gives up in 30 s); handoff status goes open to claimed; a dead-man wakeup at about 150 s re-runs and notifies; never `--resume`. A hook writing progress to a `.md` at each compaction cut reread cost from 23% to about 8% of usage (one dashboard). Verification: test.
+  Acceptance: a wrapper relaunches `claude --name` with seed "claim and continue handoff `<path>`"; a Stop hook arms it; a detached killer SIGTERMs only when idle (gives up in 30 s); handoff status goes open to claimed; a dead-man wakeup at about 150 s re-runs and notifies; never `--resume`. A hook writing progress to a `.md` at each compaction cut reread cost from 23% to about 8% of usage (one dashboard). Verification: test.
   Basis: reported, author-measured. Status: missing at 088a227c. The Stop hook and `$.process.spawn` are present in 2.1.327 (chunk-ja5z738t.js@5637; chunk-dafpvz32.js@3656); `$.session.compact` and `$.session.send` are verified on 2.1.327 (claude-code.d.ts@141519, @142251).
   Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:62,83 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>); external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:8; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:153.
 
@@ -4145,7 +4147,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
 
 #### Context Facts N-Z
 
-- [x] **OUT-1500** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-587 in permissions.md): "Allow always" approves one exact command string, so each new "cd <repo> && git x" re-prompts. A PreToolUse hook denies that form and one git-in.sh <repo> wrapper makes a single approval cover all.
+- [x] **OUT-1500** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-587 in permissions.md): "Allow always" approves one exact command string, so each new "cd `<repo>` && git x" re-prompts. A PreToolUse hook denies that form and one git-in.sh `<repo>` wrapper makes a single approval cover all.
   Basis: reported.
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbxoza-my-claude-code-setup-it-runs-l-20261022T005342Z.md:272 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbxoza/my_claude_code_setup_it_runs_like_a_small/>).
 
@@ -4804,7 +4806,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: observed (probe 1).
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:25.
 
-- [x] **OUT-1649** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-698 in request-size.md): MAX_MCP_OUTPUT_TOKENS=2000 turns 40,000 chars into a 1,447-char error naming a saved file mcp-big-blob-<n>.txt, but 20,000 and 30,000 chars stay whole at that cap (the count_tokens stand-in answered 100, so the char-to-token ratio is not measured). At 60,000 chars both the default and a cap of 60000 give a 2,261-char persisted-output preview, so a file limit of its own sits above the token cap.
+- [x] **OUT-1649** Out (paid-run, corpus, or literature result pinned to an older version, so a recheck needs a paid model run; moved from CTX-698 in request-size.md): MAX_MCP_OUTPUT_TOKENS=2000 turns 40,000 chars into a 1,447-char error naming a saved file mcp-big-blob-`<n>`.txt, but 20,000 and 30,000 chars stay whole at that cap (the count_tokens stand-in answered 100, so the char-to-token ratio is not measured). At 60,000 chars both the default and a cap of 60000 give a 2,261-char persisted-output preview, so a file limit of its own sits above the token cap.
   Basis: measured in part.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:828.
 
@@ -5912,7 +5914,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2570.
 
-- [x] **OUT-1909** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-179 in tools.md): `skillOverrides` removal checked for the 18 prompt skills in 36 runs: 18 of 18 `/<name> x` printed 'Skill "<name>" is disabled via skillOverrides' with 0 requests. 18 of 18 model Skill calls were refused: 11 with "disabled for model invocation in skillOverrides settings", 7 (batch, deep-research, debug, verify, insights, team-onboarding, run-skill-generator) with "cannot be used with Skill tool due to disable-model-invocation" (the stock flag fires first).
+- [x] **OUT-1909** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-179 in tools.md): `skillOverrides` removal checked for the 18 prompt skills in 36 runs: 18 of 18 `/<name> x` printed 'Skill "`<name>`" is disabled via skillOverrides' with 0 requests. 18 of 18 model Skill calls were refused: 11 with "disabled for model invocation in skillOverrides settings", 7 (batch, deep-research, debug, verify, insights, team-onboarding, run-skill-generator) with "cannot be used with Skill tool due to disable-model-invocation" (the stock flag fires first).
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3236.
 
@@ -5976,7 +5978,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: reported, task text.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:331; chunk-1vttvse2.js@44058, @44889 (claude 2.1.327 binary).
 
-- [x] **OUT-1925** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-196 in tools.md): An agent's own background tasks are the running tasks whose id its own tool results print: `Bash` prints "Command running in background with ID: <id>", and `Monitor` prints "Monitor started (task <id>, ...". A synchronous subagent's background command ends at its final response (`backgroundEndsWithFinalResponse`) (read).
+- [x] **OUT-1925** Out (third-party or reported claim with no probe on 2.1.327; moved from CTX-196 in tools.md): An agent's own background tasks are the running tasks whose id its own tool results print: `Bash` prints "Command running in background with ID: `<id>`", and `Monitor` prints "Monitor started (task `<id>`, ...". A synchronous subagent's background command ends at its final response (`backgroundEndsWithFinalResponse`) (read).
   Basis: reported, task text.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:407.
 
@@ -6000,7 +6002,7 @@ Parts, behaviours, and files that go, with no competing option. Each item names 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-18/README.md:1-30; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-21/README.md:6-25.
 
-- [x] **OUT-1931** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-202 in tools.md): Compound Bash line "bun test ...; cat src/lib.ts": the plugin arm spent a denied `cat` plus a retry (4.07 turns, 5.00 calls, 1.00 denial per session, against base 3.07 turns). Fix `hooks/gate/read-split.ts`, a `tool.call` hook on Bash: for a line ending in "; cat <file>" (also `&&` or newline) it reads the file with `$.tool.call` Read through the same hooks and permission check, runs the rest of the line alone, and appends the Read text to the Bash result stdout. Run 1 put the text in context: turns 3.97 against 3.00, output 692.2 against 355.8 (1.95x), Stop blocks 0.43 per session. Run 2 (stdout, 60 sessions, 30 per arm, $2.61): turns 3.43 against 3.13 (1.096x), job-op calls 4.20 against 4.47 (0.94x), raw calls 3.07 against 3.13, denials 0.00, fixed 30/30 against 30/30, output 551.8 against 378.3 (1.46x, misses the 1.25x target), Stop blocks 0.33 per session, because 10 of 30 plugin sessions got the unseen block (918.9 output tokens, 4.30 turns) while the other 20 matched base (368.3, 3.00). Job-op counting: a Bash call counts once per `;`, `&&` or newline part, because raw calls reward packing a read into Bash and "test; cat" is two jobs under the user's Bash rule (measured).
+- [x] **OUT-1931** Out (older-version fact whose recheck needs a paid model run or an interactive session, and no shipped claudetto part depends on it; moved from CTX-202 in tools.md): Compound Bash line "bun test ...; cat src/lib.ts": the plugin arm spent a denied `cat` plus a retry (4.07 turns, 5.00 calls, 1.00 denial per session, against base 3.07 turns). Fix `hooks/gate/read-split.ts`, a `tool.call` hook on Bash: for a line ending in "; cat `<file>`" (also `&&` or newline) it reads the file with `$.tool.call` Read through the same hooks and permission check, runs the rest of the line alone, and appends the Read text to the Bash result stdout. Run 1 put the text in context: turns 3.97 against 3.00, output 692.2 against 355.8 (1.95x), Stop blocks 0.43 per session. Run 2 (stdout, 60 sessions, 30 per arm, $2.61): turns 3.43 against 3.13 (1.096x), job-op calls 4.20 against 4.47 (0.94x), raw calls 3.07 against 3.13, denials 0.00, fixed 30/30 against 30/30, output 551.8 against 378.3 (1.46x, misses the 1.25x target), Stop blocks 0.33 per session, because 10 of 30 plugin sessions got the unseen block (918.9 output tokens, 4.30 turns) while the other 20 matched base (368.3, 3.00). Job-op counting: a Bash call counts once per `;`, `&&` or newline part, because raw calls reward packing a read into Bash and "test; cat" is two jobs under the user's Bash rule (measured).
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-23/README.md:3-38; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:324.
 
@@ -6416,7 +6418,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: cited.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/cc-2-1-323.md:42.
 
-  ## Claude Code Surface and Version Notes
+  ## Claude Code Surface and Version Notes OUT-922
 
 - [x] **OUT-922** claudetto shall not carry CTX-337 (from `claude-code-surface.md`) as a checked context fact: With remote control enabled Claude Code puts a link to the conversation in the commit message, and commenters add that author emails always get committed.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6424,7 +6426,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:61; external/2026-11-03/reddit.com-r-claudecode-comments-1xg1zev-this-tweet-is-a-scary-truth-20261102T184325Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xg1zev/this_tweet_is_a_scary_truth/>).
 
-  ## Claude Code Surface and Version Notes
+  ## Claude Code Surface and Version Notes OUT-923 to OUT-932
 
 - [x] **OUT-923** claudetto shall not carry CTX-338 (from `claude-code-surface.md`) as a checked context fact: A poster's subagent limits are 60 tool calls, a 100K-token soft handoff and a 150K hard limit; another poster's hook caps 20 agents per session.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6494,7 +6496,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/specs/compaction-path/spec.md:27.
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-934 to OUT-941
 
 - [x] **OUT-934** claudetto shall not carry CTX-449 (from `compaction.md`) as a checked context fact: Paid four-arm handover probe, run 2 (18 runs, cost by total_cost_usd, last value per session): A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47. No B arm cost less than C in all 3 pairs. Run 1's $13.52 summed every running total, so it overstates cost.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6544,7 +6546,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, snippet.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:12-14; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:28.
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-942 to OUT-943
 
 - [x] **OUT-942** claudetto shall not carry CTX-459 (from `compaction.md`) as a checked context fact: One user's own monitoring found 130k tokens the most cost-effective point to clear; the app injects a save-progress-to-disk request, then clears and continues, with auto-compact off.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6558,7 +6560,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user, 20 USD plan, no measures. Status: not applicable (outside fact).
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:53-54 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>).
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-944
 
 - [x] **OUT-944** claudetto shall not carry CTX-462 (from `compaction.md`) as a checked context fact: Commenters report that hitting the 5-hour limit mid-task, or switching accounts mid-task, causes a cache miss that wastes weekly limit. On Max 5x each redo costs about 3 to 5 percent of the 5-hour window and 1 to 2 percent of the week, over 10 percent of the week when repeated; with many agents it also pays 200k to 999k of fresh input, a cache write and agent re-orientation. One user reports that 4 percent of the 5-hour window was usually about 1 percent of the weekly limit.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6566,7 +6568,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:112; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:423; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:467; external/2026-10-31/reddit.com-r-claudeai-comments-1xjlvlc-anthropic-renames-max5-and-max20-20261030T212506Z.md:469 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xjlvlc/anthropic_renames_max5_and_max20_and_removes_5h/>).
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-945
 
 - [x] **OUT-945** claudetto shall not carry CTX-463 (from `compaction.md`) as a checked context fact: /export writes what was reported on the terminal during the session, not the loaded context or thinking tokens. One commenter never compacts: a tool clones and truncates messages or starts a new session with parent-session back pointers, plus a fast full-text search over past session files so agents or humans can search prior work.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6574,7 +6576,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, commenters. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:133; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:335; external/2026-11-02/reddit.com-r-claudeai-comments-1pwt86e-pro-tip-disable-compacting-use-y-20261102T071016Z.md:339 (url: <https://www.reddit.com/r/ClaudeAI/comments/1pwt86e/pro_tip_disable_compacting_use_your_own/>).
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-946
 
 - [x] **OUT-946** claudetto shall not carry CTX-464 (from `compaction.md`) as a checked context fact: One author reports that in the last 30 days 78 of 82 auto-compactions landed mid-task, and that Claude re-reads files afterwards to work out where it was. In a replay of long sessions Claude re-read about 30 percent less context once it picked its own moment to compact; the author says the replay side flatters this tool a bit, since it includes the handoff steps, which is why the figure is about 30 percent and not 33.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6582,7 +6584,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:29, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>; external/2026-11-02_p2/reddit.com-r-claudeai-comments-1x95lff-about-30-less-context-reread-cla-20261102T084459Z.md:115, <https://www.reddit.com/r/ClaudeAI/comments/1x95lff/about_30_less_context_reread_claude_finishes_the/>.
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-947
 
 - [x] **OUT-947** claudetto shall not carry CTX-468 (from `compaction.md`) as a checked context fact: Vendor sources and machine facts: the Anthropic page `about-claude/models/optimizing-for-cost-and-intelligence` is the first vendor source for the 90,000 Haiku trigger and for $0.50 against $0.10 per MTok at 100,000 (cited). Mole 1.68.0 `mo purge` defaults miss `~/CodeProjects`; a purge-paths file replaces discovery; `mo clean --dry-run` previewed about 9 GB. Dossier defects D1-D10.38 (headings only read) include path spam, a hygiene sweep deleting live probe folders, worktree creation rewriting a shared hooks path, and rule reminders moving the cache breakpoint (reported).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6590,7 +6592,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: cited / reported.
   Source: openspec/specs/compaction-path/spec.md:70; openspec/specs/setup/spec.md:115; the "about 9 GB" and D1-D10.38 wording: unresolved.
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-948 to OUT-956
 
 - [x] **OUT-948** claudetto shall not carry CTX-469 (from `compaction.md`) as a checked context fact: 524 `thinking_drop` `prefix_mismatch` rows: 515 fall within 10 minutes after a `compact_boundary` and 510 report `firstChangedMessageIndex` 0, so compaction causes them, not a plugin hook.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6646,7 +6648,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user each, opposite results; resolved by the CTX-294 break-even, not by either report.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:28 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>.); external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:84; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:88; external/2026-10-17/export---usage- has suddenly skyrocketed this week.jsonl:92.
 
-  ## Compaction and Context Thresholds
+  ## Compaction and Context Thresholds OUT-957 to OUT-962
 
 - [x] **OUT-957** claudetto shall not carry CTX-857 (from `compaction.md`) as a checked context fact: Reports of degradation after repeated compaction: one user's logs show thinking tokens falling after each compaction and not without it; another finds Opus loses orchestration state and forgets its skills after two or three compactions. This supports renewal at a task boundary before compaction stacks up (ADR-0178) over chained compactions.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6710,7 +6712,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported by one commenter, not checked.
   Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:106 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-967
 
 - [x] **OUT-967** claudetto shall not carry CTX-138 (from `cost-pricing.md`) as a checked context fact: Per-feature artifact files (spec, plan, review, QA, notes) run to about 20,000 tokens per feature per read. A local no-LLM graph query over stable story and criterion IDs (US-2, AC-2.3) answered "which criteria, which tasks, did each pass QA" at a median of about 690 tokens, against about 21,000 reading spec, plan and QA and about 11,000 grepping the IDs, over 61 stories.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6718,7 +6720,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported by the author; stand-in tokenizer, cached reads cost less, C++ code not parsed.
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xbyg3k-i-made-claude-write-down-what-it-20261023T040746Z.md:41:43; :44; :45; :47 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbyg3k/i_made_claude_write_down_what_it_rejected_not/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-968 to OUT-969
 
 - [x] **OUT-968** claudetto shall not carry CTX-139 (from `cost-pricing.md`) as a checked context fact: A task that costs about 3x its neighbours usually was badly cut, not hard, so cost works as a signal of skill or spec quality.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6732,7 +6734,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, a single test (n=1); the author does not call it proven.
   Source: external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:41; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:45; external/2026-10-25/reddit.com-r-claudeai-comments-1xcjrzg-my-one-rule-for-claude-no-number-20261024T061809Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcjrzg/my_one_rule_for_claude_no_number_goes_in_unless/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-970 to OUT-973
 
 - [x] **OUT-970** claudetto shall not carry CTX-141 (from `cost-pricing.md`) as a checked context fact: METR Feb-Mar 2026: "only around half" of passing SWE-bench solutions would pass review; Mythos Preview system card 4.5.5.3 test deletion and grader-file access; the dossier: 1,662 merged claims judged (674 adopted, 887 rejected, 50 blocked, 51 candidate); 49 records, 40 failure patterns; related ImpossibleBench, MALT (10,919 transcripts, 21 models), lost-in-conversation.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6758,7 +6760,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured. Status: not applicable.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:229; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:393.
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-974 to OUT-978
 
 - [x] **OUT-974** claudetto shall not carry CTX-147 (from `cost-pricing.md`) as a checked context fact: The same 6 weeks repriced per model (author's correction after a commenter showed the 0.1x cache-read weight was not fixed: Opus 5.5 and Sonnet 5.5 read the cache at 0.05x, Fable 5.1 at 0.025x): cache reads 57% of spend (not 75%), cache writes 21%, output 16% (not 10%), requests absent from transcripts (compaction summaries, titles, WebFetch page reads) 6%, raw cache-read tokens still about 99% of prompt tokens. The fix reads Claude Code's own session total, which matched the reported cost on 77 of 78 runs. These are API list prices, not plan-limit usage.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6790,7 +6792,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, proxy maintainer. Status: not applicable (outside fact).
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1sb8fb3-i-routed-all-my-claude-code-tr-20261105T172241Z.md:180-182 (url: <https://www.reddit.com/r/ClaudeCode/comments/1sb8fb3/i_routed_all_my_claude_code_traffic_through_a/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-979 to OUT-980
 
 - [x] **OUT-979** claudetto shall not carry CTX-152 (from `cost-pricing.md`) as a checked context fact: A cheaper split than an advisor: Opus writes the brief or spec and the done conditions once, Sonnet builds, Opus reviews against the spec and sends misses back as a residual carried into the next build, so the strong model wakes twice instead of repeatedly.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6804,7 +6806,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, inferred. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xrh0co-sonnet-with-opus-advisor-20261109T152503Z.md:128 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrh0co/sonnet_with_opus_advisor/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-981
 
 - [x] **OUT-981** claudetto shall not carry CTX-154 (from `cost-pricing.md`) as a checked context fact: One commenter says that setting Fable as advisor does not draw down the separate Fable usage.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6813,7 +6815,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one commenter, unverified. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:74 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); user decision, recorded in the 2026-11-17 handover (day of decision not recorded).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-982
 
 - [x] **OUT-982** claudetto shall not carry CTX-155 (from `cost-pricing.md`) as a checked context fact: Two commenters say that saying what is going on (or which bug is hunted) and listing the files involved saves a huge amount of tokens and discovery time, and that only the files a task touches should be sent, since whole-project uploads burn the budget.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6821,7 +6823,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, commenters, not measured. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:179; external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:141 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-983
 
 - [x] **OUT-983** claudetto shall not carry CTX-156 (from `cost-pricing.md`) as a checked context fact: One commenter says that running analysis, planning and implementation all in Claude Code fills the context with codebase detail, and that implementation can be handed to Sonnet.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6829,7 +6831,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one commenter. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-03/reddit.com-r-claude-comments-1xlrxh9-new-to-claude-any-tips-for-saving-20261102T140340Z.md:113 (url: <https://www.reddit.com/r/claude/comments/1xlrxh9/new_to_claude_any_tips_for_saving_tokens/>).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-984
 
 - [x] **OUT-984** claudetto shall not carry CTX-157 (from `cost-pricing.md`) as a checked context fact: Haiku 5.5 bills input at $0.50 per MTok past 100,000 prompt tokens against $0.10 at or below (cache reads and writes count); on 79 Managed Agents tasks about 5% of requests carried 73% of cost. Also reported: Haiku 5.5 costs about 50x less than Opus for the first 100k tokens, about like Opus 4.8 (another post says "40x cheaper under 100k"); the lower rate applies under 100k request context on the API and not in the app plan; light use (10 prompts) was 0% of the 5h window; chat re-sends the conversation, so a long session crosses 100k silently; under 1% of one author's token use; it is reported to lose basic context after long competent stretches; the orchestrator was billed 5x in one fleet. Lineup named in a post (Oct 2026): Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (the post wrongly says Haiku 4.5); account models follow repo rules. A plugin withholds reads once a worker's context passes 100k, and Haiku workers also overflow ("Autocompact is thrashing") (observed in transcript, 2026-11-16).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6837,7 +6839,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: cited; reported.
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:97; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:37; unresolved: the thread behind plan tag G:154 was not located by grep; the Haiku billing rule itself is openspec/changes/archive/2026-11-16-2-1-323/design.md:97 (billed at $0.50 per MTok above 100,000 tokens, read 2026-11-13); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:18; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
 
-  ## Cost and Pricing
+  ## Cost and Pricing OUT-985 to OUT-996
 
 - [x] **OUT-985** claudetto shall not carry CTX-158 (from `cost-pricing.md`) as a checked context fact: Measured spend (2026-11-07, Sonnet 5.5): held-out r4 (24 cases) 10 runs 237/240 twice then 239/240, 33 sessions, $2.3-$2.6 per run, largest session ~205k tokens; public cap $60 spent 2026-11-08 ($61.98); paid ledger over 9.15M tokens by task 12.1. 18 paid runs on 2.1.319 by `total_cost_usd`: A $1.59-1.83, B35 $1.55-3.23, B45 $1.49-1.90, B53 $1.52-1.77, C $0.88-1.66, D $2.87-3.47; recall 10/10 in all 18; growth ~1,000 tokens a turn; no B arm cheaper than C in 3 paired runs.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6945,7 +6947,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured, fake API.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:827.
 
-  ## Machine, Shell, and Disk
+  ## Machine, Shell, and Disk OUT-1002 to OUT-1008
 
 - [x] **OUT-1002** claudetto shall not carry CTX-527 (from `machine.md`) as a checked context fact: memoryGuard reads the free share at tool.check only. A 4 GB single-process growth (8 blocks of 512 MB, 1.5 s apart) moved memory_pressure -Q free share only from 47% to 52%, because macOS compresses pages and frees cache. So the share cannot follow one process, and per-process RSS is the signal.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6989,7 +6991,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:815.
 
-  ## Machine, Shell, and Disk
+  ## Machine, Shell, and Disk OUT-1009
 
 - [x] **OUT-1009** claudetto shall not carry CTX-542 (from `machine.md`) as a checked context fact: A stray `tsc --lsp --stdio` (TypeScript 7.0.2, pid 48197, running 27 hours at 127% CPU, parent launchd) was not started by the session. The user ran `! kill -9 48197`, and `ps -p 48197` then found no process (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -6997,7 +6999,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:412.
 
-  ## Machine, Shell, and Disk
+  ## Machine, Shell, and Disk OUT-1010
 
 - [x] **OUT-1010** claudetto shall not carry CTX-543 (from `machine.md`) as a checked context fact: Eight commits that commitlint rejected (4 headers over 100 characters, 4 body lines over 100) were reworded by `git rebase -r --exec` with the same trees. All 365 signatures stayed (`G`), `bunx commitlint` exited 0, and `git push --force-with-lease` replaced the remote head. The `just validate` check reports README_MISSING (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7005,7 +7007,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:413; openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:415.
 
-  ## Machine, Shell, and Disk
+  ## Machine, Shell, and Disk OUT-1011 to OUT-1018
 
 - [x] **OUT-1011** claudetto shall not carry CTX-544 (from `machine.md`) as a checked context fact: A sparse disk image (Docker.raw) showed 60 GB apparent size but 14 GB actual disk usage, so a cleanup agent must measure actual usage (du), not apparent size.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7055,7 +7057,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, two commenters. Status: not applicable (outside fact).
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xra3ka-help-with-large-project-20261110T094747Z.md:88 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xra3ka/help_with_large_project/>).
 
-  ## Machine, Shell, and Disk
+  ## Machine, Shell, and Disk OUT-1019 to OUT-1022
 
 - [x] **OUT-1019** claudetto shall not carry CTX-831 (from `machine.md`) as a checked context fact: On 2026-11-18 the user's 512 GB Mac had 51.6 GB free in its APFS container (about 90% used, against 68% on 2026-11-12); the Data volume used 394.2 GB. `du -xhd1 /System/Volumes/Data` outside the sandbox totals 306 GB (Users 128 GB, private 128 GB, opt 20 GB, System 15 GB, Applications 13 GB); the gap is not snapshots: the Data volume has none (the three `com.apple.os.update` snapshots belong to the system volume). `du` also counts 79 GB of Chrome clones that cost about one copy (CTX-832), so about 166 GB of real use sits in 585 folders that `du` cannot read even outside the sandbox: 280 under `~/Library/Containers`, 134 under `~/Library/Group Containers` (including OrbStack's `HUAQ24HBR6.dev.orbstack` data), 70 under `/private/var/folders/cl`, and root-owned folders under `/private/var/db` (Spotlight, biome and others). These folders and `~/.Trash` (CTX-834) are protected by macOS privacy controls (TCC), so only the user can size them: grant the terminal Full Disk Access and run `du -sh ~/Library/Containers ~/Library/Group\ Containers ~/.Trash`, run `docker system df` or `orb` outside the sandbox, or read System Settings > General > Storage. `/Volumes/DevAudioStore` is an external drive and not part of the gap. The user's `docker system df` (Docker 29.8.2 on OrbStack, 2026-11-18) reports 42.7 GB, of which 34.5 GB is reclaimable: 485 local volumes, none in use, 23.27 GB; 11 images, 7.50 GB (5.48 GB reclaimable); build cache 11.91 GB (5.76 GB reclaimable); 20 containers, 155.6 kB. Unused Docker volumes are the largest single reclaimable item measured on the machine. `docker volume prune` removes only anonymous volumes; `-a` also removes unused named ones (`docker volume prune --help`). On the user's instruction the same day, `docker image prune -a -f`, `docker builder prune -a -f` and `docker volume prune -a -f` freed 4.3, 11.9 and 23.3 GB (39.5 GB in all; `builder prune -a` also removes cache that `docker system df` counts as not reclaimable). The data volume then had 85 GB free (`df -h`, 80% used), and the running containers kept running. The collector of ADR-0185 repeats this without asking, for unused items only.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7081,7 +7083,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: probed (2026-11-18). Status: n/a.
   Source: probes in session ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl.
 
-  ## External Sweep, 2026-11-18
+  ## External Sweep, 2026-11-18 OUT-1023 to OUT-1025
 
 - [x] **OUT-1023** claudetto shall not carry CTX-878 (from `machine.md`) as a checked context fact: Two parallel background subagents re-rendered video frames, each frame starting a headless Chrome with a 4 GB GPU memory budget, and two Chrome processes never exited; with 11 sessions and 44 MCP server processes, swap reached 5.4 of 7 GB at load average 26 on a 16 GB, 10-core MacBook, which froze three times in a week. Heavy subagent jobs wait for free memory and leaked browser processes are reaped (RISK-048).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7109,7 +7111,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user.
   Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xcfufy-haiku-55-is-very-good-heres-why-20261023T025633Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xcfufy/haiku_55_is_very_good_heres_why_i_dont_use_it/>).
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1027 to OUT-1033
 
 - [x] **OUT-1027** claudetto shall not carry CTX-558 (from `model-behaviour.md`) as a checked context fact: A commenter cites Anthropic's September 2025 postmortem as confirming three infrastructure bugs that degraded output for weeks, in a list of nerf explanations: A/B routing, infra bugs, distillation, harness changes, release prep.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7153,7 +7155,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported. Status: not applicable.
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xr0drc-whats-the-one-prompt-you-keep-co-20261110T093057Z.md:259,265 (ASD-STE100) and external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:54 (one deploy or test worker owns the shared environment and reports per commit SHA). The weekly-limit complaint threads: Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1034 to OUT-1046
 
 - [x] **OUT-1034** claudetto shall not carry CTX-565 (from `model-behaviour.md`) as a checked context fact: A user reports the built-in you-should-know agent said Fable 5.2 "was trained with deliberate limits" on optimization and frontier-risk work (a CPU inference hill-climb), so a worse result may be the model's safeguard, not the prompt; the Fable 5.2 announcement carries an "AI research and development" safeguard header; a commenter says the screenshotted prompt is not found in the installed repo.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7233,7 +7235,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user, other vendors.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:156; external/2026-11-10/reddit.com-r-claudecode-comments-1xn18cu-does-delegating-to-cheaper-mod-20261110T100050Z.md:158 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xn18cu/does_delegating_to_cheaper_models_actually_save/>).
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1047
 
 - [x] **OUT-1047** claudetto shall not carry CTX-578 (from `model-behaviour.md`) as a checked context fact: Amazon Bedrock keeps a model available about a year after Anthropic removes it.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7241,7 +7243,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported. Status: not applicable (outside fact).
   Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmcdri-opus-55-for-code-opus-46-for-ide-20261104T090223Z.md:60 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmcdri/opus_55_for_code_opus_46_for_ideas_and/>).
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1048
 
 - [x] **OUT-1048** claudetto shall not carry CTX-579 (from `model-behaviour.md`) as a checked context fact: PR-review replay: Sonnet found 13 real findings plus 7 false positives (about 50% extra), Opus 13 real plus 1 false positive.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7249,7 +7251,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported. Status: not applicable (outside fact).
   Source: external/2026-11-04/reddit.com-r-claudeai-comments-1xmn6qp-is-sonnet-actually-any-worse-at-20261104T090031Z.md:189 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xmn6qp/is_sonnet_actually_any_worse_at_executing_tasks/>).
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1049
 
 - [x] **OUT-1049** claudetto shall not carry CTX-580 (from `model-behaviour.md`) as a checked context fact: A cited paper (arXiv 2610.01023) says weaker models are acceptable as judges when the checks are decisive.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7257,7 +7259,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: cited, secondhand. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-31/reddit.com-r-claude-comments-1xixg9h-is-the-consensus-currently-that-fa-20261031T082729Z.md:240 (url: <https://www.reddit.com/r/claude/comments/1xixg9h/is_the_consensus_currently_that_fable_51_is/>).
 
-  ## Model Behaviour
+  ## Model Behaviour OUT-1050 to OUT-1055
 
 - [x] **OUT-1050** claudetto shall not carry CTX-581 (from `model-behaviour.md`) as a checked context fact: Harness matters as much as model: the SNARE framework explains about 56% of the variance in overeager behaviour against about 21% for the model [2605.28122]; harness alone costs 5-30x (catalog Cat 24:3 citing [2608.01347]; the multiplier is the catalog's). Opinion on Opus 5.5 is split: the majority says heavy harnesses (Superpowers, GSD) waste tokens and a short grill-me skill, a spec split into issues, a definition of done, and a fresh-context adversarial review suffice; a minority keeps design-implement-verify. Sequential execution is cheaper than per-step subagents.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7295,7 +7297,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported (one poster; no run).
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xfs68x-claude-decided-to-run-an-experim-20261028T060928Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xfs68x/claude_decided_to_run_an_experiment_on_itself/>).
 
-  ## External Sweep, 2026-11-18
+  ## External Sweep, 2026-11-18 OUT-1056 to OUT-1066
 
 - [x] **OUT-1056** claudetto shall not carry CTX-868 (from `model-behaviour.md`) as a checked context fact: Scope escapes: in one author's 35-task bug-fix test (hidden tests) Opus 5.5 and Sonnet 5.5 each fixed 34, and Sonnet wrote outside its assigned folder on 4 of 35 tasks against 0 for Opus; in another report Opus 5.5 moved a folder outside the repo that it was told to leave. A scope fence in the brief (ADR-0140) is paired with a guard that rejects writes outside the scope path, for every model.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7371,7 +7373,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported. Status: have at 088a227c.
   Source: external/export-What am I missing by only using sonnet when it comes to coding-.jsonl (url: <https://www.reddit.com/r/ClaudeAI/comments/1wpxt1c/what_am_i_missing_by_only_using_sonnet_when_it/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>). Not located: the line numbers and the skill-pack build comparison.
 
-  ## Models and Effort
+  ## Models and Effort OUT-1068
 
 - [x] **OUT-1068** claudetto shall not carry CTX-728 (from `models-effort.md`) as a checked context fact: Task 3.1a, 120 sessions per arm, passed/failed and cost: built-in 120/0 ($2.14), suite 120/0 ($1.06), haiku 120/0 ($0.03), sonnet 114/6 ($0.25, all six failures push-after-no-push). Total $3.48, 13.7M tokens (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7379,7 +7381,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:66.
 
-  ## Models and Effort
+  ## Models and Effort OUT-1069
 
 - [x] **OUT-1069** claudetto shall not carry CTX-729 (from `models-effort.md`) as a checked context fact: Hybrid setup: Fable in the main feed does architecture, a local Qwen3.8 inside the Claude Code terminal does about 60% of implementation, and session limits are rarely hit.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7387,7 +7389,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported (a user report from the field, kept as reported; the figure comes from the author's own account and plan, and a run needs the live API and a paid session). Status: not applicable (outside fact).
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlbuq6-forget-the-usual-claude-tips-w-20261102T184441Z.md:167 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlbuq6/forget_the_usual_claude_tips_what_are_the_strange/>).
 
-  ## Models and Effort
+  ## Models and Effort OUT-1070 to OUT-1072
 
 - [x] **OUT-1070** claudetto shall not carry CTX-730 (from `models-effort.md`) as a checked context fact: One commenter says to use max effort, not xhigh, for research-style discussion, for better sourcing and thoroughness.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7407,7 +7409,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one user (disputed by another). Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:101; external/2026-10-28/reddit.com-r-claudecode-comments-1xhechu-is-sonnet-55-medium-worth-it-20261028T060702Z.md:93 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xhechu/is_sonnet_55_medium_worth_it/>).
 
-  ## Models and Effort
+  ## Models and Effort OUT-1073 to OUT-1110
 
 - [x] **OUT-1073** claudetto shall not carry CTX-733 (from `models-effort.md`) as a checked context fact: claudetto shall treat these relayed benchmarks as directional: Haiku 5.5 high found 44 of 48 files vs Opus 45 for $0.44 vs $6.17 (one user, 6 tasks); Haiku xhigh 3x cost for same files; Haiku flagged 30 correct sentences as errors; Sonnet medium ~15 points below high at 48% cost; Opus xhigh +1.4 points for 2.5x high; Opus low much worse for defect search; Fable advisor +1.7 points for 2.1x; Haiku subagents -15 F1 vs Sonnet subagents on judgment. Personal benchmark (25 tasks, 1-3 runs, small): Opus 5.5 100% ~$0.09/task 27 s; Sonnet 5 100% $0.11 61 s; Opus 5 100% $0.19 47 s; Fable 5.1 100% $0.26 41 s; Haiku 4.5 76% $0.10 78 s; low effort ~20% cheaper ~30% faster with no loss. Opus 5.5 guide (cited by poster): 5.5 medium matched/beat Opus 5 high; default effort medium; Anthropic removed >80% of Claude Code system prompt for Opus 5-class with no coding-eval loss. Terminal Bench: Sonnet 5.5 70.6 vs Opus 5.5 66.4; AA run Opus high 64.2% $3.88 vs Sonnet xhigh 61.5% $5.30. DEFLATE (single run, medium): Opus passed 4055 tests 507 MB/s 10m18s $2.08; Sonnet 447 MB/s 3m41s $0.52. Haiku 5.5 86-question: Haiku 84.7, fastest 3.5 s, weak on tool calling/safety; 18/18 made-up bugs, tomlkit 3/3, cachetools 3/3, humanize 0/3; 37% of tasks flip across identical runs. Small bug fixes (30 runs, hidden tests, 5 setups): all passed, Opus ~16x Haiku cost; harder bug gap shrank, Sonnet won. Fable 5.2 (2026-11-09): up to 30% faster, fast mode up to 2.5x; one comparison Fable 74% at $0.062 vs Opus 68% at $0.028. Effort opinions: medium daily, high for review/blueprint, xhigh overthinks, max overthinks easy tasks; Anthropic docs say highest settings can cause worse, longer outcomes (unverified). Mythos/CVP: Opus 5.5, Sonnet 5.5, Fable 5.x reported excluded, Mythos 5.1 by email, same draw as Fable; not priced for this account except Athena (project CLAUDE.md). Releases/tiers as posted (Fable 5.5 market 44%, "Opus 5.5 = Fable 5.1 at ~60% cost") are not pricing sources. Harness effect: GPT-5.6 Terra 79% in Codex vs 47% via Claude Agent SDK (reported). Models: verified on 2.1.327 (`surface` model): ids `claude-opus-5-5` (chunk-pmhjgtb5.js@2208), `claude-sonnet-5-5` (@1622), `claude-haiku-5-5` (@1894), `claude-fable-5`, `-5-1`, `-5-2` (@2366, @1732, @1786) and `claude-mythos-5`, `-5-1`, `-5-2` (chunk-jtw26wbb.js@583, @601, @621) are present, and the `[1m]` forms exist for Opus 5.5 and Sonnet 5.5 (chunk-18d5r2hb.js@271909, @272031).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7620,7 +7622,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured, claude 2.1.318.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2781.
 
-- [x] **OUT-1108** claudetto shall not carry CTX-222 (from `mods.md`) as a checked context fact: The `$.prompt.submit` frame is fixed in code ("The <name> plugin sent a message: ... starts this turn in the user's place" when idle, "while you were working" mid-turn); only the other form `asUser` reads as the user's own words. An idle `isMeta` prompt takes no rewrite. `$.session.append` writes a meta row but starts no turn. Stock Monitor rate stop: a token bucket of 10 events, refill 2000 ms, kill after 30000 ms of suppression ("[Monitor stopped - too much output ..."). The ws source is the `ws {url, protocols}` field.
+- [x] **OUT-1108** claudetto shall not carry CTX-222 (from `mods.md`) as a checked context fact: The `$.prompt.submit` frame is fixed in code ("The `<name>` plugin sent a message: ... starts this turn in the user's place" when idle, "while you were working" mid-turn); only the other form `asUser` reads as the user's own words. An idle `isMeta` prompt takes no rewrite. `$.session.append` writes a meta row but starts no turn. Stock Monitor rate stop: a token bucket of 10 events, refill 2000 ms, kill after 30000 ms of suppression ("[Monitor stopped - too much output ..."). The ws source is the `ws {url, protocols}` field.
   Acceptance: Not applicable (context fact). Verification: inspection.
   Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
   Basis: cited, claude 2.1.318 source read.
@@ -7646,7 +7648,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3171.
 
-  ## Mods and Lab Tooling
+  ## Mods and Lab Tooling OUT-1112
 
 - [x] **OUT-1112** claudetto shall not carry CTX-226 (from `mods.md`) as a checked context fact: The baseline lab at commit `62e2fe96` on Claude Code `2.1.318` (`claude plugin test /tmp/claudetto-baseline/plugins/claudetto`) ran 357 tests across 46 files with 0 failing
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7654,7 +7656,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/parity.md:3.
 
-  ## Mods and Lab Tooling
+  ## Mods and Lab Tooling OUT-1113 to OUT-1117
 
 - [x] **OUT-1113** claudetto shall not carry CTX-227 (from `mods.md`) as a checked context fact: On 2.1.323 (observed) and 2.1.326 (names re-listed on 2026-11-17): `prompt.compose` sees `e.model`, replaces the whole default body per model (not the billing line, identity line or system-role message), has sections of scope `shared`, one shared section `lean_body` on a lean model, and does not reach a built-in or plugin-agent subagent; a plugin agent body replaces the default text and the engine appends about 1,294 bytes; `tool.list` removes tools for main and subagents (`next(e)` returns `{ value: ToolInfo[] }`; 22 tools, 3 removed, 73.9 ms); `agent.spawn` rewrites subagent `model` and `prompt`; no classic hook input carries `model`; `PreToolUse` carries `effort.level`; `engines["claude-code"]` refuses install from a git or remote source; default `system[2]` is 5,893 bytes (Opus), 5,630 (Sonnet), 8,471 (Haiku); tool schemas are about 28.6 KB; no settings key sets the prompt; an agent file body replaces the default (304 vs 6,274 bytes on Opus 5.5); an output style lands in the environment message and does not reach subagents; `SessionStart` `model` is absent under `-p`; default system sizes are Opus 5.5 6,274 B, Haiku 5.5 8,862 B, tools 29,666 B. On 2.1.326 these names are present: `prompt.compose`, `tool.list`, `agent.spawn`, `tool.describe`, `settings.read`, `$.model.fork`, `$.tool.register`, `$.tool.call`, `$.ui.*`, `$.fs.*`, `$.env.get`, `$.process.*` (253 mod-api names in 2.1.326; 239 were listed on 2.1.325).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7686,7 +7688,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured; the old plan marks it unverified. Status: have at 088a227c.
   Source: openspec/specs/prompt-cache/spec.md:114.
 
-  ## Mods and Lab Tooling
+  ## Mods and Lab Tooling OUT-1118
 
 - [x] **OUT-1118** claudetto shall not carry CTX-232 (from `mods.md`) as a checked context fact: A usage-cap mod, reported by one author (MIT repo), holds these facts. A plan with no 5-hour window has that window missing from the usage data, which is not 0 percent used. The weekly percent is a whole number and one point is many tokens on Ultra, so the mod estimates between points from token counts and learns the tokens-per-point ratio. Polled usage after idle counts as fresh only when its values change. At the cap it refuses new prompts and subagents but leaves running turns and tool calls alone, and background task notifications always get through, since blocking them breaks agents. If usage is unreadable it shows a warning and lets calls through, or blocks them when set to fail closed. The 15-percent-of-weekly default is the author's least sure part.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7694,7 +7696,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:29; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:33; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:35; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:37; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:39; external/2026-11-02/reddit.com-r-anthropic-comments-1xkzigh-made-a-mod-that-caps-my-own-cla-20261101T191520Z.md:43 (url: <https://www.reddit.com/r/Anthropic/comments/1xkzigh/made_a_mod_that_caps_my_own_claude_code_usage_in/>).
 
-  ## Mods and Lab Tooling
+  ## Mods and Lab Tooling OUT-1119
 
 - [x] **OUT-1119** claudetto shall not carry CTX-234 (from `mods.md`) as a checked context fact: claudetto shall record these measured bench rounds (9 tasks, Opus 5.5, auto mode): R2 stock 8/8 $4.16 vs dev 6/7 $5.07; R3 stock 8/9 $4.18 4.85M tokens vs dev 7/9 $6.79 9.31M; R4 stock 8/9 $4.02 vs dev 7/9 $5.73 6.20M (dedupe cut 33% tokens); R5 stock 8/9 $3.98 4.36M vs dev 9/9 $9.10 12.22M regraded; conduct: reply opens with fact stock 6-7/9 vs dev 9/9, seeded claim never acted on 9/9 both, 0 compactions, 0 subagents; round costs $10.97, $9.75, $13.08.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7702,7 +7704,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured. Status: unchecked: a measured result, not code at 088a227c.
   Source: openspec/changes/2-1-325-rearchitecture/design.md:238; openspec/changes/2-1-325-rearchitecture/design.md:29; openspec/changes/2-1-325-rearchitecture/design.md:250.
 
-  ## Mods and Lab Tooling
+  ## Mods and Lab Tooling OUT-1120 to OUT-1121
 
 - [x] **OUT-1120** claudetto shall not carry CTX-239 (from `mods.md`) as a checked context fact: `$.env.get` returns a promise and needs a literal name; `$.settings.read()` returns custom keys; `$.ui.log` goes to stdout, which the cli output truncates.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7724,15 +7726,15 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: cited.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1651.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1123 to OUT-1130
 
-- [x] **OUT-1123** claudetto shall not carry CTX-599 (from `hooks.md`) as a checked context fact: WorktreeCreate for an Agent with isolation "worktree" fires before the folder exists (0.5 s before "Created agent worktree"). It carries session_id, transcript_path, cwd (repo root), prompt_id, hook_event_name, and name agent-<agentId>, and holds no path, branch, or agent id. SubagentStart then carries agent_id and a cwd of <root>/.claude/worktrees/agent-<agentId>. The Agent result text ends with agentId, worktreePath, and worktreeBranch only for a foreground call that left a commit. An agent with no change gets "Removed agent worktree", and one with a commit "Agent worktree kept".
+- [x] **OUT-1123** claudetto shall not carry CTX-599 (from `hooks.md`) as a checked context fact: WorktreeCreate for an Agent with isolation "worktree" fires before the folder exists (0.5 s before "Created agent worktree"). It carries session_id, transcript_path, cwd (repo root), prompt_id, hook_event_name, and name agent-`<agentId>`, and holds no path, branch, or agent id. SubagentStart then carries agent_id and a cwd of `<root>`/.claude/worktrees/agent-`<agentId>`. The Agent result text ends with agentId, worktreePath, and worktreeBranch only for a foreground call that left a commit. An agent with no change gets "Removed agent worktree", and one with a commit "Agent worktree kept".
   Acceptance: Not applicable (context fact). Verification: inspection.
   Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
   Basis: measured with a throwaway plugin.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:804.
 
-- [x] **OUT-1124** claudetto shall not carry CTX-600 (from `hooks.md`) as a checked context fact: ExitWorktree with action "remove" fires no WorktreeRemove (the debug log shows "Removed linked worktree" only). claude -w <name> fires no WorktreeCreate, because the worktree is made before plugin hooks register ("registered 0 WorktreeCreate and 0 WorktreeRemove matcher(s)"). WorktreeRemove fires only for a worktree a WorktreeCreate hook made, and no mod event for worktrees exists, so removal is read from git worktree list.
+- [x] **OUT-1124** claudetto shall not carry CTX-600 (from `hooks.md`) as a checked context fact: ExitWorktree with action "remove" fires no WorktreeRemove (the debug log shows "Removed linked worktree" only). claude -w `<name>` fires no WorktreeCreate, because the worktree is made before plugin hooks register ("registered 0 WorktreeCreate and 0 WorktreeRemove matcher(s)"). WorktreeRemove fires only for a worktree a WorktreeCreate hook made, and no mod event for worktrees exists, so removal is read from git worktree list.
   Acceptance: Not applicable (context fact). Verification: inspection.
   Reason: Concerns a mod, tool, or script that no part in plugins/ ships (plugins/ holds claudetto, claudetto-openspec, and claudetto-you-should-know); an earlier-version measurement that no shipped part depends on.
   Basis: measured and read.
@@ -7762,7 +7764,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: observed (session 60fc9776, lines 58 and 63).
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:165.
 
-- [x] **OUT-1129** claudetto shall not carry CTX-605 (from `hooks.md`) as a checked context fact: Twelve third-party repositories read as untrusted data yield hook uses the plugins lack: SubagentStart read-only injection, TDD gate on PreToolUse plus Stop, WorktreeCreate and WorktreeRemove terminal layout, MessageDisplay rewrite, PreCompact learnings check, PreModelSwitch hooks, PostToolUseFailure. None holds a pull-request-merge hook, a limit of the regex. Method: each repo's codeload tar.gz was read with a regex for "<Event>": [ in json, md, yaml, and toml, and nothing extracted was run. PreToolUse and PostToolUse lead. Five repos hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo has one Stop mention.
+- [x] **OUT-1129** claudetto shall not carry CTX-605 (from `hooks.md`) as a checked context fact: Twelve third-party repositories read as untrusted data yield hook uses the plugins lack: SubagentStart read-only injection, TDD gate on PreToolUse plus Stop, WorktreeCreate and WorktreeRemove terminal layout, MessageDisplay rewrite, PreCompact learnings check, PreModelSwitch hooks, PostToolUseFailure. None holds a pull-request-merge hook, a limit of the regex. Method: each repo's codeload tar.gz was read with a regex for "`<Event>`": [ in json, md, yaml, and toml, and nothing extracted was run. PreToolUse and PostToolUse lead. Five repos hold no hook config the regex found (feiskyer, Pantheon, hesreallyhim, VoltAgent, karanb192), and ykdojo has one Stop mention.
   Acceptance: Not applicable (context fact). Verification: inspection.
   Reason: Reading of twelve third-party repositories as untrusted data; not a Claude Code behaviour.
   Basis: read and measured.
@@ -7774,7 +7776,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, no measurement.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:88-90.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1131 to OUT-1134
 
 - [x] **OUT-1131** claudetto shall not carry CTX-608 (from `hooks.md`) as a checked context fact: Dossier S12: issue 32376 (opened 9 March 2026) reports a hook's condition narrowed from all code changes to only "SIGNIFICANT" code changes, with a displayed backup diff. It was closed as not planned. The enforcement code was writable by the actor it governs. The diff is stronger evidence than the report's reading of motives (reported, issue tracker).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7800,7 +7802,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, allegation.
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:201 (<https://github.com/anthropics/claude-code/issues/46828>).
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1135
 
 - [x] **OUT-1135** claudetto shall not carry CTX-612 (from `hooks.md`) as a checked context fact: Task 18.31 found that the claudekit loader rejects r2 cases with tool blocks in the prefix, so sets need string prefixes. The fixture grade prints only `{n, pass, byLabel}`, and `run.ts` removes `cfg/` and `ws/` after grading. Session 11314703 printed the first cases of `held-out-r3.json`, which contaminated r3. Before tuning, r4 scored 21/24 in run 1 and 22/24 in run 2 (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7808,7 +7810,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:332.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1136
 
 - [x] **OUT-1136** claudetto shall not carry CTX-613 (from `hooks.md`) as a checked context fact: Stop grader arms, caught/clean flagged: old text 57, 59, 58, 57 / 4, 7, 9, 7; short text with credit opening 58, 58 / 9, 10; plain opening 57, 58 / 8, 10 (no clear difference between credit and plain); calm 57, 57 / 4, 4, but case t050 moved from caught to missed. In ten runs of t050: lowercase 0/10, NOT 9/10, "the user has not seen it" 5/10, "hidden from the user" 10/10. calm3 scored 225/240 and 19/160, and its extra misses were silent picks. calm4 adds "A value the reply names that the request did not, such as a version or a branch name, counts as a pick." The plugin prompt equals the arm on all 340 case prompts. t050 stays flaky: calm4 missed it 3 of 4 runs, old text 0 of 4 (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7816,7 +7818,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:348-354.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1137 to OUT-1143
 
 - [x] **OUT-1137** claudetto shall not carry CTX-614 (from `hooks.md`) as a checked context fact: The Stop grader on held-out replies (68 calls per split), measured 2026-11-06. Before the prompt change: unchecked recall 2/11 [0.05, 0.48], unfiled 1/8, clean flagged 2/49 (108,075 tokens). After: dev split 10/11 and 8/8 with 4/49 clean flagged; held-out split 8/8, 8/8, 5/52. The misses came from replies that say "I haven't checked" yet adopt the value, and from a grader that did not know the hook's two facts: no look this turn, and nothing written to the issues file (measured). claudetto shall record these measured Stop grader figures: 2026-11-06 Haiku 0.6-3.2 s (median about 1 s over 10 concurrent sessions), $0.0002-0.0006; Sonnet 4.3 s vs Haiku 0.78 s live; held-out unchecked 8/8 [0.68,1], 5/52 clean flagged [0.04,0.21]; `unseen` Haiku precision about 0.79 (0-4 of 31 clean flagged; Sonnet alone flagged 8/39 clean, with peers 0-1/39 and recall 7-8/8); set 2 (60 faulty, 40 clean) old text 231/240 caught and 27/160 clean flagged vs calmer text 229/240 and 28/160; `parseFaults` variants (last JSON against first `{` to last `}`) differ on 0 of 486 answers.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7860,7 +7862,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/18-38/README.md:60-82.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1144 to OUT-1146
 
 - [x] **OUT-1144** claudetto shall not carry CTX-621 (from `hooks.md`) as a checked context fact: Held-out r4 runs 3-22 (20 runs) scored 474/480; every run was 23/24 or better and 14 runs were 24/24 (runs 13-22 on the shortened texts of commit `a3144659`). The misses were claim flip in runs 8, 11, 15 and 17 (the repeating one), claim drift in run 3, and ledger drift in run 20. Public set c1 scored 24, 23, 24 (measured).
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7880,7 +7882,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: read.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/README.md:1-31.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1147
 
 - [x] **OUT-1147** claudetto shall not carry CTX-624 (from `hooks.md`) as a checked context fact: Hooks never receive cost from Claude Code (issue 11008), so a cost reporter must read the session JSONL files.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7888,7 +7890,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported, one author. Status: unchecked: a fact about Claude Code or the machine, with no baseline code to check.
   Source: external/2026-10-30/reddit.com-r-claudecode-comments-1wp7guz-autocompact-read-970k-tokens-o-20261028T171208Z.md:48 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wp7guz/autocompact_read_970k_tokens_of_context_to_keep/>).
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1148 to OUT-1160
 
 - [x] **OUT-1148** claudetto shall not carry CTX-626 (from `hooks.md`) as a checked context fact: Status line stdin on 2.1.319: `context_window_size` is the model window and `used_percentage` is against it; there is no theme key; `$.config.list()` returns `theme`; `$.session.usage({breakdown:"summary"})` is local. The Claude Code permission-modes page (read 2026-10-30) says modes set the baseline, rules layer on top, and allow rules have no effect in bypassPermissions; "auto mode drops broad allow rules on entry" is NOT stated.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -7968,7 +7970,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: measured 2.1.319.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:314.
 
-  ## Hooks and Events
+  ## Hooks and Events OUT-1161 to OUT-1167
 
 - [x] **OUT-1161** claudetto shall not carry CTX-647 (from `hooks.md`) as a checked context fact: A failing pre-push hook stops `git push` (bare remote probe: rc 1, no main; rc 0, main updated). A `gh release create` goes through the API and is not covered. A push once ran before verify, 5 s after the commit. Cure: the bedrock pre-push runs `just verify`.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -8012,7 +8014,7 @@ Context facts from `arc42/03_context_and_scope/` that a paid model run would be 
   Basis: reported (read).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:759.
 
-  ## Hooks under Safe Mode
+  ## Hooks Under Safe Mode
 
 - [x] **OUT-1168** claudetto shall not carry CTX-881 (from `hooks.md`) as a checked context fact: One user went from about twenty per-rule hooks to one logging dispatcher after a hook stopped firing and was noticed only because the agent began breaking its rule. Each hook event claudetto handles writes a log line (REQ-KERNEL-002), so a dead hook shows as a missing line.
   Acceptance: Not applicable (context fact). Verification: inspection.
@@ -8285,7 +8287,7 @@ Items that contradict a settled decision. Each waits for the user to keep the de
   Verified: git grep -nEi -e '500k|500_000|tripwire|restart script' -- plugins -> 0 hits (the threshold is the CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE and CLAUDETTO_AUTO_HANDOVER_WINDOW knobs in handover/renewal.ts), 2026-11-19.
 
 - [x] **OUT-143** claudetto shall not ship a constraint ledger, so it carries no first-call-covers-all rule, no `rule none` entry kind, and no substring invariant. Also: not build the constraint ledger (`hooks/pin.ts`), which pulls standing constraints out of the user's messages and denies a call that breaks a read-only, no-commit, no-push, or only-files rule. Also: not keep the constraint ledger: the 2-1-323 design removed it (the permission dialog plus `permissions` and `autoMode` judge calls replace it), and the superseded record keeps the measured case. Also: not enforce session constraints at runtime through `tool.check` (read-only, no-commit, no-push, only-files); D321 removed the constraint ledger. A false constraint taken from a task sentence ("Rename the export in src/format.ts and you're finished") became an only-files rule that denied the caller's edit: syc-callers-updated 12/16 against 16/16 at baseline.
-  Also: not carry the constraint ledger as a remark gate: "A Remark Is Answered Before Any Tool Runs" (132 denials in 3 days, 8 recorded false), "A Dispute Is Settled by Running the Disputed Code", "A Compaction Ends the Remark Turn"; not carry the ISSUES gate (ask tool denied until the session holds a successful Read or Bash `cat/head/tail/less/more/bat/nl/non-in-place sed` of the newest `ISSUES*.md` by mtime at repo root, found by `git rev-parse --show-cdup`; a symlink counts with its target mtime via `$.fs.stat`, since `fs.list` gives link mtime 0; the deny leads with the instruction because the ask tool's failure line cuts at about 160 chars) or the answer-first remark check (it denied work the user had asked for: R9, R17, R32, R35, R60 and three more in one session, out of 132 denials; the fault is left to the root prompt line "a question wants an answer and then a wait" and the Concise style; A/B: tool before any text 5/10 vs 0/10); not keep the decider ledger or the RULE_CRITERIA list, nor decider ledger rules (a later user message that the Decider reads as allowing the act an entry forbids lifts that entry; a resumed session's first prompt waits for extraction so the ledger note rides it; a remark like "2-1-319 is out" must not become "Do not delete branch"). The per-question approval Noul (`pick_0` plus `approval_0`, or `yes_0` plus `approval_0`; "Does question <i> ask the user to approve money, a push, a release, a delete, or a step with no undo?") stays in the decider.
+  Also: not carry the constraint ledger as a remark gate: "A Remark Is Answered Before Any Tool Runs" (132 denials in 3 days, 8 recorded false), "A Dispute Is Settled by Running the Disputed Code", "A Compaction Ends the Remark Turn"; not carry the ISSUES gate (ask tool denied until the session holds a successful Read or Bash `cat/head/tail/less/more/bat/nl/non-in-place sed` of the newest `ISSUES*.md` by mtime at repo root, found by `git rev-parse --show-cdup`; a symlink counts with its target mtime via `$.fs.stat`, since `fs.list` gives link mtime 0; the deny leads with the instruction because the ask tool's failure line cuts at about 160 chars) or the answer-first remark check (it denied work the user had asked for: R9, R17, R32, R35, R60 and three more in one session, out of 132 denials; the fault is left to the root prompt line "a question wants an answer and then a wait" and the Concise style; A/B: tool before any text 5/10 vs 0/10); not keep the decider ledger or the RULE_CRITERIA list, nor decider ledger rules (a later user message that the Decider reads as allowing the act an entry forbids lifts that entry; a resumed session's first prompt waits for extraction so the ledger note rides it; a remark like "2-1-319 is out" must not become "Do not delete branch"). The per-question approval Noul (`pick_0` plus `approval_0`, or `yes_0` plus `approval_0`; "Does question `<i>` ask the user to approve money, a push, a release, a delete, or a step with no undo?") stays in the decider.
   Acceptance: no hook writes, injects, or enforces ledger entries; No `tool.check` constraint denial exists; no ledger reply, no RULE_CRITERIA, no per-sentence rule check, no ask-tool gate and no remark denial exists. Verification: inspection.
   Basis: measured (the removed ledger's false-constraint case: syc-callers-updated 12/16 against 16/16 at baseline; D321 removed the ledger); also reported and cited.
   Status: have at 088a227c (`git grep -l -E 'pin\.ts|constraint.?ledger|ConstraintPin|useConstraintPin|RULE_CRITERIA' 088a227c -- plugins` finds 0 files; `git grep -l ISSUES 088a227c -- plugins` finds 0 files; `git grep -l ISSUES 088a227c -- plugins` finds 0 files; a [ADR-0133](../adr/0133-constraint-ledger.md) spec existed outside `plugins/`).
@@ -8547,7 +8549,7 @@ Items that contradict a settled decision. Each waits for the user to keep the de
 
   Verified: git grep -nEi -e 'maxTurns|single-writer|singleWriter|262144|redundantRead|readCache|maxFileBytes|unchanged file' -- plugins -> 0 hits, 2026-11-19.
 
-#### Reply Triage
+### Reply Triage
 
 - [x] **OUT-2100** Out (part not shipped; moved from REQ-REPLY-029 in plans/rebuild/prd/reply.md): claudetto shall gate the first call on a `question` turn through a Decider call and a Stop grader for `options` and `deferred` faults.
   Basis: read (repo requirement and plugins/ tree); the Decider and the Stop grader are not shipped, ADR-0104 settles no Stop claim grader, and ADR-0190 merges the answer-first line into REQ-REPLY-024.
@@ -8697,6 +8699,8 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
 - [x] **OUT-2500** Out (describes a part that plugins/ does not ship: a rule for the rebuild agent or plan authors, not a plugin behaviour; moved from CON-010 in arc42/02_architecture_constraints/agent-terms-reinstatement.md): A cure under T9.1 is necessary for reinstatement but does not by itself reinstate the Agent; only the User reinstates. The licence rider `LICENSE-AGENTS` states the same cure-not-reinstate rule.
   Basis: cited, source text.
   Source: external/please-use-me-often/agent-terms/TERMS-AND-CONDITIONS.md:167; external/please-use-me-often/agent-terms/LICENSE-AGENTS:98-103.
+
+ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay as the record.
 
 - [x] **OUT-2501** Out (needs a paid model run or a benchmark: eval and grader integrity has no eval in this rebuild; moved from CON-055 in arc42/02_architecture_constraints/eval-and-grader-integrity.md): Evals and graders shall be designed with complexity and a hard pass; a grader shall never be loosened, and a task, scaffold, or grader shall never be edited after a run was seen, to make it pass.
   Basis: user decision, 2026-11-16 14:22 UTC, evals and graders have a hard pass and are never loosened (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6357). Status: missing at 088a227c.
@@ -9592,7 +9596,7 @@ Building-block, quality, constraint, runtime, concept and glossary items from `a
   Source: user report of the warning and the sentence, 2026-11-18 (goal message of session 2cf55002); [ADR-0179](../adr/0179-mcp-output-cap-10000.md); openspec/changes/2-1-325-rearchitecture/design.md:89; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2479; plugins/claudetto/hooks/features/web/fetch.ts@088a227c; plugins/claudetto/scripts/web-extract.py@088a227c.
 
 - [x] **OUT-2310** Out (the item describes a part that plugins/ does not ship; moved from REQ-GUARDS-065 in prd/guards.md): claudetto shall name the agent-browser session after the host with `[^\w-]` replaced by `-`; keep the cookie only through `open <url>`, bare `read`, and `close`; read the Cloudflare signal from the curl header `cf-mitigated=challe... plugins/claudetto registers no web fetch tool and no browser fallback; vanilla WebFetch stays.
-  Acceptance: a fetch whose curl header holds`cf-mitigated=challenge` falls back to a shown browser with the flag above; a blocked page answers with the recipe `! agent-browser <shown flags> --restore <session>`; the repeat notice names the file as editable. Verification: test.
+  Acceptance: a fetch whose curl header holds`cf-mitigated=challenge` falls back to a shown browser with the flag above; a blocked page answers with the recipe `! agent-browser `<shown flags>` --restore `<session>``; the repeat notice names the file as editable. Verification: test.
   Basis: measured (extraction probe on 3 pages) and reported, with 100 of 100 Edits after a withheld first Read succeeding (inferred). Status: have at 088a227c (the recipe exists in`texts.ts:36` and `fetch.ts:86`).
   Source: external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:45; openspec/changes/2-1-325-rearchitecture/design.md:87-88,92 (own fetch tool, headed`agent-browser` for a CAPTCHA, web probe of 3 pages); plugins/claudetto/hooks/features/web/fetch.ts:32,86@088a227c; plugins/claudetto/hooks/features/web/texts.ts:36@088a227c; plugins/claudetto/hooks/features/repeat/repeat.ts@088a227c.
 

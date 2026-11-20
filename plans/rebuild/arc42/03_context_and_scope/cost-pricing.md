@@ -1,4 +1,4 @@
-# cost-pricing
+# Cost-Pricing
 
 ## Cost and Pricing
 
@@ -7,7 +7,8 @@
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:144 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
   Verified: not re-run 2026-11-19: fake-API probe (ToolSearch select:TaskCreate, TaskCreate, Bash x14) stopped after 2 requests so the reminder never appeared; static: 2.1.327 binary has TURNS_SINCE_WRITE x3, TURNS_BETWEEN_REMINDERS x3, "The task tools haven't been used recently" x2, CLAUDE_CODE_ENABLE_TASKS x4; the value 10 not read
 
-## Cost and Pricing
+## Cost and Pricing CTX-132 to CTX-134
+
   Verified: source already on 2.1.327.
 
 - [x] **CTX-132** Prices checked against the docs: Opus and Sonnet cache reads are 5 percent of input ($0.20, $0.10 per MTok), Haiku 10 percent ($0.01, $0.05 over 100K). Haiku writes step 5m $0.125 to $0.625 and 1h $0.20 to $1 over 100K. Routing to Haiku is 40x (Opus) and 20x (Sonnet) cheaper under 100K, 8x and 4x over; no 10x case. The Sonnet 5.5 API default effort is high (only Opus and Haiku default medium), so the Gemini line "medium" is wrong for the API. `.claudeignore` does not exist in the 2.1.318 binary
@@ -21,7 +22,8 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1599.
   Verified: not re-run 2026-11-19: catalog default_effort field not located as a literal in 2.1.327 binary (0 hits for "default_effort"); not probed
 
-## Cost and Pricing
+## Cost and Pricing CTX-142 to CTX-146
+
   Verified: binary string search of the model catalog, claude 2.1.327, 2026-11-19: claude-opus-5-5, claude-sonnet-5-5 and claude-haiku-5-5 each carry default_effort "medium".
 
 - [x] **CTX-142** Reported or third-party facts, all reported or unverified: transcripts are deleted after 30 days by default (2.1.326 `cleanupPeriodDays`: setting present, cc-inspect `surface` 2026-11-17; the default 30 is verified on 2.1.327: `cleanupPeriodDays` describes "default: 30. Minimum 1", chunk-ja5z738t.js@227432); Time Machine keeps 13 months; attribution reminders are appended as system-reminder blocks after tool results, and the `attribution` setting controls trailers (not read here; mod-api `attribution.text` present in 2.1.326); the plugin API is early access and may break on update; Claude Code 2.1.300+ is required by one third-party plugin; `claude -p` under launchd or cron works on a Team seat without API keys; Projects run in cloud VMs; screenshots over SSH via scp; the reasoning picker is missing in app Projects; Messages API threads (beta header `message-threads-2026-08-12`: later requests send only new messages, median TTFT about -35% at 500k-1M, expires 5 min after the last request; cited); Anthropic training material cut May 2026 (second-hand); plan mode may be removed (second-hand); Max-account bans 32 min after purchase (anecdote); CVP false positives improved after acceptance; enterprise seat budget $500/month, $1000 after a ticket; Claude Code scanned about 21k launch sites, 69 leaked keys because `VITE_`, `REACT_APP_`, and `NEXT_PUBLIC_` values get inlined (grep the built output; vendor post); 11 GB moved in manual-approval mode with unseen logged approvals (GitHub issue, unconfirmed); third-party harness credit terms are contested, use the terms page; one commenter's about 86 KB of standing instructions loaded each turn, and caching is prefix caching so an early change invalidates the rest.
@@ -37,12 +39,13 @@
   Source: openspec/specs/tier-profiles/spec.md:32; external/2026-11-10/reddit.com-r-claudeai-comments-1xrzdu9-i-measured-what-actually-drives-20261110T093438Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xrzdu9/i_measured_what_actually_drives_claude_code_cost/>); external/please-use-me-often/agent-failure-dossier/judged/cache.jsonl:3. Not located: the version-gate post.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: pricing page today: cache hit 5% Opus 5.5/Sonnet 5.5, 10%/10% Haiku 5.5, Fable 5.2 $0.20 of $8 = 2.5%, Haiku over 100k $0.50 vs $0.10; 1.25x/2x write ratios per table; version gates and subagent cache clock are reported, NOT RE-RUN
 
-## Cost and Pricing
+## Cost and Pricing CTX-162 to CTX-163
+
   Verified: docs read (clawdipedia-docs model-catalog pricing table), claude 2.1.327, 2026-11-19: Opus 5.5 reads at 0.2 of 4, Sonnet 5.5 at 0.1 of 2, Haiku 5.5 at 0.01 of 0.1, Fable 5.2 at 0.2 of 8; writes are 1.25x (5m) and 2x (1h). The first sentence said 10% for all models, which was wrong for Opus and Sonnet 5.5; the version gates stay reported.
 
 - [x] **CTX-162** Prices per million tokens, checked on the platform pricing and prompt-caching pages on 2026-11-18. Opus 5.5: input $4, 5m cache write $5, 1h cache write $8, cache read $0.20, output $20. Sonnet 5.5: input $2, 5m write $2.50, 1h write $4, cache read $0.10, output $10. Haiku 5.5 up to 100k input tokens: input $0.10, 5m write $0.125, 1h write $0.20, read $0.01, output $0.50; above 100k: $0.50, $0.625, $1, $0.05, $2.50. Cache reads are 0.05x of input on Opus 5.5 and Sonnet 5.5 and 0.025x on Fable 5.2. The thread figure of $0.20 for a Sonnet 5.5 cache read is wrong. The cheaper-than-predecessor announcement figures (Opus 5.5 40%, Sonnet 5.5 up to 30%) are reported only.
   Basis: cited, checked against the pricing pages on 2026-11-18; the announcement figures are reported. A commenter's claim that Opus 5.5 and Sonnet 5.5 cache reads cost the same is refuted by these pages ($0.20 against $0.10), external/export-What's the use case for Haiku-.jsonl:24.
-  Source: https://platform.claude.com/docs/en/about-claude/pricing and https://platform.claude.com/docs/en/build-with-claude/prompt-caching (fetched 2026-11-18); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:24.
+  Source: <https://platform.claude.com/docs/en/about-claude/pricing> and <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> (fetched 2026-11-18); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:24.
   Verified: docs read (clawdipedia-docs model-catalog pricing table), claude 2.1.327, 2026-11-19: every price matches (Opus 5.5 4/20/5/8/0.2; Sonnet 5.5 2/10/2.5/4/0.1; Haiku 5.5 0.1/0.5/0.125/0.2/0.01 and 0.5 input, 2.5 output above 100,000; Fable 5.2 8/40/10/16/0.2). The /claude-api skill prompt says Sonnet 5.5 cache reads are 0.20; the program catalog says 0.1, and the catalog is the one Claude Code bills from.
   Verified: re-run on claude 2.1.327, 2026-11-19: platform pricing page read today matches every figure: Opus 5.5 4/5/8/0.20/20, Sonnet 5.5 2/2.50/4/0.10/10, Haiku 5.5 0.10/0.125/0.20/0.01/0.50 and over 100k 0.50/0.625/1/0.05/2.50; Fable 5.2 read 0.20 of 8; announcement percentages reported only
 
@@ -51,4 +54,3 @@
   Source: external/export-Why Claude Code Max burns limits 40% faster with 20K less usable context. Proxy evidence inside.jsonl:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1sj8o9l/why_claude_code_max_burns_limits_40_faster_with/>).
   Verified: source already on 2.1.327 for the settings keys and the subscription TTL; the proxy figures stay reported.
   Verified: grep, 2026-11-19: git grep -nEi 'promptCacheTtl|CACHE_TTL' -- plugins gives 0 hits, matching the corrected text; the settings keys stay present on 2.1.327 (chunk-ja5z738t.js@277237).
-

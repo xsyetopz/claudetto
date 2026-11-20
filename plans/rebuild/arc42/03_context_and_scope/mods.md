@@ -6,11 +6,12 @@
   Acceptance: Each figure is reproduced from its run before use. Verification: probe.
   Basis: measured. Status: have at 088a227c (tests/, tools/).
   Source: openspec/specs/mod-architecture/spec.md:107; openspec/specs/mod-architecture/spec.md:28; openspec/changes/2-1-325-rearchitecture/items.json:114; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:8.
-  Verified: PASS (partial, edited): git at 62e2fe96, binary 2.1.327, 2026-11-19: plugins/claudetto/src holds 23,266 lines in 270 files (reproduced); non-test lines are 16,049 by path without test or spec (16,105 excluding __tests__ folders), so the fact's 16,079 was replaced with 16,049. Run results (1,776 pass, 7 fail) and the gate counts belong to that build and were not rerun. CLAUDE_CODE_PLUGIN_DIR_WATCH is in the 2.1.327 bundle (6 hits earlier).
+  Verified: PASS (partial, edited): git at 62e2fe96, binary 2.1.327, 2026-11-19: plugins/claudetto/src holds 23,266 lines in 270 files (reproduced); non-test lines are 16,049 by path without test or spec (16,105 excluding **tests** folders), so the fact's 16,079 was replaced with 16,049. Run results (1,776 pass, 7 fail) and the gate counts belong to that build and were not rerun. CLAUDE_CODE_PLUGIN_DIR_WATCH is in the 2.1.327 bundle (6 hits earlier).
   Verified: probe, claude 2.1.327, 2026-11-19: in a fresh clone of 5aa893862, `bunx tsc -p plugins/claudetto-you-should-know/tsconfig.json --noEmit` exits 1 with three TS6053 errors (no `.claude-plugin/types`); after one interactive session started with `--plugin-dir` on that plugin, the folder holds `claude-code`, `claude-code-mcp`, `claude-code-tools` and the same command exits 0, with `git status` clean. `just verify` names this step when the folder is missing.
 
-## Mods and Lab Tooling
-  Verified: claude plugin test --help and binary string search, claude 2.1.327, 2026-11-19: help says it runs every *.test.ts and *.test.tsx under dir, each file in a child of the binary; CLAUDE_CODE_PLUGIN_DIR_WATCH is in the bundle (5 hits) and the docs page nouns-and-gates describes it (reload on save, off in print mode unless set to 1); the type-folder write claim was not rerun.
+## Mods and Lab Tooling CTX-235 to CTX-237
+
+  Verified: claude plugin test --help and binary string search, claude 2.1.327, 2026-11-19: help says it runs every *.test.ts and*.test.tsx under dir, each file in a child of the binary; CLAUDE_CODE_PLUGIN_DIR_WATCH is in the bundle (5 hits) and the docs page nouns-and-gates describes it (reload on save, off in print mode unless set to 1); the type-folder write claim was not rerun.
 
 - [x] **CTX-235** `$.command.run` runs a slash command as if typed, queued until idle, and rejects inside a hook the turn waits on; hooks see `e.origin` `{kind:'plugin'}`. `$.prompt.submit` submits a prompt as its own turn once idle. `$.session.compact` compacts between turns with trigger `plugin`.
   Acceptance: the types in clawdipedia `get_schema` `types` match. Verification: inspection.
@@ -30,9 +31,10 @@
   Acceptance: the error text reproduces. Verification: demonstration.
   Basis: reported. Status: have.
   Source: reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
-  Verified: PASS (text only): code search, binary 2.1.327, 2026-11-19: the error '<tool_use_error>Error: No such tool available: <name>' is in chunk-m14bt1pz.js@2092981; a fake-API call to lowercase `bash` ends the run without a second request, so the result text is not visible and the case-sensitivity was not shown by probe.
+  Verified: PASS (text only): code search, binary 2.1.327, 2026-11-19: the error '<tool_use_error>Error: No such tool available: `<name>`' is in chunk-m14bt1pz.js@2092981; a fake-API call to lowercase `bash` ends the run without a second request, so the result text is not visible and the case-sensitivity was not shown by probe.
 
-## Mods and Lab Tooling
+## Mods and Lab Tooling CTX-238 to CTX-850
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: "No such tool available" is in the bundle (15 hits); the behaviour stays as measured on the earlier version named in the fact and was not rerun.
 
 - [x] **CTX-238** `$.model.fork({prompt, effort})` runs one tool-less completion over the main thread's last request with the prefix from cache; it returns `isAnswered`, `text`, `usage`, or `reason:'nothing-to-fork'` when no turn ran since a clear or resume. Hook time stops during `$` calls and the hook's own budget is 10 s; `session.end` hooks share 1.5 s; `prompt.context` fires once per conversation and answers `{blocks:[{name,text}]}`.

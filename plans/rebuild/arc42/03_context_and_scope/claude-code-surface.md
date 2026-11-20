@@ -1,4 +1,4 @@
-# claude-code-surface
+# Claude-Code-Surface
 
 ## Claude Code Surface and Version Notes
 
@@ -63,27 +63,29 @@
   Source: chunk-nvx1z6pc.js@15696-44593 (2.1.327; first read in claude 2.1.326 binary); chunk-nvx1z6pc.js@0-94447 (2.1.327; first read in claude 2.1.325 binary); binary grep of /Users/krystian/.local/share/claude/versions/2.1.325, 2026-11-17.
   Verified: re-run on claude 2.1.327, 2026-11-19: 2.1.327 binary: "Press again to disable" x2, "Chat in main session" x4, "Not published (blocked by a permission setting)" x2, tengu_jolly_dewdrop x2, EXPLANATION_LENGTHS x3, FIRST_EXPLANATION_LENGTH x3
 
-## Claude Code Surface and Version Notes
+## Claude Code Surface and Version Notes CTX-331 to CTX-333
+
   Verified: source already on 2.1.327; binary string search, claude 2.1.327, 2026-11-19, also finds "Press again to disable" (2 hits), "Chat in main session" (4) and the gate tengu_jolly_dewdrop (2).
 
 - [x] **CTX-331** Claude Code 2.1.326 has these names (checked with cc-inspect `surface` on 2026-11-17; first measured on 2.1.325): env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` (str), `_REMINDER` (triBool), `_SECONDS`, `_TURNS`; gates `tengu_hushed_lark` and `tengu_hushed_lark_text`; hook events Stop, SubagentStop, PreToolUse, PostToolUse, UserPromptSubmit; setting key `sandbox.filesystem.denyRead`; tools AskUserQuestion and Monitor (listed as `MonitorTool`); all of them are present in 2.1.326. Not queried: the `isolation:"worktree"` param, the `tools:` agent frontmatter, `--no-write`, and settings `env` replacement on a tool result.
   Basis: measured. Status: not applicable.
   Source: probe cc-inspect `surface`, claude 2.1.325, 2026-11-16; cc-inspect `surface` env, hook-event, setting, gate, and tool lists, claude 2.1.326, 2026-11-17.
-  Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT (4 hits), _SECONDS (4), tengu_hushed_lark (3) and tengu_hushed_lark_text (2) are in the bundle; the 2.1.326 name list holds on 2.1.327 for these names.
+  Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT (4 hits),_SECONDS (4), tengu_hushed_lark (3) and tengu_hushed_lark_text (2) are in the bundle; the 2.1.326 name list holds on 2.1.327 for these names.
   Verified: re-run on claude 2.1.327, 2026-11-19: 2.1.327 binary: CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT x4, tengu_hushed_lark x3, tengu_hushed_lark_text x2, sandbox.filesystem.denyRead x2 (item states 2.1.326)
 
-- [x] **CTX-332** Claude Code 2.1.326 has these subagent and worktree names (checked with cc-inspect `surface` on 2026-11-17; first measured on 2.1.325): env `CLAUDE_CODE_SUBAGENT_MODEL`, `_MODEL_FORCE`, `_EFFORT`, `_HISTORY`, `_CACHE_EVICT`, `_PROMPT_CACHE_TTL`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `MAX_SUBAGENT_SPAWN_DEPTH`, `MAX_SUBAGENTS_PER_SESSION`, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (int 1..2147483647), `CLAUDE_CODE_FORK_SUBAGENT`, `EXPERIMENTAL_AGENT_TEAMS`, `DISABLE_EXPLORE_PLAN_AGENTS`, `AGENT_PROGRESS_SUMMARIES`, `NO_MODEL_FALLBACK`, `WORKFLOW_MAX_CONCURRENT_AGENTS` (1..256), `SCRIPT_CAPS`. Settings: `worktree.baseRef` (`fresh` default from origin/<default>, or `head`), `crossSessionInbound` (accept or hold), `cleanupPeriodDays` (default 30, min 1), `bashOutputMaxChars` (default 30000), `autoCompactWindow`, `switchModelsOnFlag`, `subagentStatusLine` (deprecated, no effect). Hook events: SubagentStart, SubagentStop, WorktreeCreate, WorktreeRemove, TeammateIdle, TaskCreated, TaskCompleted, PreModelSwitch, PostModelSwitch. Tools: Agent, SendMessage, ListAgents, EnterWorktree, ExitWorktree, TaskStop, Workflow. Flag `--max-turns` is hidden and works only with `--print`. None of the names in this theme is absent in 2.1.326. The defaults and ranges are from the 2.1.325 read, except `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (int 1..2147483647) and `CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (1..256), which match in 2.1.326; on 2.1.327 `surface` env lists `CLAUDE_CODE_SUBAGENT_MODEL`, `_MODEL_FORCE`, `_EFFORT`, `_HISTORY`, `_CACHE_EVICT`, `_PROMPT_CACHE_TTL`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (chunk-2ew0jg68.js@18809-44271, chunk-qhsv8pnt.js@20627); the spawn-depth default is 3 (chunk-ja9j7x1x.js@341); the other defaults were not re-read.
+- [x] **CTX-332** Claude Code 2.1.326 has these subagent and worktree names (checked with cc-inspect `surface` on 2026-11-17; first measured on 2.1.325): env `CLAUDE_CODE_SUBAGENT_MODEL`, `_MODEL_FORCE`, `_EFFORT`, `_HISTORY`, `_CACHE_EVICT`, `_PROMPT_CACHE_TTL`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `MAX_SUBAGENT_SPAWN_DEPTH`, `MAX_SUBAGENTS_PER_SESSION`, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (int 1..2147483647), `CLAUDE_CODE_FORK_SUBAGENT`, `EXPERIMENTAL_AGENT_TEAMS`, `DISABLE_EXPLORE_PLAN_AGENTS`, `AGENT_PROGRESS_SUMMARIES`, `NO_MODEL_FALLBACK`, `WORKFLOW_MAX_CONCURRENT_AGENTS` (1..256), `SCRIPT_CAPS`. Settings: `worktree.baseRef` (`fresh` default from origin/`<default>`, or `head`), `crossSessionInbound` (accept or hold), `cleanupPeriodDays` (default 30, min 1), `bashOutputMaxChars` (default 30000), `autoCompactWindow`, `switchModelsOnFlag`, `subagentStatusLine` (deprecated, no effect). Hook events: SubagentStart, SubagentStop, WorktreeCreate, WorktreeRemove, TeammateIdle, TaskCreated, TaskCompleted, PreModelSwitch, PostModelSwitch. Tools: Agent, SendMessage, ListAgents, EnterWorktree, ExitWorktree, TaskStop, Workflow. Flag `--max-turns` is hidden and works only with `--print`. None of the names in this theme is absent in 2.1.326. The defaults and ranges are from the 2.1.325 read, except `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (int 1..2147483647) and `CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (1..256), which match in 2.1.326; on 2.1.327 `surface` env lists `CLAUDE_CODE_SUBAGENT_MODEL`, `_MODEL_FORCE`, `_EFFORT`, `_HISTORY`, `_CACHE_EVICT`, `_PROMPT_CACHE_TTL`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (chunk-2ew0jg68.js@18809-44271, chunk-qhsv8pnt.js@20627); the spawn-depth default is 3 (chunk-ja9j7x1x.js@341); the other defaults were not re-read.
   Basis: measured. Status: not applicable.
   Source: probe cc-inspect `surface`, claude 2.1.325, 2026-11-16; cc-inspect `surface`, claude 2.1.326, 2026-11-17.
-  Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_SUBAGENT_MODEL_FORCE, _EFFORT, _HISTORY, _CACHE_EVICT, _PROMPT_CACHE_TTL, CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS and MAX_SUBAGENT_SPAWN_DEPTH are all in the bundle (3 to 18 hits each); the settings and flag names were not rechecked.
-  Verified: re-run on claude 2.1.327, 2026-11-19: partial: 2.1.327 binary has CLAUDE_CODE_SUBAGENT_MODEL_FORCE, _EFFORT, _HISTORY, _CACHE_EVICT, _PROMPT_CACHE_TTL, MAX_SUBAGENTS_PER_SESSION, CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS, CLAUDE_CODE_FORK_SUBAGENT, WORKFLOW_MAX_CONCURRENT_AGENTS, baseRef, crossSessionInbound, cleanupPeriodDays, bashOutputMaxChars, autoCompactWindow, switchModelsOnFlag, TeammateIdle, WorktreeCreate, PreModelSwitch; defaults/ranges not re-checked
+  Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_SUBAGENT_MODEL_FORCE, _EFFORT,_HISTORY, _CACHE_EVICT, _PROMPT_CACHE_TTL, CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS and MAX_SUBAGENT_SPAWN_DEPTH are all in the bundle (3 to 18 hits each); the settings and flag names were not rechecked.
+  Verified: re-run on claude 2.1.327, 2026-11-19: partial: 2.1.327 binary has CLAUDE_CODE_SUBAGENT_MODEL_FORCE, _EFFORT,_HISTORY, _CACHE_EVICT, _PROMPT_CACHE_TTL, MAX_SUBAGENTS_PER_SESSION, CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS, CLAUDE_CODE_FORK_SUBAGENT, WORKFLOW_MAX_CONCURRENT_AGENTS, baseRef, crossSessionInbound, cleanupPeriodDays, bashOutputMaxChars, autoCompactWindow, switchModelsOnFlag, TeammateIdle, WorktreeCreate, PreModelSwitch; defaults/ranges not re-checked
 
 - [x] **CTX-333** The `oauthAccount.organizationRateLimitTier` values are `claude_pro`, `default_claude_max_5x`, and `default_claude_max_20x`. The values come from the spec and are not checked against the binary.
   Basis: cited. Status: not applicable.
   Source: verified in the program on 2.1.327: `default_claude_max_5x` (chunk-asj6f58y.js@669513), `default_claude_max_20x` (chunk-8b50zmfk.js@40113); `claude_pro` is a subscription-type value that maps to `pro` (chunk-asj6f58y.js@371893), not a rate-limit tier value, so the plan's tier list for Pro is corrected to the subscription type.
   Verified: not re-run 2026-11-19: item says values come from the spec; static: claude_pro, default_claude_max_5x, default_claude_max_20x all present in 2.1.327 binary
 
-## Claude Code Surface and Version Notes
+## Claude Code Surface and Version Notes CTX-335
+
   Verified: source already on 2.1.327.
 
 - [x] **CTX-335** The engine has a hook budget of 10 s per event (docs); a plugin hook past budget twice is unloaded (reported); a `$.http.fetch` wait stops the hook clock even with `$.clock.sleep` raced beside it, has its own 30 s cap, and takes no `signal`; a `tool.check` deny arrives at `tool.call` as `isError`; a PreToolUse allow followed by a check error counts as no answer; `tool.describe` events carry no thread (subagent and main get one Bash text); `$.tool.check({tool:"Read"})` gives the session's verdict; `$.fs.exists` throws on `/\` paths (a grep pattern like `/\.git/` reads as a network location); the 33 classic events agree between docs and types, with 44 mod events. On 2.1.326 (checked: `code` search of each name): `$.http.fetch`, `$.clock.sleep`, `$.tool.check`, `tool.describe`, `$.fs.exists` are present; the 33 classic events are confirmed by `surface` hook-event on 2.1.327 (chunk-ja5z738t.js@5436); the count of 44 mod events was not re-counted.
@@ -93,7 +95,8 @@
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: tool.describe x21, tool.check x47 in 2.1.327 binary; 10 s budget doc-sourced; unload-after-two-overruns stays unconfirmed (see CON-008: binary says only "counted toward a runaway"); 44 mod events not re-counted
   Verified: code read, claude 2.1.327, 2026-11-19: a hook still running after its budget logs hook overran with effect counted toward a runaway (chunk-b0yr0k8v.js@64151); the host counts overruns per plugin and at Gui=2 in a row reports a runaway plugin in the hooks worker with that plugin as culprit (chunk-m14bt1pz.js@4945918, @4932274). So the twice-past-budget rule holds as two overruns in a row.
 
-## Claude Code Surface and Version Notes
+## Claude Code Surface and Version Notes CTX-336
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: tool.describe (17 hits), http.fetch (21), clock.sleep (9), tool.check (31) are in the bundle; the timing and verdict behaviours were measured earlier and are not rerun.
 
 - [x] **CTX-336** Plan mode is a permission mode, not a method; newer models need it less; it is useful as a short output for evals (save git hashes and short prompts as cases, blind-review plans).
@@ -102,7 +105,8 @@
   Source: `plan` is a permission mode on 2.1.327 (the mode list `acceptEdits, auto, bypassPermissions, default, dontAsk, plan`, chunk-k57p2hm4.js@1322). The remaining claims (newer models need it less, use for evals) are opinion; Dropped (2026-11-18): no source located in external/, openspec/, reports/, git history or the user's transcripts.
   Verified: not re-run 2026-11-19: opinion/advice on plan mode; nothing local to run
 
-## Claude Code Surface and Version Notes
+## Claude Code Surface and Version Notes CTX-339
+
   Verified: source already on 2.1.327 for the plan permission mode (mode list in chunk-k57p2hm4.js@1322); the eval advice stays reported.
 
 - [x] **CTX-339** Path-scoped rules in `.claude/rules/` with a `paths` glob load only when matching files are touched; `@path` imports still load at launch and only help organization.
@@ -110,4 +114,3 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:159.
   Verified: docs search (clawdipedia-docs), claude 2.1.327, 2026-11-19: "Nested CLAUDE.md files and paths rules load later, when Claude reads a matching file", and the doctor prompt says rules with paths frontmatter load only with matching files; the @path import behaviour is not stated there.
   Verified: not re-run 2026-11-19: path-scoped rule loading not probed here; docs lookup not made
-

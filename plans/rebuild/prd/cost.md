@@ -10,13 +10,13 @@
 
 ## Price-Step Guard
 
-## Budget Note after a Paid Run
+## Budget Note After a Paid Run
 
 ## Window Budget
 
 ## Budget Text
 
-## Cost Accounting from Transcripts
+## Cost Accounting From Transcripts
 
 ## Cache
 
@@ -54,7 +54,7 @@
   Acceptance: no hook transforms a `Read` result of a source file; a token-saving hook changes no byte before the last cache breakpoint, shown by an unchanged prefix in a captured request. Verification: inspection.
   Decision: no claudetto hook reads or rewrites a tool result, so there is no transform to test; the inspection is the registered hook list.
   Basis: cited (arXiv:2606.01326: dedent and identifier shortening cut resolved tasks from 46% to 36% and from 47% to 27%; the paper counts input tokens only, so its savings ignore cache reads). Status: missing at 088a227c.
-  Source: reports/2026-11-18-research/papers.md P5 implications 1 and 3; https://arxiv.org/pdf/2606.01326.
+  Source: reports/2026-11-18-research/papers.md P5 implications 1 and 3; <https://arxiv.org/pdf/2606.01326>.
   Verified: inspection 2026-11-19: the hook list printed by claude 2.1.327 plugin test plugins/claudetto registers no tool.result hook; classic.PostToolUse (handover/renewal.ts:38) only marks a commit as a task boundary and passes the event on unchanged, and grep of hooks/ for updatedToolOutput and tool.result finds no hit.
 
 - [x] **REQ-COST-048** claudetto shall return a hook or tool result that fits under Claude Code's inline limit in the reply itself, and shall not write it to a file the agent must read back.
@@ -62,5 +62,5 @@
   Acceptance: no claudetto hook writes a result file under 4,000 characters for the agent to read; the old file handoff stays removed (REQ-HANDOVER-023). Verification: inspection.
   Decision: claudetto writes no result file, so there is no write to test; the inspection is a search of the hooks for file writes.
   Basis: cited (arXiv:2605.15184: moving small results to files cut one harness and model pair from 93.1 to 55.2; one run). Status: missing at 088a227c.
-  Source: reports/2026-11-18-research/papers.md P7 implication 2; https://arxiv.org/pdf/2605.15184.
+  Source: reports/2026-11-18-research/papers.md P7 implication 2; <https://arxiv.org/pdf/2605.15184>.
   Verified: inspection 2026-11-19: grep of plugins/claudetto/hooks for fs.write, writeFile and appendFile finds only the settings fill; no hook writes a result file.

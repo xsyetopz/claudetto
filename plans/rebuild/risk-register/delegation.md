@@ -47,7 +47,7 @@
   Trigger: A Fable session starts a subagent whose model is Fable.
   Owner: delegation
   Status: mitigated 2026-11-20 (issue #52): hooks/delegation/spawn.ts refuses an Agent call that names Fable or Opus, and subagents default to Sonnet (CLAUDE_CODE_SUBAGENT_MODEL, hooks/settings/defaults.ts:44).
-  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/delegation/__tests__/spawn.test.ts "refuses opus and fable by alias and id" passes.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/delegation/**tests**/spawn.test.ts "refuses opus and fable by alias and id" passes.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
   Verified: Same probe as REQ-DELEGATION-026 (opus spawn refused by hooks/delegation/spawn.ts, claude 2.1.327, 2026-11-18, cc-inspect cli).
 
@@ -139,7 +139,7 @@
   Likelihood: 4. Impact: 4.
   Existing controls: none at 088a227c (no SubagentStart or SubagentStop hook); orchestrator re-verification caught most cases of a false delegate result.
   Response: mitigate.
-  Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (verified on 2.1.327: the `tools` key is an allowlist, https://clawdipedia.cc/extend/subagents/frontmatter [Documented]; the `--agents` schema describes it as an array of allowed tool names, chunk-rj3e7agr.js@296443); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
+  Actions: check each report; SubagentStop file-existence check; `tools:` frontmatter restriction rather than prose (verified on 2.1.327: the `tools` key is an allowlist, <https://clawdipedia.cc/extend/subagents/frontmatter> [Documented]; the `--agents` schema describes it as an array of allowed tool names, chunk-rj3e7agr.js@296443); a skill that names paths; independent execution record; `maxTurns` and a one-block report in agent files; root re-runs the check; card view of prompt, calls, verbatim text; SubagentStart hook injecting the Delegate Contract; lead audit of the hand-back against diff; `agent_transcript_path`; `toolsUsed`; SubagentStop hand-back form check; treat a delegate report as a Claim and verify it against artifacts or label it unverified.
   Trigger: a subagent report that names a path the lead has not checked.
   Owner: delegation. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
@@ -272,7 +272,7 @@
   - Trigger: a spawn call cancelled by `TaskStop`.
   - Owner: delegation
   - Status: closed 2026-11-20 (issue #52): the cause is absent from the shipped code; the memory hold (hooks/guards/memory.ts, REQ-GUARDS-020) reads `memory_pressure -Q` once per held call and starts no poll, so a cancelled call leaves nothing running.
-  - Verified: 2026-11-20, read of plugins/claudetto/hooks/guards/memory.ts: `registerMemory` makes a single awaited `$.process.run(["memory_pressure", "-Q"])` before `next(e)` and holds no timer, interval or abort controller; `git grep -n 'memoryWatch\|setInterval' -- plugins/claudetto/hooks ':!*__tests__*'` finds no match; `claude plugin test plugins/claudetto` on 2.1.327 passes hooks/guards/__tests__/memory.test.ts (132 pass).
+  - Verified: 2026-11-20, read of plugins/claudetto/hooks/guards/memory.ts: `registerMemory` makes a single awaited `$.process.run(["memory_pressure", "-Q"])` before `next(e)` and holds no timer, interval or abort controller; `git grep -n 'memoryWatch\|setInterval' -- plugins/claudetto/hooks ':!*__tests__*'` finds no match; `claude plugin test plugins/claudetto` on 2.1.327 passes hooks/guards/**tests**/memory.test.ts (132 pass).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:627 (measured, probe on the mock clock).
 
 - [x] **RISK-175** Background agent keeps acting after the user banned the action.
@@ -572,7 +572,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:124 (reported); external/2026-11-16/reddit.com-r-claudecode-comments-1xssfs1-21322-anthropics-copyright-par-20261116T050907Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xssfs1/21322_anthropics_copyright_paranoia_is_leaking/>; the "haywire" report). Other reports in the old item: not located.
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Status: closed. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
-  Verified: grep model:/effort: plugins/claudetto/agents/*.md -> every agent file names a model and an effort; defaults.ts sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5 without _FORCE; hooks/delegation/spawn.ts denies Opus, Fable and Mythos spawns (2.1.327, 2026-11-19).
+  Verified: grep model:/effort: plugins/claudetto/agents/*.md -> every agent file names a model and an effort; defaults.ts sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5 without_FORCE; hooks/delegation/spawn.ts denies Opus, Fable and Mythos spawns (2.1.327, 2026-11-19).
 
 ## Model Variability
 
@@ -588,7 +588,7 @@
   Trigger: a `modelsUsed` entry that differs from the agent file `model`.
   Owner: delegation. PreModelSwitch exists in 2.1.327 (chunk-m14bt1pz.js@4122610, a hook can answer deny or ask), but `git grep PreModelSwitch` finds nothing under `plugins/`, and the same entry holds two opposing parts: Existing controls keep the flag fallback while Actions turn it off.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:141 (eval profile `settings.eval.json`: the two env names and `switchModelsOnFlag: false`).
-  Status: accepted 2026-11-19; vanilla 2.1.327 announces each model switch, so no fixed-model setting ships. Core writes a `model_fallback` system message with its trigger (`model_not_found`, `permission_denied`, `overloaded`, `server_error`, `last_resort`, `model_blocked`), `original_model` and `fallback_model` (chunk-rj3e7agr.js@531194), shows "Switched to <model> due to high demand for <model>", "because <model> is not available" or "returned an error that could not be retried" (chunk-8g2nr9dn.js@291743), and shows "Switched to <model>" on a refusal fallback (chunk-18d5r2hb.js@284918). The fixed-model settings trade availability for that notice. Alias resolution and the short prompt for an unrecognised model carry no notice and stay at Likelihood 2; claudetto pins the subagent model (hooks/settings/defaults.ts:36). Earlier analysis: `CLAUDE_CODE_NO_MODEL_FALLBACK` makes a swap fail instead of switching (chunk-asj6f58y.js@495439) and also stops compaction with "Compaction unavailable" when a swap is needed (chunk-m14bt1pz.js@2961351), so a fixed model costs availability; `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` and `switchModelsOnFlag:false` leave a refused request with no retry (chunk-18d5r2hb.js@277228). The source writes all three only in the user's eval profile. Choice: write them for every setup, write them for an eval profile only, or write none and use a PreModelSwitch hook that asks. The subagent part is covered: CLAUDE_CODE_SUBAGENT_MODEL at hooks/settings/defaults.ts:36 and spawn.ts.
+  Status: accepted 2026-11-19; vanilla 2.1.327 announces each model switch, so no fixed-model setting ships. Core writes a `model_fallback` system message with its trigger (`model_not_found`, `permission_denied`, `overloaded`, `server_error`, `last_resort`, `model_blocked`), `original_model` and `fallback_model` (chunk-rj3e7agr.js@531194), shows "Switched to `<model>` due to high demand for `<model>`", "because `<model>` is not available" or "returned an error that could not be retried" (chunk-8g2nr9dn.js@291743), and shows "Switched to `<model>`" on a refusal fallback (chunk-18d5r2hb.js@284918). The fixed-model settings trade availability for that notice. Alias resolution and the short prompt for an unrecognised model carry no notice and stay at Likelihood 2; claudetto pins the subagent model (hooks/settings/defaults.ts:36). Earlier analysis: `CLAUDE_CODE_NO_MODEL_FALLBACK` makes a swap fail instead of switching (chunk-asj6f58y.js@495439) and also stops compaction with "Compaction unavailable" when a swap is needed (chunk-m14bt1pz.js@2961351), so a fixed model costs availability; `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` and `switchModelsOnFlag:false` leave a refused request with no retry (chunk-18d5r2hb.js@277228). The source writes all three only in the user's eval profile. Choice: write them for every setup, write them for an eval profile only, or write none and use a PreModelSwitch hook that asks. The subagent part is covered: CLAUDE_CODE_SUBAGENT_MODEL at hooks/settings/defaults.ts:36 and spawn.ts.
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   Verified: 2026-11-19, paid batchE-2/E-3, $1.08 (reports/2026-11-19-research/goal/e-193.sh): the Agent tool result's resolvedModel and modelUsage match the requested model and no `model_fallback` message appears in 30/30 runs: r193b (agent-file `model`) 6/6 vanilla and 6/6 claudetto, r193c (Agent `model` parameter) 6/6 and 6/6, r193a (alias) 6/6 vanilla (claudetto has no general-purpose type, so no arm). The positive control r193x caught a wrong model (haiku served for sonnet) in 1 of 3 runs, so the scorer can fail.
   Status: closed 2026-11-19 for the alias, agent-file and Agent-parameter paths: the fault stays absent in 6 runs per arm on r193b and r193c, vanilla and claudetto. Scope: overload fallback, compaction retry and the unrecognised-model path cannot be provoked by a local fixture and move to issue #62.
@@ -625,7 +625,7 @@
   Owner: delegation.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:56.
   Status: closed 2026-11-20 (issue #52): the fault is absent; the memory hold's deny text names the wait and the retry ("Wait for running commands to finish, then retry", hooks/guards/memory.ts:19).
-  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/guards/__tests__/memory.test.ts "states the measured free share and tells the model to wait and retry" asserts the deny text holds "then retry" and passes.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/guards/**tests**/memory.test.ts "states the measured free share and tells the model to wait and retry" asserts the deny text holds "then retry" and passes.
 
 - [x] **RISK-196** A subagent runs without the parent's PreToolUse and PostToolUse hooks.
   Category: Technical.
@@ -767,7 +767,7 @@
   Trigger: a subagent run past an hour with no real change.
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
-  Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'agent.spawn' -- plugins/claudetto/hooks ':!*__tests__*' -> hooks/delegation/spawn.ts:13 only, a model deny; no plugin code forwards a conversation to a subagent.
+  Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'agent.spawn' -- plugins/claudetto/hooks ':!***tests***' -> hooks/delegation/spawn.ts:13 only, a model deny; no plugin code forwards a conversation to a subagent.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:29; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:33; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:92 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeozdj/usage_cap_advice_for_the_nontechnical/>).
 
 - [x] **RISK-205** Fable 5.2 reads an indexed project past 500K tokens (the compaction limit) before finishing research, then re-reads the same code after compaction.
@@ -920,7 +920,7 @@
   - Trigger: a bulk edit command (`perl -pi`, `sed -i`, `xargs` over a shared folder) while background agents run.
   - Owner: delegation
   Status: Moved Out as OUT-2781. A lost append needs a lead edit that lands between a worker's read and write, a timing race that appears only with several live writers; no short paid run reproduces it at a measurable rate. Existing control: workers write only to their own stage folder (no plugin text names it; the lead owns the bulk edit).
-  Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'one-shot|stage folder' -- plugins/ -> only a button test in claudetto-you-should-know/hooks/__tests__/flow.test.ts:29; no plugin text names a stage folder.
+  Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'one-shot|stage folder' -- plugins/ -> only a button test in claudetto-you-should-know/hooks/**tests**/flow.test.ts:29; no plugin text names a stage folder.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10317; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10632.
 
 - [x] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
@@ -940,7 +940,7 @@
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 
-## Agent Swarm from Wording
+## Agent Swarm From Wording
 
 - [x] **RISK-215** Agent Swarm From Wording.
   Category: Agent behaviour.

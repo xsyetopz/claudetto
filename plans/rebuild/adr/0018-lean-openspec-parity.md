@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0192
 date: 2026-11-09
 ---
 # OpenSpec with Core Parity in a Lighter Form

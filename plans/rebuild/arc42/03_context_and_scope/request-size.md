@@ -1,14 +1,4 @@
-# request-size
-
-## Request Size
-
-## Request Size
-
-## Request Size
-
-## Request Size
-
-## Request Size
+# Request-Size
 
 ## Request Size
 
@@ -29,6 +19,3 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:103 (task 10.2, probes.md); openspec/changes/archive/2026-11-16-2-1-323/research/probes.md:235; cc-inspect `code` search, claude 2.1.326, 2026-11-17.
   Verified: source already on 2.1.327.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: "claude-platform" x15 in 2.1.327 binary and no cc-plugin-claude-platform check made; validate-probe and size figures not re-run
-
-## Request Size
-

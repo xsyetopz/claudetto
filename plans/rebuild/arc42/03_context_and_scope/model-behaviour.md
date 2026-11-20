@@ -1,4 +1,4 @@
-# model-behaviour
+# Model-Behaviour
 
 ## Model Behaviour
 
@@ -7,4 +7,3 @@
   Source: external/export-With Opus 5.5 guardrails, they're gonna have to eventually fix the fallback issue.jsonl:2; external/2026-10-12/export-There should be less than 24 combinations of models and effort levels to choose from.jsonl:39; claude 2.1.327 chunk-rj3e7agr.js@526100.
   Verified: binary string search, claude 2.1.327, 2026-11-19: model_refusal_fallback (25 hits) and api_refusal_category (11) are in the bundle; the Opus 5 target stays reported.
   Verified: re-run on claude 2.1.327, 2026-11-19: 2.1.327 binary: model_refusal_fallback system message with trigger "refusal", direction ["retry","revert","sticky"], scope ["session","local"]; fallback_model x22, api_refusal_category x11; ADR-0103/0005 handling not read
-

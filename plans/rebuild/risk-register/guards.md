@@ -59,12 +59,12 @@
 - [x] **RISK-035** Each worktree Claude Code creates flips the shared core.hooksPath to an absolute path, and the bedrock guard-base prints "git hooks are off".
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the bedrock repo's guard-base hook, owned by that repo).
   - Category: guards, git hooks.
-  - Cause: Claude Code runs plain git config core.hooksPath <absolute> from the worktree, which writes the shared .git/config, so the main repo flips to the absolute form. The bedrock guard-base compares to the literal .githooks; Workers in separate worktrees share one `.git/config`; a worker most likely wrote an absolute path where the guard needs exactly `.githooks`.
+  - Cause: Claude Code runs plain git config core.hooksPath `<absolute>` from the worktree, which writes the shared .git/config, so the main repo flips to the absolute form. The bedrock guard-base compares to the literal .githooks; Workers in separate worktrees share one `.git/config`; a worker most likely wrote an absolute path where the guard needs exactly `.githooks`.
   - Event: guard-base reports hooks off though they are on; the agents' fix attempts were refused 75 times; The hook guard fails for every worker that commits; the sandbox blocked the lead's fix and the unsandboxed retry was denied.
   - Consequence: wasted turns in 8 projects (2026-11-09 to 2026-11-13); hooksPath read .githooks 64 times and the absolute form 54 times; Workers cannot commit until the user runs the fix.
   - Likelihood: 5 (measured in most worktree sessions)
   - Impact: 2
-  - Existing controls: the cure: guard-base compares resolved paths from the git-common-dir root with pwd -P, and a .githooks/pre-push runs just verify. Probe P-D10.1b: .githooks and <root>/.githooks pass; unset, /tmp/elsewhere, and .git/hooks fail. Baseline plugins have no hooksPath hit (git grep); The guard reports the mismatch.
+  - Existing controls: the cure: guard-base compares resolved paths from the git-common-dir root with pwd -P, and a .githooks/pre-push runs just verify. Probe P-D10.1b: .githooks and `<root>`/.githooks pass; unset, /tmp/elsewhere, and .git/hooks fail. Baseline plugins have no hooksPath hit (git grep); The guard reports the mismatch.
   - Response: mitigate.
   - Actions: change guard-base to compare resolved paths (task 7.10, P-D10.5); Brief each worker not to change git config; have the lead check core.hooksPath after workers end.
   - Trigger: "git hooks are off" printed in a repo whose hooks run; A worker runs `git config` or an LFS install in a shared clone.

@@ -1,4 +1,4 @@
-# auto-mode
+# Auto-Mode
 
 ## Auto Mode
 
@@ -13,7 +13,8 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1032; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1690.
   Verified: PASS: docs read (permission-modes, Default classifier model and When your model doesn't review), binary 2.1.327, 2026-11-19: default Sonnet 5; Opus 5, Sonnet 5.5 and Opus 5.5 are refused and the default reviews; CLAUDE_CODE_AUTO_MODE_MODEL needs v2.1.302 or later; code search finds the variable in the env registry. The haiku-5-5 pass and the /status row were not run.
 
-## Auto Mode
+## Auto Mode CTX-118
+
   Verified: code read (cc-inspect code search and binary strings), claude 2.1.327, 2026-11-19: order is server-configured model, then CLAUDE_CODE_AUTO_MODE_MODEL, then the Sonnet 5 default; the "ignoring CLAUDE_CODE_AUTO_MODE_MODEL ... takes priority" warning is in the bundle. The per-model refusal list and the `/status` row were not rechecked.
 
 - [x] **CTX-118** Auto mode stops after 3 consecutive or 20 total denials; `PermissionDenied` returns only `retry: true`. `PermissionDenied` is present on 2.1.326 (checked: `code` search finds it in the hook name list and the text "The PermissionDenied hook indicated you may retry this tool call.").
@@ -22,7 +23,8 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3016; chunk-ja5z738t.js@5720; chunk-4xhk2fyb.js@8658 (claude 2.1.327 binary).
   Verified: PASS: docs read (permission-modes, When auto mode falls back), binary 2.1.327, 2026-11-19: 'blocks an action 3 times in a row or 20 times total', not configurable; code search finds 'The PermissionDenied hook indicated you may retry this tool call.' at chunk-4xhk2fyb.js@8658.
 
-## Auto Mode
+## Auto Mode CTX-124 to CTX-128
+
   Verified: source already on 2.1.327.
 
 - [x] **CTX-124** Sandbox 2.1.323 denies writes to 14 paths: `.claude/settings.json`, `settings.local.json`, `skills`, `hooks`, `commands`, `agents`, `workflows`, `routines`, `output-styles`, `launch.json`, `scheduled_tasks.json`, `loop.md`, `.claude/.cc-writes` (new), `.mcp.json`. `.claude/rules`, `plugins`, and `projects` stay writable. The list above is for 2.1.323 and changed on 2.1.327 (chunk-1yrzf3wn.js@992559, @997379, @997600): the home `~/.claude` set now holds shell-snapshots, session-env, plugins, hooks, skills, workflows, commands, agents, routines, rules, output-styles, scheduled_tasks.json, launch.json, CLAUDE.md, projects, daemon.json, policy-limits.json, backups, loop.md and cowork_plugins, so `rules`, `plugins` and `projects` are no longer writable (this session's sandbox config lists the same names as denied). The project `.claude` set is launch.json, workflows, routines, output-styles, scheduled_tasks.json, loop.md, skills, commands, agents, hooks, settings.json and settings.local.json, plus `.mcp.json`. `.cc-writes` is a constant in chunk-3kptb39p.js@3835; its place in the deny list was not located. The release-note statement about fewer sensitive home folders is the program vendor's text and was not tested by a write.

@@ -11,7 +11,7 @@ The claudetto `web_fetch` tool returned a whole page into context: about 12.2k t
 Measured on 2026-11-17 for one page and one question ("what does it say about MCP"):
 
 | Route | Bytes to the model |
-|---|---|
+| --- | --- |
 | `web_fetch`, `maxChars: 60000` | the whole page, about 12.2k tokens |
 | agent-browser `read` | 51,270 (3.25 s, site navigation kept) |
 | `@playwright/cli` `find "MCP"` | 14,142 (31 matches with ancestor nodes) |

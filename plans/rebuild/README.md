@@ -1,6 +1,6 @@
-# claudetto Rebuild Plan
+# Claudetto Rebuild Plan
 
-The plan for claudetto on Claude Code 2.1.327. Four standards split it; each file answers one question, and each item lives in one file only.
+The plan for claudetto on Claude Code 2.1.329 (planned on 2.1.327; ADR-0192 and ADR-0193 retarget it). Four standards split it; each file answers one question, and each item lives in one file only.
 
 ## Layout
 
@@ -40,7 +40,7 @@ An arc42 section file over 603 lines becomes a directory of the same name with a
 | `cost` | `features/budget`, `price-step`, `decide`, `statusline/`, `bin/claudetto-statusline` |
 | `setup` | `features/setup`, `surface`, `commands/setup.md`, the `@builtin` disable |
 | `edit` | the perl batch edit tool |
-| `openspec` | `plugins/claudetto-openspec/` |
+| `spec` | `plugins/claudetto-openspec/`, rebuilt as `plugins/claudetto-spec/` (ADR-0192) |
 | `you-should-know` | `plugins/claudetto-you-should-know/` |
 | `verification` | `evals/`, tests, release checks |
 
@@ -62,7 +62,7 @@ Each item goes to the first rule it matches.
 
 ## Item Format
 
-```
+```text
 - [ ] **REQ-HANDOVER-001** claudetto shall <behaviour>.
   Acceptance: <the check that passes>. Verification: test | probe | inspection | demonstration.
   Basis: measured | cited | reported | observed in transcript | user decision | inferred. Status: have | partial | missing at 088a227c.
@@ -77,6 +77,7 @@ Each risk carries the fields: Category, Cause, Event, Consequence, Likelihood, I
 - Impact: 1 cosmetic; 2 an extra turn; 3 a wasted session or spend; 4 a wrong result shipped or user work lost; 5 a secret leaked or data destroyed.
 
 A settled status (closed, mitigated, accepted, transferred) carries a `Verified:` line naming the check, its result and its date, because a status with no recorded check is one picked to pass (issue #52). The check fits the status:
+
 - closed or mitigated: the test, probe or grep that shows the fault no longer occurs, with its result on 2.1.327;
 - accepted: the recorded runs or report counts that put Likelihood × Impact at 5 or lower, or measured runs where no candidate beats vanilla (ADR-0177);
 - transferred: the engine site that causes the fault and the recheck-on-release ticket.

@@ -80,7 +80,7 @@
   Likelihood: 1. Impact: 2.
   Existing controls: None found at 088a227c.
   Response: mitigate.
-  Actions: Map an unknown or failed check to "unknown since <time>"; a Stop hook per session writes a status comment to a task board; a completion ledger tracks running, done-but-not-processed (alert past threshold), and processed.
+  Actions: Map an unknown or failed check to "unknown since `<time>`"; a Stop hook per session writes a status comment to a task board; a completion ledger tracks running, done-but-not-processed (alert past threshold), and processed.
   Trigger: A status check fails or times out.
   Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (REQ-COST-017); the rebuild has no status check to misread.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/` -> no match (exit 1).
@@ -191,7 +191,7 @@
   Owner: cost.
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
   Status: mitigated 2026-11-20 (issue #52): claudetto sets CLAUDE_CODE_SUBAGENT_MODEL to Sonnet, denies an Agent call that names Opus or Fable, and caps concurrent subagents at 3, so a fan-out no longer runs on the top model; the main session's model stays the user's choice.
-  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/delegation/__tests__/spawn.test.ts ("refuses opus and fable by alias and id") and hooks/settings/__tests__/defaults.test.ts (concurrency cap 3 written) pass; hooks/settings/defaults.ts:44 sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/delegation/**tests**/spawn.test.ts ("refuses opus and fable by alias and id") and hooks/settings/**tests**/defaults.test.ts (concurrency cap 3 written) pass; hooks/settings/defaults.ts:44 sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5.
 
 ## Compaction and Memory
 
@@ -217,7 +217,7 @@
 
 - [x] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
   - Category: product defect.
-  - Cause: `statusline/color.ts:82-85` `colorOff` reads `NO_COLOR`; nothing handles `FORCE_COLOR`. Checked on 2.1.327 (2026-11-18, cc-inspect `code search`): Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command, and https://clawdipedia.cc/configure/status-line (retrieved 2026-11-18) says ANSI colors work there. A second report found no cause; the first-render cause needs an interactive TTY capture.
+  - Cause: `statusline/color.ts:82-85` `colorOff` reads `NO_COLOR`; nothing handles `FORCE_COLOR`. Checked on 2.1.327 (2026-11-18, cc-inspect `code search`): Claude Code sets `NO_COLOR` only in the PowerShell tool environment (`chunk-m14bt1pz.js@1114484`, used at `@1115526`), not for the statusLine command, and <https://clawdipedia.cc/configure/status-line> (retrieved 2026-11-18) says ANSI colors work there. A second report found no cause; the first-render cause needs an interactive TTY capture.
   - Event: a screenshot report; a second screenshot report says the statusline renders without colour at first, then colour appears once a few more elements come up.
   - Consequence: no colour; an extra turn to read a plain statusline (cosmetic).
   - Likelihood: 1

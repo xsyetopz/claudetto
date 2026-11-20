@@ -2,11 +2,11 @@
 status: accepted
 date: 2026-11-16
 ---
-# Lay the Plan Out as arc42 with PRD, ADR and Risk Register
+# Lay the Plan Out as Arc42 with PRD, ADR and Risk Register
 
 ## Context and Problem Statement
 
-The user chose arc42 (https://arc42.org) as the plan's layout, because it is claudetto's official equivalent of OpenSpec, with a hybrid: a PRD for what we build and success; arc42 for components, runtime, constraints, deployment and quality; ADRs for why; a risk register for known problems. The user asked for the industry-standard specifications of PRD, ADR and risk register.
+The user chose arc42 (<https://arc42.org>) as the plan's layout, because it is claudetto's official equivalent of OpenSpec, with a hybrid: a PRD for what we build and success; arc42 for components, runtime, constraints, deployment and quality; ADRs for why; a risk register for known problems. The user asked for the industry-standard specifications of PRD, ADR and risk register.
 
 ## Considered Options
 

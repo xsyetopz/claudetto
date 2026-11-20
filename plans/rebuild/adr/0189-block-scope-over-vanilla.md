@@ -19,6 +19,7 @@ Chosen: build the blocks the user named. In: `kernel` (it serves the others), `g
 
 ## Consequences
 
+- ADR-0192 (2026-11-21) brings OpenSpec back In as claudetto-spec; the other blocks' scope stands.
 - Each built block still passes ADR-0177 item by item: a requirement without a measured gain over vanilla moves to scope Out with that reason.
 - OpenSpec work in the rebuild stops at the 2.1.327 engines bump of its manifest.
 

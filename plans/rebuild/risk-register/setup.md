@@ -317,7 +317,7 @@
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Bash classifier outages); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:4092 (round 2 dev arm).
   Verified: the classifier verdict is server-side; plugins/ holds no autoMode list (ADR-0190), so no lever exists (2.1.327, 2026-11-19).
 
-## Conduct Faults from the Rearchitecture Sessions
+## Conduct Faults From the Rearchitecture Sessions
 
 - [x] **RISK-413** The agent edits user settings or reverts work with no order.
   Status: closed. Cause is outside setup or outside claudetto (OUT-864, ADR-0190).
@@ -333,7 +333,7 @@
   Trigger: a settings write or a revert with no user step.
   Owner: setup.
   Status: mitigated 2026-11-20 (issue #52): the fill makes Claude Code ask before an edit of the user settings file and before `git reset --hard`, `git stash`, `git clean` and `git branch -D`, so a settings change or a revert needs the user's approval.
-  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/guards/wall/__tests__/fill.test.ts pins the ask list; hooks/guards/wall/rules.ts:47-60 holds `Bash(git reset --hard*)`, `Edit(~/.claude/settings.json)` and `Write(~/.claude/settings.json)` as ask rules.
+  Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/guards/wall/**tests**/fill.test.ts pins the ask list; hooks/guards/wall/rules.ts:47-60 holds `Bash(git reset --hard*)`, `Edit(~/.claude/settings.json)` and `Write(~/.claude/settings.json)` as ask rules.
   Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [x] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.

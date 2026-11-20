@@ -18,7 +18,7 @@
 ## Reply Register on Stop
 
 - [x] **REQ-REPLY-022** Superseded by [ADR-0104](../adr/0104-no-regex-stop-check.md), which settles "no regex Stop check and no Stop claim grader"; nothing ships from this item. The faults it names are handled where a structured signal exists (tool arguments, the last Bash exit status), never by grading reply text. The original text follows for the record. claudetto shall block once a reply that names a fault from the graded catalogue, with the fault's fix, and grade a reply for the faults `unchecked`, `unseen`, and `unfixed`.
-  Acceptance: the catalogue is credit to the user for unstated choices; silent fallback; deferring doable work; claiming without checking; breaking rules; leaving a fixable failure unfixed; options in plain text instead of `AskUserQuestion` (`AskUserQuestion` is present in claude 2.1.327, tool list at `chunk-77827yq1.js@359`); apology or agreement, feelings or praise, repeating the user, naming own mistake with no result, steps listed as a report; citing tool output the user never saw. Each block fires once and carries the fix. A failed command with a fix is rerun; a reply reporting a fixable failure gets one block (ask for the fix and a rerun); the reply "probe is blocked" after error "required option '--env-file <path>' not specified" gets a block; a fix only the user can give (`! <command>`, interactive login with no token, a permission) is not `unfixed`; `unfixed` is offered only when the turn's last Bash failed (not succeeded or denied); each graded fault gets one block; `credited` counts AskUserQuestion popup answers as the user's words beside typed messages. It cures early give-up on fixable errors. Verification: test.
+  Acceptance: the catalogue is credit to the user for unstated choices; silent fallback; deferring doable work; claiming without checking; breaking rules; leaving a fixable failure unfixed; options in plain text instead of `AskUserQuestion` (`AskUserQuestion` is present in claude 2.1.327, tool list at `chunk-77827yq1.js@359`); apology or agreement, feelings or praise, repeating the user, naming own mistake with no result, steps listed as a report; citing tool output the user never saw. Each block fires once and carries the fix. A failed command with a fix is rerun; a reply reporting a fixable failure gets one block (ask for the fix and a rerun); the reply "probe is blocked" after error "required option '--env-file `<path>`' not specified" gets a block; a fix only the user can give (`! <command>`, interactive login with no token, a permission) is not `unfixed`; `unfixed` is offered only when the turn's last Bash failed (not succeeded or denied); each graded fault gets one block; `credited` counts AskUserQuestion popup answers as the user's words beside typed messages. It cures early give-up on fixable errors. Verification: test.
   Basis: cited. Status: superseded by ADR-0104; baseline was partial at 088a227c (`tools/claim-check-json.ts`, `tools/claim-check-launch.ts`, and `tools/claim-check-plugin/` exist in `git ls-tree -r 088a227c`; `git grep unfixed` finds no hit under `plugins/`, so no grader ships in the plugin).
   Source: openspec/specs/claim-check/spec.md:8; openspec/specs/claim-check/spec.md:76; openspec/specs/claim-check/spec.md:95; openspec/specs/claim-check/spec.md:109; openspec/specs/claim-check/spec.md:118; openspec/specs/claim-check/spec.md:128; openspec/specs/claim-check/spec.md:138; openspec/specs/claim-check/spec.md:162.
   Conflict: Disputes and Openers (check the claim; no Stop-time model call judges the opener).
@@ -48,7 +48,7 @@
 
 ## Per-Model Root Prompt
 
-## Output Style: Need from You
+## Output Style: Need From You
 
 - [x] **REQ-REPLY-033** Moved Out as OUT-2101: part not shipped.
 
@@ -112,7 +112,7 @@
 
 - [x] **REQ-REPLY-087** Moved Out as OUT-2751: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-## Text between Tool Calls
+## Text Between Tool Calls
 
 - [x] **REQ-REPLY-088** Moved Out as OUT-2752: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
@@ -124,7 +124,7 @@
 
 - [x] **REQ-REPLY-090** Moved Out as OUT-2753: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-## Evidence before Claims
+## Evidence Before Claims
 
 - [x] **REQ-REPLY-091** Moved Out as OUT-2754: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
@@ -156,7 +156,7 @@
 
 - [x] **REQ-REPLY-107** Moved Out as OUT-2827: OUT-019 and ADR-0190: a cap tuned to stock lengths is out and no custom system prompt ships, so the stock lean prompt and Concise/Proactive bounds have no subject; the kept 200-character description cap holds by count on 2026-11-19 (output style 174, agents 77, 81 and 68, plugin.json 164 and 178).
 
-## Choices through AskUserQuestion
+## Choices Through AskUserQuestion
 
 - [x] **REQ-REPLY-108** claudetto shall route each question to the user, a choice with options included, through the AskUserQuestion tool, not in plain text.
   Acceptance: a turn in which the user owns a choice (a preference, or a trade-off between options they named) calls `AskUserQuestion` with the options and its reply holds no prose option list; the output style line routes it. Verification: measured runs (9 of 9 against 2 of 15 on vanilla 2.1.327, RISK-293); the style file is inspected for the line.
@@ -187,7 +187,7 @@
 
 - [x] **REQ-REPLY-112** Moved Out as OUT-2760: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-## Prompt Text from Model Guidance
+## Prompt Text From Model Guidance
 
 ## Root Prompt Rules
 
@@ -237,7 +237,7 @@
 - [x] **REQ-REPLY-140** claudetto shall make the agent decide whether to ask the user or proceed from checkable facts (a missing input that no file, command or source holds; an irreversible or outward-facing action; an instruction conflict), never from its own stated confidence.
   Acceptance: a behavioural test with a missing required input asks; one where the input is in a repo file reads it and proceeds without asking; the rule text names no confidence threshold. Verification: test.
   Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: done 2026-11-19; the missing-input line ships in output-styles/claudetto.md and names no confidence threshold. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: "Deploy this app to the staging server" with no host anywhere: the line alone asked before running in 5 of 6 runs and the full style in 3 of 3 (1 through AskUserQuestion, 2 in prose), vanilla asked in 0 of 6 and ran it with a guessed `staging`; with the host in config.json vanilla, the line and the full style all read it and proceeded without asking, 3 of 3 each. The irreversible step is covered by REQ-REPLY-108 (the style asked before cleaning a dirty tree 3 of 3, vanilla 0 of 3). The instruction-conflict fact has no case of its own.
-  Source: reports/2026-11-18-research/papers.md P3 implication 2; https://aclanthology.org/2026.acl-long.354.pdf.
+  Source: reports/2026-11-18-research/papers.md P3 implication 2; <https://aclanthology.org/2026.acl-long.354.pdf>.
   Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only). Tick audit 2026-11-19: the tick rests on the paid Sonnet 5.5 runs named in Status; no paid rerun (no paid benchmarks), and `grep -n confidence plugins/claudetto/output-styles/claudetto.md` names no threshold.
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, 24 runs: missing host asked before running: shipped style 1/3, line alone 4/6 (two ran `deploy.sh` first), vanilla 0/6; host in config.json proceeded unasked 3/3 in every arm -> FAIL on the missing-input case (reports/2026-11-19-research/tick-rerun/reply-risk/README.md, issue #53).
   Status: open 2026-11-19: the shipped style does not hold the missing-input ask.
@@ -247,4 +247,3 @@
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
-

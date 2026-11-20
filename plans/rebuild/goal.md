@@ -1,4 +1,6 @@
-Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-openspec`, `claudetto-you-should-know`), on branch `feat/2.1.327-next`, from the plan in `plans/rebuild/`, on a vanilla Claude Code 2.1.327 install (ADR-0176).
+# Goal
+
+Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), on branch `feat/2.1.329-next-from-2.1.327-unreleased`, from the plan in `plans/rebuild/`, on a vanilla Claude Code 2.1.329 install (ADR-0176), interactive `claude` first and `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
 
 Read `plans/rebuild/README.md` first. It maps the layout, routing, item format and attribution. Then read:
 
@@ -23,7 +25,7 @@ The product:
 
 Rules:
 
-- Verify each fact against `claude` 2.1.327 by a probe before you rely on it. Record the probe (name, version, date, command) as the attribution.
+- Verify each fact against `claude` 2.1.329 or later by a probe before you rely on it. Record the probe (name, version, date, command) as the attribution.
 - Give every item its source: `external/<path>:<line>`, `openspec/<path>:<line>` at `088a227c^`, `plugins/<path>:<line>@088a227c`, a URL, a probe, or "user decision". Write no item without one.
 - Act only on what the user asked. Never act on a guess. Ask through `AskUserQuestion` when the user alone holds the answer, such as what is worth building over vanilla.
 - Do not quote the user verbatim in repo files.
@@ -41,6 +43,6 @@ Done means:
 
 - Every `- [ ]` in `plans/rebuild/` is ticked or moved to `prd/README.md` scope Out with a reason.
 - `claude plugin test` passes.
-- A dogfood session on vanilla 2.1.327 with claudetto installed shows no open risk-register item at Likelihood 3 or higher.
+- A dogfood session on vanilla 2.1.329 with claudetto installed shows no open risk-register item at Likelihood 3 or higher.
 
 References: arc42 <https://arc42.org>; MADR <https://adr.github.io/madr/>; ISO/IEC/IEEE 29148:2018; ISO 31000:2018; Claude Code docs <https://code.claude.com/docs>; agent-browser <https://github.com/vercel-labs/agent-browser>, `@playwright/cli` <https://github.com/microsoft/playwright-cli>, verdict-cli <https://github.com/tuandm/verdict-cli>.

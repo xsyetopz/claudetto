@@ -58,7 +58,7 @@
 
 - [x] **REQ-GUARDS-041** Moved Out as OUT-2306: the item needs a paid model run.
 
-## No Route around a Block
+## No Route Around a Block
 
 - [x] **REQ-GUARDS-042** Moved Out as OUT-2307: the item needs a paid model run.
 

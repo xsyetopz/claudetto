@@ -33,8 +33,6 @@
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > auto compaction gets the handover and no core call" and "renewal > a finished last task above 70k renews".
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:223 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>); external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:95 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>).
 
-
-
 - [x] **RISK-123** A stale or abrupt handoff misleads or interrupts ongoing work.
   - Category: product.
   - Cause: the handoff file is out of date and badly built; the next agent takes it as the work order.
@@ -50,7 +48,6 @@
   - Status: closed; renewal runs only at a task boundary, never mid-task, and every handover ends with git state read at that moment (test: plugins/claudetto/hooks/handover/renewal.test.ts "an open task is no boundary"; plugins/claudetto/hooks/handover/compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; claudetto plugin test 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > an open task is no boundary" and "session.compact > auto compaction gets the handover and no core call".
   - Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192).
-
 
 - [x] **RISK-125** A handover written mid-step reports finished work as not done.
   Category: handover.
@@ -84,15 +81,11 @@
 
 ## Delegation
 
-
 ## Verification and Honesty
-
 
 ## Agent Habits
 
-
 ## Context Leakage
-
 
 ## Context Loss and Handover
 
@@ -141,7 +134,7 @@
   - Owner: handover
   - Status: closed; a refusal is a user row, and both the fork's Constraints section and the free extract carry every user row, with prior handovers carried whole (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/` -> no match; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
-  - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: verified against the API docs read 2026-11-18, "The cache is refreshed for no additional cost each time the cached content is used", https://platform.claude.com/docs/en/build-with-claude/prompt-caching, section "How prompt caching works"; the docs state the API behavior, not a Claude Code build offset).
+  - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: verified against the API docs read 2026-11-18, "The cache is refreshed for no additional cost each time the cached content is used", <https://platform.claude.com/docs/en/build-with-claude/prompt-caching>, section "How prompt caching works"; the docs state the API behavior, not a Claude Code build offset).
 
 - [x] **RISK-134** Auto compaction lands mid-task and compacts late
   Category: handover.
@@ -172,7 +165,6 @@
   - Status: closed; probe, claude 2.1.327, 2026-11-18, `bun -e 'compose("body","","")'`: prints "git HEAD: unknown" and "(clean)", not an empty line.
   - Verified: 2026-11-20, claude 2.1.327, `cd plugins/claudetto/hooks/handover && bun -e 'import {compose} from "./text.ts"; console.log(JSON.stringify(compose("body","","")))'` -> `"# Handover from Previous Session\n\nbody\n\ngit HEAD: unknown\ngit status --short:\n(clean)"`.
   - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:57-58@088a227c; plugins/claudetto/hooks/features/compaction/texts.ts:24@088a227c; probe F transcript, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
-
 
 ## Agent Conduct
 
@@ -259,14 +251,9 @@
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
   Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:230; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:236; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:240 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>).
 
-
-
-
 ## Safety Classifier False Positives
 
-
 ## Memory Absolutism
-
 
 ## Stale Handoff Base
 
@@ -288,9 +275,7 @@
 
 ## Skipped Notes Index
 
-
 ## Concurrent Sessions Share Nothing
-
 
 ## Compaction and Memory
 
@@ -326,10 +311,7 @@
   - Source: external/2026-10-12/export-How do i stop it writing edits ahead while waiting for action-.jsonl:6 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x1htas/how_do_i_stop_it_writing_edits_ahead_while/>) (reported). The `/clear` and context-estimate details: not located; external/2026-10-17/export-Haiku 5.5 on Steroids.jsonl:7 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x5rbwy/haiku_55_on_steroids/>; weak match, the quoted continuation wording was not located in the export); chunk-m14bt1pz.js@2596525 (claude 2.1.327 binary, searched 2026-11-17); openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:11 (reported); external/2026-10-02/export-Beware of this system prompt that is automatically injected into Claude Code after every compaction-.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1piny6t/beware_of_this_system_prompt_that_is/>).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed repo unedited in 8 of 8 runs, rerun 8 of 8 waited=1 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
 
-
 ## Ungrouped
-
-
 
 ## Product and Tooling
 
@@ -365,7 +347,7 @@
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > a failed fork falls back to the transcript extract"; clear.ts:17 holds `await $.store.set(PENDING, text)`.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
-## Conduct Faults from the Rearchitecture Sessions
+## Conduct Faults From the Rearchitecture Sessions
 
 - [x] **RISK-157** The handover fork misses the tool calls after the replayed request.
   Category: Claude Code fault.
@@ -446,4 +428,5 @@
   - Status: transferred 2026-11-20 (issue #60): the engine site is located, the cost at the renewal threshold measured 0, and recheck-on-release ticket #64 carries the check.
   - Verified: 2026-11-19, claude 2.1.327, fake-API request bodies and the paid runs above (issue #60); Likelihood 1 × Impact 2 = 2.
   - Verified: rechecked 2026-11-20 on 2.1.328 and 2.1.329 (issue #64), free: `reports/2026-11-20-research/fork-recheck/run.sh` shows the fork's copy of the parent's last message is still a string where the parent sent a cached one-block list, on 2.1.327 (control), 2.1.328 and 2.1.329.
+  - Verified: rechecked 2026-11-21 on 2.1.330 (issue #64), free, same script: same bytes False; the fault stays.
   - Source: issue #60.

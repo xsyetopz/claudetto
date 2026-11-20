@@ -7,7 +7,8 @@
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:237 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.327 binary chunk-rj3e7agr.js@277959.
   Verified: not re-run 2026-11-19: not re-checked this session; static evidence: none beyond the item.
 
-## Compaction and Context Thresholds
+## Compaction and Context Thresholds CTX-444
+
   Verified: source already on 2.1.327.
 
 - [x] **CTX-444** Reported: PreCompact is a shell command whose output never reaches Claude or the summary; PostCompact receives the new summary as compact_summary, so a script can check each generation against the decision log; hook output over 10,000 characters is swapped for a file path plus a 2,000-character preview that Claude is not asked to read. Checked in claude 2.1.327 with cc-inspect `code` search for `compact_summary`: the PostCompact input has `compact_summary` ("The conversation summary produced by compaction") (chunk-rj3e7agr.js@277959). Corrected on 2.1.327: PreCompact hook output over 10,000 characters (`Ake=1e4`, chunk-ez3vve9s.js@340) is cut in place and gets a note "output cut: N characters is over the 10000-character limit" (chunk-m14bt1pz.js@4116467, @4116900); no file path or 2,000-character preview is made for PreCompact. The constant `f3e=2000` sits beside `Ake` and serves other hook output.
@@ -15,7 +16,8 @@
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:364 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); claude 2.1.327 binary chunk-rj3e7agr.js@277959.
   Verified: not re-run 2026-11-19: partial check only; static evidence: compact_summary in the PostCompact schema, chunk-rj3e7agr.js:277959 (2.1.327); the 10,000-character cut was not checked.
 
-## Compaction and Context Thresholds
+## Compaction and Context Thresholds CTX-447 to CTX-448
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: compact_summary is in the bundle (9 hits); the 10,000-character swap of hook output is not retested.
 
 - [x] **CTX-447** Auto-compact fires at the model window minus a 33,000-token buffer (a 20,000 output reserve and 13,000 more): 967,000 for a 1M window. The older "980,000 window" wording is the same 967,000. Per-run `compact_boundary` timings (72-237 s) came from paid haiku runs on 2.1.318 and are not rechecked.
@@ -30,15 +32,17 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1586.
   Verified: not re-run 2026-11-19: not re-checked this session; static evidence: none beyond the item.
 
-## Compaction and Context Thresholds
-  Verified: binary string search, claude 2.1.327, 2026-11-19: the bundle defines a local command "autocompact" with argumentHint "[auto|<tokens>]" and the description "Set how full the context gets before auto-summarizing"; the settings write target was not retested.
+## Compaction and Context Thresholds CTX-455
+
+  Verified: binary string search, claude 2.1.327, 2026-11-19: the bundle defines a local command "autocompact" with argumentHint "[auto|`<tokens>`]" and the description "Set how full the context gets before auto-summarizing"; the settings write target was not retested.
 
 - [x] **CTX-455** The /goal modes were read from the program: supportsNonInteractive. A command.run hook for goal that answers without next() replaces the built-in /goal. A quoted "/goal set" and "/goal-set" are rejected.
   Basis: read, not run.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/vanilla-research.md:186-189.
   Verified: not re-run 2026-11-19: not re-checked this session; static evidence: none beyond the item.
 
-## Compaction and Context Thresholds
+## Compaction and Context Thresholds CTX-458 to CTX-465
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: supportsNonInteractive is in the bundle (14 hits, e.g. the autocompact command); the goal-hook replacement and the rejected quoted forms were not retested.
 
 - [x] **CTX-458** Compaction replaces the window with a summary of a few thousand tokens, not tens of thousands. On claude 2.1.327 a manual `/compact` cut about 122k to 3.2k and about 17k to 3.6k tokens, and auto-compaction cut sessions of about 714k to 4k-6k. A third-party reading of `isCompactSummary` transcript lines found summaries of about 14,500 characters (about 3.5k tokens). One user's figure of about 64k after a 375k-token load is refuted for this version; a 375k-token input still leaves a few thousand tokens of summary, so the handover file, not the summary, carries the detail.
@@ -64,7 +68,8 @@
   Source: external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:27; external/2026-10-07_p2/export-Subagents use a 5-min cache by default-!- 🤦🏻_♂️.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wz1qd4/subagents_use_a_5min_cache_by_default/>); openspec/changes/2-1-325-rearchitecture/design.md:102.
   Verified: not re-run 2026-11-19: partial; static evidence: subagentPromptCacheTtl present (chunk-ja5z738t.js:277725).
 
-## Compaction and Context Thresholds
+## Compaction and Context Thresholds CTX-466 to CTX-844
+
   Verified: source already on 2.1.327 for subagentPromptCacheTtl (present); binary string search, claude 2.1.327, 2026-11-19: 5 hits.
 
 - [x] **CTX-466** On 2.1.325 with haiku-5-5, `$.session.usage({breakdown}).autoCompactThreshold` reports 967,000 while real compaction runs at 490,000 (`thresholdSource=model-default`), so no context notice can precede compaction (measured on 2.1.325). On 2.1.327 with `claude-haiku-5-5`, no settings and the fake API, `/context` reports a 1m window and a 33k autocompact buffer, so the default threshold is 967,000 and the 490,000 figure is not reproduced. A smaller window can come from `clientdata` or `experiment` sources, which are server-supplied (the `autocompact_state` schema lists `env`, `settings`, `clientdata`, `experiment`, `model-default`, `unknown-model`, `auto`; chunk-rj3e7agr.js@617843), so the 490,000 case is kept as observed on 2.1.325 and cannot be re-created with a fake API. `CLAUDE_CODE_AUTO_COMPACT_WINDOW=40000` is raised to Claude Code's 100k minimum (effective 80k); `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is a percent of the window less the 20,000 output reserve. CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is a percent of the window less the 20,000 output reserve (L4, Ure in chunk-24jdhyyr.js, claude 2.1.319 binary; the module is gone from 2.1.327). Verified on 2.1.327: the effective window is the model window minus `min(maxOutputTokens, 20000)` (chunk-m14bt1pz.js@1998790) and the threshold is `min(floor(effective*pct/100), effective-13000)` for a pct above 0 and up to 100 (chunk-m14bt1pz.js@1992285), so 29.44 on a 200k window with 20k or more output tokens gives floor(180000*0.2944)=52,992, near 53,000.
@@ -118,5 +123,5 @@
   Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: prefix and earlier messages byte-identical, rewound prompt restored, typed text merged with it; byte sizes here 66,072/10,865 against 34,072/6,409 in the item because the environment differs (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
 ## External Sweep, 2026-11-18
-  Verified: source already on 2.1.327.
 
+  Verified: source already on 2.1.327.

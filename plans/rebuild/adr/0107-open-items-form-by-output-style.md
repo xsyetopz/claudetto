@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-17
 ---
-# What I Need from You Bullet Form
+# What I Need From You Bullet Form
 
 ## Context and Problem Statement
 

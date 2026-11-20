@@ -30,7 +30,8 @@
   Source: openspec/specs/low-hitl/spec.md:87; openspec/specs/low-hitl/spec.md:117.
   Verified: PASS: checked at 2.1.327 (B-setup report). Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
-## Machine, Shell, and Disk
+## Machine, Shell, and Disk CTX-538 to CTX-541
+
   Verified: git 2.56.1 in a temp repo, 2026-11-19: git diff, git log, and git show --output exit 0; git status --output exits 129.
 
 - [x] **CTX-538** `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` turns off the built-in advisor tool; setup writes it with the value `1` so the claudetto decide tool is the only advisor. Present in 2.1.326 (bool; cc-inspect `surface` env, 2026-11-17).
@@ -43,7 +44,7 @@
   Basis: reported. Status: have at 088a227c.
   Source: openspec/specs/session-hygiene/spec.md:203; openspec/changes/archive/2026-11-13-feat-2-1-321/specs/session-hygiene/spec.md:34.
   Verified: binary string search, claude 2.1.327, 2026-11-19: CLAUDE_CODE_TMPDIR (36 hits), plugin-tool-staging (2), bash-edit-diff (4), and cc-socks (9) are in the bundle; a fake-API run on 2.1.327 reported a messaging socket under /tmp/cc-socks.
-  Verified: PASS: /tmp/claude-501 holds -<project path> folders, bash-edit-diff and plugin-tool-staging, and /tmp/cc-socks exists, binary 2.1.327, 2026-11-19; CLAUDE_CODE_TMPDIR is in the bundle.
+  Verified: PASS: /tmp/claude-501 holds -`<project path>` folders, bash-edit-diff and plugin-tool-staging, and /tmp/cc-socks exists, binary 2.1.327, 2026-11-19; CLAUDE_CODE_TMPDIR is in the bundle.
 
 - [x] **CTX-540** Silent-turn reminder text: env `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` > server flag `tengu_hushed_lark_text` > default (2.1.319, read). 2.1.326: env present (also `_REMINDER` triBool, `_SECONDS`, `_TURNS`), and the gates `tengu_hushed_lark` and `tengu_hushed_lark_text` are present, the text default being "The user hasn't heard from you in a while. As you continue, keep them updated when there's something to tell — a finding, a change of plan." (cc-inspect `surface` env and gate, 2026-11-17); the order env over flag over default is verified on 2.1.327: `Llo()` returns `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` first, then the `tengu_hushed_lark_text` value, then the default text (chunk-m14bt1pz.js@3985537). `DISABLE_TELEMETRY=1` makes `cc-plugin-telemetry` unavailable (read 2.1.318; on 2.1.327 the plugin's `isAvailable` is `!TS()&&!Y()`, chunk-g8ypxj28.js@10244, and the plugin reads `DISABLE_TELEMETRY` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, chunk-g8ypxj28.js@25731; the bodies of `TS` and `Y` were not read). In 2.1.326 the release notes say a command turned off by an environment variable such as `DISABLE_TELEMETRY` now says why instead of "Unknown command". `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` also stops updates and refuses `$.http.fetch` with `auth`: env (bool) and `$.http.fetch` present in 2.1.326, the refusal of `auth` is Dropped (2026-11-18): the `$.http.fetch` binding passes `auth` through (chunk-b0yr0k8v.js@297361) and a search found no refusal text. The effects of the flag found on 2.1.327 are a refused plugin-archive download (chunk-m14bt1pz.js@866461) and refused plugin routes (chunk-70j62gpb.js@2552). On 2.1.327 the same facts hold: the gate is `BR("silent_turn_reminder", ..., env)`, whose first line is `if(override!==void 0)return override` (chunk-t907shf5.js@1810), called with the env value (chunk-m14bt1pz.js@3985693), while `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` is read only by the text function (chunk-m14bt1pz.js@3985537), so `CLAUDE_CODE_SILENT_TURN_REMINDER:"0"` turns the reminder off whatever the text is, and the text never turns it on. On 2.1.325 `CLAUDE_CODE_SILENT_TURN_REMINDER:"0"` and `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` are not alternatives (`chunk-wqb2b4v0.js:3789361`; `$defaults` semantics in `DZn`, `chunk-sk365049.js:435`). On 2.1.325 `CLAUDE_CODE_SILENT_TURN_REMINDER` is read through `LR("silent_turn_reminder", ..., env)`, which returns the env override.
   Acceptance: the code at the offsets matches. Verification: inspection. The binary holds the call. Verification: inspection.
@@ -56,7 +57,8 @@
   Source: openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:145; openspec/changes/archive/2026-11-10-release-2-1-319-1/design.md:164.
   Verified: PASS: tengu_fancy_wand at chunk-m14bt1pz.js@2528764; other parts not traced. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
 
-## Machine, Shell, and Disk
+## Machine, Shell, and Disk CTX-552 to CTX-553
+
   Verified: binary string search, claude 2.1.327, 2026-11-19: tengu_fancy_wand is in the bundle (4 hits); the gate details were already verified on 2.1.327 in the fact.
 
 - [x] **CTX-552** One `Bash` call `perl -0pi -e 's/.../.../g' a b c` replaces many `Edit` calls. Under `acceptEdits` it is denied: "The following part requires approval: perl -0pi -e ...".
@@ -75,7 +77,8 @@
   Verified: tick audit 2026-11-19: the fake-API rerun on 2.1.327 recorded above shows the allow; the `source: config` text is not visible through the fake API, so that half rests on the measurement in Basis.
   Verified: tick rerun 2026-11-19 on vanilla 2.1.327: PASS: OTel tool_decision showed accept from config, the file changed, and the arm with no allow was rejected (reports/2026-11-19-research/tick-rerun/ctx/README.md).
 
-## Machine, Shell, and Disk
+## Machine, Shell, and Disk CTX-554 to CTX-555
+
   Verified: cc-inspect code cli fake API (no paid call), claude 2.1.327, 2026-11-19: with --settings allowing Bash(perl -0pi -e *) under acceptEdits, the same perl call completed with no prompt (tool_result is_error false).
 
 - [x] **CTX-554** The CLI settings schema describes the per-model `autoCompactWindow` as "in tokens (at least 100000)" or "auto" (2.1.327, chunk-ja5z738t.js@279536). The 1000000 upper bound is not in the schema text and is not claimed.
@@ -90,4 +93,3 @@
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Ruled Out).
   Verified: source already on 2.1.327.
   Verified: PASS: checked at 2.1.327 (B-setup report). Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
-

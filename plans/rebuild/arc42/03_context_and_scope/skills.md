@@ -14,17 +14,10 @@
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: third-party ecosystem claims (LF AAIF, 70+ platforms, 1.3M skills); nothing local to run
 
-## Skills
-
-## Skills
+## Skills CTX-714
 
 - [x] **CTX-714** `skillListingMaxDescChars` defaults to 1536 (binary). It cuts "description - when_to_use" and appends an ellipsis with no stderr warning. It is not a 200 clamp; setting 200 works (fake-API run)
   Basis: measured.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:876; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:878.
   Verified: binary string search, claude 2.1.327, 2026-11-19: skillListingMaxDescChars default 1536 is present.
   Verified: re-run on claude 2.1.327, 2026-11-19: 2.1.327 binary: skillListingMaxDescChars described "Per-skill description character cap in the skill listing sent to Claude (default: 1536)"; the 200 run and the no-warning ellipsis not re-run
-
-## Skills
-
-## Skills
-

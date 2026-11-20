@@ -21,7 +21,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0015](../adr/0015-grader-faults-kept-in-change-1.md) | Grader Faults Kept in the First Change | superseded by ADR-0016 | 2026-11-09 |
 | [ADR-0016](../adr/0016-grader-faults-removed.md) | Grader Faults the Person Removed | accepted | 2026-11-09 |
 | [ADR-0017](../adr/0017-jev-never-allows.md) | Jev May Deny or Ask but Never Allow | accepted | 2026-11-09 |
-| [ADR-0018](../adr/0018-lean-openspec-parity.md) | OpenSpec With Core Parity In A Lighter Form | accepted | 2026-11-09 |
+| [ADR-0018](../adr/0018-lean-openspec-parity.md) | OpenSpec With Core Parity In A Lighter Form | superseded by ADR-0192 | 2026-11-09 |
 | [ADR-0019](../adr/0019-paid-work-weekly-cap.md) | Ask Before A Paid Call And Cap Paid Work At 25 Percent Of The Seven-Day Limit | superseded by ADR-0105 | 2026-11-16 |
 | [ADR-0020](../adr/0020-release-2-1-321-branch.md) | Next Release Targets 2.1.321 On A New feat Branch | accepted | 2026-11-09 |
 | [ADR-0021](../adr/0021-root-prompt-size-cap.md) | Root Prompt Size Cap | superseded by ADR-0082 | 2026-11-09 |
@@ -65,7 +65,7 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0059](../adr/0059-concise-style-length-lower-bound.md) | Keep the Output Style Short, With a Lower Bound | accepted | 2026-11-16 |
 | [ADR-0060](../adr/0060-constraint-ledger-by-sentence-selection.md) | Constraint Ledger by Sentence Selection | superseded by ADR-0075 | 2026-11-16 |
 | [ADR-0061](../adr/0061-decider-retry-policy.md) | Decider Retry Policy | accepted | 2026-11-16 |
-| [ADR-0062](../adr/0062-delete-plugin-eval-suite.md) | Delete the Behaviour Eval Suite | accepted | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
+| [ADR-0062](../adr/0062-delete-plugin-eval-suite.md) | Delete the Behaviour Eval Suite | superseded by ADR-0193 | 2026-11-16 (date of the handoff that records it; day of decision not recorded) |
 | [ADR-0063](../adr/0063-dogfood-after-each-commit.md) | Dogfood After Each Commit | accepted | 2026-11-16 |
 | [ADR-0064](../adr/0064-dogfood-from-vanilla.md) | Dogfood From A Vanilla Install Until Nothing Is Left To Align | accepted | 2026-11-16 |
 | [ADR-0065](../adr/0065-facts-verified-against-claude-2-1-326.md) | Verify Facts Against claude 2.1.326 | accepted | 2026-11-16 |
@@ -195,3 +195,5 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0189](../adr/0189-block-scope-over-vanilla.md) | Build Ten Blocks Over Vanilla 2.1.327; OpenSpec Stays Out | accepted | 2026-11-18 |
 | [ADR-0190](../adr/0190-triage-decisions-by-agent.md) | Triage Choices Settled by the Rebuild Agent | accepted | 2026-11-18 |
 | [ADR-0191](../adr/0191-commit-trailer-credits-an-account.md) | The Commit Trailer Credits Claude's Account | accepted | 2026-11-19 |
+| [ADR-0192](../adr/0192-claudetto-spec-replaces-openspec.md) | claudetto-spec Replaces claudetto-openspec | accepted | 2026-11-21 |
+| [ADR-0193](../adr/0193-plugin-evals-with-integrity-rules.md) | Plugin Evals Through `claude plugin eval`, Under Integrity Rules | accepted | 2026-11-21 |

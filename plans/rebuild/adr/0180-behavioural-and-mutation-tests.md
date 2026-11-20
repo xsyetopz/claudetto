@@ -32,4 +32,4 @@ Supersedes the mutation part of [ADR-0087](0087-product-first-no-benchmarks.md);
 - Not adopted: sample-and-select with a checker (ACL 2026.acl-long.354 implication 3). Its gain is shown only for constraints a program can check, and each sample costs a full turn; it ships only through [ADR-0177](0177-pragmatism-gate.md).
 - QS-013 changes from "tests proven by mutation" as a score to the kill check above.
 
-Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P8 implications 1-4, P7 implication 3, P9 implication 3; https://arxiv.org/pdf/2603.08806; https://arxiv.org/pdf/2605.15184; https://arxiv.org/html/2610.29162v1.
+Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7); reports/2026-11-18-research/papers.md P8 implications 1-4, P7 implication 3, P9 implication 3; <https://arxiv.org/pdf/2603.08806>; <https://arxiv.org/pdf/2605.15184>; <https://arxiv.org/html/2610.29162v1>.

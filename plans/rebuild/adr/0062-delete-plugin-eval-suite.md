@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0193
 date: 2026-11-16 (date of the handoff that records it; day of decision not recorded)
 ---
 # Delete the Behaviour Eval Suite

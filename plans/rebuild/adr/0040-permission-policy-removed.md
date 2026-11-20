@@ -16,6 +16,7 @@ Three D321 permission-policy requirements and one mod-architecture requirement c
 ## Decision Outcome
 
 Chosen: remove the parts below.
+
 - Each Ask and Deny Is Logged (no reader of `gate-asks/`);
 - /tmp folder session markers (they stopped no delete in 58 sampled denials; none of 9,567 temp folders held one; own scratch was denied about 350 times in 3 days);
 - A Test of Shipped Wording Is Denied (zero denials in 7 days);

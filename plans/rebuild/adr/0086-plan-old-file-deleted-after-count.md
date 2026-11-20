@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Delete the Old Curation File after a Count
+# Delete the Old Curation File After a Count
 
 ## Context and Problem Statement
 

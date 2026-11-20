@@ -30,4 +30,4 @@ Chosen: commit per verified slice. A slice is one change whose check passed. The
 - Undo of a bad slice is `git revert` of one commit, which covers Bash-made changes that checkpoints miss.
 - No commit is pushed without the user's instruction.
 
-Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671); https://code.claude.com/docs/en/checkpointing (fetched 2026-11-18); https://platform.claude.com/docs/en/build-with-claude/prompt-caching (fetched 2026-11-18); chunk-m14bt1pz.js@2958807 (claude 2.1.327).
+Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671); <https://code.claude.com/docs/en/checkpointing> (fetched 2026-11-18); <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> (fetched 2026-11-18); chunk-m14bt1pz.js@2958807 (claude 2.1.327).

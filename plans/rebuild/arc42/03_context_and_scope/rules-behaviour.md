@@ -1,12 +1,4 @@
-# rules-behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
+# Rules-Behaviour
 
 ## Rules and Model Behaviour
 
@@ -16,13 +8,7 @@
   Verified: source already on 2.1.327.
   Verified: re-run on claude 2.1.327, 2026-11-19: partial: declarations only; prompt.submit/turn.complete/session.compact/tool.check literals x>0 in 2.1.327 binary (tool.check x47); item itself says no blocking run was made
 
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
+## Rules and Model Behaviour CTX-498
 
 - [x] **CTX-498** A 'be clear and concise' prompt steers the final text but is not a token saver and can raise thinking tokens; a prompt naming the reader (who installs it, what they need) works better than a length limit.
   Basis: measured, in part refuted (paid run, Sonnet 5.5, 2.1.327, one README task, 5 runs per arm, `--append-system-prompt`, reports/2026-11-18-research/paid-labs/README.md). At effort high, "Be clear and concise." did not raise thinking (median 96 thinking tokens, against 113 with no line) and cut the reply by about 15%. A line naming the reader roughly doubled thinking (median 208) but gave the shortest total output (median 412 output tokens, against 504) and less than half the reply text. At effort medium no arm thought (0 thinking tokens). The naming-the-reader advice holds; "concise raises thinking" does not.
@@ -30,17 +16,4 @@
   Verified: source already on 2.1.327.
   Verified: not re-run 2026-11-19: prompt-style opinion; nothing local to run
 
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
-## Rules and Model Behaviour
-
 ## External Sweep, 2026-11-18
-

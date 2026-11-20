@@ -16,6 +16,7 @@ Change 2 of the 2.1.319 rebuild removes requirements the user chose to drop.
 ## Decision Outcome
 
 Chosen: remove the parts below, on 2026-11-09.
+
 - permission-policy "A Secret Stays off the Command Line" (`GATE_ENV_VALUES`, `GATE_ENV_DUMP`);
 - the building-blocks spec (`attachBlocks`);
 - [ADR-0133](0133-constraint-ledger.md) "An Ask Waits for the Newest Issues File", with `unfiled`;

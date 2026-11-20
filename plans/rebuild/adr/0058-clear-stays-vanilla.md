@@ -2,7 +2,7 @@
 status: superseded by ADR-0068
 date: 2026-11-16
 ---
-# Keep the User's /clear Vanilla
+# Keep the User's /Clear Vanilla
 
 ## Context and Problem Statement
 

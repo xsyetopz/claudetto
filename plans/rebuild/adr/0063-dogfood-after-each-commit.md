@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-11-16
 ---
-# Dogfood after Each Commit
+# Dogfood After Each Commit
 
 ## Context and Problem Statement
 
