@@ -419,9 +419,9 @@
   Verified: replay 2026-11-20, claude 2.1.327, Sonnet 5.5, `claude -p`, reports/2026-11-20-research/commit-trailer: on the two-commit dogfood task, vanilla 0/16 commits carried the line, claudetto at 3e7e491de 0/16, claudetto with the guard 16/16; on a single commit request vanilla 0/8, claudetto 8/8; $2.44 in all. `claude plugin test plugins/claudetto`: 141 pass, 0 fail, twice.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19.
 
-- [x] **RISK-513** The release check `bunx tsc --noEmit` fails in the sandbox when bunx must fetch typescript, because the sandbox denies `registry.npmjs.org` (issue #78).
+- [x] **RISK-513** A sandboxed command that needs a network host fails until the host is allowed for that command, because the sandbox denies every unlisted host: `bunx tsc --noEmit` fetching typescript from `registry.npmjs.org` (issue #78), `gh` reaching `api.github.com` (issue #81).
   Category: setup.
-  Cause: the plugins carry no local typescript, so `bunx` downloads it when its copy is missing or stale, and ADR-0188's minimal sandbox lists no package registry.
+  Cause: REQ-SETUP-024 lists no `allowedDomains` and the fill writes none (`defaults.test.ts:39`), so on 2.1.327 only the hosts in a command's own `allowed_domains` are reachable. The plugins carry no local typescript, so `bunx` downloads it when its copy is missing or stale, and `gh` always calls `api.github.com`.
   Event: dogfood at be012dcdd, 2026-11-20, session 9c44572c: both tsc runs exited 1 on the denial; the agent re-ran them with `allowed_domains: ["registry.npmjs.org"]`, both exited 0, and it recorded the failed attempt.
   Consequence: one extra Bash call with a domain allowance; no wrong result.
   Likelihood: 2
@@ -429,8 +429,10 @@
   Existing controls: the denial names the host and how to allow it for one command.
   Response: accept.
   Actions: none. Allowing the registry for every command would widen the sandbox to save one call about once a day.
-  Trigger: the agent reports a tsc failure caused by the denial as a type error, or the denial appears in more than a quarter of sessions that run `bunx tsc`.
+  Trigger: the agent reports a failure caused by a denial as a fault in the code, turns the sandbox off after one, or the denial appears in more than a quarter of sessions that run `bunx tsc` or `gh`.
   Owner: setup.
   Status: accepted 2026-11-20; Likelihood 2 × Impact 1 = 2.
   Verified: 2026-11-20, `grep -l 'deny network-outbound registry.npmjs.org'` over the 168 dogfood transcripts on this machine: 2 hits (4ccbdaa3 at 2026-11-19 00:06 UTC, 9c44572c at 2026-11-20 02:48 UTC) among the 20 sessions that ran `bunx tsc`; both reached exit 0 with the allowance. Session c3a85b2d ran the same command sandboxed minutes before the second hit and exited 0, and a sandboxed `bunx tsc --version` in the clone after the fetch exits 0.
-  Source: issue #78.
+  Status: accepted, widened 2026-11-20 (issue #81) to every unlisted host; Likelihood 2 × Impact 1 = 2. Listing `["*"]` would let any sandboxed command send data anywhere with no check, so it does not beat the one-call allowance.
+  Verified: 2026-11-20, `deny network-outbound` over the 171 dogfood transcripts on this machine: 4 sessions, `registry.npmjs.org` 2 (4ccbdaa3, 9c44572c) and `api.github.com` 2 (69f630f9, d2ace84e); three recovered with one `allowed_domains` re-run, one through a later call, none with the sandbox off.
+  Source: issues #78 and #81.
