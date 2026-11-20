@@ -149,3 +149,23 @@ risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 
 - No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
 - New fault: the session's `git add` of this README was refused because `.gitignore` ignored `/reports/`, which stopped its `&&` chain. The rule hid 74 register-cited report paths from git as well. Issue #77, fixed in 271c48f1c; the session's commit was applied here by cherry-pick, so this round is not the final one.
+
+## Dogfood at be012dcdd, 2026-11-20
+
+Checks run from a clean tree at be012dcdd.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0 (needed registry.npmjs.org to fetch typescript; the first attempt without it exited 1 on a blocked download, so it is not counted).
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0 (same download note).
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 99, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- All 99 distinct reports/ paths cited under plans/rebuild exist in this clone; none are missing.
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
