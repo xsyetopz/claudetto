@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: trivial-rename
 description: "Negative twin: a local variable rename adds no behaviour."
-tags: [spec,trivial]
+tags: [spec, trivial]
 plugins: ["../.."]
 runs: 3
 context:

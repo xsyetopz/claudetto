@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: contradiction
 description: "Canary: the request contradicts requirement CART-1; the passing behaviour is to stop and report."
-tags: [spec,canary]
+tags: [spec, canary]
 plugins: ["../.."]
 runs: 3
 context:

@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: ambiguous-headless
 description: "A real unknown (rounding and rate format) under claude -p."
-tags: [spec,ambiguous]
+tags: [spec, ambiguous]
 plugins: ["../.."]
 runs: 3
 context:
