@@ -32,4 +32,5 @@ Results land in `plugins/claudetto-spec/evals/results/`, which git ignores.
 - Each regex grader has a good and a bad sample in `tools/__tests__/spec-eval-graders.test.ts`; run `bun test tools/__tests__/spec-eval-graders.test.ts` before the first eval run.
 - A case whose baseline arm also scores 1.0 is reported as "does not separate the arms".
 - `tool_used: Skill` graders are plugin-fired indicators under `with-without`; the `trivial-*` ones set `arm: both` and score in both arms.
+- Each case keeps its prompt in `case.yaml` under `execution.prompt`, with no `prompt.md`: `prompt.md` rejects unknown frontmatter keys, so it cannot carry the `title` that the repo's markdownlint MD041 rule asks of a Markdown file without a heading, and a heading in the body would change the prompt Claude receives.
 - Each case folder holds its own copy of `scaffold.sh` because the docs resolve `scaffold_script` inside the case directory; a test keeps the shared copies identical.
