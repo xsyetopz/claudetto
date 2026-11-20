@@ -42,6 +42,26 @@ project-test:
 # The plugin checks CI runs after the language checks.
 project-verify: project-typecheck project-lint project-test
 
+# Paid: each run is a full Claude session. Run outside a sandboxed agent shell, whose Seatbelt makes
+# the child's own sandbox fail. Reports stay local (--no-publish).
+# Run one plugin's eval suite, e.g. `just eval claudetto-spec --case 'feature-*'`.
+eval plugin *args:
+    claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }}
+
+# The cases stay out of the repo and out of any agent's context (ADR-0193).
+# Run your held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin (user only).
+eval-holdout plugin *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    src="$HOME/.claudetto-holdout/{{ plugin }}"
+    [[ -d "$src" ]] || { echo "$src is missing: held-out cases live there, one case folder each" >&2; exit 1; }
+    work="$(mktemp -d)"
+    trap 'rm -rf "$work"' EXIT
+    cp -R "plugins/{{ plugin }}" "$work/plugin"
+    rm -rf "$work/plugin/evals"
+    cp -R "$src" "$work/plugin/evals"
+    claude plugin eval "$work/plugin" --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }}
+
 # Bump one plugin's patch version, e.g. `just bump claudetto`.
 bump plugin:
     perl -0pi -e 's/("version":\s*"\d+\.\d+\.)(\d+)"/$1 . ($2 + 1) . "\""/e' plugins/{{ plugin }}/.claude-plugin/plugin.json
