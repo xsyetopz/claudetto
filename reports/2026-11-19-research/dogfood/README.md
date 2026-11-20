@@ -108,3 +108,22 @@ Probe: `run.sh start` setup on a fresh clone of e6909b79f, which adds only the n
 - Turn 1 ran the same checks in the session plus `audit.py --all`: every exit 0, 436 risks printed, each `ok`. 5 tool calls, 0 errored results.
 - The per-status figures in that answer were the agent's own count, because `audit.py` printed none. Issue #75 makes the script print them.
 - No new fault was seen in the plugins.
+
+## Dogfood at 72796b825, 2026-11-20 (final round)
+
+Checks run from a clean tree at 72796b825.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 98, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 436; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
