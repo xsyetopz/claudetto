@@ -43,10 +43,11 @@ project-test:
 project-verify: project-typecheck project-lint project-test
 
 # Paid: each run is a full Claude session. Run outside a sandboxed agent shell, whose Seatbelt makes
-# the child's own sandbox fail. Reports stay local (--no-publish).
+# the child's own sandbox fail. Reports stay local (--no-publish); traces stay in
+# /private/tmp/e-* for diagnosis (--keep-temp).
 # Run one plugin's eval suite, e.g. `just eval claudetto-spec --case 'feature-*'`.
 eval plugin *args:
-    claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }}
+    claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish --keep-temp {{ args }}
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
 # Run your held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin (user only).

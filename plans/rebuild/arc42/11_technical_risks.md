@@ -14,3 +14,4 @@ Index of the ISO 31000 risk register, one file per owning block.
 | [`edit`](../risk-register/edit.md) | 5 | RISK-416 to RISK-419, RISK-480 |
 | [`you-should-know`](../risk-register/you-should-know.md) | 2 | RISK-420 to RISK-421 |
 | [`verification`](../risk-register/verification.md) | 58 | RISK-422 to RISK-479 |
+| [`spec`](../risk-register/spec.md) | 3 | RISK-515 to RISK-517 |
