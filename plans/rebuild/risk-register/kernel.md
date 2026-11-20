@@ -486,3 +486,19 @@
   - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2.
   - Verified: 2026-11-20, probe on 2.1.327 (Haiku 5.5, $0.009): `${(f)...}` and `${${f:t}%.ts}` blocked; `${f:t:r}`, `print -l` and `basename` not blocked. Transcripts 2026-11-17 to 2026-11-19: 10 of 18,864 Bash commands used a flag or nested expansion, and 2 results carry the block message (reports/2026-11-20-research/zsh-parse/README.md).
   - Source: issue #67.
+
+- [x] **RISK-512** The model calls a deferred tool with ToolSearch's input (`select:<name>`) under the deferred tool's own name, before its schema is loaded (issue #76).
+  - Category: host behaviour.
+  - Cause: 2.1.327 sends a deferred tool's schema only after ToolSearch loads it, and rejects a call made without it with an InputValidationError that names the fix (chunk-m14bt1pz.js offset 4744979).
+  - Event: dogfood at 72796b825, 2026-11-20, session 1c9f6d80: the agent called `Monitor` with `{"query": "select:Monitor"}`, then waited with a Bash loop; its reported checks were correct.
+  - Consequence: one errored tool call, then a working path.
+  - Likelihood: 1
+  - Impact: 1
+  - Existing controls: core's error names the missing schema and tells the model to call ToolSearch first.
+  - Response: accept.
+  - Actions: none. A prompt line cannot show a measured gain at 1.7% of sessions and one call each.
+  - Trigger: the slip repeated within one session, or more than 5% of sessions.
+  - Owner: kernel
+  - Status: accepted 2026-11-20; Likelihood 1 × Impact 1 = 1.
+  - Verified: 2026-11-20, `python3 -I reports/2026-11-20-research/deferred-slip/scan.py` over local transcripts: 35 slips in 34 of 1,998 sessions (165,204 tool calls), all under `Monitor`; the next call was Bash 30, ToolSearch 3, Edit 1, none 1, never the slip again (reports/2026-11-20-research/deferred-slip/README.md).
+  - Source: issue #76.
