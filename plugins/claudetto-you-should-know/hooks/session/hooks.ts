@@ -3,8 +3,8 @@
 import type { On } from "claude-code";
 
 import type { Ctx } from "../shared/context";
-import { forgetDetached, isOpenView, rowOf, withViewCleared } from "./rows";
 import { fault } from "../shared/fault";
+import { forgetDetached, isOpenView, rowOf, withViewCleared } from "./rows";
 
 export function registerSession(on: On, ctx: Ctx): void {
 	on("session.detach", async ($, e, next) => {
@@ -21,9 +21,9 @@ export function registerSession(on: On, ctx: Ctx): void {
 			if (isOpenView(view) || view?.kind === "off") {
 				await $.store.set("sessions", withViewCleared(rows, e.sessionId));
 			}
-		} catch (err) {
+		} catch (error) {
 			// the row is cleared at the next prompt
-			fault($, "session end", err);
+			fault($, "session end", error);
 		}
 		return next(e);
 	});

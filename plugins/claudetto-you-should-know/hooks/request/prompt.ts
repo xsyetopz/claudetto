@@ -2,13 +2,14 @@
 
 import { AFTER_KNOWN, BEFORE_SEEN, BETWEEN_LISTS } from "./propose-text";
 
-export type Direction = "first" | "simpler_words" | "less_detail" | "more_detail";
+export type Direction =
+	"first" | "simpler_words" | "less_detail" | "more_detail";
 export type Redo = Exclude<Direction, "first">;
 
 export const ASKED_WAYS = {
 	simpler_words: "in simpler words",
 	less_detail: "with less detail",
-	more_detail: "in more detail",
+	more_detail: "in more detail"
 };
 
 /** The explanation's shape: the parser reads a bold title, a lead, an optional fenced sketch, then a caption. */
@@ -34,7 +35,8 @@ Use plain words and short sentences. Prefer the concrete example to an analogy, 
 A build step is a command the pipeline runs for you, like "install packages". Listed once at the top, it runs 1 time. Listed inside each of your 3 jobs, it runs 3 times.
 Each extra run costs about 40 seconds, so you would wait 80 seconds more per build for the same result. The choice is whether the three jobs may share one install.
 </example>`;
-export const FIRST_EXPLANATION_LENGTH = "Use at most 100 words, fewer when the thing needs no introduction.";
+export const FIRST_EXPLANATION_LENGTH =
+	"Use at most 100 words, fewer when the thing needs no introduction.";
 export const EXPLANATION_LENGTHS: Readonly<Record<Direction, string>> = {
 	first: FIRST_EXPLANATION_LENGTH,
 	simpler_words:
@@ -42,7 +44,7 @@ export const EXPLANATION_LENGTHS: Readonly<Record<Direction, string>> = {
 	less_detail:
 		"Keep only the single most important point: what the thing is in one clause, then the one consequence and the choice. Leave out technical terms and the sketch. Use at most 45 words.",
 	more_detail:
-		"Name the real parts now: the actual config keys, file, or function involved, each introduced in everyday words and then named in backticks, plus one edge case that would surprise them. Keep writing for a reader with no context and keep to terms from the conversation. Use at most 160 words; a sketch of the real structure helps here.",
+		"Name the real parts now: the actual config keys, file, or function involved, each introduced in everyday words and then named in backticks, plus one edge case that would surprise them. Keep writing for a reader with no context and keep to terms from the conversation. Use at most 160 words; a sketch of the real structure helps here."
 };
 export const SIDE_REQUEST_FRAME = `<side_request>
 The person using Claude Code asked for this through the "You should know" feature. You are a separate, lightweight copy of the assistant that answers this one request while the main agent keeps working undisturbed, so write as a fresh helper and not as an agent that was interrupted.
@@ -53,7 +55,7 @@ Credentials, tokens, keys, environment values, and personal data from the conver
 </side_request>`;
 export function explainPrompt(
 	line: string,
-	redo: { readonly direction: Redo; readonly previous: string } | undefined,
+	redo?: { readonly direction: Redo; readonly previous: string }
 ): string {
 	const redone =
 		redo === undefined
@@ -79,11 +81,13 @@ Write the title and the explanation in the language the session's Language instr
 }
 
 const listed = (lines: readonly string[]): string =>
-	lines.length > 0 ? lines.map((line) => `- ${line}`).join("\n") : "(nothing yet)";
+	lines.length > 0
+		? lines.map((line) => `- ${line}`).join("\n")
+		: "(nothing yet)";
 
 /** The propose prompt: `seen` are the last offers (skipped), `known` the topics the person knows. */
 export const proposePrompt = (
 	seen: readonly string[],
-	known: readonly string[],
+	known: readonly string[]
 ): string =>
 	`${SIDE_REQUEST_FRAME}\n${BEFORE_SEEN.join("\n")}${listed(seen)}${BETWEEN_LISTS.join("\n")}${listed(known)}${AFTER_KNOWN.join("\n")}`;

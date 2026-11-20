@@ -2,58 +2,61 @@
 
 import {
 	CARD_WIDTH,
+	OFF_COMMAND,
 	OFFER_LABELS,
 	OFFER_MARGIN_ROWS,
-	OFF_COMMAND,
-	STAR_CELLS,
+	STAR_CELLS
 } from "../shared/constants";
-import { type Look, type Table } from "./table";
 import { choicesRows, wrapRows } from "../text/text";
+import type { Look, Table } from "./table";
 
-export type Span = { readonly text: string; readonly look?: "bold" | "code" };
+export interface Span {
+	readonly text: string;
+	readonly look?: "bold" | "code";
+}
 export type Copy = readonly (readonly Span[])[];
 
-export type Choice = {
+export interface Choice {
 	readonly hotkey: string;
 	readonly label: string;
 	readonly onPress: (() => void) | undefined;
 	readonly isDim?: boolean;
 	readonly role?: string;
-};
+}
 
 export type Budget =
-	| "scrolls"
-	| { readonly maxRows: number; readonly bodyColumns: number };
+	"scrolls" | { readonly maxRows: number; readonly bodyColumns: number };
 
-export type About = {
+export interface About {
 	readonly isOpen: boolean;
 	readonly surface: string;
 	readonly onPress: () => void;
 	readonly copy: Copy;
 	readonly budget: Budget;
-};
+}
 
-const SPAN_LOOKS: Readonly<Record<"bold" | "code", Look & { bold?: boolean }>> = {
-	bold: { bold: true },
-	code: { color: "permission" },
-};
+const SPAN_LOOKS: Readonly<Record<"bold" | "code", Look & { bold?: boolean }>> =
+	{
+		bold: { bold: true },
+		code: { color: "permission" }
+	};
 
 export const LEARN: readonly Span[] = [
 	{ text: "Learn more", look: "bold" },
-	{ text: " to get a deeper explanation and chat about it." },
+	{ text: " to get a deeper explanation and chat about it." }
 ];
 export const PLUGIN_OFF: readonly Span[] = [
 	{ text: "Disable on this machine with " },
 	{ text: OFF_COMMAND, look: "code" },
-	{ text: "." },
+	{ text: "." }
 ];
 export const WATCHING: readonly Span[] = [
-	{ text: "A side agent is watching your back while Claude works." },
+	{ text: "A side agent is watching your back while Claude works." }
 ];
 export const WHEN: readonly Span[] = [
 	{
-		text: "When something comes up that you should know but might miss, this plugin flags it for you.",
-	},
+		text: "When something comes up that you should know but might miss, this plugin flags it for you."
+	}
 ];
 export const APP_COPY: Copy = [WATCHING, WHEN, LEARN];
 export const TERMINAL_COPY: Copy = [WATCHING, WHEN, LEARN, PLUGIN_OFF];
@@ -65,9 +68,11 @@ export const ABOUT_THIS = plainText(TERMINAL_COPY);
 export const ABOUT_CLOSED: About = {
 	isOpen: false,
 	surface: "terminal",
-	onPress: () => { },
+	onPress: () => {
+		// the closed card is never drawn, so nothing presses it
+	},
 	copy: TERMINAL_COPY,
-	budget: "scrolls",
+	budget: "scrolls"
 };
 
 export function noteSpans(table: Table, copy: Copy, base: Look): unknown[] {
@@ -75,14 +80,14 @@ export function noteSpans(table: Table, copy: Copy, base: Look): unknown[] {
 	return copy
 		.flatMap((para, index) => (index === 0 ? para : [{ text: " " }, ...para]))
 		.map(({ text, look }: Span) =>
-			h(Text as never, { ...(look === undefined ? base : SPAN_LOOKS[look]) }, text),
-		) as unknown[];
+			h(Text, { ...(look === undefined ? base : SPAN_LOOKS[look]) }, text)
+		);
 }
 
 export function aboutCard(table: Table, copy: Copy): unknown {
 	const { Box, Text } = table;
 	return h(
-		Box as never,
+		Box,
 		{
 			position: "absolute",
 			bottom: 1,
@@ -93,9 +98,9 @@ export function aboutCard(table: Table, copy: Copy): unknown {
 			borderStyle: "round",
 			borderDimColor: true,
 			paddingX: 1,
-			width: CARD_WIDTH,
+			width: CARD_WIDTH
 		},
-		h(Text as never, { wrap: "wrap" }, noteSpans(table, copy, {})),
+		h(Text, { wrap: "wrap" }, noteSpans(table, copy, {}))
 	);
 }
 
@@ -106,13 +111,13 @@ export const aboutChoice = (about: {
 	hotkey: "3",
 	label: about.isOpen ? "Return to topic" : OFFER_LABELS.about,
 	onPress: about.onPress,
-	isDim: true,
+	isDim: true
 });
 
-type Sizing = {
+interface Sizing {
 	readonly columns: number;
 	readonly labels: readonly string[];
-};
+}
 
 export const headedRows = (text: string, sizing: Sizing): number =>
 	OFFER_MARGIN_ROWS +
@@ -144,11 +149,13 @@ export function fittedCopy(args: {
 		offerRows({
 			columns: args.bodyColumns,
 			labels: args.labels,
-			note: plainText(args.copy.slice(0, count)),
+			note: plainText(args.copy.slice(0, count))
 		}) <= args.maxRows;
 	return args.copy.slice(
 		0,
-		args.copy.map((_, index) => args.copy.length - index).find(fits) ?? 0,
+		args.copy
+			.map((_, index) => args.copy.length - index)
+			.find((count) => fits(count)) ?? 0
 	);
 }
 
@@ -160,7 +167,7 @@ export function aboutFit(
 		readonly line: string;
 		readonly before: readonly Choice[];
 		readonly after: readonly Choice[];
-	},
+	}
 ): { readonly note: Copy; readonly choices: readonly Choice[] } {
 	const closed = aboutChoice(about);
 	const open = aboutChoice({ ...about, isOpen: true });
@@ -169,10 +176,10 @@ export function aboutFit(
 	const copy = scrolls
 		? about.copy
 		: fittedCopy({
-			...budget,
-			copy: about.copy,
-			labels: [...row.before, open, ...row.after].map((c) => c.label),
-		});
+				...budget,
+				copy: about.copy,
+				labels: [...row.before, open, ...row.after].map((c) => c.label)
+			});
 	const closedRow = aboutChoice({ ...about, isOpen: false });
 	const closedFits =
 		scrolls ||
@@ -180,26 +187,26 @@ export function aboutFit(
 			columns: budget.bodyColumns,
 			tag: row.tag,
 			line: row.line,
-			labels: [...row.before, closedRow, ...row.after].map((c) => c.label),
+			labels: [...row.before, closedRow, ...row.after].map((c) => c.label)
 		}) <= budget.maxRows;
 	const fits = copy.length > 0 && closedFits;
 	return {
 		note: about.isOpen && fits ? copy : [],
-		choices: fits ? [closed] : [],
+		choices: fits ? [closed] : []
 	};
 }
 
 export const aboutFrame = (
 	isApp: boolean,
 	view: { readonly maxRows: number; readonly bodyColumns: number },
-	isOptIn: boolean,
+	isOptIn: boolean
 ): { readonly copy: Copy; readonly budget: Budget } => {
 	const full = isApp ? APP_COPY : TERMINAL_COPY;
 	return {
 		copy: isOptIn ? [] : full,
 		budget: isApp
 			? "scrolls"
-			: { maxRows: view.maxRows, bodyColumns: view.bodyColumns },
+			: { maxRows: view.maxRows, bodyColumns: view.bodyColumns }
 	};
 };
 

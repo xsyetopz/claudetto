@@ -6,22 +6,24 @@ describe("parseProposedLine", () => {
 	test("reads learn, tag and explain labels", () => {
 		expect(
 			parseProposedLine(
-				"learn: Tests run in order.\ntag: You should know\nexplain: **A title**\nA body that says what it is.",
-			),
+				"learn: Tests run in order.\ntag: You should know\nexplain: **A title**\nA body that says what it is."
+			)
 		).toEqual({
 			kind: "line",
 			line: "Tests run in order.",
 			tag: "You should know",
-			explanation: "**A title**\nA body that says what it is.",
+			explanation: "**A title**\nA body that says what it is."
 		});
 	});
 
 	test("takes the Heads up tag and ends the line with a period", () => {
-		expect(parseProposedLine("learn: Beware the cache\ntag: Heads up")).toEqual({
-			kind: "line",
-			line: "Beware the cache.",
-			tag: "Heads up",
-		});
+		expect(parseProposedLine("learn: Beware the cache\ntag: Heads up")).toEqual(
+			{
+				kind: "line",
+				line: "Beware the cache.",
+				tag: "Heads up"
+			}
+		);
 	});
 
 	test("strips wrapping quotes", () => {
@@ -40,13 +42,21 @@ describe("parseProposedLine", () => {
 	});
 
 	test("reads a bullet, a quote-wrapped line and a dash tag", () => {
-		const out = parseProposedLine("- learn: \"Cache is shared\"\n> tag - Heads up");
-		expect(out).toEqual(expect.objectContaining({ kind: "line", tag: "Heads up" }));
+		const out = parseProposedLine(
+			'- learn: "Cache is shared"\n> tag - Heads up'
+		);
+		expect(out).toEqual(
+			expect.objectContaining({ kind: "line", tag: "Heads up" })
+		);
 	});
 
 	test("reads a continuation line of learn", () => {
-		const out = parseProposedLine("learn: First part\nsecond part.\ntag: You should know");
-		expect(out).toEqual(expect.objectContaining({ kind: "line", line: "First part second part." }));
+		const out = parseProposedLine(
+			"learn: First part\nsecond part.\ntag: You should know"
+		);
+		expect(out).toEqual(
+			expect.objectContaining({ kind: "line", line: "First part second part." })
+		);
 	});
 
 	test("treats none, with punctuation, as declined", () => {
@@ -106,12 +116,15 @@ describe("parseProposedLine", () => {
 		const out = parseProposedLine(reply);
 
 		// Assert
-		expect(out).toMatchObject({ kind: "line", explanation: "**A**\nlead\nmore" });
+		expect(out).toMatchObject({
+			kind: "line",
+			explanation: "**A**\nlead\nmore"
+		});
 	});
 
 	test("an escape sequence is removed and runs of blanks become one", () => {
 		// Arrange
-		const reply = "learn: a\u001b[31m   b\u001b[0m \t c";
+		const reply = "learn: a\u001B[31m   b\u001B[0m \t c";
 
 		// Act
 		const out = parseProposedLine(reply);
@@ -127,11 +140,15 @@ describe("withKnown", () => {
 	});
 
 	test("refuses a line already known in any case", () => {
-		expect(withKnown(["Tests run in order."], "tests run in order.", 50)).toBeUndefined();
+		expect(
+			withKnown(["Tests run in order."], "tests run in order.", 50)
+		).toBeUndefined();
 	});
 
 	test("drops a repeat in any case, and keeps the newest 50", () => {
-		expect(withKnown(["Tests run in order."], "tests RUN in order.", 50)).toBeUndefined();
+		expect(
+			withKnown(["Tests run in order."], "tests RUN in order.", 50)
+		).toBeUndefined();
 		const full = Array.from({ length: 50 }, (_, i) => `l${i}`);
 		const next = withKnown(full, "new", 50);
 		expect(next?.length).toBe(50);

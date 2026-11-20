@@ -1,18 +1,19 @@
 /** Fits card titles and sketch lines to the terminal width by cell count. */
 
-import { CARD_INSET, FALLBACK_COLUMNS } from "../shared/constants";
 import type { Card } from "../request/cards";
+import { CARD_INSET, FALLBACK_COLUMNS } from "../shared/constants";
 
 const NARROW = {
 	hangulJamo: 4352,
 	punctuation: { first: 8208, last: 8286 },
 	arrows: { first: 8592, last: 8703 },
 	shapes: { first: 9472, last: 9727 },
-	mediumSmallSquares: { white: 9725, black: 9726 },
+	mediumSmallSquares: { white: 9725, black: 9726 }
 };
 
 export function glyphCellsAtMost(code: number): number {
-	const { hangulJamo, punctuation, arrows, shapes, mediumSmallSquares } = NARROW;
+	const { hangulJamo, punctuation, arrows, shapes, mediumSmallSquares } =
+		NARROW;
 	if (
 		code < hangulJamo ||
 		(code >= punctuation.first && code <= punctuation.last) ||
@@ -51,12 +52,15 @@ export function fitLine(text: string, width: number): string {
 	return out;
 }
 
-export function fitCards(cards: readonly Card[], columns: number): readonly Card[] {
+export function fitCards(
+	cards: readonly Card[],
+	columns: number
+): readonly Card[] {
 	const wide = Number.isFinite(columns) ? columns : FALLBACK_COLUMNS;
 	const room = Math.max(wide - CARD_INSET, 1);
 	return cards.map((card) => ({
 		...card,
 		title: fitLine(card.title, room),
-		sketch: card.sketch.map((line) => fitLine(line, room)),
+		sketch: card.sketch.map((line) => fitLine(line, room))
 	}));
 }

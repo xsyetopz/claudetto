@@ -2,11 +2,6 @@
 
 import type { EngineInterface, On } from "claude-code";
 
-import { CHECK_EVERY, FIRST_CHECK, CLEAR_AFTER_PROMPTS, LOOKS_TO_SKIP_MAX } from "../shared/constants";
-import { looksToSkipAfter } from "./backoff";
-import { runCheck } from "./run";
-import type { Ctx } from "../shared/context";
-import { swallow } from "../shared/fault";
 import {
 	drawsBand,
 	isBandWatched,
@@ -17,21 +12,47 @@ import {
 	promptedAtTurnStart,
 	rowOf,
 	storedCount,
-	withRow,
+	withRow
 } from "../session/rows";
+import {
+	CHECK_EVERY,
+	CLEAR_AFTER_PROMPTS,
+	FIRST_CHECK,
+	LOOKS_TO_SKIP_MAX
+} from "../shared/constants";
+import type { Ctx } from "../shared/context";
+import { swallow } from "../shared/fault";
+import { looksToSkipAfter } from "./backoff";
+import { runCheck } from "./run";
 
-export type StepAt = { readonly turnId: string; readonly index: number };
+export interface StepAt {
+	readonly turnId: string;
+	readonly index: number;
+}
 
 /** True on the steps that may start a check: the third, then the sixth, twelfth and so on. */
-export const isCheckStep = (index: number): boolean => index === FIRST_CHECK || (index > 0 && index % CHECK_EVERY === 0);
+export const isCheckStep = (index: number): boolean =>
+	index === FIRST_CHECK || (index > 0 && index % CHECK_EVERY === 0);
 
-async function setView($: EngineInterface, id: string, view: undefined): Promise<void> {
+async function setView(
+	$: EngineInterface,
+	id: string,
+	view: undefined
+): Promise<void> {
 	const rows = await $.store.get("sessions");
-	await $.store.set("sessions", withRow(rows, { ...(rowOf(rows, id) ?? { id }), view }));
+	await $.store.set(
+		"sessions",
+		withRow(rows, { ...(rowOf(rows, id) ?? { id }), view })
+	);
 }
 
 /** A person's prompts since a note was shown decide whether it stays or counts as ignored. */
-async function onTurnStart($: EngineInterface, id: string, ctx: Ctx, view: ReturnType<typeof viewAt>): Promise<void> {
+async function onTurnStart(
+	$: EngineInterface,
+	id: string,
+	ctx: Ctx,
+	view: ReturnType<typeof viewAt>
+): Promise<void> {
 	const prompted = promptedAtTurnStart(ctx.promptsSince, id, 0);
 	if (view?.kind === "asked") {
 		ctx.askedTimers.get(id)?.cancel();
@@ -51,7 +72,10 @@ async function onTurnStart($: EngineInterface, id: string, ctx: Ctx, view: Retur
 	const keep = cur.kind === "explained" || survived < CLEAR_AFTER_PROMPTS;
 	await $.store.set(
 		"sessions",
-		withRow(rows, { ...(rowOf(rows, id) ?? { id }), view: keep ? keptPastPrompt(cur, survived) : undefined }),
+		withRow(rows, {
+			...(rowOf(rows, id) ?? { id }),
+			view: keep ? keptPastPrompt(cur, survived) : undefined
+		})
 	);
 	if (keep) {
 		if (cur.kind === "offer" && cur.isOffArmed === true) {
@@ -67,22 +91,36 @@ async function onTurnStart($: EngineInterface, id: string, ctx: Ctx, view: Retur
 
 const viewAt = (view: ReturnType<typeof rowOf>) => view?.view ?? null;
 
-async function onStep($: EngineInterface, e: StepAt, id: string, surfaces: readonly string[], ctx: Ctx): Promise<void> {
+/** The row and view at a step, with an unattended in-flight view cleared once a second read confirms it. */
+async function viewForStep(
+	$: EngineInterface,
+	id: string,
+	ctx: Ctx
+): Promise<{ row: ReturnType<typeof rowOf>; view: ReturnType<typeof viewAt> }> {
+	const row = rowOf(await $.store.get("sessions"), id);
+	const view = viewAt(row);
+	if (!isUnattendedInFlight(view, id, ctx.explaining)) {
+		return { row, view };
+	}
+	const fresh = rowOf(await $.store.get("sessions"), id);
+	if (!isUnattendedInFlight(fresh?.view, id, ctx.explaining)) {
+		return { row, view: fresh?.view ?? null };
+	}
+	await setView($, id, undefined);
+	$.ui.invalidate("ui.render");
+	return { row: rowOf(await $.store.get("sessions"), id), view: null };
+}
+
+async function onStep(
+	$: EngineInterface,
+	e: StepAt,
+	id: string,
+	surfaces: readonly string[],
+	ctx: Ctx
+): Promise<void> {
 	ctx.ended.delete(id);
 	const isStart = e.index === 0;
-	let row = rowOf(await $.store.get("sessions"), id);
-	let view = viewAt(row);
-	if (isUnattendedInFlight(view, id, ctx.explaining)) {
-		const fresh = rowOf(await $.store.get("sessions"), id);
-		if (isUnattendedInFlight(fresh?.view, id, ctx.explaining)) {
-			await setView($, id, undefined);
-			$.ui.invalidate("ui.render");
-			view = null;
-			row = rowOf(await $.store.get("sessions"), id);
-		} else {
-			view = fresh?.view ?? null;
-		}
-	}
+	const { row, view } = await viewForStep($, id, ctx);
 	if (isStart) {
 		await onTurnStart($, id, ctx, view);
 		ctx.promptsSince.delete(id);
@@ -96,7 +134,10 @@ async function onStep($: EngineInterface, e: StepAt, id: string, surfaces: reado
 	if (skip || ctx.checking.has(id)) {
 		return;
 	}
-	const looks = Math.min(LOOKS_TO_SKIP_MAX, storedCount(await $.store.get("looksToSkip")));
+	const looks = Math.min(
+		LOOKS_TO_SKIP_MAX,
+		storedCount(await $.store.get("looksToSkip"))
+	);
 	if (looks > 0) {
 		await $.store.set("looksToSkip", looks - 1);
 		return;
@@ -107,8 +148,25 @@ async function onStep($: EngineInterface, e: StepAt, id: string, surfaces: reado
 			.catch(swallow($, "check"))
 			.finally(() => {
 				ctx.checking.delete(id);
-			}),
+			})
 	);
+}
+
+/** Starts the step's check where the band is drawn; a fault is logged, never thrown. */
+async function watchStep(
+	$: EngineInterface,
+	e: StepAt,
+	ctx: Ctx
+): Promise<void> {
+	try {
+		const surfaces = await $.session.surfaces();
+		if (surfaces.length === 0 || !drawsBand(surfaces, ctx.rendered)) {
+			return;
+		}
+		await onStep($, e, await $.session.id(), surfaces, ctx);
+	} catch (error) {
+		swallow($, "turn.step")(error);
+	}
 }
 
 export function registerStep(on: On, ctx: Ctx): void {
@@ -116,15 +174,7 @@ export function registerStep(on: On, ctx: Ctx): void {
 		if (e.agentId !== undefined) {
 			return yield* next(e);
 		}
-		void $.session
-			.surfaces()
-			.then(async (surfaces) => {
-				if (surfaces.length === 0 || !drawsBand(surfaces, ctx.rendered)) {
-					return;
-				}
-				await onStep($, e, await $.session.id(), surfaces, ctx);
-			})
-			.catch(swallow($, "turn.step"));
+		void watchStep($, e, ctx);
 		return yield* next(e);
 	});
 }

@@ -1,4 +1,4 @@
-# claudetto-you-should-know
+# Claudetto-You-Should-Know
 
 Every few steps of a session, this plugin sends a side request that names one thing from the session worth learning, and shows it above the prompt. Learn more explains it in cards. It is a port of the Claude Code 2.1.327 bundled you-should-know plugin.
 

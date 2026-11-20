@@ -10,25 +10,25 @@ export const PROPOSED_OUTCOMES = [
 	"stale",
 	"aborted",
 	"api_error",
-	"error",
+	"error"
 ] as const;
 
 export type Outcome = (typeof PROPOSED_OUTCOMES)[number];
 
-export type Check = {
+export interface Check {
 	readonly number: number;
 	readonly step: number;
 	readonly outcome: Outcome;
 	readonly latencyMs: number;
 	readonly at: number;
-};
+}
 
 /** The fork refusal reasons mapped to the outcome they are logged as. */
 export const UNANSWERED_OUTCOMES: Readonly<Record<string, Outcome>> = {
 	"nothing-to-fork": "none",
 	"api-error": "api_error",
 	"empty-reply": "none",
-	aborted: "aborted",
+	aborted: "aborted"
 };
 
 export const checkLineOf = (c: Check): string =>
@@ -38,18 +38,20 @@ export function isCheck(value: unknown): value is Check {
 	if (typeof value !== "object" || value === null) {
 		return false;
 	}
-	const c = value as Record<string, unknown>;
+	const outcome: unknown = Reflect.get(value, "outcome");
 	return (
-		Number.isFinite(c["number"]) &&
-		Number.isFinite(c["step"]) &&
-		Number.isFinite(c["latencyMs"]) &&
-		Number.isFinite(c["at"]) &&
-		(PROPOSED_OUTCOMES as readonly unknown[]).includes(c["outcome"])
+		Number.isFinite(Reflect.get(value, "number")) &&
+		Number.isFinite(Reflect.get(value, "step")) &&
+		Number.isFinite(Reflect.get(value, "latencyMs")) &&
+		Number.isFinite(Reflect.get(value, "at")) &&
+		PROPOSED_OUTCOMES.some((known) => known === outcome)
 	);
 }
 
 export const checksOf = (value: unknown): Check[] =>
-	Array.isArray(value) ? value.filter(isCheck).slice(-CHECKS_KEPT) : [];
+	Array.isArray(value)
+		? value.filter((item) => isCheck(item)).slice(-CHECKS_KEPT)
+		: [];
 
 export const checksWith = (list: readonly Check[], c: Check): Check[] =>
 	[...list, c].slice(-CHECKS_KEPT);

@@ -5,9 +5,9 @@ import { proseMarkdown } from "../markdown";
 describe("proseMarkdown", () => {
 	test("escapes specials, turns markers into dashes and ends with a blank line", () => {
 		const out = proseMarkdown("* one\n* two\nplain *x*", "A_B");
-		expect(out.startsWith("**A\\_B**")).toBe(true);
+		expect(out.startsWith(String.raw`**A\_B**`)).toBe(true);
 		expect(out).toContain("- one");
-		expect(out).toContain("\\*x\\*");
+		expect(out).toContain(String.raw`\*x\*`);
 		expect(out.endsWith("\n\n")).toBe(true);
 	});
 
@@ -47,7 +47,7 @@ describe("proseMarkdown lists", () => {
 		const out = proseMarkdown(text, "");
 
 		// Assert
-		expect(out).toContain("3\\. b");
+		expect(out).toContain(String.raw`3\. b`);
 		expect(out).not.toContain("\n3. b");
 	});
 

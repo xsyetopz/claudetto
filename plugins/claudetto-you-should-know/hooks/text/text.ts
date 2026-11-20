@@ -8,18 +8,18 @@ export const CHOICE_GAP = 3;
 export const ansiSequence = (): RegExp =>
 	new RegExp(
 		String.raw`[\u001B\u009B][[\]()#;?]*` +
-		String.raw`(?:(?:(?:(?:;[-a-zA-Z\d/#&.:=?%@~_]+)*` +
-		String.raw`|[a-zA-Z\d]+(?:;[-a-zA-Z\d/#&.:=?%@~_]*)*)?` +
-		String.raw`(?:\u0007|\u001B\u005C|\u009C))` +
-		String.raw`|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))`,
-		"g",
+			String.raw`(?:(?:(?:(?:;[-a-zA-Z\d/#&.:=?%@~_]+)*` +
+			String.raw`|[a-zA-Z\d]+(?:;[-a-zA-Z\d/#&.:=?%@~_]*)*)?` +
+			String.raw`(?:\u0007|\u001B\u005C|\u009C))` +
+			String.raw`|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))`,
+		"gu"
 	);
 
 export const cleanOneLine = (text: string): string =>
 	text
-		// biome-ignore lint/suspicious/noControlCharactersInRegex: strips C0 and C1 controls from model text
-		.replace(/[\x00-\x08\x0E-\x1F\x7F-\x9F]/g, "")
-		.replace(/\s+/g, " ")
+		// Strips C0 and C1 controls from model text; tab through carriage return become spaces below.
+		.replaceAll(/(?![\t-\r])\p{Cc}/gu, "")
+		.replaceAll(/\s+/gu, " ")
 		.trim();
 
 /**
@@ -40,22 +40,22 @@ export function sliceUnitsHead(text: string, count: number): string {
 	if (text.length <= count) {
 		return text;
 	}
-	return text.slice(0, count).replace(/[\uD800-\uDBFF]$/, "");
+	return text.slice(0, count).replace(/[\uD800-\uDBFF]$/u, "");
 }
 
 export const stripControlSequences = (text: string): string =>
 	text
-		.replace(/\p{Cs}/gu, "")
+		.replaceAll(/\p{Cs}/gu, "")
 		.replace(ansiSequence(), "")
-		.replace(/[\p{Cc}\p{Cf}\u2028\u2029]/gu, "");
+		.replaceAll(/[\p{Cc}\p{Cf}\u2028\u2029]/gu, "");
 
 export function truncateAtWordBoundary(text: string, max: number): string {
 	if (text.length <= max) {
 		return text;
 	}
 	const head = sliceUnitsHead(text, max - 1);
-	const cut = head.search(/\s\S*$/);
-	const atWord = cut !== -1 ? head.slice(0, cut).trimEnd() : "";
+	const cut = head.search(/\s\S*$/u);
+	const atWord = cut === -1 ? "" : head.slice(0, cut).trimEnd();
 	return `${atWord.length > max / 2 ? atWord : head.trimEnd()}…`;
 }
 
@@ -66,11 +66,13 @@ export const proseOf = (text: string): string =>
 		.filter((line) => line !== "")
 		.join("\n");
 
-export const cellsAtMost = (text: string): number =>
-	[...text].reduce(
-		(sum, ch) => sum + ((ch.codePointAt(0) ?? 0) >= WIDE_FROM ? 2 : 1),
-		0,
-	);
+export const cellsAtMost = (text: string): number => {
+	let cells = 0;
+	for (const ch of text) {
+		cells += (ch.codePointAt(0) ?? 0) >= WIDE_FROM ? 2 : 1;
+	}
+	return cells;
+};
 
 /** Rows a space-wrapped run of words takes in `width` cells. */
 export function wrapRows(text: string, width: number): number {

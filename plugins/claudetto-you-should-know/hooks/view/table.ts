@@ -2,37 +2,54 @@
 
 import type { Elements } from "claude-code";
 
-export type Look = {
+export interface Look {
 	readonly color?: string;
 	readonly dimColor?: boolean;
-};
+}
 
-export type LeadInk = { readonly star: Look; readonly tag: Look };
+export interface LeadInk {
+	readonly star: Look;
+	readonly tag: Look;
+}
 
-export type Table = Elements["terminal"] & {
+/** The nine elements every surface draws. */
+type SharedElements = Pick<
+	Elements["terminal"],
+	| "Box"
+	| "Text"
+	| "Button"
+	| "Input"
+	| "Select"
+	| "Link"
+	| "Code"
+	| "Markdown"
+	| "Progress"
+>;
+
+export type Table = SharedElements & {
 	readonly leadInk?: LeadInk;
 	readonly hasStarColumn?: boolean;
 };
 
 export const ACCENT_LEAD_INK: LeadInk = {
 	star: { color: "suggestion" },
-	tag: { dimColor: true },
+	tag: { dimColor: true }
 };
 export const MUTED_LEAD_INK: LeadInk = {
 	star: { color: "subtle" },
-	tag: { color: "subtle" },
+	tag: { color: "subtle" }
 };
 const LEAD_INK: Readonly<Record<string, LeadInk>> = {
 	terminal: ACCENT_LEAD_INK,
 	desktop: MUTED_LEAD_INK,
 	mobile: ACCENT_LEAD_INK,
-	vscode: ACCENT_LEAD_INK,
+	vscode: ACCENT_LEAD_INK
 };
 const OWN_COMPOSER: Readonly<Record<string, boolean>> = {
 	terminal: false,
 	desktop: true,
 	mobile: true,
-	vscode: true,
+	vscode: true
 };
 
 export const hasOwnComposer = (surface: string): boolean =>
@@ -46,20 +63,19 @@ export function leadInkOn(surface: string): LeadInk {
 }
 
 /** The table for `surface`: a surface with its own composer has no hotkeys and no star column. */
-export function rowsTable(surface: string, resolved: Elements[keyof Elements]): Table {
-	const elements = resolved as Elements["terminal"];
+export function rowsTable(
+	surface: string,
+	elements: Elements[keyof Elements]
+): Table {
 	const leadInk = leadInkOn(surface);
 	if (hasOwnComposer(surface)) {
-		const Button = (props: Record<string, unknown>) => {
-			const { hotkey: _hotkey, plain: _plain, ...rest } = props;
-			return (elements.Button as unknown as (p: unknown) => unknown)(rest);
+		const Button: Table["Button"] = (props) => {
+			const rest = { ...props };
+			delete rest.hotkey;
+			delete rest.plain;
+			return elements.Button(rest);
 		};
-		return {
-			...elements,
-			Button: Button as unknown as Elements["terminal"]["Button"],
-			leadInk,
-			hasStarColumn: false,
-		};
+		return { ...elements, Button, leadInk, hasStarColumn: false };
 	}
 	return { ...elements, leadInk, hasStarColumn: true };
 }

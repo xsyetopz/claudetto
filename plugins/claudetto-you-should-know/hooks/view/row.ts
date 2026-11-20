@@ -1,150 +1,27 @@
 /** Picks the row to draw for the stored view and wires its presses to the actions. */
 
-import { parseExplanation } from "../request/cards";
-import type { Ctx } from "../shared/context";
-import { noteTopic } from "./draft";
-import { fitCards } from "../text/fit";
-import { aboutFrame, aboutKeyOf } from "./copy";
-import { askedRow, explainedAskedRow } from "./parts/asked";
-import { explainedRow, explainingRow } from "./parts/explained";
-import { offerRow } from "./parts/offer";
+import type { RowArgs } from "./bind/args";
+import { askedBinding } from "./bind/asked";
+import { explainedBinding, offerBinding } from "./bind/note";
+import type { Node } from "./parts/elements";
+import { explainingRow } from "./parts/explained";
 import { failedRow } from "./parts/status";
-import { iterationOf, type View } from "../session/rows";
-import { hasOwnComposer, type Table } from "./table";
-import type { Actions } from "./actions";
 
-export type RowArgs = {
-	readonly view: View | null;
-	readonly sid: string;
-	readonly tag: string;
-	readonly surface: string;
-	readonly props: {
-		readonly bodyColumns: number;
-		readonly maxRows: number;
-		readonly hasSurvey: boolean;
-	};
-	readonly table: Table;
-	readonly actions: Actions;
-	readonly ctx: Ctx;
-	readonly isOptIn: boolean;
-	readonly isAboutOpen: boolean;
-	readonly toggleAbout: (key: string) => void;
-};
+export type { RowArgs } from "./bind/args";
 
-/** A press that counts once: the row can be pressed twice before it is redrawn. */
-function once(fn: () => unknown): () => void {
-	let isDone = false;
-	return () => {
-		if (!isDone) {
-			isDone = true;
-			void fn();
-		}
-	};
-}
-
-export function rowFor(args: RowArgs): unknown {
-	const { view, sid, tag, surface, props, table, actions, ctx } = args;
-	if (view === null) {
-		return null;
+export function rowFor(args: RowArgs): Node {
+	const { view, table, actions } = args;
+	if (view?.kind === "failed") {
+		return failedRow(table, view.reason, () => void actions.clear());
 	}
-	switch (view.kind) {
-		case "failed":
-			return failedRow(table, view.reason, () => void actions.clear());
-		case "explaining":
-			return explainingRow(table);
-		case "off":
-			return null;
-		case "asked": {
-			const guard = (fn: () => unknown) =>
-				once(() => {
-					ctx.askedTimers.get(sid)?.cancel();
-					ctx.askedTimers.delete(sid);
-					return fn();
-				});
-			const iteration = iterationOf(view);
-			const mk = (name: string, then: () => Promise<void> = actions.clear) =>
-				guard(async () => {
-					await actions.answered(name);
-					return then();
-				});
-			const know = () => actions.know(view.line);
-			if (iteration !== undefined) {
-				return explainedAskedRow(table, {
-					helpful: mk("explained_helpful", know),
-					notUnderstood: mk("explained_not_understood"),
-					dismiss: guard(actions.timeout),
-				});
-			}
-			return askedRow(table, {
-				helpful: mk("helpful", know),
-				notRelevant: mk("not_relevant"),
-				notUnderstood: mk("not_understood"),
-				off: hasOwnComposer(surface) ? undefined : guard(() => actions.takeOff(view.line, "row")),
-				dismiss: guard(actions.timeout),
-			});
-		}
-		case "explained":
-		case "offer": {
-			const { line } = view;
-			const shownAt = view.shownAt;
-			const iteration = iterationOf(view);
-			const mk = (name: string, then: () => unknown) =>
-				once(async () => {
-					ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
-					await actions.answered(name);
-					await then();
-				});
-			if (view.kind === "explained") {
-				const cards = fitCards(parseExplanation(view.text), props.bodyColumns);
-				return explainedRow(
-					table,
-					noteTopic(line),
-					cards,
-					props.hasSurvey
-						? null
-						: {
-							gotIt: mk("got_it", () => actions.know(line)),
-							respond: once(() => {
-								ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
-								return actions.respond(line, cards, tag);
-							}),
-							dismiss: mk("dismiss", () => actions.ask({ line, ...(iteration === undefined ? {} : { iteration }) })),
-						},
-					tag,
-				);
-			}
-			const noOff = hasOwnComposer(surface) || args.isOptIn;
-			return offerRow(
-				table,
-				line,
-				{
-					explain: mk("yes_explain", () => {
-						if (view.explanation !== undefined && parseExplanation(view.explanation).length > 0) {
-							return actions.showExplained(line, view.explanation, 1);
-						}
-						return actions.explain(line, undefined, 1);
-					}),
-					knew: mk("know_it", () => actions.know(line)),
-					off: noOff
-						? undefined
-						: once(() => {
-							ctx.autoSent.add(aboutKeyOf({ line, shownAt }));
-							return actions.armOff(view);
-						}),
-					later: mk("not_now", () => actions.ask({ line })),
-				},
-				view.isOffArmed === true,
-				{
-					isOpen: args.isAboutOpen,
-					surface,
-					...aboutFrame(hasOwnComposer(surface), props, args.isOptIn),
-					onPress: () => {
-						ctx.idle.delete(sid);
-						args.toggleAbout(aboutKeyOf(view));
-					},
-				},
-				tag,
-			);
-		}
+	if (view?.kind === "explaining") {
+		return explainingRow(table);
 	}
+	if (view?.kind === "asked") {
+		return askedBinding(args, view);
+	}
+	if (view?.kind === "explained") {
+		return explainedBinding(args, view);
+	}
+	return view?.kind === "offer" ? offerBinding(args, view) : null;
 }

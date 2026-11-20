@@ -45,7 +45,7 @@ export const BEFORE_SEEN: readonly string[] = [
 	"",
 	"<recent_offers>",
 	"These notes were offered lately. Pick a different topic, or reply learn: none:",
-	"",
+	""
 ];
 
 export const BETWEEN_LISTS: readonly string[] = [
@@ -54,7 +54,7 @@ export const BETWEEN_LISTS: readonly string[] = [
 	"",
 	"<known_topics>",
 	"The person said they already understand these topics, so leave them out:",
-	"",
+	""
 ];
 
 export const AFTER_KNOWN: readonly string[] = [
@@ -64,7 +64,7 @@ export const AFTER_KNOWN: readonly string[] = [
 	"<writing_for_the_reader>",
 	"Write for a smart reader who is tired from switching between tasks and remembers nothing of the session. Every noun must still make sense to them a week from now, so name the real thing (/ask, the Orders DB) instead of saying this or it. Use the person's own terms. A name the main agent invented during the session means nothing to them, so use it only when they used it first. A technical term is fine when it is needed, and it comes with a short everyday explanation unless the person has already used it correctly.",
 	"",
-	"Say \"we\" when the responsibility is shared or unclear, \"the main agent\" when it acted wholly on its own, and \"you\" when the choice was fully the person's.",
+	'Say "we" when the responsibility is shared or unclear, "the main agent" when it acted wholly on its own, and "you" when the choice was fully the person\'s.',
 	"",
 	"Make the first line carry enough of the decision or the thing involved that a reader with zero context can judge whether it is worth a click. When a topic is simple, simplify further.",
 	"</writing_for_the_reader>",
@@ -86,7 +86,7 @@ export const AFTER_KNOWN: readonly string[] = [
 	"",
 	"These lines work because each names a tradeoff or a quiet choice in plain words, makes the stake clear, and hints at a reason to learn more with words the person already uses.",
 	"",
-	"A weaker line gives the reader work to do. \"You are making /ask multi-turn, and one design keeps it nearly free while the other pays full price. Want to understand why?\" is vague about which design, and it ends in a question. \"We gated feature_multi_turn_ask at 0% rollout\" uses insider shorthand and never says the stake. \"You decided to encrypt Orders DB data at rest\" repeats what the person chose and adds no insight.",
+	'A weaker line gives the reader work to do. "You are making /ask multi-turn, and one design keeps it nearly free while the other pays full price. Want to understand why?" is vague about which design, and it ends in a question. "We gated feature_multi_turn_ask at 0% rollout" uses insider shorthand and never says the stake. "You decided to encrypt Orders DB data at rest" repeats what the person chose and adds no insight.',
 	"",
 	"In these situations the right reply is learn: none: a small routine change that went as expected; a tradeoff the person and the agent have been discussing for several turns; a well-known quirk of a library that has no stake in this work.",
 	"</the_learn_line>",
@@ -133,7 +133,7 @@ export const AFTER_KNOWN: readonly string[] = [
 	"- If CPU runs short, caching unscrambled data in memory or encrypting only the sensitive fields cuts the cost.",
 	"</example>",
 	"",
-	"A weaker explanation is full of jargon (cache_control breakpoints, ephemeral TTL) and never says what /ask or caching is. Another packs the right content into one run-on sentence with the action buried at the end. Another stretches a simple idea into five fragment bullets. Another says \"the second option\" and \"the first one\", which mean nothing a week later, and argues with a decision the person made without giving them the facts to judge it. Another teases a tradeoff and ends with \"read the docs\" when the explanation itself is supposed to be the answer.",
+	'A weaker explanation is full of jargon (cache_control breakpoints, ephemeral TTL) and never says what /ask or caching is. Another packs the right content into one run-on sentence with the action buried at the end. Another stretches a simple idea into five fragment bullets. Another says "the second option" and "the first one", which mean nothing a week later, and argues with a decision the person made without giving them the facts to judge it. Another teases a tradeoff and ends with "read the docs" when the explanation itself is supposed to be the answer.',
 	"</the_explanation>",
 	"",
 	"<safety_of_the_conversation>",
@@ -142,5 +142,5 @@ export const AFTER_KNOWN: readonly string[] = [
 	"",
 	"<when_in_doubt>",
 	"Reply with learn: none and nothing behind it, no title and no explanation. The person's attention is the scarce thing, and a missed minor topic costs less than an interruption they did not want. Suggest something only when it is not covered in the main session and is compelling, relevant, and consequential.",
-	"</when_in_doubt>",
+	"</when_in_doubt>"
 ];

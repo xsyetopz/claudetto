@@ -3,21 +3,24 @@
 import type { EngineInterface } from "claude-code";
 
 import { EARLIER_NAMES, OFF_COMMAND, PLUGIN_NAME } from "../shared/constants";
-import { rowOf, withRow } from "./rows";
 import { fault } from "../shared/fault";
+import { rowOf, withRow } from "./rows";
 
-export type OffState = {
+export interface OffState {
 	readonly clearing: Map<string, Promise<void>>;
 	readonly confirmed: Set<string>;
-};
+}
 
-export const newOffState = (): OffState => ({ clearing: new Map(), confirmed: new Set() });
+export const newOffState = (): OffState => ({
+	clearing: new Map(),
+	confirmed: new Set()
+});
 
 const OWN_NAMES: readonly string[] = [PLUGIN_NAME, ...EARLIER_NAMES];
 
 /** True for a /plugin disable aimed at this plugin by any of its names. */
 export function isOffCommand(text: string): boolean {
-	const [a, b, c] = text.trim().split(/\s+/);
+	const [a, b, c] = text.trim().split(/\s+/u);
 	if (a !== "/plugin" || b !== "disable" || c === undefined) {
 		return false;
 	}
@@ -29,14 +32,21 @@ export function isOffCommand(text: string): boolean {
 
 async function takeDown(
 	$: EngineInterface,
-	args: { readonly sid: string; readonly confirmed: Set<string>; readonly isConfirmed: boolean },
+	args: {
+		readonly sid: string;
+		readonly confirmed: Set<string>;
+		readonly isConfirmed: boolean;
+	}
 ): Promise<void> {
 	const rows = await $.store.get("sessions");
 	const row = rowOf(rows, args.sid);
 	if (row?.view?.kind !== "off") {
 		return;
 	}
-	await $.store.set("sessions", withRow(rows, { ...row, id: args.sid, view: undefined }));
+	await $.store.set(
+		"sessions",
+		withRow(rows, { ...row, id: args.sid, view: undefined })
+	);
 	$.ui.invalidate("ui.render");
 	if (args.isConfirmed) {
 		args.confirmed.add(args.sid);
@@ -47,7 +57,7 @@ async function takeDown(
 export async function clearOffLine(
 	$: EngineInterface,
 	state: OffState,
-	args: { readonly isConfirmed: boolean },
+	args: { readonly isConfirmed: boolean }
 ): Promise<void> {
 	try {
 		const sid = await $.session.id();
@@ -59,28 +69,35 @@ export async function clearOffLine(
 			await running;
 			return;
 		}
-		const job = takeDown($, { sid, confirmed: state.confirmed, isConfirmed: args.isConfirmed });
+		const job = takeDown($, {
+			sid,
+			confirmed: state.confirmed,
+			isConfirmed: args.isConfirmed
+		});
 		state.clearing.set(sid, job);
 		try {
 			await job;
 		} finally {
 			state.clearing.delete(sid);
 		}
-	} catch (err) {
+	} catch (error) {
 		// the line stays until the next prompt
-		fault($, "off clear", err);
+		fault($, "off clear", error);
 	}
 }
 
-export async function ranOffCommand($: EngineInterface, state: OffState): Promise<void> {
+export async function ranOffCommand(
+	$: EngineInterface,
+	state: OffState
+): Promise<void> {
 	await clearOffLine($, state, { isConfirmed: true });
 	try {
 		const sid = await $.session.id();
 		if (!state.confirmed.has(sid)) {
 			state.confirmed.add(sid);
 		}
-	} catch (err) {
+	} catch (error) {
 		// nothing more to record
-		fault($, "off command", err);
+		fault($, "off command", error);
 	}
 }

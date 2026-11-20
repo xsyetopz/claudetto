@@ -1,10 +1,10 @@
 import type { On, PluginOptions } from "claude-code";
 
+import { registerStep } from "./check/step";
+import { registerSession } from "./session/hooks";
+import { registerCommand, registerSubmit } from "./session/submit";
 import { newCtx } from "./shared/context";
 import { registerRender } from "./view/render";
-import { registerSession } from "./session/hooks";
-import { registerStep } from "./check/step";
-import { registerCommand, registerSubmit } from "./session/submit";
 
 export const register = (on: On, _options: PluginOptions): void => {
 	const ctx = newCtx();

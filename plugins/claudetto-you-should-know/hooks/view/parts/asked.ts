@@ -1,28 +1,28 @@
 /** The rows shown after a dismissal: the asked row and its explained variant. */
 
+import { CHOICE_GAP } from "../../text/text";
 import type { Choice } from "../copy";
 import type { Table } from "../table";
-import { CHOICE_GAP } from "../../text/text";
 import { choice, el, lead, type Node, starColumn } from "./elements";
 
-export type DismissHandlers = {
+export interface DismissHandlers {
 	readonly helpful?: (() => void) | undefined;
 	readonly notRelevant?: (() => void) | undefined;
 	readonly notUnderstood?: (() => void) | undefined;
 	readonly off?: (() => void) | undefined;
 	readonly dismiss: () => void;
-};
+}
 
 export function dismissedLine(
 	table: Table,
 	choices: readonly Choice[],
-	dismiss: (() => void) | undefined,
+	dismiss: (() => void) | undefined
 ): Node {
 	const { Box, Text } = table;
 	const hasStar = table.hasStarColumn ?? true;
 	const all = [
 		...choices,
-		{ hotkey: "0", label: "Dismiss", onPress: dismiss, role: "dismiss" },
+		{ hotkey: "0", label: "Dismiss", onPress: dismiss, role: "dismiss" }
 	].map((c) => choice(table, c));
 	if (hasStar) {
 		return el(
@@ -36,11 +36,11 @@ export function dismissedLine(
 					el(
 						Box,
 						{ marginRight: CHOICE_GAP },
-						el(Text, { dimColor: true, wrap: "truncate-end" }, "Dismissed."),
+						el(Text, { dimColor: true, wrap: "truncate-end" }, "Dismissed.")
 					),
-					all,
-				),
-			),
+					all
+				)
+			)
 		);
 	}
 	return el(
@@ -53,27 +53,27 @@ export function dismissedLine(
 				Text,
 				{ wrap: "truncate-end" },
 				lead(table),
-				el(Text, { dimColor: true }, "Dismissed."),
-			),
+				el(Text, { dimColor: true }, "Dismissed.")
+			)
 		),
-		all,
+		all
 	);
 }
 
 export function askedRow(table: Table, on: DismissHandlers): Node {
 	const off: Choice[] =
-		on.off !== undefined
-			? [{ hotkey: "4", label: "Turn off suggestions", onPress: on.off }]
-			: [];
+		on.off === undefined
+			? []
+			: [{ hotkey: "4", label: "Turn off suggestions", onPress: on.off }];
 	return dismissedLine(
 		table,
 		[
 			{ hotkey: "1", label: "That was helpful", onPress: on.helpful },
 			{ hotkey: "2", label: "Not relevant", onPress: on.notRelevant },
 			{ hotkey: "3", label: "Couldn’t understand", onPress: on.notUnderstood },
-			...off,
+			...off
 		],
-		on.dismiss,
+		on.dismiss
 	);
 }
 
@@ -82,7 +82,7 @@ export const explainedAskedRow = (table: Table, on: DismissHandlers): Node =>
 		table,
 		[
 			{ hotkey: "1", label: "That was helpful", onPress: on.helpful },
-			{ hotkey: "2", label: "Didn’t understand", onPress: on.notUnderstood },
+			{ hotkey: "2", label: "Didn’t understand", onPress: on.notUnderstood }
 		],
-		on.dismiss,
+		on.dismiss
 	);

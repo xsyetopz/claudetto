@@ -1,12 +1,25 @@
 import { expect, test } from "claude-code/testing";
 
-import { ASKED_WAYS, EXPLANATION_LENGTHS, explainPrompt, proposePrompt, SIDE_REQUEST_FRAME } from "../prompt";
-import { AFTER_KNOWN } from "../propose-text";
 import { parseExplanation } from "../cards";
+import {
+	ASKED_WAYS,
+	explainPrompt,
+	EXPLANATION_LENGTHS,
+	proposePrompt,
+	SIDE_REQUEST_FRAME
+} from "../prompt";
+import { AFTER_KNOWN } from "../propose-text";
 
 test("the propose prompt keeps the labels the parser reads and the none reply", () => {
 	// Arrange
-	const labels = ["learn: none", "learn:", "tag:", "explain:", "You should know", "Heads up"];
+	const labels = [
+		"learn: none",
+		"learn:",
+		"tag:",
+		"explain:",
+		"You should know",
+		"Heads up"
+	];
 
 	// Act
 	const prompt = proposePrompt([], []);
@@ -26,8 +39,14 @@ test("the propose prompt places earlier offers and known topics in their own tag
 	const prompt = proposePrompt(seen, known);
 
 	// Assert
-	const offers = prompt.slice(prompt.indexOf("<recent_offers>"), prompt.indexOf("</recent_offers>"));
-	const knowns = prompt.slice(prompt.indexOf("<known_topics>"), prompt.indexOf("</known_topics>"));
+	const offers = prompt.slice(
+		prompt.indexOf("<recent_offers>"),
+		prompt.indexOf("</recent_offers>")
+	);
+	const knowns = prompt.slice(
+		prompt.indexOf("<known_topics>"),
+		prompt.indexOf("</known_topics>")
+	);
 	expect(offers).toContain("- SEEN-ONE");
 	expect(offers).not.toContain("KNOWN-ONE");
 	expect(knowns).toContain("- KNOWN-ONE");
@@ -36,7 +55,10 @@ test("the propose prompt places earlier offers and known topics in their own tag
 test("the propose prompt carries the secret-in-a-command section whole (REQ-062)", () => {
 	// Arrange
 	const open = AFTER_KNOWN.indexOf("<safety_of_the_conversation>");
-	const section = AFTER_KNOWN.slice(open, AFTER_KNOWN.indexOf("</safety_of_the_conversation>") + 1).join("\n");
+	const section = AFTER_KNOWN.slice(
+		open,
+		AFTER_KNOWN.indexOf("</safety_of_the_conversation>") + 1
+	).join("\n");
 
 	// Act
 	const prompt = proposePrompt([], []);
@@ -64,7 +86,7 @@ test("the explain prompt carries the topic, the frame and the language rule, and
 	const redo = { direction: "less_detail", previous: "EARLIER-TEXT" } as const;
 
 	// Act
-	const first = explainPrompt("TOPIC-LINE", undefined);
+	const first = explainPrompt("TOPIC-LINE");
 	const again = explainPrompt("TOPIC-LINE", redo);
 
 	// Assert
@@ -77,7 +99,8 @@ test("the explain prompt carries the topic, the frame and the language rule, and
 
 test("an explanation shaped as the explain prompt asks parses into a titled card", () => {
 	// Arrange
-	const reply = "**Listing the step once saves two runs**\nA build step is a command the pipeline runs.\nIt runs 1 time instead of 3.";
+	const reply =
+		"**Listing the step once saves two runs**\nA build step is a command the pipeline runs.\nIt runs 1 time instead of 3.";
 
 	// Act
 	const cards = parseExplanation(reply);
@@ -93,22 +116,27 @@ test("the check and the explanation each open with the side-request frame that b
 
 	// Act
 	const check = proposePrompt([], []);
-	const explain = explainPrompt("TOPIC-LINE", undefined);
+	const explain = explainPrompt("TOPIC-LINE");
 
 	// Assert
 	expect(check.startsWith(`${frame}\n`)).toBe(true);
 	expect(explain.startsWith(`${frame}\n\n`)).toBe(true);
 	expect(frame).toContain("no tools");
 	expect(frame).toContain("single reply");
-	expect(frame).toContain("Credentials, tokens, keys, environment values, and personal data");
+	expect(frame).toContain(
+		"Credentials, tokens, keys, environment values, and personal data"
+	);
 });
 
 test("the explanation format asks for a bold title, a tiny example, a sketch within 60 by 6 and a closing choice (REQ-004)", () => {
 	// Arrange
-	const prompt = explainPrompt("TOPIC-LINE", undefined);
+	const prompt = explainPrompt("TOPIC-LINE");
 
 	// Act
-	const shape = prompt.slice(prompt.indexOf("<shape>"), prompt.indexOf("</shape>"));
+	const shape = prompt.slice(
+		prompt.indexOf("<shape>"),
+		prompt.indexOf("</shape>")
+	);
 
 	// Assert
 	expect(shape).toContain("two to six plain words");
@@ -120,12 +148,27 @@ test("the explanation format asks for a bold title, a tiny example, a sketch wit
 
 test("each direction puts exactly its own length line into the explanation prompt (REQ-005)", () => {
 	// Arrange
-	const limits = { first: "at most 100 words", simpler_words: "at most 100 words", less_detail: "at most 45 words", more_detail: "at most 160 words" } as const;
+	const limits = {
+		first: "at most 100 words",
+		simpler_words: "at most 100 words",
+		less_detail: "at most 45 words",
+		more_detail: "at most 160 words"
+	} as const;
 
 	// Act and Assert
-	for (const direction of ["first", "simpler_words", "less_detail", "more_detail"] as const) {
-		const prompt = explainPrompt("T", direction === "first" ? undefined : { direction, previous: "P" });
-		const others = Object.entries(EXPLANATION_LENGTHS).filter(([name]) => name !== direction);
+	for (const direction of [
+		"first",
+		"simpler_words",
+		"less_detail",
+		"more_detail"
+	] as const) {
+		const prompt = explainPrompt(
+			"T",
+			direction === "first" ? undefined : { direction, previous: "P" }
+		);
+		const others = Object.entries(EXPLANATION_LENGTHS).filter(
+			([name]) => name !== direction
+		);
 		expect(prompt).toContain(EXPLANATION_LENGTHS[direction]);
 		expect(EXPLANATION_LENGTHS[direction]).toContain(limits[direction]);
 		for (const [, line] of others) {
@@ -154,5 +197,7 @@ test("the propose prompt holds an absence claim to the file's full text", () => 
 	const prompt = proposePrompt([], []);
 
 	// Assert
-	expect(prompt).toContain("absent from a file rests on the file's full text appearing in the session");
+	expect(prompt).toContain(
+		"absent from a file rests on the file's full text appearing in the session"
+	);
 });

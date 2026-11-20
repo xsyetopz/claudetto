@@ -7,8 +7,8 @@ export const CLEAR_AFTER_PROMPTS = 2;
 export const CHECKS_KEPT = 3;
 export const SEEN_MAX = 50;
 export const SESSIONS_MAX = 32;
-export const SHOWN_KEEP_MS = 259200000;
-export const ASKED_MS = 20000;
+export const SHOWN_KEEP_MS = 259_200_000;
+export const ASKED_MS = 20_000;
 export const NOTE_READ_MS = 2000;
 export const TYPED_PAST_FREE = 2;
 export const LOOKS_TO_SKIP_MAX = 16;
@@ -39,7 +39,7 @@ export const OFFER_LABELS = {
 	knew: "Knew this already",
 	about: "What is this",
 	off: "Disable",
-	later: "Dismiss",
+	later: "Dismiss"
 } as const;
 
 /** The plugin's own name, shown in the disable hint and matched in typed off commands. */
@@ -48,6 +48,6 @@ export const PLUGIN_NAME = "claudetto-you-should-know";
 export const EARLIER_NAMES: readonly string[] = [
 	"cc-plugin-you-should-know",
 	"suggest-learning",
-	"you-should-know",
+	"you-should-know"
 ];
 export const OFF_COMMAND = `/plugin disable ${PLUGIN_NAME}`;

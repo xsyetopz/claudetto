@@ -7,7 +7,7 @@ import { choice, el, lead, type Node } from "./elements";
 export function debugRows(
 	table: Table,
 	checks: readonly Check[],
-	below?: Node,
+	below?: Node
 ): Node {
 	const { Box, Text } = table;
 	return el(
@@ -21,24 +21,34 @@ export function debugRows(
 					Box,
 					null,
 					el(Text, { ...leadInkOf(table).star }, "✦"),
-					el(Text, { wrap: "truncate-end", dimColor: true }, " ", checkLineOf(check)),
-				),
-			),
+					el(
+						Text,
+						{ wrap: "truncate-end", dimColor: true },
+						" ",
+						checkLineOf(check)
+					)
+				)
+			)
 		),
-		below ?? "",
+		below ?? ""
 	);
 }
 
-export type FailedKind = "publish" | "blocked" | "explain" | "turn_off" | string;
+/** Why a run failed: `publish`, `blocked`, `explain` or `turn_off`; any other name gets the generic text. */
+export type FailedKind = string;
 
 const FAILED_TEXT: Readonly<Record<string, string>> = {
 	publish: "Couldn’t publish that page",
 	blocked: "Not published (blocked by a permission setting)",
 	explain: "Couldn’t write that explanation",
-	turn_off: "Couldn’t turn suggestions off here. Use /plugin.",
+	turn_off: "Couldn’t turn suggestions off here. Use /plugin."
 };
 
-export function failedRow(table: Table, kind: FailedKind, onOk: () => void): Node {
+export function failedRow(
+	table: Table,
+	kind: FailedKind,
+	onOk: () => void
+): Node {
 	const { Box, Text } = table;
 	return el(
 		Box,
@@ -50,8 +60,8 @@ export function failedRow(table: Table, kind: FailedKind, onOk: () => void): Nod
 			FAILED_TEXT[kind] ?? "Couldn’t write that page",
 			" ",
 			el(Text, { dimColor: true }, "·"),
-			" ",
+			" "
 		),
-		choice(table, { hotkey: "0", label: "OK", onPress: onOk }),
+		choice(table, { hotkey: "0", label: "OK", onPress: onOk })
 	);
 }

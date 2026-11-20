@@ -2,21 +2,38 @@
 
 import type { EngineInterface } from "claude-code";
 
-import { switchOf } from "./backoff";
-import { type Check, checksOf, checksWith, type Outcome, UNANSWERED_OUTCOMES } from "./log";
-import { SEEN_MAX } from "../shared/constants";
-import type { Ctx } from "../shared/context";
 import { lineKey, parseProposedLine } from "../request/parse";
 import { proposePrompt } from "../request/prompt";
 import { isOfferDue, type Row, rowOf, withRow } from "../session/rows";
-import { stringLines } from "../shared/store";
+import { SEEN_MAX } from "../shared/constants";
+import type { Ctx } from "../shared/context";
 import { fault } from "../shared/fault";
+import { stringLines } from "../shared/store";
+import { switchOf } from "./backoff";
+import {
+	type Check,
+	checksOf,
+	checksWith,
+	type Outcome,
+	UNANSWERED_OUTCOMES
+} from "./log";
 
-export type CheckAt = { readonly id: string; readonly turnId: string; readonly index: number };
+export interface CheckAt {
+	readonly id: string;
+	readonly turnId: string;
+	readonly index: number;
+}
 
-async function writeRow($: EngineInterface, id: string, patch: Partial<Row>): Promise<void> {
+async function writeRow(
+	$: EngineInterface,
+	id: string,
+	patch: Partial<Row>
+): Promise<void> {
 	const rows = await $.store.get("sessions");
-	await $.store.set("sessions", withRow(rows, { ...(rowOf(rows, id) ?? { id }), ...patch }));
+	await $.store.set(
+		"sessions",
+		withRow(rows, { ...(rowOf(rows, id) ?? { id }), ...patch })
+	);
 }
 
 async function accept(
@@ -25,7 +42,7 @@ async function accept(
 	ctx: Ctx,
 	text: string,
 	seen: readonly string[],
-	known: readonly string[],
+	known: readonly string[]
 ): Promise<Outcome> {
 	const proposed = parseProposedLine(text);
 	if (proposed.kind !== "line") {
@@ -43,7 +60,12 @@ async function accept(
 	await writeRow($, at.id, {
 		offeredTurn: at.turnId,
 		tag: proposed.tag,
-		view: { kind: "offer", line: proposed.line, explanation: proposed.explanation, shownAt: Date.now() },
+		view: {
+			kind: "offer",
+			line: proposed.line,
+			explanation: proposed.explanation,
+			shownAt: Date.now()
+		}
 	});
 	ctx.promptsSince.delete(at.id);
 	$.ui.invalidate("ui.render");
@@ -51,7 +73,11 @@ async function accept(
 }
 
 /** Runs one check for the step `at`; never throws. */
-export async function runCheck($: EngineInterface, at: CheckAt, ctx: Ctx): Promise<void> {
+export async function runCheck(
+	$: EngineInterface,
+	at: CheckAt,
+	ctx: Ctx
+): Promise<void> {
 	await writeRow($, at.id, { askedTurn: at.turnId });
 	const seen = stringLines(await $.store.get("seen"));
 	const known = stringLines(await $.store.get("known"));
@@ -63,8 +89,8 @@ export async function runCheck($: EngineInterface, at: CheckAt, ctx: Ctx): Promi
 		outcome = reply.isAnswered
 			? await accept($, at, ctx, reply.text, seen, known)
 			: (UNANSWERED_OUTCOMES[reply.reason] ?? "error");
-	} catch (err) {
-		fault($, "check", err);
+	} catch (error) {
+		fault($, "check", error);
 		outcome = "error";
 	}
 	const latencyMs = Date.now() - started;
@@ -74,11 +100,20 @@ export async function runCheck($: EngineInterface, at: CheckAt, ctx: Ctx): Promi
 	try {
 		const row = rowOf(await $.store.get("sessions"), at.id);
 		const number = (row?.checked ?? 0) + 1;
-		const check: Check = { number, step: at.index, outcome, latencyMs, at: Date.now() };
-		await writeRow($, at.id, { checked: number, checks: checksWith(checksOf(row?.checks), check) });
+		const check: Check = {
+			number,
+			step: at.index,
+			outcome,
+			latencyMs,
+			at: Date.now()
+		};
+		await writeRow($, at.id, {
+			checked: number,
+			checks: checksWith(checksOf(row?.checks), check)
+		});
 		$.ui.invalidate("ui.render");
-	} catch (err) {
+	} catch (error) {
 		// the debug line is best effort
-		fault($, "check debug row", err);
+		fault($, "check debug row", error);
 	}
 }

@@ -5,7 +5,7 @@ import type { Timer } from "claude-code";
 import { newOffState, type OffState } from "../session/off";
 import type { Watched } from "../session/rows";
 
-export type Ctx = {
+export interface Ctx {
 	/** Sessions with a model check in flight. */
 	readonly checking: Map<string, Promise<void>>;
 	/** Sessions whose explanation is being written by this instance. */
@@ -15,7 +15,10 @@ export type Ctx = {
 	/** Sessions filling the prompt box with a note now. */
 	readonly responding: Set<string>;
 	/** Prompts a person sent since the note was shown. */
-	readonly promptsSince: Map<string, { readonly origin: string; readonly count: number }>;
+	readonly promptsSince: Map<
+		string,
+		{ readonly origin: string; readonly count: number }
+	>;
 	readonly ended: Set<string>;
 	readonly off: OffState;
 	/** Surfaces that drew the band. */
@@ -26,7 +29,7 @@ export type Ctx = {
 	readonly idle: Map<string, Watched>;
 	/** Notes already sent along with a prompt. */
 	readonly autoSent: Set<string>;
-};
+}
 
 export const newCtx = (): Ctx => ({
 	checking: new Map(),
@@ -39,5 +42,5 @@ export const newCtx = (): Ctx => ({
 	rendered: new Set(),
 	bridge: new Set(),
 	idle: new Map(),
-	autoSent: new Set(),
+	autoSent: new Set()
 });

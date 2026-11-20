@@ -5,31 +5,31 @@ import {
 	MAX_CARDS,
 	MAX_SKETCH_LINES,
 	MAX_SKETCH_WIDTH,
-	MAX_TITLE_WIDTH,
+	MAX_TITLE_WIDTH
 } from "../shared/constants";
 import {
 	cleanOneLine,
 	proseOf,
 	sliceUnitsHead,
 	stripControlSequences,
-	truncateAtWordBoundary,
+	truncateAtWordBoundary
 } from "../text/text";
 
-export type Card = {
+export interface Card {
 	title: string;
 	lead: string;
 	sketch: readonly string[];
 	caption: string;
-};
+}
 
-export const FENCE_LINE = /^```/;
-export const TITLE_LINE = /^(?:\*\*([^*]+)\*\*|#+\s*(.+))$/;
+export const FENCE_LINE = /^```/u;
+export const TITLE_LINE = /^(?:\*\*([^*]+)\*\*|#+\s*(.+))$/u;
 
 export const emptyCard = (): Card => ({
 	title: "",
 	lead: "",
 	sketch: [],
-	caption: "",
+	caption: ""
 });
 
 export function parseExplanation(text: string): readonly Card[] {
@@ -41,7 +41,7 @@ export function parseExplanation(text: string): readonly Card[] {
 		card.lead = truncateAtWordBoundary(proseOf(card.lead), MAX_CAPTION_LENGTH);
 		card.caption = truncateAtWordBoundary(
 			proseOf(card.caption),
-			MAX_CAPTION_LENGTH,
+			MAX_CAPTION_LENGTH
 		);
 		if (card.title || card.lead || card.sketch.length > 0 || card.caption) {
 			cards.push(card);
@@ -49,8 +49,8 @@ export function parseExplanation(text: string): readonly Card[] {
 		card = emptyCard();
 	};
 	for (const raw of text.split("\n")) {
-		const line = stripControlSequences(raw).replace(/\s+$/, "");
-		if (FENCE_LINE.test(line.trim())) {
+		const line = stripControlSequences(raw).replace(/\s+$/u, "");
+		if (line.trim().startsWith("```")) {
 			if (!inFence && sawFence) {
 				flush();
 			}
@@ -60,10 +60,7 @@ export function parseExplanation(text: string): readonly Card[] {
 		}
 		if (inFence) {
 			if (card.sketch.length < MAX_SKETCH_LINES) {
-				card.sketch = [
-					...card.sketch,
-					sliceUnitsHead(line, MAX_SKETCH_WIDTH),
-				];
+				card.sketch = [...card.sketch, sliceUnitsHead(line, MAX_SKETCH_WIDTH)];
 			}
 			continue;
 		}
@@ -73,7 +70,7 @@ export function parseExplanation(text: string): readonly Card[] {
 			sawFence = false;
 			card.title = truncateAtWordBoundary(
 				cleanOneLine(title[1] ?? title[2] ?? ""),
-				MAX_TITLE_WIDTH,
+				MAX_TITLE_WIDTH
 			);
 			continue;
 		}

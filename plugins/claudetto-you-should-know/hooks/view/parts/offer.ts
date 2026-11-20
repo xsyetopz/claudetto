@@ -1,35 +1,48 @@
 /** The offer row: the note line, its About copy where the surface has room, and the offer choices. */
 
 import { DEFAULT_TAG, OFFER_LABELS } from "../../shared/constants";
-import { ABOUT_CLOSED, type About, aboutCard, aboutFit, type Choice, type Copy, noteSpans } from "../copy";
+import {
+	type About,
+	ABOUT_CLOSED,
+	aboutCard,
+	aboutFit,
+	type Choice,
+	type Copy,
+	noteSpans
+} from "../copy";
 import type { Table } from "../table";
 import { choicesRow, el, lead, type Node, starred } from "./elements";
 
 export const wayOutChoices = (
 	off: (() => void) | undefined,
-	isArmed: boolean,
+	isArmed: boolean
 ): readonly Choice[] =>
 	off === undefined
 		? []
 		: [
-			{
-				hotkey: "4",
-				label: isArmed ? "Press again to disable" : OFFER_LABELS.off,
-				onPress: off,
-				isDim: true,
-			},
-		];
+				{
+					hotkey: "4",
+					label: isArmed ? "Press again to disable" : OFFER_LABELS.off,
+					onPress: off,
+					isDim: true
+				}
+			];
 
-export type OfferHandlers = {
+export interface OfferHandlers {
 	readonly explain?: (() => void) | undefined;
 	readonly knew?: (() => void) | undefined;
 	readonly off?: (() => void) | undefined;
 	readonly later?: (() => void) | undefined;
-};
+}
 
 function offerHead(
 	table: Table,
-	args: { readonly lead: Node; readonly body: unknown; readonly surface: string; readonly copy: Copy },
+	args: {
+		readonly lead: Node;
+		readonly body: unknown;
+		readonly surface: string;
+		readonly copy: Copy;
+	}
 ): Node {
 	const { Box, Text } = table;
 	if (args.surface === "desktop") {
@@ -40,9 +53,9 @@ function offerHead(
 				Box,
 				{ key: "about", flexShrink: 0 },
 				args.lead,
-				args.copy.length > 0 ? aboutCard(table, args.copy) : undefined,
+				args.copy.length > 0 ? aboutCard(table, args.copy) : undefined
 			),
-			el(Text, { wrap: "wrap" }, args.body),
+			el(Text, { wrap: "wrap" }, args.body)
 		);
 	}
 	return el(Text, { wrap: "wrap" }, args.lead, args.body);
@@ -54,16 +67,21 @@ export function offerRow(
 	on: OfferHandlers,
 	isOffArmed: boolean,
 	about: About = ABOUT_CLOSED,
-	tag: string = DEFAULT_TAG,
+	tag: string = DEFAULT_TAG
 ): Node {
 	const { Box } = table;
 	const before: Choice[] = [
 		{ hotkey: "1", label: OFFER_LABELS.explain, onPress: on.explain },
-		{ hotkey: "2", label: OFFER_LABELS.knew, onPress: on.knew },
+		{ hotkey: "2", label: OFFER_LABELS.knew, onPress: on.knew }
 	];
 	const after: Choice[] = [
 		...wayOutChoices(on.off, isOffArmed),
-		{ hotkey: "0", label: OFFER_LABELS.later, onPress: on.later, role: "dismiss" },
+		{
+			hotkey: "0",
+			label: OFFER_LABELS.later,
+			onPress: on.later,
+			role: "dismiss"
+		}
 	];
 	const fit = aboutFit(about, { tag, line, before, after });
 	const shown =
@@ -77,11 +95,11 @@ export function offerRow(
 		isTerminal
 			? starred(table, shown.tag, shown.body)
 			: offerHead(table, {
-				lead: lead(table, shown.tag),
-				body: shown.body,
-				surface: about.surface,
-				copy: about.copy,
-			}),
-		choicesRow(table, [...before, ...fit.choices, ...after]),
+					lead: lead(table, shown.tag),
+					body: shown.body,
+					surface: about.surface,
+					copy: about.copy
+				}),
+		choicesRow(table, [...before, ...fit.choices, ...after])
 	);
 }
