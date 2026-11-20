@@ -169,3 +169,5 @@ risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 
 - All 99 distinct reports/ paths cited under plans/rebuild exist in this clone; none are missing.
 - No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
+- The session committed this section with plain `git add` and `git commit`, which confirms the fix for #77; its commit was applied here by cherry-pick.
+- New observation: the sandbox denied `registry.npmjs.org` when `bunx` fetched typescript. It was seen once before, about a day earlier (session 4ccbdaa3), and cost one extra call. Issue #78, accepted as RISK-513 (Likelihood 2 × Impact 1). Since the round found something new, it is not the final one.
