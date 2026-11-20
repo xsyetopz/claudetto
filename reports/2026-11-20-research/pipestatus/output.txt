@@ -1,0 +1,19 @@
+[0] after a failing first command DIFF | shipped: exit                         | shim: exit 1 
+[0] [1] of two                 DIFF | shipped:                              | shim: 3 4 
+[2] of three                   DIFF | shipped:                              | shim: 6 
+[0] with tail                  DIFF | shipped: rc=                          | shim: rc=7 
+[0] in a loop                  DIFF | shipped: i=1 rc= i=2 rc=              | shim: i=1 rc=1 i=2 rc=2 
+[0] in a function              DIFF | shipped: f                            | shim: f 2 
+bare, single command           DIFF | shipped: bare=                        | shim: bare=4 
+[@] of two                     DIFF | shipped: all=                         | shim: all=3 4 
+control: pipestatus[1]         same | shipped: exit 1                       | shim: exit 1 
+control: $? after false        same | shipped: rc=1                         | shim: rc=1 
+control: $? of a pipeline      same | shipped: rc=0                         | shim: rc=0 
+control: set -e stops          same | shipped:                              | shim: 
+control: set -u with a pipe    same | shipped: u 1                          | shim: u 1 
+control: exit code of the command same | shipped: rc=3                         | shim: rc=3 
+control: zsh array 1-based     same | shipped: x 3                          | shim: x 3 
+control: command in a variable same | shipped: hi there                     | shim: hi there 
+cost: set -x trace lines       DIFF | shipped: +(eval):1> true +(eval):1> echo done done  | shim: +TRAPDEBUG:0> local -a s=( 0 ) k +TRAPDEBUG:0> k=( 0 )  +TRAPDEBUG:0> typeset -gA PIPESTATUS=( 0 0 ) +(eval):1> true +TRAPDEBUG:0> local -a s=( 0 ) k +TRAPDEBUG:0> k=( 0 )  +TRAPDEBUG:0> typeset -gA PIPESTATUS=( 0 0 ) +(eval):1> echo done done 
+time 200k-iteration loop, shipped: 363 ms
+time 200k-iteration loop, shim: 28209 ms

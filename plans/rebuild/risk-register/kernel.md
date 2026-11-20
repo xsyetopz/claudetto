@@ -504,3 +504,19 @@
   - Verified: 2026-11-20, `python3 -I reports/2026-11-20-research/deferred-slip/scan.py` over local transcripts: 35 slips in 34 of 1,998 sessions (165,204 tool calls), all under `Monitor`; the next call was Bash 30, ToolSearch 3, Edit 1, none 1, never the slip again (reports/2026-11-20-research/deferred-slip/README.md).
   - Verified: 2026-11-20, the same scan after the 326721a50 round (session c7e93c52): 37 slips in 36 of 2,048 sessions (171,803 tool calls), all under `Monitor`, never repeated; 186 sessions called `Monitor`, and the first call slipped in 34 of them (18%).
   - Source: issue #76; follow-up issue #79.
+
+- [x] **RISK-514** zsh leaves bash's `${PIPESTATUS[0]}` empty without an error, so a command that reports an exit code that way prints none (issue #82).
+  - Category: host behaviour.
+  - Cause: zsh names the array `pipestatus` and indexes it from 1; it has no `PIPESTATUS`, and an unset name expands to nothing. RISK-508 and RISK-509 cover `${pipestatus[1]}` only.
+  - Event: dogfood at 3f72b84bf, 2026-11-20, session ba07e0d8: `claude plugin test ... | tail -8; echo "exit ${PIPESTATUS[0]}"` printed `exit ` six times, and the session reran all six plugin tests to capture the codes.
+  - Consequence: a missing exit code, then a rerun, or a result reported without its code.
+  - Likelihood: 3
+  - Impact: 2
+  - Existing controls: none; zsh prints no error.
+  - Response: mitigate.
+  - Actions: the SessionStart hook in hooks/hooks.json appends `[ -n "$ZSH_VERSION" ] && TRAPDEBUG() { ... typeset -gA PIPESTATUS=... }` to `CLAUDE_ENV_FILE`, which copies `$pipestatus` into `PIPESTATUS` with keys 0 to n-1 before each command. A string `trap ... DEBUG` costs less (about 7 µs per command against about 85) but is rejected: its own commands overwrite `$pipestatus`, and its probe turned `${pipestatus[1]}` from `1` into `0`. `ksh_zero_subscript` with a plain array is rejected: `${PIPESTATUS[1]}` would give the first code where bash gives the second.
+  - Trigger: a Bash result in a zsh session that shows `PIPESTATUS` empty, a Bash timeout in a zsh loop, or more than 1 in 1,000 Bash commands using `set -x`.
+  - Owner: kernel
+  - Status: mitigated 2026-11-20; residual Likelihood 1 × Impact 1. The cost is about 0.1 ms per simple command (a 200,000-iteration loop took 16-28 s against 0.4-0.6 s) and three trace lines per command under `set -x`; 2 of 135,931 recorded Bash commands used `set -x`, and 320 of 136,774 used `while read` or a loop of 1,000 or more. A bare `$PIPESTATUS` gives every code instead of the first, and `${PIPESTATUS[@]}` lists them in hash order; together 8 of 389 recorded uses, both matching bash for a one-command pipeline.
+  - Verified: 2026-11-20, zsh 5.9, `bash reports/2026-11-20-research/pipestatus/probe.sh <user's shell snapshot>`, run twice with the same output: 8 of 8 `PIPESTATUS` cases fixed (vanilla prints empty), 8 of 8 controls unchanged, including `${pipestatus[1]}`, `$?`, `set -e`, `set -u` and the command's own exit code. Transcript scan: 369 Bash commands in 198 of 2,101 sessions use `PIPESTATUS`; subscripts `[0]` 378, bare 7, `[1]` 1, `[2]` 1, `[@]` 1. Under bash and sh the env file parses, and bash's own `PIPESTATUS` is untouched.
+  - Source: issue #82; reports/2026-11-20-research/pipestatus/README.md.

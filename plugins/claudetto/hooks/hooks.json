@@ -8,6 +8,10 @@
 					{
 						"type": "command",
 						"command": "[ -n \"$CLAUDE_ENV_FILE\" ] || exit 0; grep -qs 'setopt no_nomatch no_equals sh_word_split' \"$CLAUDE_ENV_FILE\" || echo '[ -n \"$ZSH_VERSION\" ] && setopt no_nomatch no_equals sh_word_split' >> \"$CLAUDE_ENV_FILE\""
+					},
+					{
+						"type": "command",
+						"command": "[ -n \"$CLAUDE_ENV_FILE\" ] || exit 0; grep -qs 'TRAPDEBUG' \"$CLAUDE_ENV_FILE\" || echo '[ -n \"$ZSH_VERSION\" ] && TRAPDEBUG() { local -a s=(\"${pipestatus[@]}\") k; k=({0..$(($#s-1))}); typeset -gA PIPESTATUS=(\"${(@)k:^s}\"); }' >> \"$CLAUDE_ENV_FILE\""
 					}
 				]
 			}
