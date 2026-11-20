@@ -27,7 +27,7 @@ def slipped(block):
 
 
 sessions = hit = total = 0
-names, after = collections.Counter(), collections.Counter()
+names, after, users, first_slip = collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter()
 for root in sys.argv[1:]:
     for path in glob.glob(root + "/**/*.jsonl", recursive=True):
         sessions += 1
@@ -35,6 +35,10 @@ for root in sys.argv[1:]:
         total += len(seq)
         slips = [i for i, b in enumerate(seq) if slipped(b)]
         hit += bool(slips)
+        for name in {b.get("name") for b in seq}:
+            users[name] += 1
+            first = next(b for b in seq if b.get("name") == name)
+            first_slip[name] += slipped(first)
         for i in slips:
             names[seq[i]["name"]] += 1
             nxt = seq[i + 1] if i + 1 < len(seq) else None
@@ -42,3 +46,5 @@ for root in sys.argv[1:]:
 print(f"sessions {sessions}; with a slip {hit}; tool calls {total}; slips {sum(names.values())}")
 print("by tool:", dict(names))
 print("next call:", dict(after))
+for name in names:
+    print(f"sessions calling {name}: {users[name]}; first call a slip: {first_slip[name]}")

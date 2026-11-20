@@ -497,8 +497,10 @@
   - Existing controls: core's error names the missing schema and tells the model to call ToolSearch first.
   - Response: accept.
   - Actions: none. A prompt line cannot show a measured gain at 1.7% of sessions and one call each.
-  - Trigger: the slip repeated within one session, or more than 5% of sessions.
+  - Trigger: the slip repeated within one session, more than 5% of sessions, or the first `Monitor` call slipping in more than a third of the sessions that call it.
   - Owner: kernel
   - Status: accepted 2026-11-20; Likelihood 1 × Impact 1 = 1.
+  - Status: accepted, rechecked 2026-11-20 (issue #79) after the slip recurred at 326721a50; no trigger met.
   - Verified: 2026-11-20, `python3 -I reports/2026-11-20-research/deferred-slip/scan.py` over local transcripts: 35 slips in 34 of 1,998 sessions (165,204 tool calls), all under `Monitor`; the next call was Bash 30, ToolSearch 3, Edit 1, none 1, never the slip again (reports/2026-11-20-research/deferred-slip/README.md).
-  - Source: issue #76.
+  - Verified: 2026-11-20, the same scan after the 326721a50 round (session c7e93c52): 37 slips in 36 of 2,048 sessions (171,803 tool calls), all under `Monitor`, never repeated; 186 sessions called `Monitor`, and the first call slipped in 34 of them (18%).
+  - Source: issue #76; follow-up issue #79.
