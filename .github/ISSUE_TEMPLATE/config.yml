@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Report a vulnerability
-    url: https://github.com/xsyetopz/claudetto/security/advisories/new
-    about: Report a security problem in private. Do not open a public issue.

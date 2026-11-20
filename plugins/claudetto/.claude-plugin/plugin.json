@@ -1,7 +1,7 @@
 {
 	"$schema": "https://clawdipedia.cc/schemas/claude-code-plugin-manifest.json",
 	"name": "claudetto",
-	"description": "Tunes Claude Code for coding at the lowest token cost, through its official extension points only: settings, hooks, agents, commands, and an output style. It patches nothing.",
+	"description": "Trims Claude Code 2.1.329 to what beats vanilla: disables the bundled builtin plugins at load, hands over context at task boundaries, and keeps prompt caching warm.",
 	"author": {
 		"name": "xsyetopz"
 	},
@@ -9,71 +9,37 @@
 	"homepage": "https://github.com/xsyetopz/claudetto",
 	"license": "MIT",
 	"engines": {
-		"claude-code": ">=2.1.323"
+		"claude-code": ">=2.1.329"
 	},
-	"keywords": ["hooks", "coding", "cost"],
+	"keywords": ["context", "handover", "builtins"],
+	"version": "0.1.0",
 	"userConfig": {
-		"notificationsEnabled": {
-			"type": "boolean",
-			"title": "Notifications",
-			"description": "Use `false` to stop the notification claudetto raises when a turn stops on an API error.",
-			"default": true
-		},
-		"limitPeriodSeconds": {
-			"type": "number",
-			"title": "Period in seconds",
-			"description": "The length of the period that `maxHeavyToolCalls` counts in. Left unset, it is 600.",
-			"min": 1
-		},
-		"maxHeavyToolCalls": {
-			"type": "number",
-			"title": "Tool calls per period at heavy context",
-			"description": "The most tool calls inside the period while the context is heavy. A call past the cap is held. Left unset, it is 20.",
-			"min": 1
-		},
-		"heavyContextTokens": {
-			"type": "number",
-			"title": "Heavy context in tokens",
-			"description": "The input tokens of the last response from which the context counts as heavy. Left unset, it is 400000.",
-			"min": 1
-		},
-		"memoryFreeMinPercent": {
-			"type": "number",
-			"title": "Free memory share that holds new work",
-			"description": "Below this share of free memory, new commands and subagents are refused until runs end. 0 turns it off. Left unset, it is 20.",
-			"min": 0
-		},
-		"memoryProcessMaxPercent": {
-			"type": "number",
-			"title": "Memory share one process of a command may hold",
-			"description": "A process that a running command started and that holds more than this share of the machine's memory is stopped. 0 turns it off. Left unset, it is 25.",
-			"min": 0
-		},
-		"hygieneEnabled": {
-			"type": "boolean",
-			"title": "Session hygiene",
-			"description": "Use `false` to run no sweep at session start. On by default: it removes old temp folders and build folders `trash.toml` or Mole's `purge_paths` names, then runs `mo clean` without a prompt.",
-			"default": true
-		},
-		"sessionTempCleanupPeriodDays": {
-			"type": "number",
-			"title": "Session temp retention in days",
-			"description": "The age in days from which hygiene removes the temp folder of a session that is not running. Use 0 to keep them all. Left unset, it follows `cleanupPeriodDays`.",
-			"min": 0
-		},
-		"trashCleanupPeriodDays": {
-			"type": "number",
-			"title": "Build trash retention in days",
-			"description": "Days after which hygiene removes a build folder `trash.toml` names in another checkout, once nothing in it or its git index changed and no process holds it. `0` keeps all. Unset: 7.",
-			"default": 7,
-			"min": 0
-		},
 		"protectedPaths": {
 			"type": "string",
 			"multiple": true,
 			"title": "Walled-off paths",
-			"description": "Folders no session may read, list, or search by any tool or command; each start warns when `permissions.deny` lacks `Read(<path>/**)`, which `/claudetto:setup` writes. Default: the held-out eval set.",
+			"description": "Folders no session may read or write: setup adds a Read deny rule and sandbox denyRead and denyWrite for each. Default: the held-out eval set.",
 			"default": ["~/.claudetto-holdout"]
+		},
+		"memoryFreeMinPercent": {
+			"type": "number",
+			"title": "Free memory share that holds new work",
+			"description": "Below this share of free memory, a new command or subagent is refused until runs end. 0 turns it off.",
+			"default": 20,
+			"min": 0
+		},
+		"bashTimeLimitMinutes": {
+			"type": "number",
+			"title": "Time limit for a shell command",
+			"description": "A shell command still running after this many minutes is stopped with its child processes, also when it runs in the background. 0 turns it off.",
+			"default": 30,
+			"min": 0
+		},
+		"includeGitInstructions": {
+			"type": "boolean",
+			"title": "claudetto's git instructions",
+			"description": "Adds a short git block with the attribution lines from settings to the Bash tool, in place of Claude Code's own, which setup turns off with includeGitInstructions false. Turned off here, set includeGitInstructions to true in settings to get the builtin block back.",
+			"default": true
 		}
 	}
 }

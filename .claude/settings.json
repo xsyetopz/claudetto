@@ -1,5 +1,7 @@
 {
-	"enabledPlugins": {
-		"typesafe@typesafe-ai": true
-	}
+  "enabledPlugins": {
+    "typesafe@typesafe-ai": true,
+    "clawdipedia-docs@clawdipedia": true,
+    "cc-inspect@clawdipedia": true
+  }
 }

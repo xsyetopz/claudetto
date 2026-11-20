@@ -1,30 +1,56 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig.json",
-	"extends": [
-		"./plugins/claudetto/tsconfig.json",
-		"typescript-bedrock/tsconfig.base.json"
-	],
-	"compilerOptions": {},
-	"include": [
-		"plugins/**/*.ts",
-		"tests/**/*.ts",
-		"tools/node-fs.ts",
-		"tools/claim-check-*.ts",
-		"tools/claim-check.test.ts",
-		"tools/claim-check-plugin/hooks/*.ts"
-	],
+	"compilerOptions": {
+		// Runtime: Bun runs ESNext directly, so nothing is downleveled.
+		"target": "ESNext",
+		"lib": ["ESNext"],
+		"types": ["bun"],
+		"module": "Preserve",
+		"moduleResolution": "bundler",
+		"moduleDetection": "force",
+		"jsx": "preserve",
+		// Imports: what Bun accepts at runtime, nothing more.
+		"allowArbitraryExtensions": true,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"erasableSyntaxOnly": true,
+		"forceConsistentCasingInFileNames": true,
+		"noUncheckedSideEffectImports": true,
+		"libReplacement": false,
+		// JavaScript is type checked too.
+		"allowJs": true,
+		"checkJs": true,
+		// Bun type checks with `bun check`; it never emits.
+		"noEmit": true,
+		"skipLibCheck": true,
+		// Strictness: everything TypeScript 7 offers.
+		"strict": true,
+		"exactOptionalPropertyTypes": true,
+		"noUncheckedIndexedAccess": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"useDefineForClassFields": true,
+		// Relative paths resolve from here.
+		"rootDir": "."
+	},
+	// Build output a repo can hold: Bun's, Rust's (`cargo doc` writes JavaScript), SwiftPM's, and Gradle's.
 	"exclude": [
-		"node_modules",
-		"plugins/*/.claude-plugin/types/**",
 		"**/.build",
 		"**/build",
 		"**/coverage",
 		"**/dist",
-		"**/target"
-	],
-	"files": [
-		"plugins/claudetto/.claude-plugin/types/claude-code/index.d.ts",
-		"plugins/claudetto/.claude-plugin/types/claude-code-tools/index.d.ts",
-		"plugins/claudetto/.claude-plugin/types/claude-code-mcp/index.d.ts"
+		"**/target",
+		".claude",
+		"openspec",
+		"plugins",
+		"reports"
 	]
 }

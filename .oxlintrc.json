@@ -1,11 +1,411 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"extends": ["./node_modules/typescript-bedrock/oxlintrc.json"],
 	"ignorePatterns": [
+		"**/.build/**",
+		"**/build/**",
 		"**/coverage/**",
 		"**/dist/**",
 		"**/node_modules/**",
+		"**/target/**",
 		"**/*.gen.*",
-		"openspec/**"
+		".claude/**",
+		"openspec/**",
+		"reports/**"
+	],
+	"plugins": [
+		"eslint",
+		"typescript",
+		"unicorn",
+		"oxc",
+		"import",
+		"promise",
+		"node",
+		"jest"
+	],
+	"env": {
+		"builtin": true,
+		"es2026": true
+	},
+	"categories": {
+		"correctness": "error",
+		"suspicious": "error",
+		"pedantic": "error",
+		"perf": "error"
+	},
+	"options": {
+		"typeAware": true,
+		"denyWarnings": true,
+		"reportUnusedDisableDirectives": "error",
+		"respectEslintDisableDirectives": true
+	},
+	"rules": {
+		"typescript/ban-ts-comment": [
+			"error",
+			{
+				"ts-check": false,
+				"ts-expect-error": true,
+				"ts-ignore": true,
+				"ts-nocheck": true
+			}
+		],
+		"typescript/dot-notation": "error",
+		"typescript/no-misused-promises": [
+			"error",
+			{
+				"checksVoidReturn": {
+					"arguments": false
+				}
+			}
+		],
+		// A callback whose result the caller ignores, such as `items.forEach((item) => seen.add(item))`,
+		// is fine to pass where a void function is expected.
+		"typescript/strict-void-return": "off",
+		// Library types such as `Request`, `BunFile`, and `Map` can never be deeply readonly.
+		"typescript/prefer-readonly-parameter-types": "off",
+		// typescript/only-throw-error checks the thrown value's type, so it catches every literal
+		// this rule does, and a non-Error variable this rule cannot see.
+		"eslint/no-throw-literal": "off",
+		// `new Array(size)` is about 3x faster than `Array.from({ length: size })` in Bun 1.4 on arm64
+		// (10,000 elements, 30 samples of 2,000 runs after warm-up), and the types tell a length from
+		// an element.
+		"unicorn/no-new-array": "off",
+		"eslint/arrow-body-style": ["error", "as-needed"],
+		"eslint/grouped-accessor-pairs": "error",
+		"eslint/guard-for-in": "error",
+		"eslint/no-lone-blocks": "error",
+		"eslint/no-template-curly-in-string": "error",
+		"eslint/no-use-before-define": [
+			"error",
+			{
+				"variables": false
+			}
+		],
+		"eslint/operator-assignment": "error",
+		"eslint/prefer-regex-literals": "error",
+		"jest/expect-expect": "error",
+		"jest/max-nested-describe": "error",
+		"jest/no-conditional-expect": "error",
+		"jest/no-disabled-tests": "error",
+		"jest/no-done-callback": "error",
+		"jest/no-duplicate-hooks": "error",
+		"jest/no-focused-tests": "error",
+		"jest/no-identical-title": "error",
+		"jest/no-standalone-expect": "error",
+		"jest/prefer-hooks-in-order": "error",
+		"jest/prefer-hooks-on-top": "error",
+		"typescript/prefer-optional-chain": "error",
+		"unicorn/prefer-dom-node-text-content": "error",
+		"eslint/curly": "error",
+		"eslint/default-case-last": "error",
+		"eslint/default-param-last": "error",
+		"eslint/func-style": [
+			"error",
+			"declaration",
+			{ "allowArrowFunctions": true }
+		],
+		"eslint/logical-assignment-operators": ["error", "always"],
+		"eslint/no-implicit-coercion": "error",
+		"eslint/no-extra-label": "error",
+		"eslint/no-label-var": "error",
+		"eslint/no-labels": "error",
+		"eslint/no-multi-assign": "error",
+		"eslint/no-nested-ternary": "error",
+		"eslint/no-new-func": "error",
+		"eslint/no-return-assign": ["error", "always"],
+		"eslint/no-script-url": "error",
+		"eslint/no-useless-computed-key": "error",
+		"eslint/object-shorthand": "error",
+		"eslint/one-var": ["error", "never"],
+		"eslint/prefer-arrow-callback": "error",
+		"eslint/prefer-const": "error",
+		"eslint/prefer-exponentiation-operator": "error",
+		"eslint/prefer-numeric-literals": "error",
+		"eslint/prefer-object-has-own": "error",
+		"eslint/prefer-object-spread": "error",
+		"eslint/prefer-rest-params": "error",
+		"eslint/prefer-spread": "error",
+		"eslint/prefer-template": "error",
+		"eslint/yoda": "error",
+		"import/first": "error",
+		"import/no-anonymous-default-export": "error",
+		"import/no-duplicates": "error",
+		"import/no-mutable-exports": "error",
+		"node/no-sync": "error",
+		"promise/no-nesting": "error",
+		"promise/no-return-wrap": "error",
+		"promise/param-names": "error",
+		"promise/prefer-await-to-then": "error",
+		"typescript/adjacent-overload-signatures": "error",
+		"typescript/array-type": [
+			"error",
+			{
+				"default": "array"
+			}
+		],
+		"typescript/ban-tslint-comment": "error",
+		"typescript/class-literal-property-style": "error",
+		"typescript/consistent-generic-constructors": "error",
+		"typescript/consistent-indexed-object-style": "error",
+		"typescript/consistent-type-assertions": [
+			"error",
+			{
+				"assertionStyle": "never"
+			}
+		],
+		"typescript/consistent-type-definitions": ["error", "interface"],
+		"typescript/consistent-type-exports": "error",
+		"typescript/consistent-type-imports": "error",
+		"typescript/method-signature-style": "error",
+		"typescript/no-empty-interface": "error",
+		"typescript/no-inferrable-types": "error",
+		"typescript/no-unnecessary-qualifier": "error",
+		"typescript/parameter-properties": "error",
+		"typescript/prefer-find": "error",
+		"typescript/prefer-for-of": "error",
+		"typescript/prefer-function-type": "error",
+		"typescript/prefer-readonly": "error",
+		"typescript/prefer-reduce-type-parameter": "error",
+		"typescript/prefer-regexp-exec": "error",
+		"typescript/prefer-return-this-type": "error",
+		"typescript/prefer-string-starts-ends-with": "error",
+		"typescript/unified-signatures": "error",
+		"unicorn/catch-error-name": [
+			"error",
+			{
+				"ignore": ["^_?\\$$"]
+			}
+		],
+		"unicorn/consistent-date-clone": "error",
+		"unicorn/consistent-existence-index-check": "error",
+		"unicorn/error-message": "error",
+		"unicorn/filename-case": [
+			"error",
+			{
+				"case": "kebabCase"
+			}
+		],
+		"unicorn/no-array-method-this-argument": "error",
+		"unicorn/no-await-expression-member": "error",
+		"unicorn/no-console-spaces": "error",
+		"unicorn/no-unreadable-array-destructuring": "error",
+		"unicorn/no-useless-collection-argument": "error",
+		"unicorn/no-zero-fractions": "error",
+		"unicorn/number-literal-case": "error",
+		"unicorn/numeric-separators-style": "error",
+		"unicorn/prefer-array-index-of": "error",
+		"unicorn/prefer-bigint-literals": "error",
+		"unicorn/prefer-class-fields": "error",
+		"unicorn/prefer-default-parameters": "error",
+		"unicorn/prefer-export-from": "error",
+		"unicorn/prefer-global-this": "error",
+		"unicorn/prefer-includes": "error",
+		"unicorn/prefer-logical-operator-over-ternary": "error",
+		"unicorn/prefer-negative-index": "error",
+		"unicorn/prefer-module": "error",
+		"unicorn/prefer-object-from-entries": "error",
+		"unicorn/prefer-optional-catch-binding": "error",
+		"unicorn/prefer-response-static-json": "error",
+		"unicorn/prefer-spread": "error",
+		"unicorn/prefer-string-raw": "error",
+		"unicorn/prefer-string-trim-start-end": "error",
+		"unicorn/prefer-structured-clone": "error",
+		"unicorn/relative-url-style": "error",
+		"unicorn/require-array-join-separator": "error",
+		"unicorn/require-module-attributes": "error",
+		"unicorn/switch-case-braces": "error",
+		"unicorn/text-encoding-identifier-case": "error",
+		"unicorn/throw-new-error": "error",
+		"eslint/complexity": [
+			"error",
+			{
+				"max": 15
+			}
+		],
+		"eslint/no-alert": "error",
+		"eslint/no-console": [
+			"error",
+			{
+				"allow": ["error", "info", "warn"]
+			}
+		],
+		"eslint/no-empty": "error",
+		"eslint/no-empty-function": "error",
+		"eslint/no-eq-null": "error",
+		"eslint/no-implicit-globals": "error",
+		"eslint/no-param-reassign": "error",
+		"eslint/no-proto": "error",
+		"eslint/no-regex-spaces": "error",
+		"eslint/no-sequences": "error",
+		"eslint/no-var": "error",
+		"import/no-amd": "error",
+		"import/no-commonjs": "error",
+		"import/no-cycle": "error",
+		"import/no-default-export": "error",
+		"import/no-dynamic-require": "error",
+		"import/no-webpack-loader-syntax": "error",
+		"node/no-new-require": "error",
+		"node/no-path-concat": "error",
+		"oxc/bad-bitwise-operator": "error",
+		"oxc/no-barrel-file": "error",
+		"oxc/no-const-enum": "error",
+		"typescript/no-dynamic-delete": "error",
+		"typescript/no-empty-object-type": "error",
+		"typescript/no-explicit-any": "error",
+		"typescript/no-import-type-side-effects": "error",
+		"typescript/no-invalid-void-type": "error",
+		"typescript/no-namespace": "error",
+		"typescript/no-non-null-asserted-nullish-coalescing": "error",
+		"typescript/no-non-null-assertion": "error",
+		"typescript/no-require-imports": "error",
+		"typescript/no-var-requires": "error",
+		"typescript/prefer-literal-enum-member": "error",
+		"typescript/use-unknown-in-catch-callback-variable": "error",
+		"unicorn/no-abusive-eslint-disable": "error",
+		"unicorn/no-anonymous-default-export": "error",
+		"unicorn/no-array-for-each": "error",
+		"unicorn/no-array-reduce": "error",
+		"unicorn/no-document-cookie": "error",
+		"unicorn/no-length-as-slice-end": "error",
+		"unicorn/no-magic-array-flat-depth": "error",
+		"unicorn/no-process-exit": "error",
+		"unicorn/no-useless-error-capture-stack-trace": "error",
+		"unicorn/prefer-modern-math-apis": "error",
+		"unicorn/prefer-node-protocol": "error",
+		"unicorn/prefer-number-properties": "error",
+		"eslint/no-restricted-imports": [
+			"error",
+			{
+				"paths": [
+					{
+						"name": "node:child_process",
+						"message": "Run processes with `Bun.$` (shell) or `Bun.spawn` (argv).\n\n- import { execFileSync } from \"node:child_process\";\n- const out = execFileSync(\"git\", [\"status\"]).toString();\n+ import { $ } from \"bun\";\n+ const out = await $`git status`.text();"
+					},
+					{
+						"name": "node:sqlite",
+						"message": "Use `bun:sqlite`.\n\n- import { DatabaseSync } from \"node:sqlite\";\n- const db = new DatabaseSync(\"app.db\");\n- const rows = db.prepare(\"SELECT * FROM users\").all();\n+ import { Database } from \"bun:sqlite\";\n+ const db = new Database(\"app.db\", { strict: true });\n+ const rows = db.query(\"SELECT * FROM users\").all();"
+					},
+					{
+						"name": "node:test",
+						"message": "Use `bun:test`; `bun test` runs it.\n\n- import { test } from \"node:test\";\n- import assert from \"node:assert/strict\";\n- test(\"adds\", () => assert.equal(1 + 1, 2));\n+ import { expect, test } from \"bun:test\";\n+ test(\"adds\", () => expect(1 + 1).toBe(2));"
+					},
+					{
+						"name": "@jest/globals",
+						"message": "Use `bun:test`; `bun test` runs it.\n\n- import { expect, jest, test } from \"@jest/globals\";\n- const fn = jest.fn();\n+ import { expect, mock, test } from \"bun:test\";\n+ const fn = mock();"
+					},
+					{
+						"name": "argon2",
+						"message": "Hash passwords with `Bun.password` (argon2id by default).\n\n- import argon2 from \"argon2\";\n- const hash = await argon2.hash(password);\n- const ok = await argon2.verify(hash, password);\n+ const hash = await Bun.password.hash(password, \"argon2id\");\n+ const ok = await Bun.password.verify(password, hash);"
+					},
+					{
+						"name": "bcrypt",
+						"message": "Hash passwords with `Bun.password`.\n\n- import bcrypt from \"bcrypt\";\n- const hash = await bcrypt.hash(password, 10);\n- const ok = await bcrypt.compare(password, hash);\n+ const hash = await Bun.password.hash(password, { algorithm: \"bcrypt\", cost: 10 });\n+ const ok = await Bun.password.verify(password, hash);"
+					},
+					{
+						"name": "better-sqlite3",
+						"message": "Use `bun:sqlite`; it has the same prepare/run/get/all API.\n\n- import Database from \"better-sqlite3\";\n- const db = new Database(\"app.db\");\n- const rows = db.prepare(\"SELECT * FROM users\").all();\n+ import { Database } from \"bun:sqlite\";\n+ const db = new Database(\"app.db\", { strict: true });\n+ const rows = db.query(\"SELECT * FROM users\").all();"
+					},
+					{
+						"name": "cross-fetch",
+						"message": "Use the global `fetch`.\n\n- import fetch from \"cross-fetch\";\n- const res = await fetch(url);\n+ const res = await fetch(url); // global, no import"
+					},
+					{
+						"name": "cross-spawn",
+						"message": "Use `Bun.spawn`; it is cross-platform.\n\n- import spawn from \"cross-spawn\";\n- spawn(\"git\", [\"status\"], { stdio: \"inherit\" });\n+ const proc = Bun.spawn([\"git\", \"status\"], { stdout: \"inherit\" });\n+ await proc.exited;"
+					},
+					{
+						"name": "execa",
+						"message": "Use `Bun.$` (shell) or `Bun.spawn` (argv).\n\n- import { execa } from \"execa\";\n- const { stdout } = await execa(\"git\", [\"status\"]);\n+ import { $ } from \"bun\";\n+ const stdout = await $`git status`.text();"
+					},
+					{
+						"name": "fast-glob",
+						"message": "Use `Bun.Glob`.\n\n- import glob from \"fast-glob\";\n- const files = await glob(\"src/**/*.ts\");\n+ const files = await Array.fromAsync(new Bun.Glob(\"src/**/*.ts\").scan());"
+					},
+					{
+						"name": "glob",
+						"message": "Use `Bun.Glob`.\n\n- import { glob } from \"glob\";\n- const files = await glob(\"src/**/*.ts\");\n+ const files = await Array.fromAsync(new Bun.Glob(\"src/**/*.ts\").scan());"
+					},
+					{
+						"name": "jest",
+						"message": "Use `bun:test`; `bun test` runs it.\n\n- import { expect, jest, test } from \"jest\";\n- const fn = jest.fn();\n+ import { expect, mock, test } from \"bun:test\";\n+ const fn = mock();"
+					},
+					{
+						"name": "js-yaml",
+						"message": "Use `Bun.YAML`.\n\n- import yaml from \"js-yaml\";\n- const data = yaml.load(text);\n- const out = yaml.dump(data);\n+ const data = Bun.YAML.parse(text);\n+ const out = Bun.YAML.stringify(data);"
+					},
+					{
+						"name": "node-fetch",
+						"message": "Use the global `fetch`.\n\n- import fetch from \"node-fetch\";\n- const res = await fetch(url);\n+ const res = await fetch(url); // global, no import"
+					},
+					{
+						"name": "shelljs",
+						"message": "Use `Bun.$`.\n\n- import shell from \"shelljs\";\n- shell.rm(\"-rf\", \"dist\");\n- const out = shell.exec(\"git status\").stdout;\n+ import { $ } from \"bun\";\n+ await $`rm -rf dist`;\n+ const out = await $`git status`.text();"
+					},
+					{
+						"name": "sqlite3",
+						"message": "Use `bun:sqlite`; it is synchronous, no callbacks.\n\n- import sqlite3 from \"sqlite3\";\n- const db = new sqlite3.Database(\"app.db\");\n- db.all(\"SELECT * FROM users\", (error, rows) => {});\n+ import { Database } from \"bun:sqlite\";\n+ const db = new Database(\"app.db\", { strict: true });\n+ const rows = db.query(\"SELECT * FROM users\").all();"
+					},
+					{
+						"name": "uuid",
+						"message": "Use `crypto.randomUUID` (v4) or `Bun.randomUUIDv7` (v7).\n\n- import { v4, v7 } from \"uuid\";\n- const id = v4();\n- const ordered = v7();\n+ const id = crypto.randomUUID();\n+ const ordered = Bun.randomUUIDv7();"
+					},
+					{
+						"name": "vitest",
+						"message": "Use `bun:test`; `bun test` runs it.\n\n- import { expect, vi, test } from \"vitest\";\n- const fn = vi.fn();\n+ import { expect, mock, test } from \"bun:test\";\n+ const fn = mock();"
+					},
+					{
+						"name": "zx",
+						"message": "Use `Bun.$`; it escapes interpolated values the same way.\n\n- import { $ } from \"zx\";\n+ import { $ } from \"bun\";\n  await $`git status`;"
+					}
+				]
+			}
+		]
+	},
+	"overrides": [
+		{
+			"files": [
+				"**/*{.test,_test,.spec,_spec}.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"
+			],
+			"rules": {
+				"eslint/max-lines-per-function": "off",
+				"eslint/max-nested-callbacks": "off"
+			}
+		},
+		{
+			"files": ["scripts/**"],
+			"rules": {
+				"eslint/no-console": "off"
+			}
+		},
+		{
+			"files": ["**/*.config.{js,mjs,cjs,ts,mts,cts}"],
+			"rules": {
+				"import/no-default-export": "off"
+			}
+		},
+		{
+			"files": ["**/src/theme/**"],
+			"rules": {
+				"import/no-default-export": "off"
+			}
+		},
+		{
+			"files": ["**/hooks/**"],
+			"rules": {
+				"promise/prefer-await-to-then": "off",
+				"promise/no-callback-in-promise": "off"
+			}
+		},
+		{
+			"files": ["**/hooks/register.{js,mjs,ts,mts}"],
+			"rules": {
+				"import/max-dependencies": "off"
+			}
+		},
+		{
+			"files": ["**/*.d.{ts,mts,cts}"],
+			"rules": {
+				"typescript/no-namespace": "off"
+			}
+		}
 	]
 }

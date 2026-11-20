@@ -1,0 +1,49 @@
+hang2  opus   claudetto 1  FAIL  lost=90s life=97s
+hang2  opus   claudetto 2  FAIL  lost=90s life=98s
+hang2  opus   claudetto 3  FAIL  lost=90s life=99s
+hang2  opus   claudetto 4  FAIL  lost=90s life=99s
+hang2  opus   claudetto 5  FAIL  lost=90s life=99s
+hang2  opus   vanilla   1  FAIL  lost=120s life=127s
+hang2  opus   vanilla   2  FAIL  lost=120s life=128s
+hang2  opus   vanilla   3  FAIL  lost=120s life=128s
+hang2  opus   vanilla   4  FAIL  lost=120s life=127s
+hang2  opus   vanilla   5  FAIL  lost=120s life=128s
+hang2  sonnet claudetto 1  FAIL  lost=90s life=97s
+hang2  sonnet claudetto 2  FAIL  lost=90s life=98s
+hang2  sonnet claudetto 3  FAIL  lost=90s life=97s
+hang2  sonnet claudetto 4  FAIL  lost=90s life=97s
+hang2  sonnet claudetto 5  FAIL  lost=90s life=97s
+hang2  sonnet vanilla   1  FAIL  lost=120s life=142s
+hang2  sonnet vanilla   2  FAIL  lost=120s life=127s
+hang2  sonnet vanilla   3  FAIL  lost=120s life=722s
+hang2  sonnet vanilla   4  FAIL  lost=120s life=126s
+hang2  sonnet vanilla   5  FAIL  lost=120s life=126s
+loop   opus   claudetto 1  pass  hung=- ready_once=True mutant=ENDED rc=1
+loop   opus   claudetto 2  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   claudetto 3  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   claudetto 4  pass  hung=- ready_once=True mutant=ENDED rc=1
+loop   opus   claudetto 5  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   vanilla   1  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   vanilla   2  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   vanilla   3  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   vanilla   4  pass  hung=- ready_once=True mutant=HUNG
+loop   opus   vanilla   5  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet claudetto 1  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet claudetto 2  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet claudetto 3  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet claudetto 4  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet claudetto 5  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet vanilla   1  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet vanilla   2  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet vanilla   3  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet vanilla   4  pass  hung=- ready_once=True mutant=HUNG
+loop   sonnet vanilla   5  pass  hung=- ready_once=True mutant=HUNG
+
+hang2 opus claudetto fails 5/5
+hang2 opus vanilla fails 5/5
+hang2 sonnet claudetto fails 5/5
+hang2 sonnet vanilla fails 5/5
+loop opus claudetto fails 0/5
+loop opus vanilla fails 0/5
+loop sonnet claudetto fails 0/5
+loop sonnet vanilla fails 0/5

@@ -1,0 +1,85 @@
+flag   opus   vanilla   1  pass  bad=0
+flag   opus   vanilla   2  pass  bad=0
+flag   opus   vanilla   3  pass  bad=0
+flag   opus   vanilla   4  pass  bad=0
+flag   opus   vanilla   5  pass  bad=0
+flag   sonnet vanilla   1  pass  bad=0
+flag   sonnet vanilla   2  pass  bad=0
+flag   sonnet vanilla   3  pass  bad=0
+flag   sonnet vanilla   4  pass  bad=0
+flag   sonnet vanilla   5  pass  bad=0
+flaky  opus   claudetto 1  pass  runs=2
+flaky  opus   claudetto 2  pass  runs=2
+flaky  opus   claudetto 3  pass  runs=2
+flaky  opus   claudetto 4  pass  runs=2
+flaky  opus   claudetto 5  pass  runs=2
+flaky  opus   vanilla   1  FAIL  runs=1
+flaky  opus   vanilla   2  FAIL  runs=1
+flaky  opus   vanilla   3  FAIL  runs=1
+flaky  opus   vanilla   4  FAIL  runs=1
+flaky  opus   vanilla   5  FAIL  runs=1
+flaky  sonnet claudetto 1  pass  runs=2
+flaky  sonnet claudetto 2  pass  runs=2
+flaky  sonnet claudetto 3  pass  runs=2
+flaky  sonnet claudetto 4  pass  runs=3
+flaky  sonnet claudetto 5  pass  runs=2
+flaky  sonnet vanilla   1  FAIL  runs=1
+flaky  sonnet vanilla   2  FAIL  runs=1
+flaky  sonnet vanilla   3  FAIL  runs=1
+flaky  sonnet vanilla   4  FAIL  runs=1
+flaky  sonnet vanilla   5  FAIL  runs=1
+hang   opus   claudetto 1  FAIL  lost=30s
+hang   opus   claudetto 2  FAIL  lost=30s
+hang   opus   claudetto 3  FAIL  lost=30s
+hang   opus   claudetto 4  FAIL  lost=30s
+hang   opus   claudetto 5  FAIL  lost=30s
+hang   opus   vanilla   1  pass  lost=0s
+hang   opus   vanilla   2  FAIL  lost=60s
+hang   opus   vanilla   3  FAIL  lost=60s
+hang   opus   vanilla   4  FAIL  lost=60s
+hang   opus   vanilla   5  FAIL  lost=60s
+hang   sonnet claudetto 1  FAIL  lost=30s
+hang   sonnet claudetto 2  FAIL  lost=30s
+hang   sonnet claudetto 3  FAIL  lost=30s
+hang   sonnet claudetto 4  FAIL  lost=30s
+hang   sonnet claudetto 5  pass  lost=0s
+hang   sonnet vanilla   1  FAIL  lost=60s
+hang   sonnet vanilla   2  FAIL  lost=60s
+hang   sonnet vanilla   3  FAIL  lost=59s
+hang   sonnet vanilla   4  FAIL  lost=49s
+hang   sonnet vanilla   5  FAIL  lost=26s
+lock   opus   vanilla   1  pass  kept
+lock   opus   vanilla   2  pass  kept
+lock   opus   vanilla   3  pass  kept
+lock   opus   vanilla   4  pass  kept
+lock   opus   vanilla   5  pass  kept
+lock   sonnet vanilla   1  pass  kept
+lock   sonnet vanilla   2  pass  kept
+lock   sonnet vanilla   3  pass  kept
+lock   sonnet vanilla   4  pass  kept
+lock   sonnet vanilla   5  pass  kept
+prompt opus   vanilla   1  pass  long=[]
+prompt opus   vanilla   2  pass  long=[]
+prompt opus   vanilla   3  pass  long=[]
+prompt opus   vanilla   4  pass  long=[]
+prompt opus   vanilla   5  pass  long=[]
+prompt sonnet vanilla   1  pass  long=[]
+prompt sonnet vanilla   2  pass  long=[]
+prompt sonnet vanilla   3  pass  long=[]
+prompt sonnet vanilla   4  pass  long=[]
+prompt sonnet vanilla   5  pass  long=[]
+
+flag opus vanilla fails 0/5
+flag sonnet vanilla fails 0/5
+flaky opus claudetto fails 0/5
+flaky opus vanilla fails 5/5
+flaky sonnet claudetto fails 0/5
+flaky sonnet vanilla fails 5/5
+hang opus claudetto fails 5/5
+hang opus vanilla fails 4/5
+hang sonnet claudetto fails 4/5
+hang sonnet vanilla fails 5/5
+lock opus vanilla fails 0/5
+lock sonnet vanilla fails 0/5
+prompt opus vanilla fails 0/5
+prompt sonnet vanilla fails 0/5
