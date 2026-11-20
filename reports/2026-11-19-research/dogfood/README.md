@@ -127,3 +127,5 @@ risks: 436; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher:
 ```
 
 - No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
+- The session agent wrote and committed the section above. A fresh clone of 72796b825 outside the session gave the same test counts twice, with no timeout, and tsc and register exit 0.
+- New fault: the agent called `Monitor` with a ToolSearch input (`select:Monitor`) and got core's InputValidationError, then waited with a Bash loop (session 1c9f6d80; issue #76, RISK-512, accepted at Likelihood 1 × Impact 1).
