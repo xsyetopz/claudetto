@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Spec-first loop (clarify, spec, red, green, check) for new or changed behaviour only; skip typos, renames, dependency bumps and questions.
+description: Use for new or changed behaviour - spec, failing tests, then code (clarify, spec, red, green, check). Skip typos, renames, dependency bumps and questions.
 license: MIT
 ---
 
@@ -8,7 +8,7 @@ license: MIT
 
 Loop: clarify, spec, red, green, check. Formats and `spec_check` output: `references/FORMAT.md`.
 
-- Specs in this repo: !`git ls-files 'specs/*.md' 2>/dev/null || true`
+First Glob `specs/*.md` and read the specs the request touches.
 
 ## Clarify
 

@@ -2,7 +2,7 @@
 
 ## Spec
 
-- [ ] **RISK-515** The `spec` skill does not load when its shell injection cannot run (issue #85).
+- [x] **RISK-515** The `spec` skill does not load when its shell injection cannot run (issue #85).
   - Category: spec, skill loading.
   - Cause: `skills/spec/SKILL.md` lists specs through `` !`git ls-files 'specs/*.md' 2>/dev/null || true` ``; Claude Code runs the injection through the Bash permission check and a shell before the skill loads, and `|| true` covers only git's exit code.
   - Event: 2026-11-21, claude 2.1.330: `claude -p --disallowedTools Bash "/claudetto-spec:spec ..."` answered `Shell command permission check failed for pattern ...` with 0 turns; under a nested Seatbelt, eval suite 1 answered `Shell command failed for pattern ...: sandbox-exec: sandbox_apply: Operation not permitted`.
@@ -14,7 +14,8 @@
   - Actions: remove the injection; the loop finds specs with Glob or `spec_check`.
   - Trigger: a skill edit.
   - Owner: spec
-  - Status: open.
+  - Status: mitigated 2026-11-21: the injection is gone; the skill tells Claude to Glob `specs/*.md` first.
+  - Verified: 2026-11-21, claude 2.1.330: the `--disallowedTools Bash` probe now loads the skill (3 turns, no shell error), and eval suite 3 scores 1.0 with the plugin on all six current cases; Likelihood 2 × Impact 3 = 6.
   - Source: issue #85.
 
 - [x] **RISK-516** An eval run from a sandboxed agent shell scores 0 for a reason outside the plugin (issue #86).
@@ -47,4 +48,20 @@
   - Owner: spec
   - Status: mitigated 2026-11-21 (commit 315a57a57).
   - Verified: 2026-11-21: `bun test tools/__tests__/spec-eval-graders.test.ts` 64 pass, including four traces that write the implementation before staging and a skill-text decoy; the new grader run over the 13 kept suite-1 traces passes all 6 with-plugin runs and fails all 7 baselines, which never stage. Likelihood 3 × Impact 3 = 9.
+  - Source: this session, 058ea2d3-793b-495e-912a-323a9453747d.
+
+- [x] **RISK-518** In a session with many skills the listing cuts the `spec` description before its trigger words, and the skill does not fire.
+  - Category: spec, skill triggering.
+  - Cause: Claude Code shortens each skill description in a crowded listing (about 60 characters in the probe); the old description opened with "Spec-first loop (clarify, spec, red, green, check) for new …", so "new or changed behaviour" was cut.
+  - Event: 2026-11-21, claude 2.1.330, interactive tmux probe in the user's own setup with the `ambiguous-headless` task: 0 Skill calls in 12 tool calls, no spec, no question; eval runs did not show it because they load only the plugin.
+  - Consequence: the plugin is inert in the interactive sessions it is built for first.
+  - Likelihood: 3
+  - Impact: 4
+  - Existing controls: none before the fix.
+  - Response: treat.
+  - Actions: the description opens with "Use for new or changed behaviour", so the trigger survives the cut.
+  - Trigger: a description edit, or a Claude Code change to the listing width.
+  - Owner: spec
+  - Status: mitigated 2026-11-21.
+  - Verified: 2026-11-21, claude 2.1.330, the same probe after the edit: the skill fired first and asked about the tax rate form and rounding through AskUserQuestion (one run each way, so a small sample); Likelihood 3 × Impact 4 = 12 before the fix.
   - Source: this session, 058ea2d3-793b-495e-912a-323a9453747d.
