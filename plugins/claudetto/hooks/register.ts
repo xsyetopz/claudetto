@@ -22,7 +22,6 @@ import { registerToolOffer } from "./pool/offer";
 import { registerQuestionRule } from "./pool/question";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
-import { registerAnswerNote } from "./question/answers";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { registerStatusline } from "./statusline/statusline";
@@ -48,7 +47,6 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerRenewal(on);
 	registerClear(on);
 	registerStopNotice(on);
-	registerAnswerNote(on);
 	registerSpawn(on);
 	registerThrash(on);
 	registerRunaway(on);
