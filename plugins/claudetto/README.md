@@ -69,6 +69,10 @@ claudetto turns off Write, Edit, NotebookEdit and SendMessage in every loop, the
 - Every Edit and Write permission rule holds through `patch`: its permission check asks for the Edit and Write verdict of each path and takes the strictest.
 - Claude Code loads path-scoped rules (`.claude/rules/**/*.md` with `paths:`) and nested CLAUDE.md files only when Read, Write or Edit touches a file, so `patch` appends the matching ones to its reply, once per session.
 
+## Tool Pool
+
+claudetto hides `Write`, `Edit`, `NotebookEdit`, `SendMessage` and `ListAgents` from every loop through `tool.offer`, and replaces the description of 16 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`). Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+
 ## Web Tools
 
 claudetto registers `mcp__claudetto__web_fetch` and `mcp__claudetto__web_search`, and hides the built-in `WebFetch` and `WebSearch` from every loop (`tool.offer` answers `isOffered: false`).

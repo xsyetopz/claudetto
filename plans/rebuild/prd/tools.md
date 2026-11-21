@@ -1,19 +1,23 @@
 # Tools Requirements
 
-claudetto shapes the tool pool every request carries, because each tool's schema and description is resent with every request and each call is a model turn. Claude Code 2.1.330 vanilla sends 31,215 bytes of tools in a `-p hi` request (cc-inspect cli, fake API, 2026-11-21). The 2026-11-21 user ruling sets the pool: Write, Edit and NotebookEdit give way to one `patch` tool; WebSearch and WebFetch give way to claudetto's own `web_search` and `web_fetch`; SendMessage is off; Monitor, TaskStop and the task-list tools stay, trimmed; every kept tool's description is at most 200 characters. A cut ships only with a check that measures it (ADR-0177); the system prompt and output style name the tools that replace the removed ones.
+claudetto shapes the tool pool every request carries, because each tool's schema and description is resent with every request and each call is a model turn. Claude Code 2.1.330 vanilla sends 29,825 characters of tools in a `-p hi` request (tools/measure-tools.ts, fake API, 2026-11-21; the earlier 31,215 was not reproduced, see reports/2026-11-21-tool-bytes). The 2026-11-21 user ruling sets the pool: Write, Edit and NotebookEdit give way to one `patch` tool; WebSearch and WebFetch give way to claudetto's own `web_search` and `web_fetch`; SendMessage is off; Monitor, TaskStop and the task-list tools stay, trimmed; every kept tool's description is at most 200 characters. A cut ships only with a check that measures it (ADR-0177); the system prompt and output style name the tools that replace the removed ones.
 
 ## Pool
 
 - [x] **REQ-TOOLS-001** claudetto shall keep Write, Edit, NotebookEdit and SendMessage from every model loop through `tool.offer` `{ isOffered: false }`, alongside the existing deny list (Workflow, ScheduleWakeup, ReportFindings, Cron*, EnterPlanMode).
   Acceptance: a `-p` request with claudetto loaded lists none of them, a subagent's request lists none of them, and the request's tool bytes are measured before and after. Verification: test; probe.
-  Status: done at 6b2fb4a34 for the `tool.offer` hook and its test (`claude plugin test plugins/claudetto`: 170 pass, 2026-11-21); the `-p` request listing and the tool-bytes measurement were not run.
-  Verified: PASS: `hooks/patch/__tests__/guards.test.ts` hides the four in the main loop and a subagent's through `$.tool.offer` and keeps Bash, Read and patch; the probe leg is pending.
+  Status: done at 6b2fb4a34 for the `tool.offer` hook and its test (`claude plugin test plugins/claudetto`: 170 pass, 2026-11-21); the hook now lives in `hooks/pool/offer.ts`, and the probe ran after the last change (2026-11-21).
+  Verified: PASS: `hooks/pool/__tests__/offer.test.ts` hides the set in the main loop and a subagent's; probe: `tools/measure-tools.ts` against a fake API shows none of the four in the main or the subagent request, and the tool bytes before and after (reports/2026-11-21-tool-bytes/README.md).
 
 - [ ] **REQ-TOOLS-002** claudetto shall decide ListAgents, EnterWorktree and ExitWorktree on measured cost: the tool bytes each adds per request against the calls and bytes the Bash or Agent-isolation path takes for the same job.
   Acceptance: a report gives both numbers per tool and the decision (off, or kept with a description of at most 200 characters). Verification: probe.
+  Status: partial (2026-11-21): the tool-bytes half is measured and the Bash-path half is not, so the item stays open. ListAgents off, EnterWorktree and ExitWorktree kept at 177 and 188 characters.
+  Verified: PASS: probe in reports/2026-11-21-tool-bytes/README.md gives the tool bytes per tool; `hooks/pool/__tests__/offer.test.ts` covers the decisions. Not measured: the calls and bytes of the Bash path for the same job, which is reasoned only.
 
 - [ ] **REQ-TOOLS-003** claudetto shall describe each kept built-in tool in at most 200 characters through `tool.describe`, keeping the facts a model needs to call it right (Bash, Read, Glob, Grep, Agent, Skill, ToolSearch, AskUserQuestion, Monitor, TaskStop, TodoWrite, TaskCreate, TaskGet, TaskList, TaskUpdate, ExitPlanMode, ListAgents if kept).
   Acceptance: a test renders each description and asserts the length; the request's tool bytes are measured before and after; a trivial and a feature eval show no lower score. Verification: test; eval.
+  Status: partial (2026-11-21): 16 descriptions in `hooks/pool/describe.ts`; the eval leg is open. Glob and Grep do not exist in 2.1.330, and Bash renders at 915 characters because the claudetto git block follows the 199-character base.
+  Verified: PASS: `hooks/pool/__tests__/describe.test.ts` asserts at most 200 characters per description; probe: default-mode tool bytes 16,730 to 8,887 and tools-upfront 43,131 to 24,443 (reports/2026-11-21-tool-bytes/README.md).
 
 ## Patch
 
