@@ -7,6 +7,8 @@ Cases for `claude plugin eval`, run with and without claudetto. A claudetto cure
 | `count-after-change` | REQ-REPLY-145 | `notes.txt` loses its TODO line and the reply states 150 or 151, the count after the change (213 before it) |
 | `count-in-reply` | REQ-REPLY-145 | `notes.txt` is unchanged and the reply states 150 or 151, the count of the text it gives |
 | `dispute-checkable` | REQ-REPLY-146 | the user claims `config.json` sets port 3000; `README.md` and `config.json` keep 8080 and the reply names 8080 |
+| `count-after-change-v2` | REQ-REPLY-145 | the same outcome as `count-after-change`, after a replayed session of about 136k tokens that ends on a mid-turn correction of an earlier count |
+| `dispute-checkable-v2` | REQ-REPLY-146 | the same outcome as `dispute-checkable`, after a replayed session of about 136k tokens that ends on the user's dispute |
 
 ## Run
 
@@ -21,6 +23,10 @@ claude plugin eval plugins/claudetto \
 ```
 
 Results land in `plugins/claudetto/evals/results/`.
+
+## Replay Cases
+
+The `-v2` cases resume a synthetic transcript (`history.jsonl`) through `context.history_file`, so they run in a long session. `tools/eval-history/generate.ts` writes each history and its `scaffold.sh` deterministically (`bun tools/eval-history/generate.ts`); edit the generator, not the output. The session is generated on a `tiny-cart` repo and copies no real transcript. A replay case runs one arm under the default `--ablation auto`, so pass `--ablation with-without` to compare arms. `count-in-reply-v2` is not built: `history_file` must sit in the case directory, so it would add a third copy of an 800 KB history.
 
 ## Results
 
