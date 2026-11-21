@@ -51,7 +51,7 @@ eval plugin *args:
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
 # Run the held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin, outside the sandbox.
-eval-holdout plugin *args:
+eval-holdout plugin model="claude-opus-5-5" *args:
     #!/usr/bin/env bash
     set -euo pipefail
     src="$HOME/.claudetto-holdout/{{ plugin }}"
@@ -63,14 +63,16 @@ eval-holdout plugin *args:
     cp -R "$src" "$work/plugin/evals"
     rc=0
     # The copy is this repo's plugin in a fresh temp dir each run, so no earlier trust answer covers it.
-    claude plugin eval "$work/plugin" --trust-plugin --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }} || rc=$?
+    claude plugin eval "$work/plugin" --trust-plugin --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish --model "{{ model }}" {{ args }} || rc=$?
     # The temp copy holds traces and prompts of unseen cases; only scores leave it (ADR-0193 rule 7).
     keep="plugins/{{ plugin }}/evals/results"
     mkdir -p "$keep"
     for f in "$work"/plugin/evals/results/*/aggregate-result.json; do
         [[ -f "$f" ]] || continue
-        jq '.cases |= map({name, aggregates, arms: (.arms | map_values(map({score, passed, costUsd, turns, error})))})' \
-            "$f" > "$keep/holdout-$(basename "$(dirname "$f")").json"
+        # The result JSON names no model (claude 2.1.330) and the traces go with the scaffolds, so the pin is recorded.
+        jq --arg model "{{ model }}" \
+            '{model: $model} + . | .cases |= map({name, aggregates, arms: (.arms | map_values(map({score, passed, costUsd, turns, error})))})' \
+            "$f" >"$keep/holdout-$(basename "$(dirname "$f")").json"
         echo "kept $keep/holdout-$(basename "$(dirname "$f")").json"
     done
     exit "$rc"

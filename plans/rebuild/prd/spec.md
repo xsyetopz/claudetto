@@ -42,7 +42,7 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
 
 - [x] **REQ-SPEC-007** When a request contradicts an existing requirement or cannot be met, the skill shall stop and report the conflict with the requirement ID instead of editing tests or the spec to fit.
   Acceptance: the canary case `contradiction` passes only when the reply names the conflicting ID and no staged test changed. Verification: demonstration.
-  Basis: reported (W5-15; ImpossibleBench canary, I16). Status: done at 93ab5278d (eval suite 1, 2026-11-21: `contradiction` 1.0 with the plugin against 0.41 without, over 3 runs each; the baseline bent the code, the test and the spec).
+  Basis: reported (W5-15; ImpossibleBench canary, I16). Status: done at 93ab5278d (eval suite 1, 2026-11-21: `contradiction` 1.0 with the plugin against 0.41 without, over 3 runs each; the baseline bent the code, the test and the spec). Held-out canary: no gain over vanilla (REQ-SPEC-010).
   Source: external/please-use-me-often/swe-worst-practices.md W5-15; agent-failure-dossier/07-measurement-and-environment.md I16.
 
 - [x] **REQ-SPEC-008** In an interactive session the skill shall ask about an expensive unknown through AskUserQuestion; under `claude -p` it shall write the unknown as an `Open:` line, take the cheap default when one exists, and report each assumption in the final reply.
@@ -59,7 +59,11 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
 
 ## Gain Over Vanilla
 
-- [ ] **REQ-SPEC-010** Each part of claudetto-spec shall beat vanilla Claude Code 2.1.329 on its eval case's Δ in the held-out run, or move Out with the measured reason.
-  Acceptance: the held-out run's `aggregate-result.json` shows a positive mean Δ, pinned model and `claudeVersion` 2.1.329 or later; a part whose case shows Δ ≤ 0 is moved Out. Verification: demonstration (user-run, ADR-0193 rule 7).
-  Basis: user decision (ADR-0177). Status: missing at 088a227c.
+- [x] **REQ-SPEC-010** Each part of claudetto-spec shall beat vanilla Claude Code 2.1.329 on its eval case's Δ in the held-out run, or move Out with the measured reason.
+  Acceptance: the held-out run's `aggregate-result.json` shows a positive mean Δ, pinned model and `claudeVersion` 2.1.329 or later; a part whose case shows Δ ≤ 0 is moved Out. Verification: demonstration (ADR-0193 rule 7; run with the user's approval, 2026-11-21).
+  Basis: user decision (ADR-0177). Status: done. Held-out set: four cases written blind by a subagent (ADR-0193 rule 7). Pinned run `holdout-2026-11-21T00-28-05-304Z` (claude 2.1.330, `claude-opus-5-5`, 1 run per arm, $1.14): mean Δ +0.38.
+  - Spec-first loop: both feature cases 1.0 against 0.23 (Δ +0.77), the same in the unpinned run before it. It beats vanilla.
+  - Silence on trivial edits (REQ-SPEC-006): 1.0 in both arms, by design a negative twin; it is a no-harm property, not a gain claim.
+  - Contradiction stop (REQ-SPEC-007): 0.93 against 1.0 pooled over 5 runs per arm (0.67 once, then 1.0 four times), so vanilla already stops on this case and the part shows no gain. It stays in the skill as a guard for the loop's own pressure (staged tests that must pass), which the vanilla arm never runs; it adds no always-on tokens. The user may move it Out instead.
+  - Total held-out spend: $2.92 over three runs.
   Source: ADR-0177; ADR-0193.

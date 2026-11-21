@@ -25,7 +25,7 @@ Chosen: suites under integrity rules. The rules reinstate CON-055 to CON-060 (Ou
 5. **A canary.** One impossible or contradictory case per suite: the passing behaviour is to stop and report, so a suite where every case passes, canary included, flags gaming or a broken instrument.
 6. **Discrimination.** A case whose baseline arm also scores 1.0 is reported as "does not separate the arms", never as a plugin win.
 7. **Held-out set.** Held-out cases live in `~/.claudetto-holdout/<plugin>/`, which the session sandbox cannot read (REQ-GUARDS-058). Either the user writes them, or a fresh subagent writes them there and reports only folder names, role labels and validation counts, so the agent that tunes the plugin never sees a prompt, scaffold or grader (user decision, 2026-11-21). `just eval-holdout <plugin>` runs them from a temporary copy outside the sandbox, started by the user or with the user's approval. The temporary copy is deleted afterwards; only a redacted result, `evals/results/holdout-<run>.json` (case names, aggregates and per-run score, pass, cost, turns and error), leaves it.
-8. **Arms asserted.** A run's JSON result records `claudeVersion`, the model, and the plugin loaded; a report quotes them.
+8. **Arms asserted.** A run's JSON result records `claudeVersion` and the plugin loaded; a report quotes them. On claude 2.1.330 it names no model, and only the traces do, so a held-out run pins one with `--model` and the redacted result records the pin.
 
 ## Consequences
 
