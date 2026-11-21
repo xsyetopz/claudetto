@@ -4,6 +4,9 @@ import type { On, RenderPropsOf, RenderSurface } from "claude-code";
 import { type Engine, mock, type MockClock } from "claude-code/testing";
 
 import { rowOf } from "../session/rows";
+import { stepTurn } from "./turns";
+
+export { completeTurn, drain, stepTurn } from "./turns";
 
 declare const setTimeout: (fn: () => void, ms: number) => unknown;
 
@@ -53,14 +56,6 @@ export const inOrder = async <T>(
 	}
 };
 
-/** Reads a stream to its end so the step behind it completes. */
-export const drain = async (stream: AsyncIterator<unknown>): Promise<void> => {
-	const chunk = await stream.next();
-	if (chunk.done !== true) {
-		await drain(stream);
-	}
-};
-
 /** A promise a test settles by hand: `release` lets everything waiting on `hold` go on. */
 export const gate = (): { hold: Promise<void>; release: () => void } => {
 	const door: { open?: () => void } = {};
@@ -81,23 +76,6 @@ export const submitTyped = (
 	text: string,
 	kind: PromptKind = "composer"
 ): Promise<unknown> => $.prompt.submit({ text, origin: { kind }, wait: false });
-
-/** Runs one step of turn `turnId` to its end, as the agent `agentId` when one is given. */
-export const stepTurn = (
-	$: Engine,
-	turnId: string,
-	index: number,
-	agentId?: string
-): Promise<void> => {
-	const stream = $.turn.step({
-		turnId,
-		index,
-		model: "m",
-		messageCount: 1,
-		...(agentId === undefined ? {} : { agentId })
-	});
-	return drain(stream[Symbol.asyncIterator]());
-};
 
 /** Pauses until `ready` holds or `tries` pauses have passed. */
 export const until = async (
@@ -152,6 +130,8 @@ export interface Offer {
 	readonly surfaces?: RenderSurface[];
 	/** True when the prompt box refuses a fill. The harness strips a cause a hook writes, so none is given. */
 	readonly refuse?: boolean;
+	/** True when every fork after the first (the check) rejects. */
+	readonly faults?: boolean;
 	/** False when the test expects the check to show nothing. */
 	readonly isOffer?: boolean;
 }
@@ -205,8 +185,9 @@ const wireSession = (
 	});
 };
 
-/** Answers each `turn.step` with one empty chunk and an empty end-of-turn result. */
+/** Answers each `turn.step` with one empty chunk and an empty end-of-turn result, and each `turn.complete` with no text. */
 export const stubSteps = (on: On): void => {
+	on("turn.complete", () => ({ text: "" }));
 	on("turn.step", async function* (_$, e) {
 		await Promise.resolve();
 		yield { kind: "text", index: 0, text: "" };
@@ -229,13 +210,17 @@ const wireModel = (
 	on: On,
 	box: Box,
 	replies: readonly string[],
-	hold: Promise<void> | undefined
+	hold: Promise<void> | undefined,
+	faults: boolean | undefined
 ): void => {
 	let call = 0;
 	on("model.fork", async (_$, e) => {
 		box.forks++;
 		(box.args ??= []).push(e);
 		await hold;
+		if (faults === true && call > 0) {
+			throw new Error("fork failed");
+		}
 		return {
 			value: {
 				isAnswered: true as const,
@@ -260,6 +245,7 @@ export const offered = async (
 		replies = [REPLY],
 		kept,
 		hold,
+		faults,
 		surfaces,
 		refuse,
 		isOffer = true
@@ -268,7 +254,7 @@ export const offered = async (
 	box.clock = mock.clock(on, { now: 1000 });
 	wireStore(on, kept);
 	wireSession(on, box, () => surfaces ?? [surface], refuse);
-	wireModel(on, box, replies, hold);
+	wireModel(on, box, replies, hold, faults);
 	const band = await $.ui.mount({
 		plugin: PLUGIN,
 		surface,

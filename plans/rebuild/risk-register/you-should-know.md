@@ -69,3 +69,19 @@
   Status: accepted 2026-11-20; Likelihood 2 × Impact 2 = 4, and the only candidate did not beat the current prompt.
   Verified: 2026-11-20, claude 2.1.327, claude-sonnet-5-5, replay of the propose request on the dogfood session, 6 per arm, $0.913 (reports/2026-11-20-research/ysk-tool-claim): current prompt 1 false card of 6 replies, with a sentence tying tool-behaviour claims to session output 2 false of 6.
   Source: issue #65.
+
+- [x] **RISK-511** A you-should-know offer stays up after later steps of the same turn make it untrue.
+  Category: you-should-know
+  Cause: After an offer was stored for a turn, every later check of that turn was skipped and nothing revisited the shown line, so a note such as "the test fails because X" stayed above the prompt after the agent fixed X.
+  Event: An offer shown at step 3 described a failure the agent repaired in the following steps; the card stayed until two prompts had passed.
+  Consequence: The user is told a false fact and may act on it.
+  Likelihood: 3
+  Impact: 2
+  Existing controls: The person can dismiss the card, and it clears after two prompts.
+  Response: mitigate
+  Actions: Recheck the untouched offer at later check steps and at the main agent's turn end with one fork that answers KEEP or DROP, failing open (REQ-YOU-SHOULD-KNOW-075).
+  Trigger: A card whose line a later step of the same turn contradicted.
+  Owner: you-should-know
+  Status: closed 2026-11-21. `hooks/check/recheck.ts` withdraws the offer on DROP; every fault keeps it.
+  Verified: claude 2.1.330, 2026-11-21, `claude plugin test plugins/claudetto-you-should-know`: 170 pass, 0 fail (hooks/**tests**/recheck.test.ts).
+  Source: bug report, 2026-11-21.

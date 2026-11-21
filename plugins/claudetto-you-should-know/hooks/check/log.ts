@@ -4,6 +4,7 @@ import { CHECKS_KEPT } from "../shared/constants";
 
 export const PROPOSED_OUTCOMES = [
 	"shown",
+	"withdrawn",
 	"none",
 	"parse_failed",
 	"deduped",
