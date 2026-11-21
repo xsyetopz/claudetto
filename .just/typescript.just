@@ -65,6 +65,10 @@ format-staged:
 # taken over; a holder kill cannot signal belongs to another user and still counts as alive.
 # Nested configs stay off, so a worktree's own .oxlintrc.json under an ignored path, such as
 # .claude/worktrees, does not stop the run.
+# Claude Code writes a plugin's ambient types (.claude-plugin/types/claude-code/index.d.ts) only when a
+# session loads the plugin, and git-ignores them, so CI has none and a tsconfig that lists them is invalid.
+# A plugin folder whose tsconfig lists the types and whose types are absent is skipped with a note, unless
+# a path argument points into it; start `claude --plugin-dir <dir>` to lint it.
 [private]
 oxlint *args:
     #!/usr/bin/env bash
@@ -87,7 +91,25 @@ oxlint *args:
     trap 'rm -rf "$lock"' EXIT
     echo $$ >"$lock/pid"
     export GOMEMLIMIT="{{ lint_memory }}" GOMAXPROCS="{{ lint_threads }}"
-    bun run oxlint --threads={{ lint_threads }} --disable-nested-config {{ args }}
+    set -- {{ args }}
+    skips=()
+    while IFS= read -r -d '' manifest; do
+        case "/$manifest" in */node_modules/* | */.claude/*) continue ;; esac
+        dir="${manifest%.claude-plugin/plugin.json}"
+        dir="${dir%/}"
+        root="${dir:-.}"
+        [[ -f "$root/.claude-plugin/types/claude-code/index.d.ts" ]] && continue
+        grep -qs '\.claude-plugin/types/' "$root/tsconfig.json" || continue
+        targeted=
+        for arg in "$@"; do
+            arg="${arg#./}"
+            if [[ "$arg" != -* && ( "$root" == . || "$arg" == "$root" || "$arg" == "$root"/* ) ]]; then targeted=1; fi
+        done
+        if [[ -n "$targeted" ]]; then continue; fi
+        echo "Skipping lint of the Claude Code plugin in $root: Claude Code writes its types only when a session loads the plugin. Start one with \`claude --plugin-dir $root\` to lint it." >&2
+        skips+=("--ignore-pattern=${dir:+$dir/}**")
+    done < <(git ls-files -z --cached --others --exclude-standard -- ':(glob)**/.claude-plugin/plugin.json')
+    bun run oxlint --threads={{ lint_threads }} --disable-nested-config ${skips[@]+"${skips[@]}"} "$@"
 
 # Takes one of the machine's check slots for this run; see `hold-slot` in the justfile.
 [private]

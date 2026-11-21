@@ -5,7 +5,7 @@ root = true
 # the CLI from the checkout; bedrock_languages and bedrock_<language>_<option>
 # are what bedrock adopt and update keep. Editors ignore keys they don't know.
 [*]
-bedrock_version = 0.6.4
+bedrock_version = 0.7.0
 bedrock_languages = typescript
 charset = utf-8
 end_of_line = lf
