@@ -14,6 +14,7 @@ export const EXEMPT = new Set([
 	"cd",
 	"chmod",
 	"cp",
+	"curl",
 	"cut",
 	"date",
 	"df",
@@ -29,6 +30,7 @@ export const EXEMPT = new Set([
 	"find",
 	"grep",
 	"head",
+	"jq",
 	"kill",
 	"ln",
 	"ls",
@@ -37,6 +39,7 @@ export const EXEMPT = new Set([
 	"node",
 	"perl",
 	"printf",
+	"ps",
 	"pwd",
 	"python",
 	"python3",
@@ -50,6 +53,7 @@ export const EXEMPT = new Set([
 	"sort",
 	"stat",
 	"tail",
+	"tar",
 	"tee",
 	"test",
 	"touch",
@@ -60,6 +64,38 @@ export const EXEMPT = new Set([
 	"which",
 	"xargs",
 	"zsh"
+]);
+
+/**
+ * Subcommands whose flags are common knowledge, so a flagged call needs no note: `git commit -m`,
+ * `bun test`. Rarer ones (`git rebase --onto`, `git push --force-with-lease`, `gh pr merge`) still
+ * trigger. Retrieval helps rare APIs and hurts common ones (arXiv 2407.09726).
+ */
+const COMMON = new Set([
+	"bun install",
+	"bun run",
+	"bun test",
+	"cargo build",
+	"cargo check",
+	"cargo test",
+	"git add",
+	"git branch",
+	"git checkout",
+	"git clone",
+	"git commit",
+	"git diff",
+	"git fetch",
+	"git init",
+	"git log",
+	"git merge",
+	"git mv",
+	"git pull",
+	"git restore",
+	"git rm",
+	"git show",
+	"git status",
+	"git switch",
+	"git tag"
 ]);
 
 /** How many words after the CLI name make up its subcommand: `gh pr merge` has 2, `git commit` 1. */
@@ -167,6 +203,9 @@ const callOf = (segment: string): Call | undefined => {
 		(word) => !word.quoted && FLAG.test(word.text) && !isHelpFlag(word)
 	);
 	const key = [cli, ...sub].join(" ");
+	if (COMMON.has(key)) {
+		return undefined;
+	}
 	return {
 		key,
 		cli,

@@ -92,12 +92,12 @@ describe("REQ-REPLY-149 help before flags", () => {
 		// Act
 		const plain = helpNotes("gh pr list", state);
 		const just = helpNotes("just --list", state);
-		const bun = helpNotes("FOO=1 bun test --bail src/a.test.ts", state);
+		const bun = helpNotes("FOO=1 bun build --minify src/a.ts", state);
 
 		// Assert
 		expect(plain).toEqual([]);
 		expect(just).toEqual([helpNote("just")]);
-		expect(bun).toEqual([helpNote("bun test")]);
+		expect(bun).toEqual([helpNote("bun build")]);
 	});
 
 	test("exempt POSIX tools and quoted dashes get no note", () => {
@@ -106,12 +106,37 @@ describe("REQ-REPLY-149 help before flags", () => {
 
 		// Act
 		const notes = helpNotes(
-			'ls -la && grep -rn foo . | head -5; rm -rf x; echo "--flag" && git commit -m "-x"',
+			'ls -la && grep -rn foo . | head -5; rm -rf x; echo "--flag" && git rebase -i "-x"',
 			state
 		);
 
 		// Assert
-		expect(notes).toEqual([helpNote("git commit")]);
+		expect(notes).toEqual([helpNote("git rebase")]);
+	});
+
+	test("common subcommands and tools get no note, rare ones do", () => {
+		// Arrange
+		const state = newHelpState();
+
+		// Act
+		const common = helpNotes(
+			'git status -s && git commit -am "x" && git log --oneline -5 && git -C r diff --stat && curl -sS u | jq -r .a && bun test --bail && tar -xzf a.tgz',
+			state
+		);
+		const rare = helpNotes(
+			"git rebase --onto a b && git worktree add -b x y && git push --force-with-lease && gh pr merge --merge && docker run --rm x",
+			state
+		);
+
+		// Assert
+		expect(common).toEqual([]);
+		expect(rare).toEqual([
+			helpNote("git rebase"),
+			helpNote("git worktree"),
+			helpNote("git push"),
+			helpNote("gh pr merge"),
+			helpNote("docker run")
+		]);
 	});
 
 	test("each note stays within 200 characters", () => {
