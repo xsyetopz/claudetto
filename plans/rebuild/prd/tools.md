@@ -23,11 +23,15 @@ claudetto shapes the tool pool every request carries, because each tool's schema
 
 ## Web
 
-- [ ] **REQ-TOOLS-020** claudetto shall register `web_fetch` that fetches a URL directly, turns HTML into compact Markdown of the main content, falls back to a headless Chrome render when the direct fetch fails or the page needs JavaScript, and opens a visible Chrome for the user when a captcha blocks, saving the cookies for later fetches.
+- [x] **REQ-TOOLS-020** claudetto shall register `web_fetch` that fetches a URL directly, turns HTML into compact Markdown of the main content, falls back to a headless Chrome render when the direct fetch fails or the page needs JavaScript, and opens a visible Chrome for the user when a captcha blocks, saving the cookies for later fetches.
   Acceptance: tests with local fixture pages cover the direct path, the size cap with a saved full copy, the fallback, and the cookie reuse; WebFetch is not offered. Verification: test.
+  Basis: ruled (2026-11-21 user ruling: claudetto ships its own web_fetch and web_search). Status: done at 68c0fe623 (`claude plugin test plugins/claudetto`: 201 pass, 2026-11-21).
+  Verified: tests on local fixture pages (extraction, size cap with saved copy and offset paging, fallback on 403, 429, 503, a failed request and a JS shell, challenge detection, per-host cookie jar, offer refusal); live probe 2026-11-21: `fetchPage` on `https://example.com` returned 174 characters of Markdown by the direct path with no Chrome render. The captcha window is covered by a scripted Chrome in tests, not run live.
 
-- [ ] **REQ-TOOLS-021** claudetto shall register `web_search` that returns titles, URLs and snippets for a query without an API key, and uses a configured search API when one is set.
+- [x] **REQ-TOOLS-021** claudetto shall register `web_search` that returns titles, URLs and snippets for a query without an API key, and uses a configured search API when one is set.
   Acceptance: a parser test on a saved results page; WebSearch is not offered. Verification: test.
+  Basis: ruled (2026-11-21 user ruling). Status: done at 68c0fe623 (`claude plugin test plugins/claudetto`: 201 pass, 2026-11-21).
+  Verified: parser test on a hand-written DuckDuckGo results fixture, Brave API tests with a stub, offer refusal; live probe 2026-11-21: `searchWeb("bun runtime")` returned 4 results (1,531 characters) from DuckDuckGo by plain request, with no Chrome render. An earlier probe the same day got DuckDuckGo's 202 bot check, so the render and key paths remain the fallback.
 
 ## Prompt
 

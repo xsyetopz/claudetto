@@ -62,6 +62,31 @@ claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many pla
 
 When an `Edit` call's `old_string` carries the tab that follows the line number in `Read` output on every line, and the file lacks the text as written, claudetto drops that tab from both strings and runs the edit. The model then reads a note that says so, so its next `Edit` leaves the tab out.
 
+## Web Tools
+
+claudetto registers `mcp__claudetto__web_fetch` and `mcp__claudetto__web_search`, and hides the built-in `WebFetch` and `WebSearch` from every loop (`tool.offer` answers `isOffered: false`).
+
+`web_fetch` takes `url`, `max_chars` (default 8000) and `offset`.
+
+- It requests the page directly with a desktop Chrome User-Agent and the cookies saved for that exact host. claudetto attaches a saved cookie only to a request for the exact host it came from, never to a subdomain or another host.
+- HTML goes through a readability-style pick of the main block (navigation, footers, asides, scripts, forms and long link-only menus dropped) and becomes compact Markdown with headings, lists, code, tables, quotes and links. JSON, plain text and Markdown pass through unchanged. Other content types are refused.
+- The reply holds at most `max_chars` characters. The full Markdown is saved under the plugin data folder in `web/`, the reply names the path and the next `offset`, and a call with `offset` pages through the saved copy without a new request.
+- A 401, 403, 407, 408, 425, 429 or 5xx status, a failed request, a page with no readable content, or a script-only shell falls back to `chrome --headless=new --dump-dom`. Any other 4xx, such as a 404, is the page's answer and starts no browser.
+- A captcha that survives the headless render is handled by the session. In an interactive session claudetto notifies the user and opens a visible Chrome on a dedicated profile under the plugin data folder, waits up to 3 minutes, and renders again. Chrome keeps the solved cookies in that profile, so later headless renders of the site pass. Under `-p` and the SDK, which have no one to solve it, the reply says a captcha blocks and gives the URL.
+- Chrome comes from `CHROME_PATH`, then the macOS app bundles (Chrome, Chromium, Edge, Brave), then `google-chrome`, `chromium` and similar names on `PATH`. With none, the reply says so and names `CHROME_PATH`.
+
+`web_search` takes `query` and `max_results` (default 8) and answers `1. Title — url` lines with the snippet indented beneath.
+
+- With `BRAVE_SEARCH_API_KEY` set, it asks the Brave Search API first.
+- Otherwise, or when Brave fails, it reads DuckDuckGo's HTML endpoint and decodes each `uddg=` redirect to the real URL. Sponsored results are dropped.
+- DuckDuckGo answers many automated requests with a bot check (HTTP 202). The search then renders the same URL in headless Chrome, and in an interactive session opens the visible window. When all of that fails, the reply names `BRAVE_SEARCH_API_KEY`, which avoids the check.
+
+Permissions and the sandbox:
+
+- Page requests go through `$.http.fetch`, which the host performs, so the Bash sandbox's network allowlist does not apply to them.
+- Chrome runs through `$.process.run`, which executes locally outside the Bash sandbox. The same Chrome binary started from a sandboxed Bash command fails under Seatbelt, so the tools could not move into Bash.
+- `$.process.run` is one-shot (30 seconds by default, 10 minutes at most) and has no pipe to a running browser, so claudetto drives Chrome by command-line flags and a persistent profile and not by the DevTools protocol.
+
 ## Subagents
 
 claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset.
