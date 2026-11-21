@@ -1,87 +1,53 @@
-import type { PluginOptions } from "claude-code";
-
 import { indentOf, isRecord, parseSettings } from "../settings/settings";
 
 /**
- * The built-in key full autonomy turns on. With it, Claude Code denies each call
- * that would wait on a permission prompt, drops AskUserQuestion, EnterPlanMode
- * and ExitPlanMode, and cancels unanswered MCP elicitations, in interactive
- * sessions, `-p` runs, subagents and agent teams (settings reference, 2.1.319+).
- * Only user or managed settings and `--settings` can set it, not a plugin
- * manifest, so the option writes it to user settings.
+ * The built-in Claude Code key that earlier claudetto releases wrote to user
+ * settings from a plugin option of their own. Claude Code owns it, so claudetto
+ * writes it no more and only removes the copy it wrote.
  */
-export const AUTONOMY_KEY = "denyInsteadOfPrompting";
+export const DENY_KEY = "denyInsteadOfPrompting";
 
-/** Store key that marks the key as claudetto's, so semi removes only what full wrote. */
-export const AUTONOMY_MARK = "autonomy.wrote";
+/** Store key that marks the key as claudetto's, so cleanup removes only what claudetto wrote. */
+export const WROTE_MARK = "autonomy.wrote";
 
-/** What the person reads after a session start changed the key. */
-export const AUTONOMY_ON =
-	"claudetto: autonomy is full, so it set permissions.denyInsteadOfPrompting in user settings: " +
-	"calls that would wait on a prompt are denied and questions are off. Set autonomy to semi in /config to undo.";
-/** What the person reads after semi removed the key full had written. */
-export const AUTONOMY_OFF =
-	"claudetto: autonomy is semi, so it removed the permissions.denyInsteadOfPrompting it had set: prompts and questions are back.";
+/** What the person reads after session start removed the key claudetto had written. */
+export const RETIRED_NOTICE =
+	"claudetto removed the permissions.denyInsteadOfPrompting it had written to user settings. " +
+	"Claude Code owns that setting: set permissions.defaultMode and " +
+	"permissions.denyInsteadOfPrompting in ~/.claude/settings.json " +
+	"(https://code.claude.com/docs/en/settings-reference).";
 
-/**
- * Whether claudetto's `autonomy` option asks for full autonomy. Semi, the
- * default, leaves prompts and questions as Claude Code shows them.
- *
- * @param options The plugin's options from `/config`.
- * @returns True only for the value `full`.
- */
-export const isFull = (options: PluginOptions): boolean =>
-	options["autonomy"] === "full";
-
-/** The outcome of matching user settings to the autonomy option. */
-export interface AutonomySync {
+/** The outcome of retiring the key claudetto wrote. */
+export interface RetiredKey {
 	/** The settings text to write; equal to the input when nothing changed. */
 	readonly text: string;
-	/** Whether claudetto owns the key after this change. */
-	readonly owned: boolean;
+	/** Whether claudetto still owns the key after this change; always false. */
+	readonly owned: false;
 	/** The notice for the person, or undefined when nothing changed. */
 	readonly notice?: string;
 }
 
 /**
- * Matches `permissions.denyInsteadOfPrompting` in user settings to the
- * autonomy option. Full sets it when unset; semi removes it only when full
- * wrote it. A value the person set is never touched.
+ * Removes `permissions.denyInsteadOfPrompting` from user settings when claudetto
+ * wrote it (the mark is set) and it still holds `true`. A key the person set
+ * (no mark) or changed is never touched.
  *
  * @param text The user settings text.
- * @param full Whether the option is full.
- * @param owned Whether claudetto wrote the key in an earlier session.
- * @returns The text to write, the new ownership, and the notice to show.
+ * @param owned Whether the store mark says claudetto wrote the key.
+ * @returns The text to write, the cleared ownership, and the notice to show.
  */
-export function syncAutonomy(
-	text: string,
-	full: boolean,
-	owned: boolean
-): AutonomySync {
+export function retireDenyKey(text: string, owned: boolean): RetiredKey {
 	const settings = parseSettings(text);
-	if (settings === undefined) {
-		return { text, owned };
+	if (settings === undefined || !owned) {
+		return { text, owned: false };
 	}
 	const permissions = isRecord(settings["permissions"])
 		? settings["permissions"]
 		: {};
-	const current = permissions[AUTONOMY_KEY];
-	const write = (next: Record<string, unknown>): string =>
-		`${JSON.stringify({ ...settings, permissions: next }, undefined, indentOf(text))}\n`;
-	if (full) {
-		if (current !== undefined) {
-			// The person's own value wins; a key claudetto wrote stays claudetto's.
-			return { text, owned: owned && current === true };
-		}
-		return {
-			text: write({ ...permissions, [AUTONOMY_KEY]: true }),
-			owned: true,
-			notice: AUTONOMY_ON
-		};
-	}
-	if (!owned || current !== true) {
+	if (permissions[DENY_KEY] !== true) {
 		return { text, owned: false };
 	}
-	const { [AUTONOMY_KEY]: _removed, ...rest } = permissions;
-	return { text: write(rest), owned: false, notice: AUTONOMY_OFF };
+	const { [DENY_KEY]: _removed, ...rest } = permissions;
+	const next = `${JSON.stringify({ ...settings, permissions: rest }, undefined, indentOf(text))}\n`;
+	return { text: next, owned: false, notice: RETIRED_NOTICE };
 }

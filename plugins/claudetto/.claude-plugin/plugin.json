@@ -35,13 +35,6 @@
 			"default": 30,
 			"min": 0
 		},
-		"autonomy": {
-			"type": "string",
-			"title": "Autonomy",
-			"description": "semi: prompts and questions work as in Claude Code. full: for unattended work, sets Claude Code's permissions.denyInsteadOfPrompting in user settings, so nothing waits on a prompt; best with auto mode.",
-			"options": ["semi", "full"],
-			"default": "semi"
-		},
 		"includeGitInstructions": {
 			"type": "boolean",
 			"title": "claudetto's git instructions",

@@ -1,10 +1,9 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
 import {
-	AUTONOMY_MARK,
-	type AutonomySync,
-	isFull,
-	syncAutonomy
+	retireDenyKey,
+	type RetiredKey,
+	WROTE_MARK
 } from "../autonomy/autonomy";
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
@@ -47,54 +46,54 @@ function logChanges(
 	}
 }
 
-/** The repaired settings after the autonomy sync and the fill, with what each changed. */
+/** The repaired settings after the cleanup and the fill, with what each changed. */
 interface Settled {
 	readonly text: string;
 	readonly added: readonly string[];
-	readonly autonomy: AutonomySync;
+	readonly retired: RetiredKey;
 	readonly filled: boolean;
 	readonly owned: boolean;
 }
 
-/** Runs the autonomy sync (REQ-SETUP-070), then the fill when this fill version has not run. */
+/** Retires the key claudetto wrote (REQ-SETUP-070), then fills if this fill version has not run. */
 async function settle(
 	$: EngineInterface,
 	text: string,
-	options: PluginOptions,
 	walls: readonly string[] | undefined
 ): Promise<Settled> {
-	const owned = (await $.store.get(AUTONOMY_MARK)) === true;
-	const autonomy = syncAutonomy(text, isFull(options), owned);
+	const owned = (await $.store.get(WROTE_MARK)) === true;
+	const retired = retireDenyKey(text, owned);
 	const filled = (await $.store.get(MARK)) === FILL_VERSION;
-	const fill = filled ? undefined : fillSettings(autonomy.text, walls);
+	const fill = filled ? undefined : fillSettings(retired.text, walls);
 	return {
-		text: fill?.text ?? autonomy.text,
+		text: fill?.text ?? retired.text,
 		added: fill?.added ?? [],
-		autonomy,
+		retired,
 		filled,
 		owned
 	};
 }
 
-/** Stores the fill version and the autonomy ownership once the write landed, and tells the person what autonomy changed. */
+/** After the write, stores the fill version, clears the written-key mark, shows the notice. */
 async function record($: EngineInterface, settled: Settled): Promise<void> {
 	if (!settled.filled) {
 		await $.store.set(MARK, FILL_VERSION);
 	}
-	if (settled.autonomy.owned !== settled.owned) {
-		await $.store.set(AUTONOMY_MARK, settled.autonomy.owned);
+	if (settled.retired.owned !== settled.owned) {
+		await $.store.set(WROTE_MARK, settled.retired.owned);
 	}
-	if (settled.autonomy.notice !== undefined) {
-		$.ui.log(settled.autonomy.notice);
+	if (settled.retired.notice !== undefined) {
+		$.ui.log(settled.retired.notice);
 	}
 }
 
 /**
- * Repairs builtin drift (REQ-SETUP-011), matches the autonomy option to the
- * built-in `permissions.denyInsteadOfPrompting` (REQ-SETUP-070), and fills
- * unset defaults (ADR-0190) in one read and one write of user settings. Core
- * allows one unmatched `session.start` registration per plugin, so all three
- * share this hook, and so does the web tools' registration (REQ-TOOLS-020).
+ * Repairs builtin drift (REQ-SETUP-011), removes the
+ * `permissions.denyInsteadOfPrompting` an earlier release wrote
+ * (REQ-SETUP-070), and fills unset defaults (ADR-0190) in one read and one
+ * write of user settings. Core allows one unmatched `session.start`
+ * registration per plugin, so all three share this hook, and so does the web
+ * tools' registration (REQ-TOOLS-020).
  */
 export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
@@ -118,11 +117,11 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 			$.ui.log(`claudetto left ${path} alone: it does not hold a JSON object.`);
 			return result;
 		}
-		const settled = await settle($, repair.text, options, walls);
+		const settled = await settle($, repair.text, walls);
 		const changed =
 			repair.drifted.length > 0 ||
 			settled.added.length > 0 ||
-			settled.autonomy.notice !== undefined;
+			settled.retired.notice !== undefined;
 		if (changed) {
 			await $.fs.write(path, settled.text);
 		}
