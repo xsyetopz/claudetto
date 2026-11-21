@@ -4,6 +4,7 @@ import { describe, type Engine, expect, test } from "claude-code/testing";
 import { TOOL_FULL_NAME } from "../../patch/texts";
 import { FETCH_FULL_NAME, SEARCH_FULL_NAME } from "../../web/register";
 import { STOCK_LEAN_LINE, STOCK_TOOLS_LINE } from "../compose";
+import { CONDUCT, CONDUCT_ID, CONDUCT_PARAGRAPHS } from "../conduct";
 import { LEAN_BODY, TOOLS_SECTION } from "./fixtures";
 
 const MODEL = "claude-opus-5-5";
@@ -134,9 +135,73 @@ describe("REQ-TOOLS-030 prompt.compose", () => {
 		expect(sections.map((s) => `${s.id}:${s.scope}`)).toEqual([
 			"lean_body:shared",
 			"tools:shared",
+			`${CONDUCT_ID}:shared`,
 			"memory:session"
 		]);
-		expect(sections[2]?.text).toBe("write with the Write tool");
+		expect(sections[3]?.text).toBe("write with the Write tool");
+		const firstSession = sections.findIndex((s) => s.scope === "session");
+		expect(sections.slice(firstSession).map((s) => s.scope)).not.toContain(
+			"shared"
+		);
+	});
+
+	test("the conduct section carries the ten paragraphs word for word, once, after the last shared section", async ($, on) => {
+		// Arrange
+		engine(on);
+
+		// Act
+		const { sections } = await compose($, OFFERED);
+		const conduct = sections.filter((s) => s.id === CONDUCT_ID);
+
+		// Assert
+		expect(CONDUCT_PARAGRAPHS).toHaveLength(10);
+		expect(conduct).toHaveLength(1);
+		expect(conduct[0]?.scope).toBe("shared");
+		expect(conduct[0]?.text).toBe(CONDUCT);
+		expect(conduct[0]?.text.startsWith("Before a commit or push")).toBe(true);
+		expect(
+			conduct[0]?.text.endsWith(
+				"scoped the task to this tree and a change elsewhere lands in history and code they did not open."
+			)
+		).toBe(true);
+		expect(sections[1]?.id).toBe("tools");
+		expect(sections[2]?.id).toBe(CONDUCT_ID);
+	});
+
+	test("a list with only session sections gets the conduct section first", async ($, on) => {
+		// Arrange
+		on("prompt.compose", () => ({
+			sections: [{ id: "memory", text: "m", scope: "session" }]
+		}));
+
+		// Act
+		const { sections } = await compose($, OFFERED);
+
+		// Assert
+		expect(sections.map((s) => `${s.id}:${s.scope}`)).toEqual([
+			`${CONDUCT_ID}:shared`,
+			"memory:session"
+		]);
+	});
+
+	test("a bare prompt gets no conduct section", async ($, on) => {
+		// Arrange
+		on("prompt.compose", () => ({
+			sections: [{ id: "bare", text: "b", scope: "shared" }]
+		}));
+
+		// Act
+		const { sections } = await $.prompt.compose({
+			model: MODEL,
+			promptModel: MODEL,
+			surfaces: [],
+			tools: OFFERED,
+			outputStyle: null,
+			traits: ["bare"]
+		});
+
+		// Assert
+		expect(sections.map((s) => s.id)).toEqual(["bare"]);
 	});
 
 	test("a prompt whose stock line moved passes through unchanged", async ($, on) => {

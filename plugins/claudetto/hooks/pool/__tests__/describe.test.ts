@@ -42,11 +42,17 @@ describe("tool.describe", () => {
 		);
 
 		// Assert
-		// Bash carries the recipes and the git block after its short text.
+		// Bash carries the recipes and the git block, and AskUserQuestion its rule, after the short text.
 		expect(
-			rendered.filter((r) => r.tool !== "Bash" && r.length > MAX_DESCRIPTION)
+			rendered.filter(
+				(r) =>
+					r.tool !== "Bash" &&
+					r.tool !== "AskUserQuestion" &&
+					r.length > MAX_DESCRIPTION
+			)
 		).toEqual([]);
 		expect(text("Bash").length).toBeLessThanOrEqual(MAX_DESCRIPTION);
+		expect(text("AskUserQuestion").length).toBeLessThanOrEqual(MAX_DESCRIPTION);
 	});
 
 	test("covers each tool REQ-TOOLS-003 lists that Claude Code 2.1.330 ships", () => {

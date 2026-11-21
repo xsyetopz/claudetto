@@ -1,4 +1,4 @@
-import type { On } from "claude-code";
+import type { On, PromptComposeSection } from "claude-code";
 
 import { TOOL_FULL_NAME as PATCH } from "../patch/texts";
 import { fault } from "../shared/fault";
@@ -6,6 +6,7 @@ import {
 	FETCH_FULL_NAME as FETCH,
 	SEARCH_FULL_NAME as SEARCH
 } from "../web/register";
+import { CONDUCT, CONDUCT_ID } from "./conduct";
 import { memorySection } from "./memory";
 
 /**
@@ -63,6 +64,27 @@ export const toolsSection = (
 	);
 
 /**
+ * Inserts the conduct section (REQ-TOOLS-032) directly after the last shared
+ * section, so every shared section stays ahead of every session one and the
+ * cache boundary holds. A list without a shared section gets it first; a list
+ * that already has the id is left as it is. `--bare` composes one minimal
+ * section and gets none.
+ */
+const withConduct = (
+	sections: readonly PromptComposeSection[]
+): readonly PromptComposeSection[] => {
+	if (sections.some((section) => section.id === CONDUCT_ID)) {
+		return sections;
+	}
+	const at = sections.findLastIndex((section) => section.scope === "shared");
+	return [
+		...sections.slice(0, at + 1),
+		{ id: CONDUCT_ID, scope: "shared", text: CONDUCT },
+		...sections.slice(at + 1)
+	];
+};
+
+/**
  * Names `patch`, `web_fetch` and `web_search` where the stock prompt names the
  * tools they replace, and names no tool that is off (REQ-TOOLS-030). Every other
  * line, the safety and permission rules included, stays as the engine wrote it,
@@ -96,7 +118,9 @@ export function registerCompose(on: On): void {
 			}
 			return section;
 		});
-		return { sections };
+		return {
+			sections: e.traits.includes("bare") ? sections : withConduct(sections)
+		};
 	}).catch(($, e, next) => {
 		fault($, "prompt compose", next.error);
 		return next(e);
