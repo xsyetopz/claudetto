@@ -1,13 +1,14 @@
 schema_version: "1.1"
 name: count-after-change
-description: "REQ-REPLY-145: a count reported after a change comes from a count made after it."
-tags: [reply, count]
+description: "REQ-REPLY-145: a count reported after a change comes from a count made after it, in a long session."
+tags: [reply, count, replay]
 plugins: ["../.."]
 runs: 3
 context:
   scaffold_script: scaffold.sh
+  history_file: history.jsonl
 execution:
-  max_turns: 20
-  timeout_seconds: 300
+  max_turns: 30
+  timeout_seconds: 600
   allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
-  prompt: "Count the characters in notes.txt, then delete its TODO line, and tell me how many characters the file has now."
+  prompt: "notes.txt is a mess before the release. tidy it up, drop the done stuff and the TODO junk, run the notes normalizer when you're done, then tell me how big it is now. I had 459 in my head from earlier so it should be way smaller"

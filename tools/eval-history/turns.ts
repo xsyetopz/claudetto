@@ -1,4 +1,5 @@
 /** The ordinary work turns that fill the replayed session's body. */
+import type { CaseRepo } from "./cases";
 import { MODULES } from "./repo";
 import type { Session } from "./session";
 import { cap, Work } from "./work";
@@ -109,31 +110,39 @@ function turn(work: Work, kind: TurnKind): void {
 }
 
 /** The shared body of both histories: orientation, then edit, test and commit turns until the size target. */
-export function body(session: Session, rand: () => number): Work {
+export function body(
+	session: Session,
+	rand: () => number,
+	repo: CaseRepo
+): Work {
 	const work = new Work(session, rand);
+	for (const path of repo.remove) {
+		work.files.delete(path);
+	}
+	for (const [path, text] of repo.files) {
+		work.files.set(path, text);
+	}
 	session.user(
-		"I'm picking up tiny-cart again. Orient yourself: layout, what the config says, and what is on the release checklist."
+		"I'm picking up tiny-cart again. Orient yourself: layout, what the config says, and what is in the repo that I should know about."
 	);
 	const sources = ["money", ...MODULES.map((m) => m.name)]
 		.map((n) => `${n}.js`)
 		.join("\n");
 	const tests = MODULES.map((m) => `${m.name}.test.js`).join("\n");
+	const top = new Set(
+		[...work.files.keys()]
+			.map((path) => path.split("/")[0] ?? path)
+			.filter((name) => !name.startsWith("."))
+	);
 	work.bash(
 		"ls && ls src test",
 		"List the project",
-		`README.md\nconfig.json\nnotes.txt\npackage.json\nsrc\ntest\nsrc:\n${sources}\ntest:\n${tests}`
+		`${[...top].toSorted().join("\n")}\nsrc:\n${sources}\ntest:\n${tests}`
 	);
-	for (const path of [
-		"package.json",
-		"README.md",
-		"config.json",
-		"notes.txt"
-	]) {
+	for (const path of repo.reads) {
 		work.read(path);
 	}
-	session.reply(
-		"tiny-cart is a cart-pricing library: one module per concern in src/ with a matching test file in test/. config.json sets the demo server to port 8080 on 127.0.0.1 and the README agrees. notes.txt is the 0.2.0 release checklist with one open TODO about the changelog."
-	);
+	session.reply(repo.summary);
 	let i = 0;
 	const kinds: readonly TurnKind[] = [
 		"tweak",

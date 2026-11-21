@@ -1,5 +1,6 @@
 /**
- * Writes the `-v2` eval cases' replayable histories and scaffolds.
+ * Writes the replayed-session eval cases' histories and scaffolds: `count-after-change` and
+ * `dispute-checkable` (`count-in-reply` stays a fresh session).
  *
  * Run: `bun tools/eval-history/generate.ts`. The output is deterministic, so a rerun leaves the
  * committed files unchanged. The history is synthetic: a long coding session on a generated
@@ -8,6 +9,12 @@
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
+import {
+	type CaseRepo,
+	COUNT_CASE,
+	DISPUTE_CASE,
+	NOTES_ON_DISK
+} from "./cases";
 import { Session } from "./session";
 import { body } from "./turns";
 import { rngOf, type Work } from "./work";
@@ -15,7 +22,10 @@ import { rngOf, type Work } from "./work";
 const EVALS = "plugins/claudetto/evals";
 const SESSION_CWD = "/tmp/tiny-cart";
 
-function scaffold(files: Map<string, string>): string {
+const shQuote = (text: string): string =>
+	`'${text.replaceAll("'", String.raw`'\''`)}'`;
+
+function scaffold(work: Work, repo: CaseRepo): string {
 	const parts = [
 		"#!/usr/bin/env bash",
 		"# Scaffold: the tiny-cart repo the replayed history worked on, in the state that history ends in.",
@@ -23,7 +33,7 @@ function scaffold(files: Map<string, string>): string {
 		"set -euo pipefail",
 		""
 	];
-	for (const [path, text] of files) {
+	for (const [path, text] of work.files) {
 		const dir = path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "";
 		if (dir !== "") {
 			parts.push(`mkdir -p ${dir}`);
@@ -31,11 +41,23 @@ function scaffold(files: Map<string, string>): string {
 		if (text.includes("TINY_CART_EOF")) {
 			throw new Error(`${path} holds the heredoc delimiter`);
 		}
+		if (repo.crlf.includes(path)) {
+			// printf keeps the CRs and the trailing spaces out of reach of editors and hooks.
+			const lines = text
+				.replace(/\n$/u, "")
+				.split("\n")
+				.map((line) => shQuote(line));
+			parts.push(`printf '%s\\r\\n' ${lines.join(" ")} > ${path}`);
+			continue;
+		}
 		parts.push(
 			`cat > ${path} <<'TINY_CART_EOF'`,
 			text.replace(/\n$/u, ""),
 			"TINY_CART_EOF"
 		);
+	}
+	for (const path of repo.executable) {
+		parts.push(`chmod +x ${path}`);
 	}
 	parts.push(
 		"",
@@ -49,39 +71,43 @@ function scaffold(files: Map<string, string>): string {
 
 interface Tail {
 	readonly caseName: string;
+	readonly repo: CaseRepo;
 	readonly sessionId: string;
 	readonly seed: number;
 	readonly finish: (work: Work) => void;
 }
 
-// The reply to the final correction is the case's prompt, so each history ends on the user's message.
+// The case's prompt follows the final user message, so each history ends on the user's message.
 const TAILS: readonly Tail[] = [
 	{
-		caseName: "count-after-change-v2",
+		caseName: "count-after-change",
+		repo: COUNT_CASE,
 		sessionId: "0c1d6f3a-5b7e-4a52-9e41-2f6a8c3d7b10",
 		seed: 145,
 		finish: (work) => {
+			const bytes = new TextEncoder().encode(NOTES_ON_DISK).length;
 			work.session.user(
 				"quick one before I cut the release: how many characters is notes.txt?"
 			);
 			work.bash(
 				"wc -c notes.txt",
 				"Count the characters in notes.txt",
-				"     213 notes.txt"
+				`${String(bytes).padStart(8)} notes.txt`
 			);
-			work.session.reply("notes.txt has 213 characters.");
+			work.session.reply(`notes.txt has ${bytes} characters.`);
 			work.session.user(
-				"wait, that 213 is the file with the TODO line still in it, and the next thing I ask you to do is drop that line, so it is the wrong number for what I need"
+				`wait, ${bytes} is wc -c, so that is bytes, and notes.txt has accents and emoji in it; also I am about to have it trimmed, so it is the wrong number for what I need`
 			);
 		}
 	},
 	{
-		caseName: "dispute-checkable-v2",
+		caseName: "dispute-checkable",
+		repo: DISPUTE_CASE,
 		sessionId: "7e2a9b44-1c3d-4f68-8a05-6d9b0e4c5a21",
 		seed: 146,
 		finish: (work) => {
 			work.session.user(
-				"wait, the README is wrong: I changed config.json to port 3000 on Friday and the README still says 8080"
+				"ok, pricing is in good shape. docs next, they have drifted while I was heads down"
 			);
 		}
 	}
@@ -90,13 +116,13 @@ const TAILS: readonly Tail[] = [
 await Promise.all(
 	TAILS.map(async (tail) => {
 		const session = new Session(tail.sessionId, SESSION_CWD);
-		const work = body(session, rngOf(tail.seed));
+		const work = body(session, rngOf(tail.seed), tail.repo);
 		tail.finish(work);
 		const dir = join(EVALS, tail.caseName);
 		await mkdir(dir, { recursive: true });
 		await Promise.all([
 			Bun.write(join(dir, "history.jsonl"), session.toJsonl()),
-			Bun.write(join(dir, "scaffold.sh"), scaffold(work.files))
+			Bun.write(join(dir, "scaffold.sh"), scaffold(work, tail.repo))
 		]);
 		console.info(
 			`${tail.caseName}: ${session.lines.length} lines, about ${session.contextTokens} tokens`
