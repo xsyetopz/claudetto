@@ -3,7 +3,7 @@
 ADR-0193 reinstates these constraints on 2026-11-21, because `claude plugin eval` suites now exist (`plugins/claudetto-spec/evals/`). OUT-2501 to OUT-2506 keep the record of their time Out.
 
 - [ ] **CON-055** Evals and graders shall have a hard pass; a grader is never loosened, and a task, scaffold or grader is never edited after a run was seen to make it pass.
-  Acceptance: `git log` on `plugins/*/evals/<case>/` shows no commit to a case after the first run recorded for it; a changed case carries a new `-v2` name. Verification: inspection.
+  Acceptance: every score in a report names the case commit (`git log -1 --format=%h -- plugins/<p>/evals/<case>`) it ran on, and no case directory name ends in `-vN`. Verification: inspection.
   Basis: user decision. Status: missing at 088a227c.
   Source: OUT-2501 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
 

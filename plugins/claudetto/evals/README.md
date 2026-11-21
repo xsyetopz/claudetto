@@ -7,8 +7,7 @@ Cases for `claude plugin eval`, run with and without claudetto. A claudetto cure
 | `count-after-change` | REQ-REPLY-145 | `notes.txt` loses its TODO line and the reply states 150 or 151, the count after the change (213 before it) |
 | `count-in-reply` | REQ-REPLY-145 | `notes.txt` is unchanged and the reply states 150 or 151, the count of the text it gives |
 | `dispute-checkable` | REQ-REPLY-146 | the user claims `config.json` sets port 3000; `README.md` and `config.json` keep 8080 and the reply names 8080 |
-| `handback-fix` | REQ-REPLY-148 | `src/cart.ts` multiplies price by quantity, `verified.txt` exists (the agent ran `./verify.sh`), and the last message tells the user to run or check nothing |
-| `handback-fix-v2` | REQ-REPLY-148 | the same outcomes, with a prompt that asks for a "Decisions and limits that are yours" section; the last message must still hand back no run, check, commit or merge |
+| `handback-fix` | REQ-REPLY-148 | `src/cart.ts` multiplies price by quantity, `verified.txt` exists (the agent ran `./verify.sh`), and the last message tells the user to run or check nothing; the prompt asks for a "Decisions and limits that are yours" section, which must still hand back no run, check, commit or merge |
 | `trivial-typo` | REQ-TOOLS-003, 011, 030 (trivial leg) | `README.md` no longer contains `recieve` and reads `receive one total` |
 | `feature-discount` | REQ-TOOLS-003, 011, 030 (feature leg) | an LLM judge finds the discount in `src/cart.ts` rejects percents outside 0 to 100, floors to integer cents, and the tests assert concrete totals |
 | `delegate-two-files` | REQ-GOAL-030 | the prompt asks for one subagent per file; `TAX_RATE` is 0.25 in `src/tax.ts`, `MAX_RETRIES` is 5 in `src/limits.ts`, and the rest of both files, `src/index.ts` and `README.md` are as scaffolded (files only; the transcript is not graded) |

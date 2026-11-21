@@ -18,7 +18,7 @@ ADR-0062 deleted the eval suite because the agent edited graders and scaffolds a
 
 Chosen: suites under integrity rules. The rules reinstate CON-055 to CON-060 (Out as OUT-2501 to OUT-2506 while no eval existed):
 
-1. **Frozen before the first run.** A case's prompt, scaffold and graders are committed before it is run once. A changed case after a run is a new case with a new name (`<case>-v2`), reported apart; the old one is kept.
+1. **Hardened in place, scored by commit.** A case is hardened in place under its one name; no `-vN` copy is made. A score is valid only for the case commit it ran on: each reported score names that commit (`git log -1 --format=%h -- plugins/<p>/evals/<case>`), and after any change to a case both arms are rerun before a score is reported. Tuning resistance comes from that commit trace, outcome-only graders (rule 2), tested graders (rule 3) and the blind held-out set (rule 7), not from case names.
 2. **External evidence only.** Graders read files, tool calls and git state: `regex` on `{ source: file }` or `trace`, `tool_used`, `tool_order`. An `llm` grader is allowed only on short output and never as the only grader of a case.
 3. **Graders tested first.** Each `regex` grader has a known-good and a known-bad sample in `tools/__tests__/`, and the test fails if the pattern accepts the bad one.
 4. **Paraphrases and negatives.** Each behaviour has at least two phrasings, and each positive case has a negative twin where the plugin must stay silent.
@@ -32,5 +32,7 @@ Chosen: suites under integrity rules. The rules reinstate CON-055 to CON-060 (Ou
 - ADR-0062 is superseded. `plugins/<plugin>/evals/results/` is ignored by git.
 - Each eval run is a paid model call; suites run with `--max-cost-usd`, and quick suites use deterministic graders only.
 - Scores tune the dev cases only; the claim that a part beats vanilla (ADR-0177) is made from the held-out run.
+
+- Amended 2026-11-21 (issue #130): rule 1 dropped the `<case>-v2` naming. It filled the suites with superseded duplicates and turned every weakness into a new case; the commit trace and the other rules carry the integrity.
 
 Source: user goal, 2026-11-21 (this session, first prompt); user decisions of 2026-11-16 quoted in OUT-2501 to OUT-2506; code.claude.com/docs/en/plugin-evals (read 2026-11-21); external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md (I16 recipe); external/llm-agent-behavior-mitigation-research.md section 6.

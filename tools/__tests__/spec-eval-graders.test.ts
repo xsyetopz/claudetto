@@ -55,7 +55,7 @@ const unstagedImplTraces = [
 	[writeTest, editImpl]
 ].map((lines) => lines.join("\n"));
 
-const v2Samples: [string, Sample][] = [
+const stagingSamples: [string, Sample][] = [
 	[
 		"impl-written",
 		{
@@ -78,7 +78,7 @@ const v2Samples: [string, Sample][] = [
 const redRun = String.raw`{"type":"tool_result","content":"(fail) DISC-1\n\n 0 pass\n 1 fail\n 1 error\nRan 1 test"}`;
 const greenRun = String.raw`{"type":"tool_result","content":" 6 pass\n 0 fail\n 11 expect() calls\nRan 6 tests"}`;
 
-const v3Samples: [string, Sample][] = [
+const endRunSamples: [string, Sample][] = [
 	[
 		"tests-pass-at-end",
 		{
@@ -160,18 +160,7 @@ const samples = new Map<string, Sample>([
 	],
 	...specReviewSamples,
 	...["feature-discount", "feature-discount-p2"].flatMap((name) =>
-		featureSamples.map(([grader, sample]): [string, Sample] => [
-			`${name}/${grader}`,
-			sample
-		])
-	),
-	...["feature-discount-v2", "feature-discount-p2-v2"].flatMap((name) =>
-		[...featureSamples, ...v2Samples].map(
-			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
-		)
-	),
-	...["feature-discount-v3", "feature-discount-p2-v3"].flatMap((name) =>
-		[...featureSamples, ...v2Samples, ...v3Samples].map(
+		[...featureSamples, ...stagingSamples, ...endRunSamples].map(
 			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
 		)
 	)
@@ -215,7 +204,7 @@ test.each(unstagedImplTraces)(
 	"staged-before-impl rejects an implementation written before staging: %#",
 	(trace) => {
 		// Arrange
-		const grader = graders.get("feature-discount-v2/staged-before-impl");
+		const grader = graders.get("feature-discount/staged-before-impl");
 		// Act
 		const result = grader === undefined ? true : passes(grader, trace);
 		// Assert
@@ -223,12 +212,9 @@ test.each(unstagedImplTraces)(
 	}
 );
 
-test.each([
-	["feature-discount-v2", "feature-discount-p2-v2"],
-	["feature-discount-v3", "feature-discount-p2-v3"]
-])("the phrasings %s and %s share their graders", async (first, second) => {
+test("the phrasings feature-discount and feature-discount-p2 share their graders", async () => {
 	// Arrange
-	const pair = [first, second];
+	const pair = ["feature-discount", "feature-discount-p2"];
 	// Act
 	const listings = await Promise.all(
 		pair.map(async (d) => {
@@ -267,10 +253,6 @@ test("the shared scaffold is identical in every case that uses it", async () => 
 		"ambiguous-headless",
 		"feature-discount",
 		"feature-discount-p2",
-		"feature-discount-v2",
-		"feature-discount-p2-v2",
-		"feature-discount-v3",
-		"feature-discount-p2-v3",
 		"trivial-rename",
 		"trivial-typo"
 	];
