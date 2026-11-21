@@ -49,7 +49,14 @@ In the plugin runs the request lists none of Write, Edit, NotebookEdit, SendMess
 | EnterWorktree | kept, 177 characters | 921 bytes upfront (was 4,013); a name line when deferred | Bash cannot change the session's working directory or writable directories. |
 | ExitWorktree | kept, 188 characters | 897 bytes upfront (was 2,903); a name line when deferred | Same reason; the pair is one feature. |
 
-Not measured: the calls and bytes of the Bash path for the same job (`git worktree add` plus `cd`). That side is reasoned only. The decision rests on the capability gap and the measured tool cost.
+The Bash path for the same job, probed 2026-11-21 in a scratch repository (git 2.x, zsh):
+
+| Job | Bash calls | Command chars | Output chars | Then, per later call |
+| --- | --- | --- | --- | --- |
+| Create (`git worktree add -b feat-x ../feat-x`) | 1 | 36 | 68 | a `cd ../feat-x &&` prefix (16 chars) or `git -C`, because the Bash tool resets the working directory |
+| Remove (`git worktree remove ../feat-x && git branch -d feat-x`) | 1 | 53 | 36 | none |
+
+The Bash path costs one call and about 100 to 140 characters per job against 921 and 897 bytes on every request when the pair is upfront, and a name line when deferred. ListAgents has no Bash path: it lists only SendMessage targets, and SendMessage is off. EnterWorktree and ExitWorktree stay because the Bash path cannot move the session's working directory (the 2.1.330 Bash tool description: `cd` carries over only when it ends inside the working directories), and the default mode defers them, so their per-request cost there is the name line.
 
 ## REQ-TOOLS-003 test and probe legs
 

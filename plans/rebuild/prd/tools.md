@@ -9,10 +9,10 @@ claudetto shapes the tool pool every request carries, because each tool's schema
   Status: done at 6b2fb4a34 for the `tool.offer` hook and its test (`claude plugin test plugins/claudetto`: 170 pass, 2026-11-21); the hook now lives in `hooks/pool/offer.ts`, and the probe ran after the last change (2026-11-21).
   Verified: PASS: `hooks/pool/__tests__/offer.test.ts` hides the set in the main loop and a subagent's; probe: `tools/measure-tools.ts` against a fake API shows none of the four in the main or the subagent request, and the tool bytes before and after (reports/2026-11-21-tool-bytes/README.md).
 
-- [ ] **REQ-TOOLS-002** claudetto shall decide ListAgents, EnterWorktree and ExitWorktree on measured cost: the tool bytes each adds per request against the calls and bytes the Bash or Agent-isolation path takes for the same job.
+- [x] **REQ-TOOLS-002** claudetto shall decide ListAgents, EnterWorktree and ExitWorktree on measured cost: the tool bytes each adds per request against the calls and bytes the Bash or Agent-isolation path takes for the same job.
   Acceptance: a report gives both numbers per tool and the decision (off, or kept with a description of at most 200 characters). Verification: probe.
-  Status: partial (2026-11-21): the tool-bytes half is measured and the Bash-path half is not, so the item stays open. ListAgents off, EnterWorktree and ExitWorktree kept at 177 and 188 characters.
-  Verified: PASS: probe in reports/2026-11-21-tool-bytes/README.md gives the tool bytes per tool; `hooks/pool/__tests__/offer.test.ts` covers the decisions. Not measured: the calls and bytes of the Bash path for the same job, which is reasoned only.
+  Status: done (2026-11-21). ListAgents off, EnterWorktree and ExitWorktree kept at 177 and 188 characters.
+  Verified: PASS: probe in reports/2026-11-21-tool-bytes/README.md gives the tool bytes per tool and the Bash path (create: 1 call, 36 + 68 chars, then a `cd` prefix per call; remove: 1 call, 53 + 36 chars); `hooks/pool/__tests__/offer.test.ts` covers the decisions.
 
 - [ ] **REQ-TOOLS-003** claudetto shall describe each kept built-in tool in at most 200 characters through `tool.describe`, keeping the facts a model needs to call it right (Bash, Read, Glob, Grep, Agent, Skill, ToolSearch, AskUserQuestion, Monitor, TaskStop, TodoWrite, TaskCreate, TaskGet, TaskList, TaskUpdate, ExitPlanMode, ListAgents if kept).
   Acceptance: a test renders each description and asserts the length; the request's tool bytes are measured before and after; a trivial and a feature eval show no lower score. Verification: test; eval.
