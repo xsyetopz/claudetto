@@ -61,7 +61,7 @@ async function settle(
 	$: EngineInterface,
 	text: string,
 	options: PluginOptions,
-	walls: readonly string[]
+	walls: readonly string[] | undefined
 ): Promise<Settled> {
 	const owned = (await $.store.get(AUTONOMY_MARK)) === true;
 	const autonomy = syncAutonomy(text, isFull(options), owned);
