@@ -11,11 +11,11 @@ The user's settings bound the design: `skillListingMaxDescChars: 60` cuts each l
 | claudetto | Artemis | agent | exists |
 | claudetto | Athena | agent | exists |
 | claudetto | Heracles | agent | exists |
-| claudetto | review | user command, forked | exists (REQ-SKILLS-010) |
+| claudetto | review | user command, forked | removed: tied vanilla (REQ-SKILLS-010) |
 | claudetto-spec | spec | skill | exists |
 | claudetto-spec | spec-review | user command, forked | eval first (REQ-SKILLS-020) |
 
-Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` covers it), `simplify` (folds into `review` if its eval shows a gap), `bugfix` (an extension of `spec`'s description, measured first). Rejected items and the reasons are in the catalog, sections 4 and 5.
+Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` covers it), `simplify` (a plain request to review the diff tied the removed `review` command, so it needs an eval that vanilla fails), `bugfix` (an extension of `spec`'s description, measured first). Rejected items and the reasons are in the catalog, sections 4 and 5.
 
 ## Engine
 
@@ -28,8 +28,8 @@ Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` cover
 
 - [x] **REQ-SKILLS-010** claudetto shall ship `/claudetto:review`, a user-invoked command that reviews the working diff in a forked context for defects only (no style), returns findings as `path:line` with the failing input, and edits nothing.
   Acceptance: an eval case `review-seeded-defects` (a fixture diff with 5 seeded defects and 3 benign changes, outcome-only grader on defects named with file and line) scores recall no lower and false findings no higher than vanilla asked to "review the diff", n=3 per arm, `--no-publish` and a cost cap; the description's first 60 characters name the trigger. If the arms tie, the command is removed. Verification: eval.
-  Status: done (2026-11-21, 2.1.330, Opus 5.5). Both cases rerun outside the session sandbox, where Bash and the skill's `git diff` injection work. Command case `review-seeded-defects-slash` (`--ablation none`, n=3, result `2026-11-21T13-47-24-461Z`, $0.08): 0.75, 0.88, 0.88, mean 0.83; recall 15 of 15 seeded defects, 4 false findings (`b3-false-format` 3, `b1-false-rename` 1). Vanilla asked to review the diff, the plain case's without arm (n=3, result `2026-11-21T13-52-59-332Z`, $1.18 for both arms): 0.75, 0.88, 0.75, mean 0.79; recall 15 of 15, 5 false findings (`b3-false-format` 3, `b2-false-config` 2). Recall is equal and false findings are lower, so the arms do not tie and the command stays. The description opens "Review the uncommitted diff for bugs only". The earlier blocked state: the first slash runs made no model call because the eval's sandbox could not start inside this session's Seatbelt sandbox (exit 71).
-  Verified: PASS: eval results above (`aggregate-result.json`, local, gitignored); n=3 per arm, so a one-finding margin.
+  Status: removed by its acceptance rule (2026-11-21, 2.1.330, Opus 5.5, issue #156). At n=10 per arm the first runs scored with 0.76 vs without 0.90 on `review-seeded-defects-slash` and 0.75 vs 0.79 on `review-seeded-defects`. Two causes: the benign `formatPrice` helper (B3) was wrong for negative cents (`formatPrice(-150)` gave `$-2.-50`), so both arms reported a real defect as a false finding; and the command listed changes it had checked and cleared (`src/cart.js:1` "this rename is clean"). With B3 replaced by a correct helper and the command told to report defects only, the arms tie: slash 0.95 vs 0.95 (n=10, $1.79), plain 0.90 vs 0.90 (n=10, $3.91). A plain request to review the diff does as well, so the command, its skill and the slash case are removed; `review-seeded-defects` stays as the review regression case.
+  Verified: PASS: `plugins/claudetto/evals/results/2026-11-21T20-45-41-658Z` and `2026-11-21T20-45-41-655Z` (`aggregate-result.json`, local, gitignored).
 
 ## Spec Plugin
 
