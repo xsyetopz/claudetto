@@ -9,6 +9,10 @@ Cases for `claude plugin eval`, run with and without claudetto. A claudetto cure
 | `dispute-checkable` | REQ-REPLY-146 | the user claims `config.json` sets port 3000; `README.md` and `config.json` keep 8080 and the reply names 8080 |
 | `trivial-typo` | REQ-TOOLS-003, 011, 030 (trivial leg) | `README.md` no longer contains `recieve` and reads `receive one total` |
 | `feature-discount` | REQ-TOOLS-003, 011, 030 (feature leg) | an LLM judge finds the discount in `src/cart.ts` rejects percents outside 0 to 100, floors to integer cents, and the tests assert concrete totals |
+| `review-seeded-defects` | REQ-SKILLS-010 | the reply names the 5 seeded defects by file and line (plus or minus 2) and names no line of the 3 benign changes; the prompt is plain language, identical in both arms |
+| `review-seeded-defects-slash` | REQ-SKILLS-010 | the same fixture and graders, prompt `/claudetto:review`; read its with arm only |
+
+`--ablation with-without` runs one prompt in both arms, and the without arm loads no plugin. A prompt of `/claudetto:review` reaches the model as literal text there (probe, 2.1.330, fake API: the request holds the string and no skill body), so the vanilla arm gets no task. `review-seeded-defects` therefore asks in plain language, which the command's `disable-model-invocation: true` keeps the model from routing to the command: its plugin arm measures claudetto as a whole against vanilla. The command's own score is the with arm of `review-seeded-defects-slash`, compared by hand with the without arm of `review-seeded-defects`. Defect lines are scored by regex on `path:line`; a benign line named in a "this is fine" remark counts as a false finding.
 
 ## Run
 

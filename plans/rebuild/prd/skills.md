@@ -19,13 +19,16 @@ Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` cover
 
 ## Engine
 
-- [ ] **REQ-SKILLS-001** The two questions the catalog left open shall be probed on 2.1.330 before either command is built: whether a plugin skill's `agent:` field resolves a plugin agent (`claudetto:Athena`), and whether a `disable-model-invocation: true` skill adds a line to the model's skill listing.
+- [x] **REQ-SKILLS-001** The two questions the catalog left open shall be probed on 2.1.330 before either command is built: whether a plugin skill's `agent:` field resolves a plugin agent (`claudetto:Athena`), and whether a `disable-model-invocation: true` skill adds a line to the model's skill listing.
   Acceptance: each answer comes from a fake-API capture or a cc-inspect `code` read, with the request bytes of the listing with and without the command. Verification: probe.
+  Status: done (2026-11-21, 2.1.330). `agent: claudetto:Athena` resolves under `context: fork`; a `disable-model-invocation: true` skill adds no listing line.
+  Verified: PASS: probe in reports/2026-11-21-skills/README.md: the fork's request carries Athena's prompt and its 3 tools (`Read`, `Grep`, `Glob`); the skill listing is 5,889 bytes with and without the command, and 5,979 (+90) for the same skill without `disable-model-invocation`. Not exercised: a fork's tool use and reply against a real model, which the eval covers.
 
 ## Core Plugin
 
 - [ ] **REQ-SKILLS-010** claudetto shall ship `/claudetto:review`, a user-invoked command that reviews the working diff in a forked context for defects only (no style), returns findings as `path:line` with the failing input, and edits nothing.
   Acceptance: an eval case `review-seeded-defects` (a fixture diff with 5 seeded defects and 3 benign changes, outcome-only grader on defects named with file and line) scores recall no lower and false findings no higher than vanilla asked to "review the diff", n=3 per arm, `--no-publish` and a cost cap; the description's first 60 characters name the trigger. If the arms tie, the command is removed. Verification: eval.
+  Status: built, eval pending: `plugins/claudetto/skills/review/SKILL.md` and `plugins/claudetto/evals/review-seeded-defects/` exist; the paid runs are not made.
 
 ## Spec Plugin
 
