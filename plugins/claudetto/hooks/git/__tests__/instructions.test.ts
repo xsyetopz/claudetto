@@ -2,11 +2,12 @@ import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 import { TOOL_DESCRIPTIONS } from "../../pool/describe";
+import { BASH_RECIPES } from "../../pool/recipes";
 import { GIT_CONFLICT, gitBlock } from "../instructions";
 
 const BASE = "Executes a bash command and returns its output.";
 /** What the pool's `tool.describe` leaves of the stock Bash text; the git block goes after it. */
-const SHORT = TOOL_DESCRIPTIONS["Bash"];
+const SHORT = `${TOOL_DESCRIPTIONS["Bash"]}${BASH_RECIPES}`;
 
 /** Stands in for the engine's settings and env, and records what the session logs. */
 const engine = (
