@@ -1,6 +1,6 @@
 ---
 type: llm
-target:
+focus:
   source: file
   path: src/cart.test.ts
 ---
