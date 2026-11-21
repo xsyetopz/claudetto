@@ -11,6 +11,7 @@ import { registerCompact } from "./handover/compact";
 import { registerRenewal } from "./handover/renewal";
 import { registerStopNotice } from "./notice/stop";
 import { registerPatch, registerToolOffer } from "./patch/tool";
+import { registerCompose } from "./prompt/compose";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { registerStatusline } from "./statusline/statusline";
@@ -33,4 +34,5 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerStatusline(on);
 	registerStatuslineCommand(on);
 	registerWeb(on);
+	registerCompose(on);
 };

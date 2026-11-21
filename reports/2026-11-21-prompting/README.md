@@ -268,3 +268,14 @@ Not checked: the remaining PRD files line by line (`guards.md`, `handover.md`, `
 - Tokens: about -250 per request (F8, cached), about -50 per spawn x3 agents (F9), about -190 per propose fork (F7), plus lower thinking on three fork types (F6).
 - Behaviour: a standing spec finding is reported by ID (F1), source-side test-gaming is named as a failed green (F3), lead and delegate agree on scope (F5), and Opus 5.5 narrates and delegates less (F10, F14).
 - Every rewrite should be re-run through `plugins/claudetto-spec/evals` (`contradiction*`, `feature-discount*`, `trivial-*`) before it lands; the Stop-gate and skill wording changes are behaviour changes.
+
+## Composed prompt capture (2026-11-21, REQ-TOOLS-030 and REQ-TOOLS-031)
+
+`capture.ts` is a fake Anthropic API (`bun capture.ts <out-prefix> <port>`) that records each `/v1/messages` body. Runs: `ANTHROPIC_BASE_URL=http://127.0.0.1:<port> ANTHROPIC_API_KEY=sk-ant-fake claude -p hi --model claude-opus-5-5`, with an empty `CLAUDE_CONFIG_DIR`, claude 2.1.330, without and with `--plugin-dir plugins/claudetto`. `system[2]` characters:
+
+| Prompt | Without the plugin | With `prompt.compose` | Change |
+| --- | --- | --- | --- |
+| Short (`lean_body` plus session sections) | 7,050 | 7,238 | +188 |
+| Full (`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0`) | 28,344 | 28,545 | +201 |
+
+The tool list of the with-plugin runs holds `mcp__claudetto__patch` and no `Edit` or `Write`. The `prompt.compose` input on the short prompt listed `Agent`, `Bash`, `Read`, `mcp__claudetto__patch`, `mcp__claudetto__web_fetch`, `mcp__claudetto__web_search` and others, and the engine's sections were `lean_body` (shared, 2,063 characters) then session sections (`pronouns`, `action_caution`, `user_privacy`, `session_guidance`, `memory`, `env_info_simple`, `context_management`, ...). Not measured: the full prompt's section list on the real engine (only its `tools` line is checked, against the stock capture), and the session `memory` section, which still tells the model to use the `Write` tool.
