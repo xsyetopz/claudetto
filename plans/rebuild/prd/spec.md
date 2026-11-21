@@ -50,6 +50,16 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
   Basis: reported (thread: "Missing AC becomes an explicit assumption or open question"). Status: done. Headless half at 93ab5278d: Headless half: eval suite 1 (2026-11-21, claude 2.1.330), `ambiguous-headless` 1.0 with the plugin against 0.17 without over 3 runs. Suite 3: 1.0 again after the skill edits. Interactive half: tmux probe on claude 2.1.330 in the user's own setup, 2026-11-21: the skill fired and asked the tax rate form and the rounding through AskUserQuestion (RISK-518 fix; one run).
   Source: external/export-Has anyone actually combined TDD + Specification-Driven Development (SDD)…jsonl, comment 13; swe-best-practices B5-5.
 
+- [ ] **REQ-SPEC-011** `spec_check` shall report spec drift against HEAD: IDs a spec file defined in HEAD that no spec defines now (`removedIds`) and IDs whose one behaviour sentence changed (`reworded`), with a spec file absent from HEAD and a new ID counting as no drift.
+  Acceptance: with HEAD's text injected, a dropped ID is listed under `removedIds`, a changed sentence under `reworded`, and a new ID, a new spec file, a reflowed sentence or an ID moved to another spec file lists nothing. Verification: test (git output injected).
+  Basis: design (Feature List as Immutable Contract; its enforcement is prompt-only, so a code check is the stronger form). Status: pending.
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 1.
+
+- [ ] **REQ-SPEC-012** `spec_check` shall report, for each test file edited since it was staged, whether it was deleted from the work tree, which skip or only markers (`.skip(`, `.only(`, `xit(`, `xdescribe(`, `test.todo(`, `it.todo(`) the work tree added over the index, and whether its assertion-call count dropped (`tampered`, beside the unchanged `changedSinceStaged`).
+  Acceptance: with index and work tree texts injected, a deleted file, an added marker and a removed `expect(` each yield a `tampered` entry, a marker the index already had or an edit that keeps both counts yields none, and a path with non-ASCII characters is reported under its own name; git runs with `core.quotePath=false`. Verification: test (git output injected).
+  Basis: reported (no_human's mechanical guard covers deletions, skip markers and removed assertions; its documented gap is non-ASCII file names). Status: pending.
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 2.
+
 ## Cost
 
 - [x] **REQ-SPEC-009** claudetto-spec shall add at most 150 always-on tokens: the skill description and the deferred tool name, with no agent, output style or rule text.
