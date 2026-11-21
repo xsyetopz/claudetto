@@ -46,31 +46,55 @@ async function landing(
 	return landing($, abs.slice(0, cut), `${abs.slice(cut)}${rest}`);
 }
 
+/** Whether `abs` is inside one of `roots`, by spelling and after symbolic links. */
+async function isPlaced(
+	$: EngineInterface,
+	roots: readonly { root: string; real: string }[],
+	abs: string
+): Promise<boolean> {
+	const home = roots.find(({ root }) => isInside(root, abs));
+	if (home === undefined) {
+		return false;
+	}
+	const to = await landing($, abs);
+	return to !== undefined && isInside(home.real, to);
+}
+
 /**
  * Resolves each path a patch names against the session directory and refuses
- * any that lands outside it, by spelling (`../x`) or through a symbolic link.
+ * any that lands outside it and outside `extra`, by spelling (`../x`) or
+ * through a symbolic link.
  *
  * @param $ The engine.
  * @param cwd The session directory, absolute.
  * @param paths The paths as the patch wrote them.
+ * @param extra Other absolute folders patch may write in (the auto-memory folder).
  * @returns Per path, its absolute form or the reason it is refused.
  */
 export async function placePaths(
 	$: EngineInterface,
 	cwd: string,
-	paths: readonly string[]
+	paths: readonly string[],
+	extra: readonly string[] = []
 ): Promise<Map<string, { abs: string } | { error: string }>> {
-	const real = (await landing($, cwd)) ?? cwd;
+	const roots = await Promise.all(
+		[cwd, ...extra].map(async (root) => ({
+			root,
+			real: (await landing($, root)) ?? root
+		}))
+	);
 	const places = await Promise.all(
 		paths.map(async (path) => {
 			const abs = absolute(cwd, path);
-			const to = isInside(cwd, abs) ? await landing($, abs) : undefined;
-			const place: { abs: string } | { error: string } =
-				to !== undefined && isInside(real, to)
-					? { abs }
-					: {
-							error: `outside the session directory ${cwd}; patch edits files only inside it, so give the path and the change in your reply instead`
-						};
+			const place: { abs: string } | { error: string } = (await isPlaced(
+				$,
+				roots,
+				abs
+			))
+				? { abs }
+				: {
+						error: `outside the session directory ${cwd}; patch edits files only inside it, so give the path and the change in your reply instead`
+					};
 			return [path, place] as const;
 		})
 	);

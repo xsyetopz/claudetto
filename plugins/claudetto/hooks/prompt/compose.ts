@@ -6,6 +6,7 @@ import {
 	FETCH_FULL_NAME as FETCH,
 	SEARCH_FULL_NAME as SEARCH
 } from "../web/register";
+import { memorySection } from "./memory";
 
 /**
  * ENGINE(v2.1.330): the stock line of the short prompt's `lean_body` section
@@ -84,6 +85,13 @@ export function registerCompose(on: On): void {
 					id: section.id,
 					scope: section.scope,
 					text: toolsSection(section.text, e.tools)
+				};
+			}
+			if (section.id === "memory") {
+				return {
+					id: section.id,
+					scope: section.scope,
+					text: memorySection(section.text, e.tools)
 				};
 			}
 			return section;

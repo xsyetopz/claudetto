@@ -1,5 +1,6 @@
 import type { EngineInterface, On } from "claude-code";
 
+import { memoryFolder } from "../prompt/memory";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
 import { applyOps } from "./apply";
@@ -92,7 +93,13 @@ export async function runPatch(
 		return { deny: `patch refused, nothing written: ${parsed.error}` };
 	}
 	const cwd = await $.session.cwd();
-	const placed = await placePaths($, cwd, pathsOf(parsed.ops));
+	const memory = memoryFolder();
+	const placed = await placePaths(
+		$,
+		cwd,
+		pathsOf(parsed.ops),
+		memory === undefined ? [] : [memory]
+	);
 	const plan = await applyOps(parsed.ops, {
 		resolve: (path) => placed.get(path) ?? { error: "path not placed" },
 		read: async (abs) => ((await $.fs.exists(abs)) ? $.fs.read(abs) : undefined)
