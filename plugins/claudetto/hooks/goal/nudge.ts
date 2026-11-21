@@ -59,8 +59,8 @@ export const isSource = (path: string): boolean => !DOC_FILE.test(path);
  * Nudges the main loop toward the Agent tool when it edits source itself under a goal that names
  * delegation (REQ-GOAL-030). The note rides on the edit's result once per session and never
  * denies. A subagent edit (`agentId` set) is the delegation the goal asks for, so it passes.
- * The goal comes from the tracker, which copies it from each `/goal` run the plugin sees. A goal
- * restored on resume, or set before the plugin loaded, is unseen, so the nudge stays quiet there.
+ * The goal comes from the tracker, which copies it from each `/goal` run the plugin sees and, on
+ * resume or compact, recovers it from the transcript (`resume.ts`).
  */
 export function registerNudge(on: On, tracker: Tracker): void {
 	on(

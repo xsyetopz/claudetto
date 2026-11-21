@@ -3,6 +3,7 @@ import type { On } from "claude-code";
 import { registerCommand } from "./command";
 import { registerFeedback } from "./feedback";
 import { registerNudge } from "./nudge";
+import { registerResume } from "./resume";
 import type { Tracker } from "./state";
 import { registerTools } from "./tools";
 
@@ -18,4 +19,5 @@ export function registerGoal(on: On): void {
 	registerFeedback(on, tracker);
 	registerTools(on, tracker);
 	registerNudge(on, tracker);
+	registerResume(on, tracker);
 }
