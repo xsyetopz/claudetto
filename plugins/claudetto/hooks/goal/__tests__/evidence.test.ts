@@ -64,6 +64,28 @@ describe("goal evidence", () => {
 		expect(verdict.ok).toBe(false);
 	});
 
+	test("refuses a passed check that no Bash run in the transcript shows", () => {
+		// Arrange
+		const other: Use = { tool: "Read", input: { file_path: "/a" }, text: "x" };
+
+		// Act
+		const verdict = judgeClaim(GOAL, claim("passed"), [other]);
+
+		// Assert
+		expect(verdict.ok).toBe(false);
+	});
+
+	test("accepts a check whose newest run passed after an earlier one errored", () => {
+		// Arrange
+		const failed: Use = { ...RAN, text: "1 fail", isError: true };
+
+		// Act
+		const verdict = judgeClaim(GOAL, claim("passed"), [failed, RAN]);
+
+		// Assert
+		expect(verdict).toEqual({ ok: true });
+	});
+
 	test("drops malformed checks while reading a claim", () => {
 		// Arrange and Act
 		const read = claimOf(GOAL, [

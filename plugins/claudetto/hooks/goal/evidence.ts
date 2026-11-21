@@ -34,8 +34,9 @@ const isGoalTool = (tool: string): boolean => /(?:^|__)\w*_goal$/u.test(tool);
  * Judges a claim that a goal is met, so the evaluator model is not the only
  * judge of "done" and a model cannot end a goal by assertion.
  * A claim is refused when it names a different condition, cites no check,
- * its last check failed, a cited Bash command errored in the transcript, or
- * no other tool result stands behind it. A refusal is the model's to fix: it
+ * its last check failed, or a check it cites as passed has no Bash run of
+ * that exact command with a result in the transcript, or the newest such run
+ * errored. A refusal is the model's to fix: it
  * runs the check, or keeps working.
  *
  * @param goal The condition the session holds.
@@ -64,16 +65,19 @@ export const judgeClaim = (
 		);
 	}
 	const backing = uses.filter((use) => !isGoalTool(use.tool));
-	if (!backing.some((use) => use.text !== undefined)) {
-		return refuse(
-			"No tool result this turn backs the claim. Run the check, then cite it."
-		);
-	}
-	for (const check of claim.checks) {
-		const ran = backing.find(
+	for (const check of claim.checks.filter(
+		(item) => item.outcome === "passed"
+	)) {
+		// The newest run counts, so a check that failed and then passed on a rerun backs the claim.
+		const ran = backing.findLast(
 			(use) => use.tool === "Bash" && use.input["command"] === check.command
 		);
-		if (ran?.isError === true) {
+		if (ran?.text === undefined) {
+			return refuse(
+				`"${check.command}" is not a Bash command with a result in the transcript. Run it, then cite its exact text.`
+			);
+		}
+		if (ran.isError === true) {
 			return refuse(
 				`"${check.command}" errored in the transcript, so it does not show the goal met. Fix it and rerun it.`
 			);
