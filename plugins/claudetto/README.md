@@ -127,13 +127,14 @@ The fill adds permission rules that Claude Code enforces: reads of `.env` files 
 
 Before the model reads a tool result, claudetto masks the values of the project's env-style files and the secrets that `betterleaks` finds, or a set of built-in key shapes when `betterleaks` is not installed. It masks the tool's own record, so the session file in `~/.claude/projects` stores the masked value too: in a run with a printed token, an errored command and an env-style file read, vanilla left 3 of 3 values raw in the session file and claudetto 0 of 3, in 2 of 2 runs. A masked error result reaches the model wrapped in `<tool_use_error>`.
 
-Four options in the plugin settings tune the hooks:
+Five options in the plugin settings tune the hooks:
 
 | Option | Effect |
 | --- | --- |
 | `protectedPaths` | Folders no session may read or write (default: the held-out eval folder). The fill adds a `Read` deny rule and sandbox `denyRead` and `denyWrite` for each, and a Bash call that names one, also through a glob, a variable or a `cd` to home, is refused. An empty list turns the check off. The `denyWrite` entry stops shell writers (`>`, `tee`, `cp`, `sed -i`) only while `sandbox.enabled` is true; with the sandbox off, only the `Read` deny and the Bash check apply. |
 | `memoryFreeMinPercent` | A new `Bash`, `Monitor` or `Agent` call is refused while free memory (`memory_pressure -Q`) is under this percent (default 20; 0 turns it off). A failed read never blocks. |
 | `bashTimeLimitMinutes` | The wall-time limit under Shell Commands. |
+| `autonomy` | `semi` (default) leaves permission prompts and questions as Claude Code shows them. `full`, for unattended work, sets Claude Code's own `permissions.denyInsteadOfPrompting` in user settings at session start: a call that would wait on a prompt is denied and the turn goes on, and `AskUserQuestion`, `EnterPlanMode` and `ExitPlanMode` are left out. Pair it with auto mode, or nearly every call is denied. Back to `semi`, claudetto removes the key it wrote and leaves one you set. For one `-p` run, `--permission-prompts none` does the same. |
 | `includeGitInstructions` | Adds a short git block to the `Bash` tool in place of Claude Code's own, which the fill turns off with the `includeGitInstructions` setting false (default on). The block carries the commit and pull request lines from the `attribution` setting and adds none for an unset or empty value. While the block is on, a Bash call whose inline commit message (`-m`, `--message` or `-F -`) lacks the commit lines is refused with the line to add; a message from a file, the editor or another commit is let through. When the setting or `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` turns the builtin block on, the builtin block stays alone and session start reports the conflict. Turned off, set `includeGitInstructions` to true in settings to get the builtin block back. |
 
 ## Notices
