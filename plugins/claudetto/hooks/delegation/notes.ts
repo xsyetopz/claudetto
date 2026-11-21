@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
+import { runawayDue } from "./runaway";
 import { thrashNote } from "./thrash";
 
 /**
@@ -14,14 +15,15 @@ import { thrashNote } from "./thrash";
  * sources are imported here, not passed in.
  */
 export function registerAgentNotes(on: On): void {
-	on("tool.call", { agentId: /./u }, async (_$, e, next) => {
+	on("tool.call", { agentId: /./u }, async ($, e, next) => {
 		const r = await next(e);
 		if (e.agentId === undefined || r.deny !== undefined) {
 			return r;
 		}
-		const notes = [thrashNote(e.agentId)].filter(
-			(note): note is string => note !== undefined
-		);
+		const notes = [
+			thrashNote(e.agentId),
+			await runawayDue($, e.agentId)
+		].filter((note): note is string => note !== undefined);
 		return notes.length === 0
 			? r
 			: { ...r, context: [...(r.context ?? []), ...notes] };

@@ -7,6 +7,7 @@ import { THRASH_NOTE, THRASH_STEPS } from "../thrash";
 
 /** Answers every tool call and turn step beneath the plugin's hooks. */
 const base = (on: On) => {
+	on("agent.list", () => ({ value: [] }));
 	on("tool.call", () => ({ result: "ok" }));
 	on("turn.step", async function* (_$, e) {
 		// A response with no chunks; the yield keeps the body a generator.
