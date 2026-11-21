@@ -57,6 +57,10 @@ It returns JSON text:
 
 `hardFindings(report)` (`hooks/check/hard.ts`) returns the findings that should block completion: malformed, `removedIds`, `reworded`, `tampered` and `orphans`. The rest is advice.
 
+## Stop Gate
+
+When the main agent is about to finish a turn in a repo with a `specs/` directory, a `classic.Stop` hook (`hooks/check/stop.ts`) runs the same gather and check and blocks the stop once if `hardFindings` is non-empty. The block reason holds one line per finding; a `reworded` or `removedId` line tells the agent to restore the spec, its tests and the code unless the user named the change, and to report the conflict by ID. It blocks at most once per turn: a Stop that follows a block (`stop_hook_active`) passes. It never blocks a subagent, never blocks on advice findings, and fails open on any error (logged to the debug log). A repo without `specs/` costs one `fs.exists`. The hook adds no always-on tokens.
+
 Test files are paths matching `*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, or under `__tests__/`, `test/` or `tests/`.
 
 ## Disable

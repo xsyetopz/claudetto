@@ -75,6 +75,11 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
   Basis: design (a later Stop hook calls it; hard signals change agent behaviour where passive text is ignored). Status: done at 6b49a4603 (`claude plugin test plugins/claudetto-spec`: 37 pass, 2026-11-21).
   Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 5.
 
+- [x] **REQ-SPEC-016** claudetto-spec shall block the main agent's Stop once when the repo has `specs/` and `hardFindings` is non-empty, with a reason holding one line per finding.
+  Acceptance: a hard finding blocks a first Stop with each finding named; `stop_hook_active: true`, a subagent (`agent_id`), advice-only findings, a repo without `specs/` (no git run), a git failure and a thrown error all let the Stop pass; a reworded requirement's line names the ID and says to restore it unless the user named the change. Verification: test (engine injected, no git).
+  Basis: design (hard signals change agent behaviour; dev eval traces show the model rewriting spec, test and code together). Status: done at d645eabef (`claude plugin test plugins/claudetto-spec`: 46 pass, 2026-11-21; always-on tokens unchanged by the hook).
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 5.
+
 ## Cost
 
 - [x] **REQ-SPEC-009** claudetto-spec shall add at most 150 always-on tokens: the skill description and the deferred tool name, with no agent, output style or rule text.
