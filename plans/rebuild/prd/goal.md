@@ -18,8 +18,8 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
 - [x] **REQ-GOAL-001** claudetto shall register `get_goal`, `set_goal`, `pause_goal` and `clear_goal` for the interactive main loop, and send `isOffered: false` for the built-in `SetGoal`, `PauseGoal` and `GetGoal`.
   Acceptance: each description is at most 200 characters; the built-in names are withdrawn. Verification: test. Status: shipped (`hooks/goal/tools.ts`). Verified: `goal.test.ts`.
 
-- [x] **REQ-GOAL-002** `clear_goal` shall end a goal only with evidence: it is refused when the last check in the session failed or no tool result backs the claim, and an accepted claim is echoed to the user through `$.ui`.
-  Acceptance: tests cover a refusal after a failed check, a refusal with no tool result, and an accepted claim with its echo. Verification: test. Status: shipped (`evidence.ts`). Verified: `evidence.test.ts`, `goal.test.ts`.
+- [x] **REQ-GOAL-002** `clear_goal` shall end a goal only with evidence: it is refused when the last cited check failed, or a check cited as passed has no Bash run of that exact command with a result in the transcript, or its newest run errored, and an accepted claim is echoed to the user through `$.ui`.
+  Acceptance: tests cover a refusal after a failed check, a refusal for a cited check with no run, an acceptance after a rerun that passed, and an accepted claim with its echo. Verification: test. Status: shipped (`evidence.ts`). Verified: `evidence.test.ts`, `goal.test.ts`.
 
 ## Set Time
 
