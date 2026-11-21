@@ -1,6 +1,17 @@
 import type { On } from "claude-code";
 
 import { fault } from "../../shared/fault";
+import { fieldOf } from "../../shared/field";
+import {
+	type BashAnswer,
+	GREP_COUNT_NOTE,
+	isZeroCount,
+	missingCommand,
+	missingNote
+} from "./missing";
+
+const stringOf = (value: unknown): string | undefined =>
+	typeof value === "string" ? value : undefined;
 
 /** The longest a note may be: the model reads each beside a tool result. */
 export const NOTE_LIMIT = 200;
@@ -101,9 +112,10 @@ export const shellNotes = (command: string, facts: ShellFacts): string[] => {
 
 /**
  * Adds a note to a Bash result when the command hides a failure (ISSUES
- * 2026-11-21: background `; echo`, pipe and chain status, zsh word splitting).
- * The command runs as written; the notes only tell the model what its exit
- * status can and cannot show.
+ * 2026-11-21: background `; echo`, pipe and chain status, zsh word splitting),
+ * and to a result that shows a missing command (install it and keep the check)
+ * or a `grep -c` zero count (zero matches, not a failure). The command runs as
+ * written; the notes only tell the model what its exit status can and cannot show.
  */
 export function registerNotes(on: On): void {
 	on("tool.call", { tool: "Bash" }, async ($, e, next) => {
@@ -118,7 +130,24 @@ export function registerNotes(on: On): void {
 			isZsh: shell.endsWith("zsh")
 		});
 		const r = await next(e);
-		if (notes.length === 0 || r.deny !== undefined) {
+		if (r.deny !== undefined) {
+			return r;
+		}
+		// ENGINE(v2.1.330): a failed Bash call is an error result whose text begins "Exit code N".
+		const answer: BashAnswer = {
+			text: r.isError === true ? r.text : undefined,
+			stdout: stringOf(fieldOf(r.result, "stdout")),
+			stderr: stringOf(fieldOf(r.result, "stderr"))
+		};
+		const missing = missingCommand(e.command, answer);
+		if (missing !== undefined) {
+			const setup = await $.process.run(["just", "--show", "setup"]);
+			notes.push(missingNote(missing, setup.exitCode === 0));
+		}
+		if (isZeroCount(e.command, answer)) {
+			notes.push(GREP_COUNT_NOTE);
+		}
+		if (notes.length === 0) {
 			return r;
 		}
 		return { ...r, context: [...(r.context ?? []), ...notes] };
