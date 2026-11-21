@@ -1,1 +1,73 @@
-{"duration_api_ms":30147,"stop_reason":"end_turn","session_id":"51d03b0f-1ad2-4087-803a-186e103eacb9","total_cost_usd":0.1123103,"usage":{"input_tokens":8,"cache_creation_input_tokens":15149,"cache_read_input_tokens":81483,"output_tokens":4355,"output_tokens_details":{"thinking_tokens":1260},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":15149,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":8,"outputTokens":4355,"cacheReadInputTokens":81483,"cacheCreationInputTokens":15149,"webSearchRequests":0,"costUSD":0.1123103,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":1260,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":15149,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":5,"subtype":"success","api_error_status":null,"result":"No. `bun tools/check-register.ts` reports 0 open entries at Likelihood 3 or higher. It also reports 0 settled entries with no Verified line, 0 Moved Out for a bad reason, and 0 with two Likelihood values, across 436 items.\n\nThe checker reads only the last `Status:` in an entry. I listed every entry at Likelihood 3 or higher with more than one Status line. There are 38, and the last Status line is settled in all of them. I took the last line as current because the dated statuses run in order.\n\n**Mitigated**\n\n| Entries | Current status and recorded reason |\n|---|---|\n| RISK-226, 227, 262, 264, 278, 352, 353, 362 (reply.md) | These went closed, then reopened, then mitigated on 2026-11-19. The earlier \"closed\" was reopened because the fault reproduced on vanilla 2.1.327. The mitigation is the `output-styles/claudetto.md` defect paragraph (for RISK-227, the output style plus the redact guard). It beats vanilla on two fixtures and holds level on both controls. |\n| RISK-497 (reply.md) | Mitigated 2026-11-19 after five \"open\" statuses. Line 3 beats vanilla on r497i (6/6 vs 0/6) and r497a (4/6 vs 0/6), and holds the r497ac control at 6/6 on Opus, Sonnet and Haiku. |\n| RISK-171 (delegation.md) | The consent paragraph in the output style and in `Artemis.md`, `Athena.md` and `Heracles.md` beats vanilla on r171b and r171d, and holds level on both controls. |\n| RISK-185 (delegation.md) | The output-style paragraph that has the agent read background output beats vanilla on r185a and r185b, and holds level on r185c. An agent-written acceptance had been left open for the user to decide. |\n| RISK-451 (verification.md) | The background exit-status paragraph beats vanilla on r451a and r451d, and holds level on r451c. An agent-written acceptance was likewise left open for the user. |\n| RISK-186 (delegation.md) | The refusals came from the rebuild's own Bash wrapper (RISK-499, issue #45). A command naming git is now left unwrapped, and a fake-API probe confirmed `git status` runs. The residual is model-written expansions that no hook reaches, so Likelihood stays 5 with Impact 2. |\n| RISK-416 (edit.md) | The output style and `Heracles.md` ask for one `perl -pi` call when a change repeats across files. This was closed, then reopened after a dogfood run showed `sed -i` failing on BSD flags, then mitigated. Perl was used in 3 of 3 runs. |\n| RISK-053 (guards.md) | The sandbox and Read deny rules refuse every shell channel probed. A gap in the wall guard's path folding (`~/./`, `~//`, an unclosed `[`) was fixed (#42). |\n| RISK-067 (guards.md) | The git ask rules cover stash, hard reset, clean and `branch -D`. Claude Code refuses dangerous `rm` itself. The disk-cleanup part has no control and rests on one report. Residual Likelihood is 2. |\n| RISK-103 (guards.md) | `rules.ts` adds middle-wildcard git forms. A fake-API probe denied all seven force-push and stash forms tried. |\n| RISK-132 (handover.md) | Mitigated for options the user refused, because the handover keeps the user's corrections word for word. For options the agent ruled out alone, the next session rechecks them against the code. |\n| RISK-374, 391, 393 (cost.md) | RISK-374 now has caps on spawn depth and concurrency, and Opus and Fable spawns are refused. For RISK-391 and 393, the fill writes no `Bash(claude -p *)` allow and removes the old one. An earlier acceptance was withdrawn because it was the user's to give. |\n| RISK-170, 199, 222, 223 (delegation.md) | Mitigated by the shipped agent files, or for RISK-222 by `CLAUDE_CODE_SUBAGENT_MODEL`. |\n| RISK-401, 411 (setup.md) | RISK-401: routine writes meet no EPERM with the ADR-0188 block. RISK-411: the session-start fill removes the retired text. |\n| RISK-424 (verification.md) | The threshold test pins the literal 70000. |\n\n**Closed, moved Out or accepted**\n\n| Entries | Current status and recorded reason |\n|---|---|\n| RISK-410 (setup.md) | Closed. The cause is outside claudetto (OUT-866, ADR-0190). The statuses run closed, open, closed, and the last says \"as the first Status line says\". |\n| RISK-166 (delegation.md) | Closed 2026-11-19. It was not reproduced on vanilla 2.1.327, and the BUILD line is superseded. |\n| RISK-169 (delegation.md) | Closed. The Stop guard was removed (ADR-0092, OUT-016). Likelihood stays 4 as an accepted engine behaviour: a job dies with the turn. |\n| RISK-055, 059, 063, 064, 071 (guards.md) | Closed. For RISK-055, pkill and killall ask first. For RISK-059 and 071, the gate texts were dropped (OUT-035). For RISK-063, destructive git and the user settings file ask first. For RISK-064, the deny rules and the sandbox are the boundary. |\n| RISK-463 (verification.md) | Closed 2026-11-19. The fault stayed out of 24 of 24 runs. An agent-written acceptance had been left open for the user. |\n| RISK-462 (verification.md) | Moved Out as OUT-2777 (Verified line). |\n\nThree entries rest on a user decision that has not happened. RISK-185, 451 and 463 each carry an agent-written \"accepted\" that the entry itself says is the user's call (issue #57). They are settled only because a later mitigation or closure replaced the acceptance. RISK-171 records the same withdrawn acceptance.\n\nI did not re-run the measurements or probes behind these statuses. The Verified lines are present, as the checker confirms, but I did not check their contents.","ttft_ms":1396,"type":"result","duration_ms":31160,"uuid":"0ef6d971-2e58-4f02-8b99-bc0a10e6bd6e","ttft_stream_ms":1014,"time_to_request_ms":423,"first_content_frame_ms":1014,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 30147,
+	"stop_reason": "end_turn",
+	"session_id": "51d03b0f-1ad2-4087-803a-186e103eacb9",
+	"total_cost_usd": 0.1123103,
+	"usage": {
+		"input_tokens": 8,
+		"cache_creation_input_tokens": 15149,
+		"cache_read_input_tokens": 81483,
+		"output_tokens": 4355,
+		"output_tokens_details": { "thinking_tokens": 1260 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 15149,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 8,
+			"outputTokens": 4355,
+			"cacheReadInputTokens": 81483,
+			"cacheCreationInputTokens": 15149,
+			"webSearchRequests": 0,
+			"costUSD": 0.1123103,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 1260,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 15149,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 5,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "No. `bun tools/check-register.ts` reports 0 open entries at Likelihood 3 or higher. It also reports 0 settled entries with no Verified line, 0 Moved Out for a bad reason, and 0 with two Likelihood values, across 436 items.\n\nThe checker reads only the last `Status:` in an entry. I listed every entry at Likelihood 3 or higher with more than one Status line. There are 38, and the last Status line is settled in all of them. I took the last line as current because the dated statuses run in order.\n\n**Mitigated**\n\n| Entries | Current status and recorded reason |\n|---|---|\n| RISK-226, 227, 262, 264, 278, 352, 353, 362 (reply.md) | These went closed, then reopened, then mitigated on 2026-11-19. The earlier \"closed\" was reopened because the fault reproduced on vanilla 2.1.327. The mitigation is the `output-styles/claudetto.md` defect paragraph (for RISK-227, the output style plus the redact guard). It beats vanilla on two fixtures and holds level on both controls. |\n| RISK-497 (reply.md) | Mitigated 2026-11-19 after five \"open\" statuses. Line 3 beats vanilla on r497i (6/6 vs 0/6) and r497a (4/6 vs 0/6), and holds the r497ac control at 6/6 on Opus, Sonnet and Haiku. |\n| RISK-171 (delegation.md) | The consent paragraph in the output style and in `Artemis.md`, `Athena.md` and `Heracles.md` beats vanilla on r171b and r171d, and holds level on both controls. |\n| RISK-185 (delegation.md) | The output-style paragraph that has the agent read background output beats vanilla on r185a and r185b, and holds level on r185c. An agent-written acceptance had been left open for the user to decide. |\n| RISK-451 (verification.md) | The background exit-status paragraph beats vanilla on r451a and r451d, and holds level on r451c. An agent-written acceptance was likewise left open for the user. |\n| RISK-186 (delegation.md) | The refusals came from the rebuild's own Bash wrapper (RISK-499, issue #45). A command naming git is now left unwrapped, and a fake-API probe confirmed `git status` runs. The residual is model-written expansions that no hook reaches, so Likelihood stays 5 with Impact 2. |\n| RISK-416 (edit.md) | The output style and `Heracles.md` ask for one `perl -pi` call when a change repeats across files. This was closed, then reopened after a dogfood run showed `sed -i` failing on BSD flags, then mitigated. Perl was used in 3 of 3 runs. |\n| RISK-053 (guards.md) | The sandbox and Read deny rules refuse every shell channel probed. A gap in the wall guard's path folding (`~/./`, `~//`, an unclosed `[`) was fixed (#42). |\n| RISK-067 (guards.md) | The git ask rules cover stash, hard reset, clean and `branch -D`. Claude Code refuses dangerous `rm` itself. The disk-cleanup part has no control and rests on one report. Residual Likelihood is 2. |\n| RISK-103 (guards.md) | `rules.ts` adds middle-wildcard git forms. A fake-API probe denied all seven force-push and stash forms tried. |\n| RISK-132 (handover.md) | Mitigated for options the user refused, because the handover keeps the user's corrections word for word. For options the agent ruled out alone, the next session rechecks them against the code. |\n| RISK-374, 391, 393 (cost.md) | RISK-374 now has caps on spawn depth and concurrency, and Opus and Fable spawns are refused. For RISK-391 and 393, the fill writes no `Bash(claude -p *)` allow and removes the old one. An earlier acceptance was withdrawn because it was the user's to give. |\n| RISK-170, 199, 222, 223 (delegation.md) | Mitigated by the shipped agent files, or for RISK-222 by `CLAUDE_CODE_SUBAGENT_MODEL`. |\n| RISK-401, 411 (setup.md) | RISK-401: routine writes meet no EPERM with the ADR-0188 block. RISK-411: the session-start fill removes the retired text. |\n| RISK-424 (verification.md) | The threshold test pins the literal 70000. |\n\n**Closed, moved Out or accepted**\n\n| Entries | Current status and recorded reason |\n|---|---|\n| RISK-410 (setup.md) | Closed. The cause is outside claudetto (OUT-866, ADR-0190). The statuses run closed, open, closed, and the last says \"as the first Status line says\". |\n| RISK-166 (delegation.md) | Closed 2026-11-19. It was not reproduced on vanilla 2.1.327, and the BUILD line is superseded. |\n| RISK-169 (delegation.md) | Closed. The Stop guard was removed (ADR-0092, OUT-016). Likelihood stays 4 as an accepted engine behaviour: a job dies with the turn. |\n| RISK-055, 059, 063, 064, 071 (guards.md) | Closed. For RISK-055, pkill and killall ask first. For RISK-059 and 071, the gate texts were dropped (OUT-035). For RISK-063, destructive git and the user settings file ask first. For RISK-064, the deny rules and the sandbox are the boundary. |\n| RISK-463 (verification.md) | Closed 2026-11-19. The fault stayed out of 24 of 24 runs. An agent-written acceptance had been left open for the user. |\n| RISK-462 (verification.md) | Moved Out as OUT-2777 (Verified line). |\n\nThree entries rest on a user decision that has not happened. RISK-185, 451 and 463 each carry an agent-written \"accepted\" that the entry itself says is the user's call (issue #57). They are settled only because a later mitigation or closure replaced the acceptance. RISK-171 records the same withdrawn acceptance.\n\nI did not re-run the measurements or probes behind these statuses. The Verified lines are present, as the checker confirms, but I did not check their contents.",
+	"ttft_ms": 1396,
+	"type": "result",
+	"duration_ms": 31160,
+	"uuid": "0ef6d971-2e58-4f02-8b99-bc0a10e6bd6e",
+	"ttft_stream_ms": 1014,
+	"time_to_request_ms": 423,
+	"first_content_frame_ms": 1014,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

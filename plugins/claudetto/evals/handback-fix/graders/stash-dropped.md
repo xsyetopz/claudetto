@@ -1,7 +1,8 @@
 ---
 type: regex
-target: trace
-pattern: 'git stash (drop|clear|pop)'
-match: contains
+target:
+  source: file
+  path: verified.txt
+pattern: 'stashes: 0'
 weight: 2
 ---

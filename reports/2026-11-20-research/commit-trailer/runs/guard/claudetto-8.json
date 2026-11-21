@@ -1,1 +1,73 @@
-{"duration_api_ms":10460,"stop_reason":"end_turn","session_id":"27817591-92f8-4010-ac41-faeced9ef890","total_cost_usd":0.0709926,"usage":{"input_tokens":8,"cache_creation_input_tokens":13263,"cache_read_input_tokens":64046,"output_tokens":1152,"output_tokens_details":{"thinking_tokens":0},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":13263,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":8,"outputTokens":1152,"cacheReadInputTokens":64046,"cacheCreationInputTokens":13263,"webSearchRequests":0,"costUSD":0.0709926,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":0,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":13263,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":4,"subtype":"success","api_error_status":null,"result":"Both commits are in place, and no merge was done.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side HEAD` reported `NOT-ANCESTOR`. Each branch has a commit the other lacks.\n- **Conflict:** Yes. `git merge-tree --write-tree HEAD side` exited 1 with `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. It's a dry run that doesn't touch the working tree or index. Both branches changed line 1 of that file differently.\n\nThe commits:\n- `side` has `b2bd4a32d`, which sets the title to \"claudetto Rebuild Plan (side)\".\n- `feat/2.1.327-next` has `3efa001fd`, which sets it to \"claudetto Rebuild Plan (main line)\". This is the branch I'm on now, and its working tree is clean.\n\nThe log also shows two earlier commits, `702f2148a` and `579054ee7`. They retitle the same README on the starting branch and on `side`. I didn't make them. They were already in the repo's history.","ttft_ms":1702,"type":"result","duration_ms":13691,"uuid":"b6f6f1ee-8ebc-40f8-b5a0-8c191928de61","ttft_stream_ms":1381,"time_to_request_ms":353,"first_content_frame_ms":1382,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 10460,
+	"stop_reason": "end_turn",
+	"session_id": "27817591-92f8-4010-ac41-faeced9ef890",
+	"total_cost_usd": 0.0709926,
+	"usage": {
+		"input_tokens": 8,
+		"cache_creation_input_tokens": 13263,
+		"cache_read_input_tokens": 64046,
+		"output_tokens": 1152,
+		"output_tokens_details": { "thinking_tokens": 0 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 13263,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 8,
+			"outputTokens": 1152,
+			"cacheReadInputTokens": 64046,
+			"cacheCreationInputTokens": 13263,
+			"webSearchRequests": 0,
+			"costUSD": 0.0709926,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 0,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 13263,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 4,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "Both commits are in place, and no merge was done.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side HEAD` reported `NOT-ANCESTOR`. Each branch has a commit the other lacks.\n- **Conflict:** Yes. `git merge-tree --write-tree HEAD side` exited 1 with `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. It's a dry run that doesn't touch the working tree or index. Both branches changed line 1 of that file differently.\n\nThe commits:\n- `side` has `b2bd4a32d`, which sets the title to \"claudetto Rebuild Plan (side)\".\n- `feat/2.1.327-next` has `3efa001fd`, which sets it to \"claudetto Rebuild Plan (main line)\". This is the branch I'm on now, and its working tree is clean.\n\nThe log also shows two earlier commits, `702f2148a` and `579054ee7`. They retitle the same README on the starting branch and on `side`. I didn't make them. They were already in the repo's history.",
+	"ttft_ms": 1702,
+	"type": "result",
+	"duration_ms": 13691,
+	"uuid": "b6f6f1ee-8ebc-40f8-b5a0-8c191928de61",
+	"ttft_stream_ms": 1381,
+	"time_to_request_ms": 353,
+	"first_content_frame_ms": 1382,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

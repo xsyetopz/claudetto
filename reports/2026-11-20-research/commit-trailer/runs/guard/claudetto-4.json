@@ -1,1 +1,73 @@
-{"duration_api_ms":12681,"stop_reason":"end_turn","session_id":"3f2e8325-7459-460f-ad8a-dc08b261c8e4","total_cost_usd":0.0794178,"usage":{"input_tokens":10,"cache_creation_input_tokens":13802,"cache_read_input_tokens":84098,"output_tokens":1578,"output_tokens_details":{"thinking_tokens":23},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":13802,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":10,"outputTokens":1578,"cacheReadInputTokens":84098,"cacheCreationInputTokens":13802,"webSearchRequests":0,"costUSD":0.0794178,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":23,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":13802,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":5,"subtype":"success","api_error_status":null,"result":"`side` is not an ancestor of `feat/2.1.327-next`, and merging it would conflict. Both answers come from git runs, and I did not merge.\n\n- **Ancestor check:** `git merge-base --is-ancestor side HEAD` exited 1, which means no. The two branches diverged from `3e7e491` with one commit each.\n- **Merge check:** `git merge-tree --write-tree --name-only HEAD side` exited 1 and reported `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. Both commits rewrote line 1 differently, so the conflict is real.\n\nBoth commits are in place:\n- `side` has `936e44ed4`, with line 1 set to `# claudetto Rebuild Plan (side)`.\n- `feat/2.1.327-next` has `425f60485`, with line 1 set to `# claudetto Rebuild Plan (next)`.\n\nI'm back on `feat/2.1.327-next`. The checkout message said it is 1 commit behind `origin/feat/2.1.327-next`, and I left that alone.\n\nThe graph also shows `702f2148a` and `579054ee7`, which have similar \"Retitle rebuild README\" titles. I didn't create them, so they were already in the repo.","ttft_ms":1508,"type":"result","duration_ms":15774,"uuid":"c77f9655-fac8-4d1a-b782-4a1cfb5b66b4","ttft_stream_ms":1124,"time_to_request_ms":180,"first_content_frame_ms":1126,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 12681,
+	"stop_reason": "end_turn",
+	"session_id": "3f2e8325-7459-460f-ad8a-dc08b261c8e4",
+	"total_cost_usd": 0.0794178,
+	"usage": {
+		"input_tokens": 10,
+		"cache_creation_input_tokens": 13802,
+		"cache_read_input_tokens": 84098,
+		"output_tokens": 1578,
+		"output_tokens_details": { "thinking_tokens": 23 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 13802,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 10,
+			"outputTokens": 1578,
+			"cacheReadInputTokens": 84098,
+			"cacheCreationInputTokens": 13802,
+			"webSearchRequests": 0,
+			"costUSD": 0.0794178,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 23,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 13802,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 5,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "`side` is not an ancestor of `feat/2.1.327-next`, and merging it would conflict. Both answers come from git runs, and I did not merge.\n\n- **Ancestor check:** `git merge-base --is-ancestor side HEAD` exited 1, which means no. The two branches diverged from `3e7e491` with one commit each.\n- **Merge check:** `git merge-tree --write-tree --name-only HEAD side` exited 1 and reported `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. Both commits rewrote line 1 differently, so the conflict is real.\n\nBoth commits are in place:\n- `side` has `936e44ed4`, with line 1 set to `# claudetto Rebuild Plan (side)`.\n- `feat/2.1.327-next` has `425f60485`, with line 1 set to `# claudetto Rebuild Plan (next)`.\n\nI'm back on `feat/2.1.327-next`. The checkout message said it is 1 commit behind `origin/feat/2.1.327-next`, and I left that alone.\n\nThe graph also shows `702f2148a` and `579054ee7`, which have similar \"Retitle rebuild README\" titles. I didn't create them, so they were already in the repo.",
+	"ttft_ms": 1508,
+	"type": "result",
+	"duration_ms": 15774,
+	"uuid": "c77f9655-fac8-4d1a-b782-4a1cfb5b66b4",
+	"ttft_stream_ms": 1124,
+	"time_to_request_ms": 180,
+	"first_content_frame_ms": 1126,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

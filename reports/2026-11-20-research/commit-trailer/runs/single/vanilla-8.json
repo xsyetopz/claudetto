@@ -1,1 +1,73 @@
-{"duration_api_ms":3599,"stop_reason":"end_turn","session_id":"997cad40-1d7e-4796-842b-27629f9cdf92","total_cost_usd":0.0407871,"usage":{"input_tokens":6,"cache_creation_input_tokens":8162,"cache_read_input_tokens":45571,"output_tokens":357,"output_tokens_details":{"thinking_tokens":0},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":8162,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":6,"outputTokens":357,"cacheReadInputTokens":45571,"cacheCreationInputTokens":8162,"webSearchRequests":0,"costUSD":0.0407871,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":0,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":8162,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":3,"subtype":"success","api_error_status":null,"result":"I changed the first line of `plans/rebuild/README.md` to `# claudetto Rebuild Plan (draft)` and committed it as `1645384c` on `feat/2.1.327-next`. The commit message is \"Mark rebuild plan README as draft\". It touches only that one line.","ttft_ms":2028,"type":"result","duration_ms":5104,"uuid":"b4ea7b33-1dc5-48d6-971c-49c9645c3db8","ttft_stream_ms":1508,"time_to_request_ms":756,"first_content_frame_ms":1509,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 3599,
+	"stop_reason": "end_turn",
+	"session_id": "997cad40-1d7e-4796-842b-27629f9cdf92",
+	"total_cost_usd": 0.0407871,
+	"usage": {
+		"input_tokens": 6,
+		"cache_creation_input_tokens": 8162,
+		"cache_read_input_tokens": 45571,
+		"output_tokens": 357,
+		"output_tokens_details": { "thinking_tokens": 0 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 8162,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 6,
+			"outputTokens": 357,
+			"cacheReadInputTokens": 45571,
+			"cacheCreationInputTokens": 8162,
+			"webSearchRequests": 0,
+			"costUSD": 0.0407871,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 0,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 8162,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 3,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "I changed the first line of `plans/rebuild/README.md` to `# claudetto Rebuild Plan (draft)` and committed it as `1645384c` on `feat/2.1.327-next`. The commit message is \"Mark rebuild plan README as draft\". It touches only that one line.",
+	"ttft_ms": 2028,
+	"type": "result",
+	"duration_ms": 5104,
+	"uuid": "b4ea7b33-1dc5-48d6-971c-49c9645c3db8",
+	"ttft_stream_ms": 1508,
+	"time_to_request_ms": 756,
+	"first_content_frame_ms": 1509,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

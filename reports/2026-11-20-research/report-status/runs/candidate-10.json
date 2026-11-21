@@ -1,1 +1,73 @@
-{"duration_api_ms":22703,"stop_reason":"end_turn","session_id":"594b593b-6133-40ba-8754-76e56f4e05d4","total_cost_usd":0.1102146,"usage":{"input_tokens":12,"cache_creation_input_tokens":16867,"cache_read_input_tokens":119526,"output_tokens":3077,"output_tokens_details":{"thinking_tokens":162},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":16867,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":12,"outputTokens":3077,"cacheReadInputTokens":119526,"cacheCreationInputTokens":16867,"webSearchRequests":0,"costUSD":0.1102146,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":162,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":16867,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":7,"subtype":"success","api_error_status":null,"result":"`bun tools/check-register.ts` exited 0. It reports 436 items and 0 at Likelihood 3 or higher that are unsettled. I did not check the register against the script's own rules beyond reading its output.\n\nBy the last Status line, no risk at Likelihood 3 or higher is unsettled. Seventeen such entries carry more than one Status line. I found them with my own parse of the register files, which is not part of the check. The last line on each is `mitigated` (15 entries) or `closed` (2 entries). In each entry below, the earlier Status lines differ from the last one.\n\n**Cost**\n- **RISK-374 (L5):** mitigated 2026-11-18. The spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused. The earlier line said the caps were unprobed.\n- **RISK-393 (L3):** mitigated 2026-11-19. The fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote, so a paid `claude -p` run meets the permission prompt that vanilla shows. An earlier line accepted the risk. The entry says that acceptance was the user's to give and was withdrawn.\n\n**Delegation**\n- **RISK-166 (L4):** closed 2026-11-19. It was not reproduced on vanilla 2.1.327, so the earlier BUILD line is superseded.\n- **RISK-170 (L4):** mitigated 2026-11-18 by the shipped agent files.\n- **RISK-171 (L4):** mitigated 2026-11-19. The consent paragraph in the output style and agent files beats vanilla on r171b and r171d and holds level on both controls.\n- **RISK-186 (L5):** mitigated 2026-11-19. The rebuild's own Bash wrapper made every git command in an isolated worktree non-simple, so each was refused. A command naming git is now left unwrapped.\n  - **Residual:** refusals from model-written expansions remain. Likelihood stays 5 for those, with Impact 2.\n\n**Guards**\n- **RISK-053 (L4):** mitigated 2026-11-19. Some path spellings and an unclosed `[` got past the wall guard for a sandbox-off call (#42). The guard now folds those paths and escapes `[`, and `wall.test.ts` covers all four.\n- **RISK-103 (L4):** mitigated 2026-11-19. The gap was the prefix form of the deny rules, not the subagent. `rules.ts` adds middle-wildcard forms, and a fake-API probe denied all seven force-push and stash forms tried.\n\n**Reply**\n- **RISK-226 (L4), RISK-262 (L5), RISK-264 (L5), RISK-352 (L5), RISK-353 (L5):** each is mitigated 2026-11-19. The defect paragraph in `output-styles/claudetto.md` beats vanilla on two fixtures and holds level on both controls.\n- **RISK-227 (L3):** mitigated 2026-11-19. The output style plus the redact guard beat vanilla on env1 (5/6 against 1/6) and env2 (6/6 against 0/6). Both controls are level at 6/6.\n\n**Setup**\n- **RISK-410 (L4):** closed. It is outside claudetto (OUT-866, ADR-0190), as the first Status line says.\n\n**Verification**\n- **RISK-424 (L3):** mitigated 2026-11-18. The threshold test pins the literal 70000.\n- **RISK-451 (L4):** mitigated 2026-11-19. The output-style paragraph on background exit status beats vanilla on r451a and r451d and holds level on the r451c control.\n\n**RISK-163** also has three Status lines, but its Likelihood is 1, so it is outside your filter. Its last line is `closed`, after an earlier `accepted` and an `open` in between.\n\nI did not re-run any probes or paid runs behind the Verified lines.","ttft_ms":1274,"type":"result","duration_ms":24981,"uuid":"94bd5298-fc50-4c90-81c1-3f44efdba68f","ttft_stream_ms":887,"time_to_request_ms":91,"first_content_frame_ms":889,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 22703,
+	"stop_reason": "end_turn",
+	"session_id": "594b593b-6133-40ba-8754-76e56f4e05d4",
+	"total_cost_usd": 0.1102146,
+	"usage": {
+		"input_tokens": 12,
+		"cache_creation_input_tokens": 16867,
+		"cache_read_input_tokens": 119526,
+		"output_tokens": 3077,
+		"output_tokens_details": { "thinking_tokens": 162 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 16867,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 12,
+			"outputTokens": 3077,
+			"cacheReadInputTokens": 119526,
+			"cacheCreationInputTokens": 16867,
+			"webSearchRequests": 0,
+			"costUSD": 0.1102146,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 162,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 16867,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 7,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "`bun tools/check-register.ts` exited 0. It reports 436 items and 0 at Likelihood 3 or higher that are unsettled. I did not check the register against the script's own rules beyond reading its output.\n\nBy the last Status line, no risk at Likelihood 3 or higher is unsettled. Seventeen such entries carry more than one Status line. I found them with my own parse of the register files, which is not part of the check. The last line on each is `mitigated` (15 entries) or `closed` (2 entries). In each entry below, the earlier Status lines differ from the last one.\n\n**Cost**\n- **RISK-374 (L5):** mitigated 2026-11-18. The spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused. The earlier line said the caps were unprobed.\n- **RISK-393 (L3):** mitigated 2026-11-19. The fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote, so a paid `claude -p` run meets the permission prompt that vanilla shows. An earlier line accepted the risk. The entry says that acceptance was the user's to give and was withdrawn.\n\n**Delegation**\n- **RISK-166 (L4):** closed 2026-11-19. It was not reproduced on vanilla 2.1.327, so the earlier BUILD line is superseded.\n- **RISK-170 (L4):** mitigated 2026-11-18 by the shipped agent files.\n- **RISK-171 (L4):** mitigated 2026-11-19. The consent paragraph in the output style and agent files beats vanilla on r171b and r171d and holds level on both controls.\n- **RISK-186 (L5):** mitigated 2026-11-19. The rebuild's own Bash wrapper made every git command in an isolated worktree non-simple, so each was refused. A command naming git is now left unwrapped.\n  - **Residual:** refusals from model-written expansions remain. Likelihood stays 5 for those, with Impact 2.\n\n**Guards**\n- **RISK-053 (L4):** mitigated 2026-11-19. Some path spellings and an unclosed `[` got past the wall guard for a sandbox-off call (#42). The guard now folds those paths and escapes `[`, and `wall.test.ts` covers all four.\n- **RISK-103 (L4):** mitigated 2026-11-19. The gap was the prefix form of the deny rules, not the subagent. `rules.ts` adds middle-wildcard forms, and a fake-API probe denied all seven force-push and stash forms tried.\n\n**Reply**\n- **RISK-226 (L4), RISK-262 (L5), RISK-264 (L5), RISK-352 (L5), RISK-353 (L5):** each is mitigated 2026-11-19. The defect paragraph in `output-styles/claudetto.md` beats vanilla on two fixtures and holds level on both controls.\n- **RISK-227 (L3):** mitigated 2026-11-19. The output style plus the redact guard beat vanilla on env1 (5/6 against 1/6) and env2 (6/6 against 0/6). Both controls are level at 6/6.\n\n**Setup**\n- **RISK-410 (L4):** closed. It is outside claudetto (OUT-866, ADR-0190), as the first Status line says.\n\n**Verification**\n- **RISK-424 (L3):** mitigated 2026-11-18. The threshold test pins the literal 70000.\n- **RISK-451 (L4):** mitigated 2026-11-19. The output-style paragraph on background exit status beats vanilla on r451a and r451d and holds level on the r451c control.\n\n**RISK-163** also has three Status lines, but its Likelihood is 1, so it is outside your filter. Its last line is `closed`, after an earlier `accepted` and an `open` in between.\n\nI did not re-run any probes or paid runs behind the Verified lines.",
+	"ttft_ms": 1274,
+	"type": "result",
+	"duration_ms": 24981,
+	"uuid": "94bd5298-fc50-4c90-81c1-3f44efdba68f",
+	"ttft_stream_ms": 887,
+	"time_to_request_ms": 91,
+	"first_content_frame_ms": 889,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

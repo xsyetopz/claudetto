@@ -1,1 +1,73 @@
-{"duration_api_ms":22962,"stop_reason":"end_turn","session_id":"6b171fdf-9d84-4df5-90d5-00aa7edaaff6","total_cost_usd":0.1709467,"usage":{"input_tokens":14,"cache_creation_input_tokens":31760,"cache_read_input_tokens":141287,"output_tokens":2975,"output_tokens_details":{"thinking_tokens":500},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":31760,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":14,"outputTokens":2975,"cacheReadInputTokens":141287,"cacheCreationInputTokens":31760,"webSearchRequests":0,"costUSD":0.1709467,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":500,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":31760,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":8,"subtype":"success","api_error_status":null,"result":"**No risk at Likelihood 3 or higher is unsettled.** `bun tools/check-register.ts` exited 0 over 436 items and reported 0 in each of its four categories:\n\n- 0 at Likelihood 3 or higher and not settled\n- 0 settled with no Verified line\n- 0 Moved Out for a reason other than a part `plugins/` does not ship\n- 0 with two Likelihood values\n\nThe checker reads only the last `Status:` in an entry. I ran a separate throwaway script, not part of the repo, to list every entry at Likelihood 3 or higher with more than one `Status:`. It found 38, and the last Status of each is settled: 31 mitigated, 6 closed and 1 moved Out. In each entry, earlier Status lines were `open` or `partial`, and the last line supersedes them.\n\nI've left the Status reasons for those 38 out of this reply. They are in the script output above, and I can write them up if you want.\n\nThree entries are settled but record a leftover gap:\n- **RISK-067** (`guards.md:595`) is mitigated for git and for `rm`. The disk-cleanup part has no control and rests on one report. The entry records residual Likelihood 2.\n- **RISK-132** (`handover.md:127`) is mitigated for options the user refused and accepted for options the agent ruled out alone. The next session rechecks those against the code.\n- **RISK-186** (`delegation.md:475`) is mitigated by the fix for the rebuild's own Bash wrapper. The entry says Likelihood stays 5 for model-written expansions that no hook reaches, with Impact 2. The checker still counts it as settled.\n\nI ran the script once. It checks the register text, not the underlying fixes. The `Verified:` lines were not re-run.","ttft_ms":1218,"type":"result","duration_ms":26500,"uuid":"1bc731b6-6aed-4e21-8cdb-6a125fab8596","ttft_stream_ms":837,"time_to_request_ms":87,"first_content_frame_ms":839,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 22962,
+	"stop_reason": "end_turn",
+	"session_id": "6b171fdf-9d84-4df5-90d5-00aa7edaaff6",
+	"total_cost_usd": 0.1709467,
+	"usage": {
+		"input_tokens": 14,
+		"cache_creation_input_tokens": 31760,
+		"cache_read_input_tokens": 141287,
+		"output_tokens": 2975,
+		"output_tokens_details": { "thinking_tokens": 500 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 31760,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 14,
+			"outputTokens": 2975,
+			"cacheReadInputTokens": 141287,
+			"cacheCreationInputTokens": 31760,
+			"webSearchRequests": 0,
+			"costUSD": 0.1709467,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 500,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 31760,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 8,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "**No risk at Likelihood 3 or higher is unsettled.** `bun tools/check-register.ts` exited 0 over 436 items and reported 0 in each of its four categories:\n\n- 0 at Likelihood 3 or higher and not settled\n- 0 settled with no Verified line\n- 0 Moved Out for a reason other than a part `plugins/` does not ship\n- 0 with two Likelihood values\n\nThe checker reads only the last `Status:` in an entry. I ran a separate throwaway script, not part of the repo, to list every entry at Likelihood 3 or higher with more than one `Status:`. It found 38, and the last Status of each is settled: 31 mitigated, 6 closed and 1 moved Out. In each entry, earlier Status lines were `open` or `partial`, and the last line supersedes them.\n\nI've left the Status reasons for those 38 out of this reply. They are in the script output above, and I can write them up if you want.\n\nThree entries are settled but record a leftover gap:\n- **RISK-067** (`guards.md:595`) is mitigated for git and for `rm`. The disk-cleanup part has no control and rests on one report. The entry records residual Likelihood 2.\n- **RISK-132** (`handover.md:127`) is mitigated for options the user refused and accepted for options the agent ruled out alone. The next session rechecks those against the code.\n- **RISK-186** (`delegation.md:475`) is mitigated by the fix for the rebuild's own Bash wrapper. The entry says Likelihood stays 5 for model-written expansions that no hook reaches, with Impact 2. The checker still counts it as settled.\n\nI ran the script once. It checks the register text, not the underlying fixes. The `Verified:` lines were not re-run.",
+	"ttft_ms": 1218,
+	"type": "result",
+	"duration_ms": 26500,
+	"uuid": "1bc731b6-6aed-4e21-8cdb-6a125fab8596",
+	"ttft_stream_ms": 837,
+	"time_to_request_ms": 87,
+	"first_content_frame_ms": 839,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

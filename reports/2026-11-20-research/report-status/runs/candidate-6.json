@@ -1,1 +1,73 @@
-{"duration_api_ms":29552,"stop_reason":"end_turn","session_id":"00b4de3e-b40e-4c0a-a484-b1d7f0c8f493","total_cost_usd":0.1350098,"usage":{"input_tokens":16,"cache_creation_input_tokens":19066,"cache_read_input_tokens":173638,"output_tokens":4135,"output_tokens_details":{"thinking_tokens":506},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":19066,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":16,"outputTokens":4135,"cacheReadInputTokens":173638,"cacheCreationInputTokens":19066,"webSearchRequests":0,"costUSD":0.1350098,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":506,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":19066,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":9,"subtype":"success","api_error_status":null,"result":"Nothing at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0 over 436 items, and all four of its counts were 0.\n\nThe checker doesn't list entries with several Status lines, so I found them with a scratch script. 38 entries at Likelihood 3 or higher carry more than one Status line. For each, I took the last Status line, which is the current one. All 38 end in closed, mitigated or moved Out, and every earlier Status line differs. My script ran from `$TMPDIR` and changed nothing in the repo. I shortened the reasons below, and a few are cut off in my output and not read in full.\n\n**setup.md**\n- RISK-401 (L5), mitigated 2026-11-18: routine writes meet no EPERM with the ADR-0188 block.\n- RISK-410 (L4), closed: outside claudetto (OUT-866, ADR-0190).\n- RISK-411 (L3), mitigated 2026-11-19: the session-start fill removes the retired text.\n\n**cost.md**\n- RISK-374 (L5), mitigated 2026-11-18: the spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused.\n- RISK-391 and RISK-393 (L3), mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote.\n  - An earlier status accepted the risk. That acceptance was the user's to give, and it was withdrawn.\n\n**reply.md**\n- RISK-226 (L4), RISK-262, RISK-264, RISK-352, RISK-353 and RISK-362 (L5), and RISK-278 (L4), mitigated 2026-11-19: the defect paragraph in `output-styles/claudetto.md` beats vanilla on two fixtures and holds level on both controls.\n- RISK-227 (L3), mitigated 2026-11-19: the output style plus the redact guard beat vanilla on two fixtures and hold level on both controls.\n- RISK-497 (L4, 7 Status lines), mitigated 2026-11-19: line 3 beats vanilla on the tuning fixture and an untouched fixture, and holds the control at 6/6.\n\n**delegation.md**\n- RISK-166 (L4), closed 2026-11-19: not reproduced on vanilla 2.1.327.\n- RISK-169 (L4), closed: the cure was a SubagentStop/Stop guard, and those checks were removed (ADR-0092, OUT-016).\n- RISK-170, RISK-199 and RISK-223, mitigated 2026-11-18 by the shipped agent files (Verified line).\n- RISK-171 (L4), mitigated 2026-11-19: the consent paragraph and the agent files beat vanilla on r171b and r171d.\n- RISK-185 (L3), mitigated 2026-11-19: the output-style paragraph on reading a background command's output beats vanilla on r185a and r185b.\n- RISK-186 (L5), mitigated 2026-11-19: it records the fix to the Bash wrapper's `{ ... } </dev/null` group (bb4fdbf4, RISK-499, issue #45).\n- RISK-222 (L4), mitigated 2026-11-18: `CLAUDE_CODE_SUBAGENT_MODEL` moves a no-model subagent off Opus.\n\n**guards.md**\n- RISK-053 (L4), mitigated 2026-11-19, with a gap closed: odd path spellings and an unclosed `[` had passed the wall guard.\n- RISK-055 (L4), closed 2026-11-19: pkill and killall ask first.\n- RISK-059 (L3), closed 2026-11-18: the gate texts that handed commands to the user are dropped (OUT-035, OUT-021).\n- RISK-063 (L3), closed 2026-11-19: destructive git and the user settings file ask first.\n- RISK-064 (L4), closed 2026-11-19: the deny rules and the sandbox are the boundary.\n- RISK-067 (L4), mitigated 2026-11-19 for git: the ask rules cover stash, hard reset, clean and branch -D, including the `git -C dir` form.\n- RISK-071 (L5), closed 2026-11-18: the `rules.ts` stat and the gate denial log are dropped with the gate (OUT-035).\n- RISK-103 (L4), mitigated 2026-11-19: the probe showed the gap was the prefix match, which is fixed.\n\n**verification.md**\n- RISK-424 (L3), mitigated 2026-11-18: the threshold test pins the literal 70000.\n- RISK-451 (L4), mitigated 2026-11-19: the output-style paragraph on background exit status beats vanilla on r451a and r451d.\n- RISK-462 (L4), moved Out as OUT-2777 (Verified line). The checker passes it, so the OUT entry gives a not-shipped reason.\n- RISK-463 (L3), closed 2026-11-19: the fault stayed out of 24 of 24 target runs.\n\n**edit.md**\n- RISK-416 (L5), mitigated 2026-11-19: one line in the output style and `agents/Heracles.md` asks for one `perl -pi`/`-0pi` call when a change repeats across files.\n\n**handover.md**\n- RISK-132 (L4), mitigated 2026-11-19 for options the user refused: the handover keeps every user correction, refusal and consent word for word.","ttft_ms":1264,"type":"result","duration_ms":33996,"uuid":"f320e2b5-7e07-4d7a-aa2f-9e5ecf713702","ttft_stream_ms":912,"time_to_request_ms":137,"first_content_frame_ms":917,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 29552,
+	"stop_reason": "end_turn",
+	"session_id": "00b4de3e-b40e-4c0a-a484-b1d7f0c8f493",
+	"total_cost_usd": 0.1350098,
+	"usage": {
+		"input_tokens": 16,
+		"cache_creation_input_tokens": 19066,
+		"cache_read_input_tokens": 173638,
+		"output_tokens": 4135,
+		"output_tokens_details": { "thinking_tokens": 506 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 19066,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 16,
+			"outputTokens": 4135,
+			"cacheReadInputTokens": 173638,
+			"cacheCreationInputTokens": 19066,
+			"webSearchRequests": 0,
+			"costUSD": 0.1350098,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 506,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 19066,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 9,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "Nothing at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0 over 436 items, and all four of its counts were 0.\n\nThe checker doesn't list entries with several Status lines, so I found them with a scratch script. 38 entries at Likelihood 3 or higher carry more than one Status line. For each, I took the last Status line, which is the current one. All 38 end in closed, mitigated or moved Out, and every earlier Status line differs. My script ran from `$TMPDIR` and changed nothing in the repo. I shortened the reasons below, and a few are cut off in my output and not read in full.\n\n**setup.md**\n- RISK-401 (L5), mitigated 2026-11-18: routine writes meet no EPERM with the ADR-0188 block.\n- RISK-410 (L4), closed: outside claudetto (OUT-866, ADR-0190).\n- RISK-411 (L3), mitigated 2026-11-19: the session-start fill removes the retired text.\n\n**cost.md**\n- RISK-374 (L5), mitigated 2026-11-18: the spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused.\n- RISK-391 and RISK-393 (L3), mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote.\n  - An earlier status accepted the risk. That acceptance was the user's to give, and it was withdrawn.\n\n**reply.md**\n- RISK-226 (L4), RISK-262, RISK-264, RISK-352, RISK-353 and RISK-362 (L5), and RISK-278 (L4), mitigated 2026-11-19: the defect paragraph in `output-styles/claudetto.md` beats vanilla on two fixtures and holds level on both controls.\n- RISK-227 (L3), mitigated 2026-11-19: the output style plus the redact guard beat vanilla on two fixtures and hold level on both controls.\n- RISK-497 (L4, 7 Status lines), mitigated 2026-11-19: line 3 beats vanilla on the tuning fixture and an untouched fixture, and holds the control at 6/6.\n\n**delegation.md**\n- RISK-166 (L4), closed 2026-11-19: not reproduced on vanilla 2.1.327.\n- RISK-169 (L4), closed: the cure was a SubagentStop/Stop guard, and those checks were removed (ADR-0092, OUT-016).\n- RISK-170, RISK-199 and RISK-223, mitigated 2026-11-18 by the shipped agent files (Verified line).\n- RISK-171 (L4), mitigated 2026-11-19: the consent paragraph and the agent files beat vanilla on r171b and r171d.\n- RISK-185 (L3), mitigated 2026-11-19: the output-style paragraph on reading a background command's output beats vanilla on r185a and r185b.\n- RISK-186 (L5), mitigated 2026-11-19: it records the fix to the Bash wrapper's `{ ... } </dev/null` group (bb4fdbf4, RISK-499, issue #45).\n- RISK-222 (L4), mitigated 2026-11-18: `CLAUDE_CODE_SUBAGENT_MODEL` moves a no-model subagent off Opus.\n\n**guards.md**\n- RISK-053 (L4), mitigated 2026-11-19, with a gap closed: odd path spellings and an unclosed `[` had passed the wall guard.\n- RISK-055 (L4), closed 2026-11-19: pkill and killall ask first.\n- RISK-059 (L3), closed 2026-11-18: the gate texts that handed commands to the user are dropped (OUT-035, OUT-021).\n- RISK-063 (L3), closed 2026-11-19: destructive git and the user settings file ask first.\n- RISK-064 (L4), closed 2026-11-19: the deny rules and the sandbox are the boundary.\n- RISK-067 (L4), mitigated 2026-11-19 for git: the ask rules cover stash, hard reset, clean and branch -D, including the `git -C dir` form.\n- RISK-071 (L5), closed 2026-11-18: the `rules.ts` stat and the gate denial log are dropped with the gate (OUT-035).\n- RISK-103 (L4), mitigated 2026-11-19: the probe showed the gap was the prefix match, which is fixed.\n\n**verification.md**\n- RISK-424 (L3), mitigated 2026-11-18: the threshold test pins the literal 70000.\n- RISK-451 (L4), mitigated 2026-11-19: the output-style paragraph on background exit status beats vanilla on r451a and r451d.\n- RISK-462 (L4), moved Out as OUT-2777 (Verified line). The checker passes it, so the OUT entry gives a not-shipped reason.\n- RISK-463 (L3), closed 2026-11-19: the fault stayed out of 24 of 24 target runs.\n\n**edit.md**\n- RISK-416 (L5), mitigated 2026-11-19: one line in the output style and `agents/Heracles.md` asks for one `perl -pi`/`-0pi` call when a change repeats across files.\n\n**handover.md**\n- RISK-132 (L4), mitigated 2026-11-19 for options the user refused: the handover keeps every user correction, refusal and consent word for word.",
+	"ttft_ms": 1264,
+	"type": "result",
+	"duration_ms": 33996,
+	"uuid": "f320e2b5-7e07-4d7a-aa2f-9e5ecf713702",
+	"ttft_stream_ms": 912,
+	"time_to_request_ms": 137,
+	"first_content_frame_ms": 917,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

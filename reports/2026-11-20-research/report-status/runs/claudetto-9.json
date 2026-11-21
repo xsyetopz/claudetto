@@ -1,1 +1,73 @@
-{"duration_api_ms":26519,"stop_reason":"end_turn","session_id":"32d2f21e-71e4-4270-a58f-2d2d8d677bd0","total_cost_usd":0.1340966,"usage":{"input_tokens":14,"cache_creation_input_tokens":20952,"cache_read_input_tokens":158606,"output_tokens":3440,"output_tokens_details":{"thinking_tokens":684},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":20952,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":14,"outputTokens":3440,"cacheReadInputTokens":158606,"cacheCreationInputTokens":20952,"webSearchRequests":0,"costUSD":0.1340966,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":684,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":20952,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":8,"subtype":"success","api_error_status":null,"result":"No risk at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0. It checked 436 items and listed none in any of its four checks: not settled, settled with no `Verified` line, Moved Out for a live fault, or two Likelihood values.\n\nThe checker reads only the last `Status:` in each entry. So I ran a separate script over the register files and found 38 entries at Likelihood 3 or higher with more than one Status line. In all 38 the last Status is a settled one (closed, mitigated, or Moved Out), so none is currently unsettled. The earlier lines are the history: `open` or `partial` first, then `mitigated` or `closed`.\n\nTwo of those entries are settled only in part. The second is the only one where an earlier Status is not a plain `open` or `partial`:\n\n- **RISK-067** (guards.md, Likelihood 4): the current Status is `mitigated 2026-11-19 for git`. The ask rules cover stash, hard reset, clean and `branch -D`, including the `git -C dir` form. For `rm`, Claude Code 2.1.327 refuses the dangerous forms on its own; the entry records fake-API probes for an empty variable, `./scratch/*` and `~/x/ *`. The entry says the disk-cleanup part \"has no control; it rests on one report\", with residual likelihood 2.\n- **RISK-132** (handover.md, Likelihood 4): the current Status is `mitigated 2026-11-19 for options the user refused`, because the handover keeps every user correction, refusal and consent word for word (`hooks/handover/text.ts:14`). It is \"accepted\" for an option the agent ruled out alone, where the next session rechecks it against the code. The entry's `Verified` line says the 2026-11-19 dogfood handover was not re-read.\n- **RISK-416** (edit.md, Likelihood 5): its Status history is `closed`, then `reopened`, then `mitigated`. It was reopened because a dogfood run used `sed -i` and failed on BSD flags. The current `mitigated 2026-11-19` rests on one output-style line telling the model to use `perl -pi`, with 3 of 3 runs on perl. That depends on the model following the line, not on a hard control.\n\nI read the entries and the checker source. I did not re-run the probes or tests the entries cite.","ttft_ms":1472,"type":"result","duration_ms":29709,"uuid":"6a501232-f800-48fa-b974-17bb7d9d0032","ttft_stream_ms":1151,"time_to_request_ms":193,"first_content_frame_ms":1152,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 26519,
+	"stop_reason": "end_turn",
+	"session_id": "32d2f21e-71e4-4270-a58f-2d2d8d677bd0",
+	"total_cost_usd": 0.1340966,
+	"usage": {
+		"input_tokens": 14,
+		"cache_creation_input_tokens": 20952,
+		"cache_read_input_tokens": 158606,
+		"output_tokens": 3440,
+		"output_tokens_details": { "thinking_tokens": 684 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 20952,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 14,
+			"outputTokens": 3440,
+			"cacheReadInputTokens": 158606,
+			"cacheCreationInputTokens": 20952,
+			"webSearchRequests": 0,
+			"costUSD": 0.1340966,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 684,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 20952,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 8,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "No risk at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0. It checked 436 items and listed none in any of its four checks: not settled, settled with no `Verified` line, Moved Out for a live fault, or two Likelihood values.\n\nThe checker reads only the last `Status:` in each entry. So I ran a separate script over the register files and found 38 entries at Likelihood 3 or higher with more than one Status line. In all 38 the last Status is a settled one (closed, mitigated, or Moved Out), so none is currently unsettled. The earlier lines are the history: `open` or `partial` first, then `mitigated` or `closed`.\n\nTwo of those entries are settled only in part. The second is the only one where an earlier Status is not a plain `open` or `partial`:\n\n- **RISK-067** (guards.md, Likelihood 4): the current Status is `mitigated 2026-11-19 for git`. The ask rules cover stash, hard reset, clean and `branch -D`, including the `git -C dir` form. For `rm`, Claude Code 2.1.327 refuses the dangerous forms on its own; the entry records fake-API probes for an empty variable, `./scratch/*` and `~/x/ *`. The entry says the disk-cleanup part \"has no control; it rests on one report\", with residual likelihood 2.\n- **RISK-132** (handover.md, Likelihood 4): the current Status is `mitigated 2026-11-19 for options the user refused`, because the handover keeps every user correction, refusal and consent word for word (`hooks/handover/text.ts:14`). It is \"accepted\" for an option the agent ruled out alone, where the next session rechecks it against the code. The entry's `Verified` line says the 2026-11-19 dogfood handover was not re-read.\n- **RISK-416** (edit.md, Likelihood 5): its Status history is `closed`, then `reopened`, then `mitigated`. It was reopened because a dogfood run used `sed -i` and failed on BSD flags. The current `mitigated 2026-11-19` rests on one output-style line telling the model to use `perl -pi`, with 3 of 3 runs on perl. That depends on the model following the line, not on a hard control.\n\nI read the entries and the checker source. I did not re-run the probes or tests the entries cite.",
+	"ttft_ms": 1472,
+	"type": "result",
+	"duration_ms": 29709,
+	"uuid": "6a501232-f800-48fa-b974-17bb7d9d0032",
+	"ttft_stream_ms": 1151,
+	"time_to_request_ms": 193,
+	"first_content_frame_ms": 1152,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

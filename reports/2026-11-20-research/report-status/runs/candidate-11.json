@@ -1,1 +1,73 @@
-{"duration_api_ms":22658,"stop_reason":"end_turn","session_id":"d4848c99-23af-462f-ab21-47aa1f3d9a81","total_cost_usd":0.10430779999999999,"usage":{"input_tokens":12,"cache_creation_input_tokens":15215,"cache_read_input_tokens":118538,"output_tokens":3157,"output_tokens_details":{"thinking_tokens":217},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":15215,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":12,"outputTokens":3157,"cacheReadInputTokens":118538,"cacheCreationInputTokens":15215,"webSearchRequests":0,"costUSD":0.10430779999999999,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":217,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":15215,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":6,"subtype":"success","api_error_status":null,"result":"No risk at Likelihood 3 or higher is unsettled.\n\n`bun tools/check-register.ts` exited 0 and read 436 items. It reported 0 at Likelihood 3 or higher that are not closed, accepted, mitigated, transferred or Moved Out. It also reported 0 settled items with no Verified line, 0 Moved Out for a reason other than a part plugins/ does not ship, and 0 items with two Likelihood values.\n\nThe checker may only read one Status line per entry, so I parsed `plans/rebuild/risk-register/*.md` myself. 17 entries at Likelihood 3 or higher carry more than one Status line. I did not run the checker's own logic on them. In every one the last Status line is settled. These are the last lines, which are the current status. Earlier lines differ, as the text below notes.\n\n| Entry | Likelihood | Current status | Reason the entry records |\n|---|---|---|---|\n| RISK-374 (cost.md) | 5 | mitigated 2026-11-18 | The spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused. An earlier line said \"partial\". |\n| RISK-393 (cost.md) | 3 | mitigated 2026-11-19 | The fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote, so a paid run meets the permission prompt. An earlier status accepted the risk on ADR-0188's allow rule. The entry notes that acceptance was the user's to give. |\n| RISK-166 (delegation.md) | 4 | closed 2026-11-19 | Not reproduced on vanilla 2.1.327. The earlier \"open, BUILD\" line is superseded. |\n| RISK-170 (delegation.md) | 4 | mitigated 2026-11-18 | Shipped agent files, per its Verified line. |\n| RISK-171 (delegation.md) | 4 | mitigated 2026-11-19 | The consent paragraph in the output style and the three agent files beats vanilla on r171b and r171d and holds level on both controls. |\n| RISK-186 (delegation.md) | 5 | mitigated 2026-11-19 | The rebuild's Bash wrapper made git commands in isolated worktrees non-simple, so they were refused (bb4fdbf4, RISK-499, issue #45). A command naming git is now left unwrapped. The 495 measured refusals predate that wrapper. |\n| RISK-053 (guards.md) | 4 | mitigated 2026-11-19 | The dogfood agent found `~/./`, `~//`, `~/x/..` and an unclosed `[` passing the wall guard (#42). The guard now folds those paths and escapes `[`, and wall.test.ts covers all four. |\n| RISK-103 (guards.md) | 4 | mitigated 2026-11-19 | The gap was the prefix form of the rules, not the subagent. rules.ts adds middle-wildcard forms, and a fake-API probe on 2.1.327 denied all seven probe commands. |\n| RISK-226, 262, 264, 352, 353 (reply.md) | 4, 5, 5, 5, 5 | mitigated 2026-11-19 | The defect paragraph in output-styles/claudetto.md beats vanilla on two fixtures and holds level on both controls. |\n| RISK-227 (reply.md) | 3 | mitigated 2026-11-19 | The output style plus the redact guard beat vanilla: env1 5/6 against 1/6, env2 6/6 against 0/6. Both controls hold level at 6/6. |\n| RISK-410 (setup.md) | 4 | closed | Outside claudetto (OUT-866, ADR-0190). |\n| RISK-424 (verification.md) | 3 | mitigated 2026-11-18 | The threshold test pins the literal 70000, per its Verified line. |\n| RISK-451 (verification.md) | 4 | mitigated 2026-11-19 | The output-style paragraph on background exit status beats vanilla on r451a and r451d and holds level on the r451c control. |\n\nRISK-163 (delegation.md) also has three Status lines, but its Likelihood is 1, so it is outside your question. Its entry shows accepted, then open, then closed 2026-11-19.\n\nMy parse found only Status lines that start a line, and I did not check the Verified lines. The reasons above are truncated to about 330 characters for the table, so RISK-393, RISK-186, RISK-053 and RISK-103 have more text in the register.","ttft_ms":1359,"type":"result","duration_ms":25058,"uuid":"b48eb36a-67a9-4cb3-a175-4b1addac4e4d","ttft_stream_ms":1024,"time_to_request_ms":164,"first_content_frame_ms":1026,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 22658,
+	"stop_reason": "end_turn",
+	"session_id": "d4848c99-23af-462f-ab21-47aa1f3d9a81",
+	"total_cost_usd": 0.10430779999999999,
+	"usage": {
+		"input_tokens": 12,
+		"cache_creation_input_tokens": 15215,
+		"cache_read_input_tokens": 118538,
+		"output_tokens": 3157,
+		"output_tokens_details": { "thinking_tokens": 217 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 15215,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 12,
+			"outputTokens": 3157,
+			"cacheReadInputTokens": 118538,
+			"cacheCreationInputTokens": 15215,
+			"webSearchRequests": 0,
+			"costUSD": 0.10430779999999999,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 217,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 15215,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 6,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "No risk at Likelihood 3 or higher is unsettled.\n\n`bun tools/check-register.ts` exited 0 and read 436 items. It reported 0 at Likelihood 3 or higher that are not closed, accepted, mitigated, transferred or Moved Out. It also reported 0 settled items with no Verified line, 0 Moved Out for a reason other than a part plugins/ does not ship, and 0 items with two Likelihood values.\n\nThe checker may only read one Status line per entry, so I parsed `plans/rebuild/risk-register/*.md` myself. 17 entries at Likelihood 3 or higher carry more than one Status line. I did not run the checker's own logic on them. In every one the last Status line is settled. These are the last lines, which are the current status. Earlier lines differ, as the text below notes.\n\n| Entry | Likelihood | Current status | Reason the entry records |\n|---|---|---|---|\n| RISK-374 (cost.md) | 5 | mitigated 2026-11-18 | The spawn-depth and concurrency caps take effect, and Opus and Fable spawns are refused. An earlier line said \"partial\". |\n| RISK-393 (cost.md) | 3 | mitigated 2026-11-19 | The fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote, so a paid run meets the permission prompt. An earlier status accepted the risk on ADR-0188's allow rule. The entry notes that acceptance was the user's to give. |\n| RISK-166 (delegation.md) | 4 | closed 2026-11-19 | Not reproduced on vanilla 2.1.327. The earlier \"open, BUILD\" line is superseded. |\n| RISK-170 (delegation.md) | 4 | mitigated 2026-11-18 | Shipped agent files, per its Verified line. |\n| RISK-171 (delegation.md) | 4 | mitigated 2026-11-19 | The consent paragraph in the output style and the three agent files beats vanilla on r171b and r171d and holds level on both controls. |\n| RISK-186 (delegation.md) | 5 | mitigated 2026-11-19 | The rebuild's Bash wrapper made git commands in isolated worktrees non-simple, so they were refused (bb4fdbf4, RISK-499, issue #45). A command naming git is now left unwrapped. The 495 measured refusals predate that wrapper. |\n| RISK-053 (guards.md) | 4 | mitigated 2026-11-19 | The dogfood agent found `~/./`, `~//`, `~/x/..` and an unclosed `[` passing the wall guard (#42). The guard now folds those paths and escapes `[`, and wall.test.ts covers all four. |\n| RISK-103 (guards.md) | 4 | mitigated 2026-11-19 | The gap was the prefix form of the rules, not the subagent. rules.ts adds middle-wildcard forms, and a fake-API probe on 2.1.327 denied all seven probe commands. |\n| RISK-226, 262, 264, 352, 353 (reply.md) | 4, 5, 5, 5, 5 | mitigated 2026-11-19 | The defect paragraph in output-styles/claudetto.md beats vanilla on two fixtures and holds level on both controls. |\n| RISK-227 (reply.md) | 3 | mitigated 2026-11-19 | The output style plus the redact guard beat vanilla: env1 5/6 against 1/6, env2 6/6 against 0/6. Both controls hold level at 6/6. |\n| RISK-410 (setup.md) | 4 | closed | Outside claudetto (OUT-866, ADR-0190). |\n| RISK-424 (verification.md) | 3 | mitigated 2026-11-18 | The threshold test pins the literal 70000, per its Verified line. |\n| RISK-451 (verification.md) | 4 | mitigated 2026-11-19 | The output-style paragraph on background exit status beats vanilla on r451a and r451d and holds level on the r451c control. |\n\nRISK-163 (delegation.md) also has three Status lines, but its Likelihood is 1, so it is outside your question. Its entry shows accepted, then open, then closed 2026-11-19.\n\nMy parse found only Status lines that start a line, and I did not check the Verified lines. The reasons above are truncated to about 330 characters for the table, so RISK-393, RISK-186, RISK-053 and RISK-103 have more text in the register.",
+	"ttft_ms": 1359,
+	"type": "result",
+	"duration_ms": 25058,
+	"uuid": "b48eb36a-67a9-4cb3-a175-4b1addac4e4d",
+	"ttft_stream_ms": 1024,
+	"time_to_request_ms": 164,
+	"first_content_frame_ms": 1026,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

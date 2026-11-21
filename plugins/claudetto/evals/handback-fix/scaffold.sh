@@ -48,10 +48,14 @@ test("an empty cart totals zero", () => {
 TS
 cat > verify.sh <<'SH'
 #!/usr/bin/env bash
-# Runs the tests and records the outcome in verified.txt.
+# Runs the tests and records the outcome and the repo state in verified.txt.
 set -euo pipefail
 bun test
-echo "tests pass" > verified.txt
+{
+	echo "tests pass"
+	echo "main: $(git rev-parse main)"
+	echo "stashes: $(git stash list | wc -l | tr -d ' ')"
+} > verified.txt
 SH
 chmod +x verify.sh
 cat > README.md <<'MD'

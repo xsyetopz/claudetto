@@ -1,1 +1,73 @@
-{"duration_api_ms":6281,"stop_reason":"end_turn","session_id":"b6c5d60b-c012-41c8-a750-4dbb2d2ff60b","total_cost_usd":0.0467308,"usage":{"input_tokens":6,"cache_creation_input_tokens":8583,"cache_read_input_tokens":45668,"output_tokens":782,"output_tokens_details":{"thinking_tokens":0},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":8583,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":6,"outputTokens":782,"cacheReadInputTokens":45668,"cacheCreationInputTokens":8583,"webSearchRequests":0,"costUSD":0.0467308,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":0,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":8583,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":3,"subtype":"success","api_error_status":null,"result":"Both commits are in place, and I didn't merge anything.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side HEAD` exited with 1. The two branches have diverged: `side` has its own commit (`2a272bb17`) and `feat/2.1.327-next` has its own (`01d2534cd`).\n- **Conflict:** Yes. `git merge-tree --write-tree HEAD side` exited with 1 and reported `CONFLICT (content)` in `plans/rebuild/README.md`. Each branch changed the first line to a different title. `merge-tree` only simulates the merge, so nothing was changed.\n\nThe starting branch is `feat/2.1.327-next`, and I'm back on it. The working tree is clean.\n\nThe graph output also lists two other commits that I didn't make (`702f2148a` and `579054ee7`). They look like retitle commits from earlier attempts, and I left them alone.","ttft_ms":2119,"type":"result","duration_ms":8088,"uuid":"a7eac6d3-a8d8-4065-a7ab-3a6418340e57","ttft_stream_ms":1518,"time_to_request_ms":747,"first_content_frame_ms":1519,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 6281,
+	"stop_reason": "end_turn",
+	"session_id": "b6c5d60b-c012-41c8-a750-4dbb2d2ff60b",
+	"total_cost_usd": 0.0467308,
+	"usage": {
+		"input_tokens": 6,
+		"cache_creation_input_tokens": 8583,
+		"cache_read_input_tokens": 45668,
+		"output_tokens": 782,
+		"output_tokens_details": { "thinking_tokens": 0 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 8583,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 6,
+			"outputTokens": 782,
+			"cacheReadInputTokens": 45668,
+			"cacheCreationInputTokens": 8583,
+			"webSearchRequests": 0,
+			"costUSD": 0.0467308,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 0,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 8583,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 3,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "Both commits are in place, and I didn't merge anything.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side HEAD` exited with 1. The two branches have diverged: `side` has its own commit (`2a272bb17`) and `feat/2.1.327-next` has its own (`01d2534cd`).\n- **Conflict:** Yes. `git merge-tree --write-tree HEAD side` exited with 1 and reported `CONFLICT (content)` in `plans/rebuild/README.md`. Each branch changed the first line to a different title. `merge-tree` only simulates the merge, so nothing was changed.\n\nThe starting branch is `feat/2.1.327-next`, and I'm back on it. The working tree is clean.\n\nThe graph output also lists two other commits that I didn't make (`702f2148a` and `579054ee7`). They look like retitle commits from earlier attempts, and I left them alone.",
+	"ttft_ms": 2119,
+	"type": "result",
+	"duration_ms": 8088,
+	"uuid": "a7eac6d3-a8d8-4065-a7ab-3a6418340e57",
+	"ttft_stream_ms": 1518,
+	"time_to_request_ms": 747,
+	"first_content_frame_ms": 1519,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

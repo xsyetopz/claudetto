@@ -1,1 +1,73 @@
-{"duration_api_ms":20772,"stop_reason":"end_turn","session_id":"b3a0cf03-1aec-4382-b2f3-eb1182b45ff0","total_cost_usd":0.09788980000000001,"usage":{"input_tokens":12,"cache_creation_input_tokens":14950,"cache_read_input_tokens":121058,"output_tokens":2596,"output_tokens_details":{"thinking_tokens":490},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":14950,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":12,"outputTokens":2596,"cacheReadInputTokens":121058,"cacheCreationInputTokens":14950,"webSearchRequests":0,"costUSD":0.09788980000000001,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":490,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":14950,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":7,"subtype":"success","api_error_status":null,"result":"No risk at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0 and reported 0 in every category:\n\n- **Items:** 436 in total.\n- **Unsettled at Likelihood 3 or higher:** 0, meaning none that isn't closed, accepted, mitigated, transferred or Moved Out.\n- **Settled with no Verified line:** 0.\n- **Moved Out for a reason other than a part `plugins/` does not ship:** 0.\n- **Two Likelihood values in one entry:** 0.\n\n**Entries with more than one Status line:** the checker judges an entry by its last Status only, so I scanned for these separately with a throwaway script in `$TMPDIR`.\n\n- 65 entries have more than one Status line, and 38 of them are at Likelihood 3 or higher.\n- In all 38, the last Status is settled, so there is nothing to name as unsettled.\n- The earlier Status lines are older \"open\" ones that a later line superseded. RISK-401 in `setup.md` is an example. It is Likelihood 5 and still has `Status: open.` at line 128. Line 130 then says `Status: mitigated 2026-11-18: routine writes meet no EPERM with the ADR-0188 block (Verified line).` It also has a `Verified:` line at line 118.\n\nI treated the last Status as current because that is the checker's rule and RISK-401 reads that way. I did not read the other 37 entries one by one. I can list all 38 with their current status and recorded reason if you want them.","ttft_ms":1358,"type":"result","duration_ms":23098,"uuid":"ea1a238a-b35e-442b-9964-516639722ede","ttft_stream_ms":1008,"time_to_request_ms":129,"first_content_frame_ms":1008,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 20772,
+	"stop_reason": "end_turn",
+	"session_id": "b3a0cf03-1aec-4382-b2f3-eb1182b45ff0",
+	"total_cost_usd": 0.09788980000000001,
+	"usage": {
+		"input_tokens": 12,
+		"cache_creation_input_tokens": 14950,
+		"cache_read_input_tokens": 121058,
+		"output_tokens": 2596,
+		"output_tokens_details": { "thinking_tokens": 490 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 14950,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 12,
+			"outputTokens": 2596,
+			"cacheReadInputTokens": 121058,
+			"cacheCreationInputTokens": 14950,
+			"webSearchRequests": 0,
+			"costUSD": 0.09788980000000001,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 490,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 14950,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 7,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "No risk at Likelihood 3 or higher is unsettled. `bun tools/check-register.ts` exited 0 and reported 0 in every category:\n\n- **Items:** 436 in total.\n- **Unsettled at Likelihood 3 or higher:** 0, meaning none that isn't closed, accepted, mitigated, transferred or Moved Out.\n- **Settled with no Verified line:** 0.\n- **Moved Out for a reason other than a part `plugins/` does not ship:** 0.\n- **Two Likelihood values in one entry:** 0.\n\n**Entries with more than one Status line:** the checker judges an entry by its last Status only, so I scanned for these separately with a throwaway script in `$TMPDIR`.\n\n- 65 entries have more than one Status line, and 38 of them are at Likelihood 3 or higher.\n- In all 38, the last Status is settled, so there is nothing to name as unsettled.\n- The earlier Status lines are older \"open\" ones that a later line superseded. RISK-401 in `setup.md` is an example. It is Likelihood 5 and still has `Status: open.` at line 128. Line 130 then says `Status: mitigated 2026-11-18: routine writes meet no EPERM with the ADR-0188 block (Verified line).` It also has a `Verified:` line at line 118.\n\nI treated the last Status as current because that is the checker's rule and RISK-401 reads that way. I did not read the other 37 entries one by one. I can list all 38 with their current status and recorded reason if you want them.",
+	"ttft_ms": 1358,
+	"type": "result",
+	"duration_ms": 23098,
+	"uuid": "ea1a238a-b35e-442b-9964-516639722ede",
+	"ttft_stream_ms": 1008,
+	"time_to_request_ms": 129,
+	"first_content_frame_ms": 1008,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}

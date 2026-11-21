@@ -1,1 +1,73 @@
-{"duration_api_ms":10891,"stop_reason":"end_turn","session_id":"8b11848b-beb0-4c65-b5dd-daef8fbad4e5","total_cost_usd":0.07288329999999998,"usage":{"input_tokens":8,"cache_creation_input_tokens":13330,"cache_read_input_tokens":64073,"output_tokens":1314,"output_tokens_details":{"thinking_tokens":84},"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":13330,"ephemeral_5m_input_tokens":0},"inference_geo":"global","iterations":[],"speed":"standard","fallback_credit":null},"modelUsage":{"claude-sonnet-5-5":{"inputTokens":8,"outputTokens":1314,"cacheReadInputTokens":64073,"cacheCreationInputTokens":13330,"webSearchRequests":0,"costUSD":0.07288329999999998,"contextWindow":1000000,"maxOutputTokens":128000,"thinkingTokens":84,"cacheCreationEphemeral5mInputTokens":0,"cacheCreationEphemeral1hInputTokens":13330,"canonicalModel":"claude-sonnet-5-5","provider":"firstParty","costBasis":"list"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"disabled_by_env","subagent_stats":{"spawned":0,"requested":{"background":0,"foreground":0,"unset":0},"started_in_background":0,"max_depth":0,"spawned_by_subagents":0,"completed":0,"failed":0,"killed":{"parent":0,"user":0,"system":0},"refused":{"depth_limit":0,"concurrency_limit":0,"budget":0},"by_type":{}},"safety_stops":0,"is_error":false,"num_turns":4,"subtype":"success","api_error_status":null,"result":"Both commits are in place, and nothing was merged.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side feat/2.1.327-next` exited 1, so `side` is not an ancestor of the starting branch. The two branches diverged from the same HEAD.\n- **Conflict:** Yes. `git merge-tree --write-tree feat/2.1.327-next side` exited 1 with `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. It produced no clean tree, and the three index stages show both sides changed line 1 differently from the common base. `merge-tree` only computes the merge, so the working tree and branches are untouched.\n\nCommits:\n- `side`: `a562bb10c`, first line changed to `# claudetto Rebuild Plan (side)`.\n- `feat/2.1.327-next`: `6be3ccf8b`, first line changed to `# claudetto Rebuild Plan (main line)`.\n\nI'm back on `feat/2.1.327-next` and the working tree is clean.\n\nThe `git log --all` graph also shows `702f2148a` and `579054ee7`, which look like similar commits on other branches. I didn't create or touch those.","ttft_ms":1740,"type":"result","duration_ms":13944,"uuid":"4da43d25-ec8a-4d12-ba43-94ef84a40ef7","ttft_stream_ms":1406,"time_to_request_ms":267,"first_content_frame_ms":1408,"queued_turn_count":0,"result_index":0,"credential_expires_at":"2026-12-18T05:16:15.642Z"}
+{
+	"duration_api_ms": 10891,
+	"stop_reason": "end_turn",
+	"session_id": "8b11848b-beb0-4c65-b5dd-daef8fbad4e5",
+	"total_cost_usd": 0.07288329999999998,
+	"usage": {
+		"input_tokens": 8,
+		"cache_creation_input_tokens": 13330,
+		"cache_read_input_tokens": 64073,
+		"output_tokens": 1314,
+		"output_tokens_details": { "thinking_tokens": 84 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 13330,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 8,
+			"outputTokens": 1314,
+			"cacheReadInputTokens": 64073,
+			"cacheCreationInputTokens": 13330,
+			"webSearchRequests": 0,
+			"costUSD": 0.07288329999999998,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 84,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 13330,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 4,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "Both commits are in place, and nothing was merged.\n\n- **Ancestor:** No. `git merge-base --is-ancestor side feat/2.1.327-next` exited 1, so `side` is not an ancestor of the starting branch. The two branches diverged from the same HEAD.\n- **Conflict:** Yes. `git merge-tree --write-tree feat/2.1.327-next side` exited 1 with `CONFLICT (content): Merge conflict in plans/rebuild/README.md`. It produced no clean tree, and the three index stages show both sides changed line 1 differently from the common base. `merge-tree` only computes the merge, so the working tree and branches are untouched.\n\nCommits:\n- `side`: `a562bb10c`, first line changed to `# claudetto Rebuild Plan (side)`.\n- `feat/2.1.327-next`: `6be3ccf8b`, first line changed to `# claudetto Rebuild Plan (main line)`.\n\nI'm back on `feat/2.1.327-next` and the working tree is clean.\n\nThe `git log --all` graph also shows `702f2148a` and `579054ee7`, which look like similar commits on other branches. I didn't create or touch those.",
+	"ttft_ms": 1740,
+	"type": "result",
+	"duration_ms": 13944,
+	"uuid": "4da43d25-ec8a-4d12-ba43-94ef84a40ef7",
+	"ttft_stream_ms": 1406,
+	"time_to_request_ms": 267,
+	"first_content_frame_ms": 1408,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}
