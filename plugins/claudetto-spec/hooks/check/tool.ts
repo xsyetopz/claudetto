@@ -27,6 +27,14 @@ function git(args: string[]): string[] {
 	return ["git", "-c", "core.quotePath=false", ...args];
 }
 
+/** The `git ls-files` argv that lists the tracked and untracked files a check reads. */
+export const LIST_ARGV = git([
+	"ls-files",
+	"--cached",
+	"--others",
+	"--exclude-standard"
+]);
+
 /** The stdout of each `git show <ref>` that succeeds; a ref git cannot resolve has no entry. */
 async function showAll(
 	$: EngineInterface,
@@ -71,7 +79,7 @@ async function gitOut($: EngineInterface, args: string[]): Promise<string> {
 }
 
 /** Gathers the git outputs and file texts one check reads; `check` itself never shells out. */
-async function gather(
+export async function gather(
 	$: EngineInterface,
 	listing: string
 ): Promise<Omit<CheckInput, "path">> {
@@ -96,9 +104,7 @@ export async function runSpecCheck(
 	$: EngineInterface,
 	path: string | undefined
 ): Promise<string> {
-	const listed = await $.process.run(
-		git(["ls-files", "--cached", "--others", "--exclude-standard"])
-	);
+	const listed = await $.process.run(LIST_ARGV);
 	if (listed.exitCode !== 0) {
 		return GIT_FAILED + listed.stderr.trim();
 	}

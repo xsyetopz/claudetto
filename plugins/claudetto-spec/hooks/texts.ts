@@ -17,3 +17,10 @@ export const UNKNOWN_PATH = "no such spec file: ";
 
 /** Returned when git cannot list the files. */
 export const GIT_FAILED = "git ls-files failed: ";
+
+/** The directory whose presence turns the Stop gate on. */
+export const SPECS_DIR = "specs";
+
+/** Opens the reason a Stop is blocked; one line per finding follows. */
+export const STOP_BLOCK_HEAD =
+	"spec_check found blocking problems; fix each or tell the user why it stands:";
