@@ -35,11 +35,21 @@ describe("in-place edit deny (REQ-GUARDS-079, issue #98)", () => {
 
 	test("hooks.json runs the script on PreToolUse only behind each in-place rule", async () => {
 		// Arrange
+		// A leading `*` reaches the command behind `xargs`, `find -exec` and `env`, which the
+		// engine's `if` does not strip; `* -i*` reaches a flag placed before `-i`.
 		const rules = [
-			"Bash(sed -i*)",
-			"Bash(sed --in-place*)",
-			"Bash(perl -i*)",
-			"Bash(perl -pi*)"
+			"Bash(*sed -i*)",
+			"Bash(*sed --in-place*)",
+			"Bash(*sed -Ei*)",
+			"Bash(*sed -ri*)",
+			"Bash(*sed * -i*)",
+			"Bash(*sed * --in-place*)",
+			"Bash(*perl -i*)",
+			"Bash(*perl -pi*)",
+			"Bash(*perl -0pi*)",
+			"Bash(*perl * -i*)",
+			"Bash(*perl * -pi*)",
+			"Bash(*perl * -0pi*)"
 		];
 
 		// Act
