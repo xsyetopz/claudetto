@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: handback-fix
-description: "REQ-REPLY-147: the agent finishes work it can do itself instead of handing it back (issue #96)."
+description: "REQ-REPLY-148: the agent finishes work it can do itself instead of handing it back (issue #96)."
 tags: [reply, handback]
 plugins: ["../.."]
 runs: 3
