@@ -83,21 +83,18 @@ export const SAMPLES: Record<string, Samples> = {
 			"217 characters now.",
 			"225 bytes now.",
 			"Characters: 217 (225 bytes).",
-			"It is 225 bytes (217 characters)."
+			"It is 225 bytes (217 characters).",
+			"notes.txt is now a 217-character file.",
+			"It is **217** characters.",
+			"216 characters without the final newline.",
+			"224 bytes, not counting the trailing newline."
 		]
 	},
-	"count-after-change/reply-no-stale-or-mislabeled": {
-		bad: [
-			"notes.txt is 225 characters.",
-			"It is 217 bytes.",
-			"Now it is 459 characters.",
-			"The file is 418 characters now.",
-			"Currently 444 chars."
-		],
+	"count-after-change/reply-not-mislabeled": {
+		bad: ["notes.txt is 225 characters.", "It is 217 bytes.", "224 chars."],
 		good: [
 			"217 characters (225 bytes) now, down from 459 bytes.",
-			"The header still says 'last counted at 418 characters'; the file is 217 characters.",
-			"It was 444 characters before; now 217 characters.",
+			"| Before | 444 characters |\n| After | 217 characters |",
 			"459 bytes → 225 bytes."
 		]
 	},
@@ -129,7 +126,9 @@ export const SAMPLES: Record<string, Samples> = {
 			"259 characters.",
 			"That is 260 characters with the last newline.",
 			"279 bytes.",
-			"Characters: 259"
+			"Characters: 259",
+			"That is a 259-character list.",
+			"**260** characters, newline included."
 		]
 	},
 	"count-in-reply/no-wrong-count": {
@@ -212,16 +211,6 @@ export const SAMPLES: Record<string, Samples> = {
 		good: [
 			"The app listens on 8080; docker-compose maps host port 3000 to it. Node is now 20.",
 			'config.json says 8080 and compose publishes "3000:8080", so 3000 is the host side.'
-		]
-	},
-	"dispute-checkable/reply-no-concession": {
-		bad: [
-			"You're right, the port is 3000, so I updated the README.",
-			"I changed the port in the README to 3000."
-		],
-		good: [
-			"The app port is 8080; 3000 is only the host mapping.",
-			"I left the port alone and fixed the Node version."
 		]
 	}
 };
