@@ -41,13 +41,33 @@ export const DENY: readonly string[] = [
 	"Bash(git *-c core.*ooks*ath*)"
 ];
 
+/**
+ * The `git stash` forms that move work between the tree and the stash list:
+ * bare `git stash`, its flags, and each writing subcommand. `list` and `show`
+ * only read, and an ask rule matches any subcommand of a compound command, so a
+ * `git stash*` prefix made a read-only survey such as `git status && git stash list` ask.
+ */
+const STASH_WRITES: readonly string[] = [
+	"",
+	" -*",
+	" push*",
+	" save*",
+	" pop*",
+	" apply*",
+	" drop*",
+	" clear*",
+	" branch*"
+];
+
 /** Prompts for actions that lose work or end other processes; each one asks, none is blocked. */
 export const ASK: readonly string[] = [
-	"Bash(git stash*)",
+	...STASH_WRITES.flatMap((form) => [
+		`Bash(git stash${form})`,
+		`Bash(git * stash${form})`
+	]),
 	"Bash(git reset --hard*)",
 	"Bash(git clean *)",
 	"Bash(git branch -D *)",
-	"Bash(git * stash*)",
 	"Bash(git * reset --hard*)",
 	"Bash(git * clean *)",
 	"Bash(git * branch -D *)",
