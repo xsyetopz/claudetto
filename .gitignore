@@ -12,6 +12,10 @@ __pycache__/
 
 /plugins/claudetto/evals/results/
 
+# ENGINE(v2.1.330): resuming a history file by path writes the continued session beside it as
+# <sessionId>.jsonl, so an eval run of a context.history_file case leaves one in the case folder.
+/plugins/*/evals/*/????????-????-????-????-????????????.jsonl
+
 # Claude Code writes a `tsconfig.json` into a plugin folder that has none when a session loads the plugin, such as in `just sandbox`.
 # Each shipped plugin keeps its own strict `tsconfig.json`, which `just verify` and CI's type-aware lint read.
 /plugins/*/tsconfig.json

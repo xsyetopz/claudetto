@@ -16,18 +16,14 @@ if (history === undefined || prompt === undefined) {
 }
 
 const config = await mkdtemp(join(tmpdir(), "replay-check-"));
+// ENGINE(v2.1.330): --resume <path> writes the continued session beside the file, so the check
+// resumes a copy in the temp dir and leaves the case folder untouched.
+const copy = join(config, "history.jsonl");
+await Bun.write(copy, Bun.file(resolve(history)));
 const api = startFakeApi(false);
 try {
 	const proc = Bun.spawn(
-		[
-			"claude",
-			"-p",
-			prompt,
-			"--resume",
-			resolve(history),
-			"--output-format",
-			"text"
-		],
+		["claude", "-p", prompt, "--resume", copy, "--output-format", "text"],
 		{
 			cwd: config,
 			stdout: "pipe",
