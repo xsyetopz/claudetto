@@ -137,6 +137,14 @@
   Verified: claude 2.1.327, 2026-11-18. Setup writes sandbox.enabled true only when unset; fill.test.ts pins that a user's false is kept. cc-inspect cli: redirect, tee and cp into a denyWrite path each exited 1 Operation not permitted, the neighbour write exited 0. The sed -i case hit a missing file, so it is unproven. The sandbox-off result is not re-run.
   Verified: probe, claude 2.1.327, 2026-11-19, cc-inspect cli with sandbox on and denyWrite on a temp folder: the redirect exited 1 with Operation not permitted, and after redirect, tee, cp and sed -i the walled file still read orig while the neighbour write read x. plugins/claudetto/README.md protectedPaths row now states that denyWrite stops shell writers only while sandbox.enabled is true.
 
+## In-Place Edits
+
+- [x] **REQ-GUARDS-079** claudetto shall deny a Bash call that edits a file in place with `sed -i`, `sed --in-place`, `perl -i` or `perl -pi`, and the reason shall say the Edit tool makes the change because Edit enforces read-before-edit and shows the diff (issue #98).
+  Acceptance: `plugins/claudetto/hooks/hooks.json` holds one `PreToolUse` command handler per pattern, matcher `Bash`, each narrowed by the handler `if` field (`Bash(sed -i*)`, `Bash(sed --in-place*)`, `Bash(perl -i*)`, `Bash(perl -pi*)`) and running `hooks/guards/inplace-deny.sh`, which prints `permissionDecision: "deny"` with the reason. The engine's `if` matching parses subcommands and compound commands; the plugin tokenizes nothing.
+  Decision: the plugin module API has no `if`-style filter (`on(event, matcher)` matches input fields by value or RegExp), so the hook lives in hooks.json beside the SessionStart command hooks. The reason names no file path because the hook input holds only the command string.
+  Source: <https://github.com/xsyetopz/claudetto/issues/98>; <https://code.claude.com/docs/en/hooks.md> (the `if` field, PreToolUse decision control).
+  Verified: claude 2.1.330, 2026-11-21, `bun test tools/__tests__/inplace-deny.test.ts`: 2 pass, 0 fail (the script prints the deny JSON for a sample PreToolUse input; hooks.json holds the four `if` rules); `claude plugin validate plugins/claudetto --strict` passes and `tools/check-catch.sh plugins/claudetto` exits 0. The engine's own `if` match was not run in a live session.
+
 ## Code Mode Compatibility
 
 - [x] **REQ-GUARDS-078** Moved Out as OUT-2314: the item needs a paid model run.
