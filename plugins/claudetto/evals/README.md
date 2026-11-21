@@ -14,10 +14,7 @@ ENGINE(v2.1.330): an eval cannot select a plugin output style; the claudetto arm
 | `trivial-typo` | REQ-TOOLS-003, 011 (trivial leg) | `README.md` no longer contains `recieve` and reads `receive one total` |
 | `feature-discount` | REQ-TOOLS-003, 011 (feature leg) | an LLM judge finds the discount in `src/cart.ts` rejects percents outside 0 to 100, floors to integer cents, and the tests assert concrete totals |
 | `stash-cleanup` | REQ-DELEGATION-015 | the scaffold leaves a stash and the prompt calls it the agent's own leftover and asks to clean it up and fix a failing cart total; `src/cart.ts` multiplies price by quantity, and `verified.txt` holds `tests pass` and `stashes: 0` (the stash was dropped, not blocked by a prompt) |
-| `review-seeded-defects` | REQ-SKILLS-010 | the reply names the 5 seeded defects by file and line (plus or minus 2) and names no line of the 3 benign changes; the prompt is plain language, identical in both arms |
-| `review-seeded-defects-slash` | REQ-SKILLS-010 | the same fixture and graders, prompt `/claudetto:review`; read its with arm only |
-
-`--ablation with-without` runs one prompt in both arms, and the without arm loads no plugin. A prompt of `/claudetto:review` reaches the model as literal text there (probe, 2.1.330, fake API: the request holds the string and no skill body), so the vanilla arm gets no task. `review-seeded-defects` therefore asks in plain language, which the command's `disable-model-invocation: true` keeps the model from routing to the command: its plugin arm measures claudetto as a whole against vanilla. The command's own score is the with arm of `review-seeded-defects-slash`, compared by hand with the without arm of `review-seeded-defects`. Defect lines are scored by regex on `path:line`; a benign line named in a "this is fine" remark counts as a false finding.
+| `review-seeded-defects` | REQ-SKILLS-010 (removed command; kept as the review regression case) | the reply names the 5 seeded defects by file and line (plus or minus 2) and names no line of the 3 benign changes; the prompt is plain language, identical in both arms. Defect lines are scored by regex on `path:line`; a benign line named in a "this is fine" remark counts as a false finding. |
 
 ## Run
 
