@@ -8,13 +8,15 @@ const background = { isBackground: true, isZsh: false };
 const zsh = { isBackground: false, isZsh: true };
 
 describe("shell notes", () => {
-	test("a background command ending in `; echo` without $? hides the exit code", () => {
+	test("a background command ending in `; echo` hides the exit code unless it ends with exit $rc", () => {
 		// Arrange
 		const hidden = "sleep 5; echo done";
-		const shown = 'sleep 5; echo "exit=$?"';
+		const printed = 'sleep 5; echo "exit=$?"';
+		const shown = "sleep 5; rc=$?; echo done; exit $rc";
 
 		// Act and Assert
 		expect(shellNotes(hidden, background)).toHaveLength(1);
+		expect(shellNotes(printed, background)).toHaveLength(1);
 		expect(shellNotes(shown, background)).toEqual([]);
 		expect(shellNotes(hidden, bash)).not.toContain(
 			expect.stringContaining("background")

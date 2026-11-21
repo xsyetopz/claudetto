@@ -31,6 +31,9 @@ const CHAINED = new RegExp(
 /** A command that ends in `; echo ...`, closing group or not. */
 const ENDS_IN_ECHO = /;\s*echo\b[^;&|\n]*(?:\n\})?\s*$/u;
 
+/** An `exit $rc` or `exit $?` that hands the check's status to the completion notice. */
+const EXITS_WITH_STATUS = /\bexit\s+"?\$\??\w*/u;
+
 /** `name="a b"` or `name='a b'`: a scalar that holds a space. */
 const SPACED = /\b([A-Za-z_]\w*)=(["'])[^"'\n]*\s[^"'\n]*\2/gu;
 
@@ -75,10 +78,10 @@ export const shellNotes = (command: string, facts: ShellFacts): string[] => {
 	if (
 		facts.isBackground &&
 		ENDS_IN_ECHO.test(command) &&
-		!command.includes("$?")
+		!EXITS_WITH_STATUS.test(command)
 	) {
 		notes.push(
-			"A background command ending in `; echo ...` reports the echo's exit 0, not the command's. End it with `; echo \"exit=$?\"` so the exit code shows."
+			"A background command ending in `; echo` reports exit 0 to the completion notice, even when it prints $?. Save `rc=$?` after the check and end with `exit $rc`."
 		);
 	}
 	if (FILTERED.test(command) && !/pipefail/u.test(command)) {
