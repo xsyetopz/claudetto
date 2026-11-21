@@ -66,15 +66,15 @@ REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (A
 | `guards/shell/notes.ts`, `guards/wall`, `guards/denial.ts`, `guards/memory.ts`, `delegation/{spawn,limit}.ts`, `git/trailer.ts`, `edit/perl.ts`, `goal/evidence.ts`, `goal/state.ts`, `goal/command.ts`, `patch/*` errors, `web/fetch.ts` replies, `notice/stop.ts` | Yes | Tool results, denials and reminders fired by a specific event; hooks per the table. |
 | `handover/text.ts` fork prompt, `statusline/command.ts` prompt, `you-should-know/hooks/request/*` prompts | Yes | Each is the task prompt of a separate call, not session-wide instruction. |
 | `prompt/compose.ts` tool-preference text | Yes | Rewrites the system prompt through `prompt.compose` (REQ-TOOLS-030). |
-| `git/instructions.ts` `gitBlock` (4 rules plus attribution lines) | Not on the table | Task conduct (git rules) delivered in the Bash tool description, where Claude Code's stock git block sits, with the attribution lines the stock block carries (b1c9665a0). The table has no tool-description row. Moving it to the system prompt means a new `prompt.compose` edit that changes `system[2]`, which is not mechanical, so it is listed. |
-| `pool/describe.ts`, `web/register.ts`, `goal/tools.ts`, `patch/texts.ts` tool descriptions | Not on the table | Per-tool usage recipes in tool descriptions, the surface the harness uses for tool schemas. The table has no row for it. Listed, not moved. |
+| `git/instructions.ts` `gitBlock` (4 rules plus attribution lines) | Yes, tool description | Rules for running git and `gh` through Bash, delivered in the Bash tool description where Claude Code's stock git block sits, with the attribution lines the stock block carries (b1c9665a0). The tool-description row (added 2026-11-21) holds when and how to use a tool (platform `define-tools`). |
+| `pool/describe.ts`, `web/register.ts`, `goal/tools.ts`, `patch/texts.ts`, claudetto-spec `texts.ts` tool descriptions | Yes, tool description | What each tool does and when to use it. Each measures 200 characters or fewer; the claudetto-spec `spec_check` text was cut from 295 to 197. |
 | `settings/defaults.ts` `RETIRED_REMINDER_TEXTS` | Not shipped | Data for removing old env entries, not an instruction the model reads. |
 
 ## Result
 
 - Lines checked: 17 style paragraphs, 19 agent paragraphs, 31 skill lines, about 110 hook strings.
 - Moved: 0.
-- Held per ADR-0177: 14 style paragraphs. On surface: 3 style paragraphs, all agent and skill lines, and the hook strings except the two groups below.
-- Listed, neither moved nor held by a measured record: the Bash-description git block and the tool descriptions, because the table has no row for tool descriptions.
+- Held per ADR-0177: 14 style paragraphs. On surface: 3 style paragraphs, all agent and skill lines, the hook strings, the tool descriptions and the Bash-description git block.
+- Hook strings below the regex's seven words: only `prompt/compose.ts` (`prompt.compose`) and `handover/clear.ts` (`prompt.context`) inject session-wide text, and both are checked; every other hook string is an event result, which is the hooks surface.
 
-REQ-TOOLS-032 stays unticked: the table needs a tool-description row (or a decision that these groups belong in the system prompt) before every line is on its surface or held with evidence, and the 14 held paragraphs wait on a 2.1.330 eval.
+REQ-TOOLS-032 is blocked by ADR-0177: the 14 held paragraphs move only after a 2.1.330 eval shows each ties vanilla.
