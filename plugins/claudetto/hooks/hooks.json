@@ -15,6 +15,33 @@
 					}
 				]
 			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"if": "Bash(sed -i*)",
+						"command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/guards/inplace-deny.sh\""
+					},
+					{
+						"type": "command",
+						"if": "Bash(sed --in-place*)",
+						"command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/guards/inplace-deny.sh\""
+					},
+					{
+						"type": "command",
+						"if": "Bash(perl -i*)",
+						"command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/guards/inplace-deny.sh\""
+					},
+					{
+						"type": "command",
+						"if": "Bash(perl -pi*)",
+						"command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/guards/inplace-deny.sh\""
+					}
+				]
+			}
 		]
 	}
 }
