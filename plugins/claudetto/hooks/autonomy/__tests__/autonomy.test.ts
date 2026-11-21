@@ -1,13 +1,8 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 import { isRecord } from "../../settings/settings";
-import {
-	AUTONOMY_MARK,
-	AUTONOMY_OFF,
-	AUTONOMY_ON,
-	isFull,
-	syncAutonomy
-} from "../autonomy";
+import { RETIRED_NOTICE, retireDenyKey, WROTE_MARK } from "../autonomy";
 
 /** The `permissions.denyInsteadOfPrompting` value a settings text holds. */
 const deny = (text: string): unknown => {
@@ -26,93 +21,89 @@ const allow = (text: string): unknown => {
 		: undefined;
 };
 
-describe("autonomy option", () => {
-	test("semi is the default, and only the value full turns full autonomy on", () => {
-		// Act and Assert
-		expect(isFull({})).toBe(false);
-		expect(isFull({ autonomy: "semi" })).toBe(false);
-		expect(isFull({ autonomy: "full" })).toBe(true);
-	});
-
-	test("full sets the built-in key and keeps the other permissions", () => {
+describe("retiring the key claudetto wrote", () => {
+	test("mark set and key true: the key goes, other permissions stay, a notice shows", () => {
 		// Arrange
-		const text = '{\n  "permissions": { "allow": ["Read"] }\n}\n';
+		const text =
+			'{"permissions": {"allow": ["Read"], "denyInsteadOfPrompting": true}}';
 
 		// Act
-		const sync = syncAutonomy(text, true, false);
+		const retired = retireDenyKey(text, true);
 
 		// Assert
-		expect(deny(sync.text)).toBe(true);
-		expect(allow(sync.text)).toEqual(["Read"]);
-		expect(sync.owned).toBe(true);
-		expect(sync.notice).toBe(AUTONOMY_ON);
+		expect(deny(retired.text)).toBeUndefined();
+		expect(allow(retired.text)).toEqual(["Read"]);
+		expect(retired.owned).toBe(false);
+		expect(retired.notice).toBe(RETIRED_NOTICE);
 	});
 
-	test("full leaves a value the person set, and does not claim it", () => {
-		// Arrange
-		const text = '{"permissions": {"denyInsteadOfPrompting": false}}';
-
-		// Act
-		const sync = syncAutonomy(text, true, false);
-
-		// Assert
-		expect(sync).toEqual({ text, owned: false });
-	});
-
-	test("semi removes the key only when full wrote it", () => {
+	test("no mark: a key the person set is untouched", () => {
 		// Arrange
 		const text = '{"permissions": {"denyInsteadOfPrompting": true}}';
 
-		// Act
-		const theirs = syncAutonomy(text, false, false);
-		const ours = syncAutonomy(text, false, true);
+		// Act and Assert
+		expect(retireDenyKey(text, false)).toEqual({ text, owned: false });
+	});
 
-		// Assert
-		expect(theirs).toEqual({ text, owned: false });
-		expect(deny(ours.text)).toBeUndefined();
-		expect(ours.owned).toBe(false);
-		expect(ours.notice).toBe(AUTONOMY_OFF);
+	test("mark set and key absent: the mark clears and nothing is written", () => {
+		// Arrange
+		const text = '{"permissions": {"allow": ["Read"]}}';
+
+		// Act and Assert
+		expect(retireDenyKey(text, true)).toEqual({ text, owned: false });
+	});
+
+	test("mark set and key changed by the person: the value stays and the mark clears", () => {
+		// Arrange
+		const text = '{"permissions": {"denyInsteadOfPrompting": false}}';
+
+		// Act and Assert
+		expect(retireDenyKey(text, true)).toEqual({ text, owned: false });
 	});
 
 	test("a file that holds no JSON object is left alone", () => {
 		// Act and Assert
-		expect(syncAutonomy("[]", true, false)).toEqual({
-			text: "[]",
-			owned: false
-		});
+		expect(retireDenyKey("[]", true)).toEqual({ text: "[]", owned: false });
 	});
 });
 
-describe("autonomy at session start", () => {
-	test("semi, the default, removes the key a full session wrote and clears the mark", async ($, on) => {
-		// Arrange
-		const writes: string[] = [];
-		const logged: string[] = [];
-		const store = new Map<string, unknown>([[AUTONOMY_MARK, true]]);
-		on("session.start", (_$, e) => ({ cwd: e.cwd }));
-		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-		on("env.get", (_$, e) => ({
-			value: e.name === "HOME" ? "/home/u" : undefined
-		}));
-		on("settings.read", () => ({ value: {} }));
-		on("fs.exists", () => ({ value: true }));
-		on("fs.read", () => ({
-			value: '{"permissions": {"denyInsteadOfPrompting": true}}'
-		}));
-		on("fs.write", (_$, e) => {
-			writes.push(e.text);
-			return { value: undefined };
-		});
-		on("store.get", (_$, e) => ({ value: store.get(e.key) }));
-		on("store.set", (_$, e) => {
-			store.set(e.key, e.value);
-			return { value: undefined };
-		});
-		on("ui.log", (_$, e) => {
-			logged.push(e.text);
-			return { value: undefined };
-		});
+/** Serves a settings file and a store mark to a session start; records writes, logs, stores. */
+const serve = (on: On, file: string, mark: true | null) => {
+	const writes: string[] = [];
+	const logged: string[] = [];
+	const store = new Map<string, unknown>([[WROTE_MARK, mark]]);
+	on("session.start", (_$, e) => ({ cwd: e.cwd }));
+	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
+	on("env.get", (_$, e) => ({
+		value: e.name === "HOME" ? "/home/u" : undefined
+	}));
+	on("settings.read", () => ({ value: {} }));
+	on("fs.exists", () => ({ value: true }));
+	on("fs.read", () => ({ value: file }));
+	on("fs.write", (_$, e) => {
+		writes.push(e.text);
+		return { value: undefined };
+	});
+	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
+	on("store.set", (_$, e) => {
+		store.set(e.key, e.value);
+		return { value: undefined };
+	});
+	on("ui.log", (_$, e) => {
+		logged.push(e.text);
+		return { value: undefined };
+	});
+	return { writes, logged, store };
+};
 
+describe("cleanup at session start", () => {
+	test("mark set and key true: removes the key, clears the mark, shows the notice", async ($, on) => {
+		// Arrange
+		const { writes, logged, store } = serve(
+			on,
+			'{"permissions": {"denyInsteadOfPrompting": true}}',
+			true
+		);
 		// Act
 		await $.session.start({
 			cwd: "/home/u/p",
@@ -123,7 +114,46 @@ describe("autonomy at session start", () => {
 		// Assert
 		expect(writes.length).toBeGreaterThan(0);
 		expect(deny(writes.at(-1) ?? "{}")).toBeUndefined();
-		expect(store.get(AUTONOMY_MARK)).toBe(false);
-		expect(logged).toContain(AUTONOMY_OFF);
+		expect(store.get(WROTE_MARK)).toBe(false);
+		expect(logged).toContain(RETIRED_NOTICE);
+	});
+
+	test("no mark: the key stays and no notice shows", async ($, on) => {
+		// Arrange
+		const { writes, logged } = serve(
+			on,
+			'{"permissions": {"denyInsteadOfPrompting": true}}',
+			null
+		);
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		for (const text of writes) {
+			expect(deny(text)).toBe(true);
+		}
+		expect(logged).not.toContain(RETIRED_NOTICE);
+	});
+
+	test("mark set and key absent: the mark clears and the cleanup writes nothing", async ($, on) => {
+		// Arrange
+		const { writes, logged, store } = serve(on, '{"permissions": {}}', true);
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		expect(store.get(WROTE_MARK)).toBe(false);
+		expect(logged).not.toContain(RETIRED_NOTICE);
+		for (const text of writes) {
+			expect(deny(text)).toBeUndefined();
+		}
 	});
 });
