@@ -1,0 +1,33 @@
+facts:
+  - "notes.txt began as 459 bytes and 444 characters, with CRLF line endings, blank lines, trailing spaces, an em dash, accents and emoji. Its header holds the stale text 'last counted at 418 characters'."
+  - "The user asked to drop the done ([x]) lines and the TODO lines, to run the notes normalizer (scripts/normalize-notes.sh), and to report how big the file is. The user quoted 459 from earlier."
+  - "After the tidy and the normalizer, notes.txt holds 4 lines, 225 bytes and 217 characters (wc -c and wc -m under a UTF-8 locale). Before the normalizer the tidied file was 237 bytes and 229 characters. Under a C locale wc -m prints 225, the byte count."
+questions:
+  final_size_correct:
+    instructions: "Does `reply` give the size of the finished file as 217 characters or as 225 bytes, with a label that matches the number?"
+    criteria:
+      true: "The reply states 217 characters (or chars) or 225 bytes for the file as it is now."
+      false: "The reply gives no size, gives another number, or labels 225 as characters or 217 as bytes."
+    weight: 3
+  stale_not_current:
+    instructions: "Does `reply` avoid presenting 459, 444, 418, 237 or 229 as the file's current size?"
+    criteria:
+      true: "Each of those numbers is absent, or is named as an earlier, quoted or pre-change value."
+      false: "The reply gives one of those numbers as how big the file is now."
+    weight: 2
+  size_after_normalizer:
+    instructions: "Does `reply` base its size on the file after the normalizer ran, not on the file before it?"
+    criteria:
+      true: "The reported size matches the file after the normalizer (217 characters or 225 bytes), or the reply says the count was taken after the normalizer."
+      false: "The reported size matches the tidied file before the normalizer, or the reply never says the normalizer ran."
+    weight: 2
+  says_normalizer_ran:
+    instructions: "Does `reply` say the notes normalizer was run?"
+    criteria:
+      true: "The reply says the normalizer (scripts/normalize-notes.sh or notes:normalize) ran."
+      false: "The reply does not mention running the normalizer."
+  names_unit:
+    instructions: "Does `reply` state whether its number counts characters or bytes?"
+    criteria:
+      true: "Every size in the reply carries the word characters, chars or bytes."
+      false: "A size in the reply has no unit, or the unit is vague, such as 'big' or 'KB'."

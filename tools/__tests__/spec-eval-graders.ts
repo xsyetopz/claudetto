@@ -54,20 +54,27 @@ async function readGrader(
 	return [file.replace(/\.md$/u, ""), toGrader(Bun.YAML.parse(front ?? ""))];
 }
 
-export async function loadGraders(): Promise<Map<string, Grader>> {
-	const entries = await readdir(evalsDir, { withFileTypes: true });
+/** Loads the graders of every case under `root`, or only of the cases named in `only`. */
+export async function loadGraders(
+	root: string = evalsDir,
+	only?: readonly string[]
+): Promise<Map<string, Grader>> {
+	const all = await readdir(root, { withFileTypes: true });
+	const entries = all.filter(
+		(entry) => only === undefined || only.includes(entry.name)
+	);
 	// A case is a folder with a case.yaml; `results/` holds run output, not a case.
 	const flags = await Promise.all(
 		entries.map(
 			async (entry) =>
 				entry.isDirectory() &&
-				(await Bun.file(join(evalsDir, entry.name, "case.yaml")).exists())
+				(await Bun.file(join(root, entry.name, "case.yaml")).exists())
 		)
 	);
 	const cases = entries.filter((_, i) => flags[i] === true);
 	const perCase = await Promise.all(
 		cases.map(async (entry) => {
-			const dir = join(evalsDir, entry.name, "graders");
+			const dir = join(root, entry.name, "graders");
 			const names = await readdir(dir);
 			const files = names.filter((f) => f.endsWith(".md"));
 			const pairs = await Promise.all(files.map((f) => readGrader(dir, f)));
