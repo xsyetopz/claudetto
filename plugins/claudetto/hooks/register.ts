@@ -27,7 +27,7 @@ import { registerStatusline } from "./statusline/statusline";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
-	// ENGINE(v2.1.330): registered first so it reads the command as the model wrote it, before the shell guard wraps it.
+	// Registered first so it reads the command as the model wrote it, before the shell guard wraps it.
 	registerHelpNote(on);
 	registerStart(on, options);
 	registerGuards(on, options);
