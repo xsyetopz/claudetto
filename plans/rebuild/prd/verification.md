@@ -121,10 +121,10 @@
 
 ## Eval Validity
 
-- [ ] **REQ-VERIFICATION-104** `just eval <plugin>` shall grant, with `--allow-tools`, every gated tool (outside the read-only set) that a case under `plugins/<plugin>/evals/*/case.yaml` lists in `allowed_tools`, and shall exit nonzero when the run prints `not granted`, so a run without a grant cannot pass as a score (issue #102).
+- [x] **REQ-VERIFICATION-104** `just eval <plugin>` shall grant, with `--allow-tools`, every gated tool (outside the read-only set) that a case under `plugins/<plugin>/evals/*/case.yaml` lists in `allowed_tools`, and shall exit nonzero when the run prints `not granted`, so a run without a grant cannot pass as a score (issue #102).
   Acceptance: with a fake `claude` that prints `not granted`, the recipe exits 1 and names the cause; with one that exits 3 and prints nothing else, the recipe exits 3; the command line holds `--allow-tools Bash Edit Write mcp__claudetto__patch`. Verification: test.
   Basis: measured. Source: plugin-evals docs (code.claude.com/docs/en/plugin-evals#grant-tools): gated tools are `Bash`, `Write`, `Edit`, `WebFetch`, `WebSearch`; a tool a case asked for and the run did not grant is listed as `not granted`; a plugin's real MCP tools need `--allow-real-servers` or `--mocks off` plus a grant by name.
-  Verified: PASS 2026-11-21, claude 2.1.330: `bun test tools/__tests__/eval-recipe.test.ts` 3 pass, 0 fail (fake `claude`, no paid run): the grant line, exit 1 on `not granted` with exit 0 from the eval, and exit 3 kept. Not measured: whether a real run honors the by-name grant `mcp__claudetto__patch`, which needs `just eval claudetto --case trivial-typo --runs 1 --max-cost-usd 2` outside the sandbox.
+  Verified: PASS 2026-11-21, claude 2.1.330: `bun test tools/__tests__/eval-recipe.test.ts` 3 pass, 0 fail (fake `claude`, no paid run): the grant line, exit 1 on `not granted` with exit 0 from the eval, and exit 3 kept. Real run, 2026-11-21, outside the session sandbox: `just eval claudetto --case trivial-typo --runs 1 --max-cost-usd 2 --model claude-sonnet-5-5` printed no `not granted` line (each run before this recipe printed `not granted ... mcp__claudetto__patch`), scored 1.00 in both arms and cost $0.11 (results `2026-11-21T14-35-59-842Z`).
 
 ## Bounded Waits
 
