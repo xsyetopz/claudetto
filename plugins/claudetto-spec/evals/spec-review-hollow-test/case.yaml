@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: spec-review-hollow-test
+description: "Gaps by requirement ID: STOCK-2 has a hollow test, STOCK-3 has an untested scenario, STOCK-4 has no code; STOCK-1 is fully covered and must not be flagged."
+tags: [spec, spec-review]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 40
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill, Bash]
+  prompt: "I just wrote the stock ledger, its tests and specs/stock.md (see the working diff). Before I commit, check the change against the spec: which requirements are not really delivered? Name each gap by requirement ID and say what is missing. Do not edit anything."
