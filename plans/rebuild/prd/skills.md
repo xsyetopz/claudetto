@@ -11,7 +11,7 @@ The user's settings bound the design: `skillListingMaxDescChars: 60` cuts each l
 | claudetto | Artemis | agent | exists |
 | claudetto | Athena | agent | exists |
 | claudetto | Heracles | agent | exists |
-| claudetto | review | user command, forked | eval first (REQ-SKILLS-010) |
+| claudetto | review | user command, forked | exists (REQ-SKILLS-010) |
 | claudetto-spec | spec | skill | exists |
 | claudetto-spec | spec-review | user command, forked | eval first (REQ-SKILLS-020) |
 
@@ -26,9 +26,10 @@ Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` cover
 
 ## Core Plugin
 
-- [ ] **REQ-SKILLS-010** claudetto shall ship `/claudetto:review`, a user-invoked command that reviews the working diff in a forked context for defects only (no style), returns findings as `path:line` with the failing input, and edits nothing.
+- [x] **REQ-SKILLS-010** claudetto shall ship `/claudetto:review`, a user-invoked command that reviews the working diff in a forked context for defects only (no style), returns findings as `path:line` with the failing input, and edits nothing.
   Acceptance: an eval case `review-seeded-defects` (a fixture diff with 5 seeded defects and 3 benign changes, outcome-only grader on defects named with file and line) scores recall no lower and false findings no higher than vanilla asked to "review the diff", n=3 per arm, `--no-publish` and a cost cap; the description's first 60 characters name the trigger. If the arms tie, the command is removed. Verification: eval.
-  Status: blocked (2026-11-21, 2.1.330, Opus 5.5). The plain-prompt case `review-seeded-defects` ties, n=3 per arm: with 0.75, without 0.75 (both arms name the benign `b2-false-config` change), $1.09. The command case `review-seeded-defects-slash` (`--ablation none`) made no model call in any of 4 runs: the skill's `` !`git diff HEAD` `` injection failed with `sandbox-exec: sandbox_apply: Operation not permitted`, because the eval's OS sandbox for shell commands cannot start inside this session's own Seatbelt sandbox (trace `/private/tmp/e-5dje7f/out/trace.jsonl`, 0 turns, $0.00). The command's score needs a run outside a sandboxed session: `claude plugin eval plugins/claudetto --case review-seeded-defects-slash --scaffold --allow-tools Bash --runs 3 --ablation none --no-publish --max-cost-usd 3 --model claude-opus-5-5`, compared with the plain case's without arm (0.75).
+  Status: done (2026-11-21, 2.1.330, Opus 5.5). Both cases rerun outside the session sandbox, where Bash and the skill's `git diff` injection work. Command case `review-seeded-defects-slash` (`--ablation none`, n=3, result `2026-11-21T13-47-24-461Z`, $0.08): 0.75, 0.88, 0.88, mean 0.83; recall 15 of 15 seeded defects, 4 false findings (`b3-false-format` 3, `b1-false-rename` 1). Vanilla asked to review the diff, the plain case's without arm (n=3, result `2026-11-21T13-52-59-332Z`, $1.18 for both arms): 0.75, 0.88, 0.75, mean 0.79; recall 15 of 15, 5 false findings (`b3-false-format` 3, `b2-false-config` 2). Recall is equal and false findings are lower, so the arms do not tie and the command stays. The description opens "Review the uncommitted diff for bugs only". The earlier blocked state: the first slash runs made no model call because the eval's sandbox could not start inside this session's Seatbelt sandbox (exit 71).
+  Verified: PASS: eval results above (`aggregate-result.json`, local, gitignored); n=3 per arm, so a one-finding margin.
 
 ## Spec Plugin
 
