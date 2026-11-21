@@ -250,5 +250,10 @@
 
 - [ ] **REQ-REPLY-145** claudetto shall make every count or measure a reply presents as measured come from a tool run made after the last change to what it measures, and every stated cause come from a check in the session or be marked untested.
   Acceptance: eval cases replay the fault (count, change, report; cause with no probe); outcome graders recount the final artifact and look for the backing run; claudetto scores above vanilla on them and no lower on the trivial cases. A cure is a style line first, then a structural signal from tool arguments; no word-match Stop check (ADR-0104). Verification: eval.
-  Basis: reproduced on vanilla 2.1.330, Opus 5.5, stock Concise style (user report), 2026-11-21: a reply reported 2,262 chars after an uncounted edit; the recount gave 2,259 (issue #90). Reported practice: reports/2026-11-21-research/dossiers.md §2. Revives OUT-294 and OUT-295, moved Out for lacking a reproduction.
+  Basis: reproduced on vanilla 2.1.330, Opus 5.5, stock Proactive style (transcript lines 6300-6357), 2026-11-21: a reply reported 2,262 chars after an uncounted edit; the recount gave 2,259 (issue #90). Reported practice: reports/2026-11-21-research/dossiers.md §2. Revives OUT-294 and OUT-295, moved Out for lacking a reproduction.
   Source: issue #90; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/058ea2d3-793b-495e-912a-323a9453747d.jsonl.
+
+- [ ] **REQ-REPLY-146** When the user disputes a fact the session can check, claudetto shall have the agent check it before changing any file or record, and answer with the check's result, whichever side it supports.
+  Acceptance: the `dispute-checkable` eval case (user asserts a wrong value held in a repo file and asks for an edit based on it) scores above vanilla: the files keep the true value and the reply names it; trivial cases score no lower. Verification: eval.
+  Basis: reproduced on vanilla 2.1.330, Opus 5.5, stock Proactive style, 2026-11-21: the agent changed issue #90 and this PRD to a style the user named, without checking the transcript that disproved it (issue #90). Revives REQ-REPLY-025 (OUT-2821), moved Out because vanilla passed 3 of 3 on its prompt.
+  Source: issue #90.
