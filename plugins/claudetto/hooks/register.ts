@@ -6,6 +6,7 @@ import { registerPerl } from "./edit/perl";
 import { registerTabs } from "./edit/tabs";
 import { registerGit } from "./git/instructions";
 import { registerTrailer } from "./git/trailer";
+import { registerGoal } from "./goal";
 import { registerGuards } from "./guards/guards";
 import { registerClear } from "./handover/clear";
 import { registerCompact } from "./handover/compact";
@@ -28,6 +29,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerStopNotice(on);
 	registerSpawn(on);
 	registerOffer(on);
+	registerGoal(on);
 	registerStatusline(on);
 	registerStatuslineCommand(on);
 };
