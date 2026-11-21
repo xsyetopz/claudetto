@@ -15,6 +15,19 @@
 					}
 				]
 			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "prompt",
+						"prompt": "You review an agent's final message before the turn ends. Hook input: $ARGUMENTS\n\nIf `stop_hook_active` is true, answer {\"ok\": true} and stop.\n\nOtherwise read `last_assistant_message`. Answer {\"ok\": false, \"reason\": \"...\"} only when the message hands the user work the agent could do itself with its tools: running a command, test, eval or build, making a fix, a merge the user asked for, or a check. That includes work listed as \"for you\", \"left to you\", \"you can run\", or \"your call\". Name that work in the reason and tell the agent to do it now and report the result, in one sentence.\n\nAnswer {\"ok\": true} for items only the user can hold: credentials or secrets, payment, an interactive login, a product or priorities decision that is the user's to make, a commit, push or publish the user did not ask for, or access the agent lacks. Answer {\"ok\": true} for an ordinary answer, a status report, or a question to the user.",
+						"model": "claude-haiku-5-5",
+						"timeout": 30,
+						"continueOnBlock": true
+					}
+				]
+			}
 		]
 	}
 }
