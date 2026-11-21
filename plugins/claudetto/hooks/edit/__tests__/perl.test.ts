@@ -71,6 +71,34 @@ describe("perl diff note", () => {
 		);
 	});
 
+	test("outside a git work tree the note says the stat is unavailable and never says nothing changed", async ($, on) => {
+		// Arrange
+		on("process.run", () => ({
+			value: {
+				exitCode: 128,
+				stdout: "",
+				stderr: "fatal: not a git repository",
+				isStdoutTruncated: false,
+				isStderrTruncated: false
+			}
+		}));
+		on("tool.check", () => ({ decision: "allow" }));
+		on("tool.call", { tool: "Bash" }, () => ({ result: "ok" }));
+
+		// Act
+		const r = await $.tool.call({
+			tool: "Bash",
+			command: "perl -pi -e 's/a/b/g' a.txt"
+		});
+
+		// Assert
+		const context = stringsOf(fieldOf(r, "context")) ?? [];
+		expect(context.length).toBe(1);
+		expect(context[0]).toStartWith("Diff stat unavailable outside git");
+		expect(context[0]).not.toContain("No tracked file changed");
+		expect(context[0]).toContain("Read each file");
+	});
+
 	test("a Bash call without perl -i gets no note", async ($, on) => {
 		// Arrange
 		on("tool.call", { tool: "Bash" }, () => ({ result: "ok" }));

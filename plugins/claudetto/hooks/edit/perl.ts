@@ -43,6 +43,13 @@ export const note = (stat: string): string =>
 	`${stat.trimEnd()}\nRead each file above again before you Write it, because Write refuses a file that changed after its last Read. Check the stat against the edit you meant; a regex that matched nothing shows no line.`;
 
 /**
+ * The note outside a git work tree: the files did change, git cannot show how,
+ * so the claim "nothing changed" stays out of it (issue #114).
+ */
+export const noGit =
+	"Diff stat unavailable outside git; the edited files may have changed. Read each file again before you Write it, because Write refuses a file that changed after its last Read.";
+
+/**
  * Shows what a perl in-place edit changed (REQ-EDIT-002). One perl call
  * replaces many Edit calls, and the diff stat makes a typo'd regex that
  * changed nothing, or too much, visible in the same turn.
@@ -52,16 +59,21 @@ export function registerPerl(on: On): void {
 		if (e.tool !== "Bash" || !PERL_EDIT.test(e.command)) {
 			return next(e);
 		}
-		const numstat = async (): Promise<string> => {
+		// Undefined means git cannot report a diff here (not a work tree, or git failed).
+		const numstat = async (): Promise<string | undefined> => {
 			const r = await $.process.run(["git", "diff", "--numstat"]);
-			return r.exitCode === 0 ? r.stdout : "";
+			return r.exitCode === 0 ? r.stdout : undefined;
 		};
 		const before = await numstat();
 		const r = await next(e);
 		if (r.deny !== undefined || r.isError === true) {
 			return r;
 		}
-		const files = touched(before, await numstat());
+		const after = await numstat();
+		if (before === undefined || after === undefined) {
+			return { ...r, context: [...(r.context ?? []), noGit] };
+		}
+		const files = touched(before, after);
 		const stat =
 			files.length === 0
 				? "No tracked file changed."
