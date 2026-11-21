@@ -60,8 +60,42 @@ eval-preflight:
     fi
 
 # Run one plugin's eval suite, e.g. `just eval claudetto-spec --case 'feature-*'`.
+# A run grants only what --allow-tools names, and a case that lists a tool beyond the read-only set
+# runs without it, still exits 0, and scores as if the tool did not exist (#102). So the recipe grants
+# every gated tool (anything outside the read-only set the docs list) that a case's allowed_tools
+# names, mcp__ tools included, by name; and it fails when the output holds "not granted".
+# Needs flow-style `allowed_tools: [A, B]` lines in case.yaml.
 eval plugin *args: eval-preflight
-    claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish --keep-temp {{ args }}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cases=(plugins/{{ plugin }}/evals/*/case.yaml)
+    [[ -f "${cases[0]}" ]] || { echo "no plugins/{{ plugin }}/evals/*/case.yaml: is {{ plugin }} a plugin with eval cases?" >&2; exit 1; }
+    if grep -H '^[[:space:]]*allowed_tools:' "${cases[@]}" | grep -v 'allowed_tools:[[:space:]]*\['; then
+        echo "the allowed_tools lines above are not flow lists like [Read, Bash]: extend project.just to read them" >&2
+        exit 1
+    fi
+    grants=()
+    while IFS= read -r tool; do
+        [[ -n "$tool" ]] && grants+=("$tool")
+    done < <(
+        grep -h '^[[:space:]]*allowed_tools:' "${cases[@]}" | sed 's/^[^[]*\[//; s/\].*$//' | tr ',' '\n' | tr -d ' "'"'" \
+            | grep -vxE 'Read|Glob|Grep|NotebookRead|Skill|AskUserQuestion|Agent|TodoWrite|TaskCreate|TaskGet|TaskList|TaskUpdate|TaskStop' | sort -u
+    )
+    allow=()
+    if ((${#grants[@]})); then
+        allow=(--allow-tools "${grants[@]}")
+        echo "granting: ${grants[*]}" >&2
+    fi
+    log="$(mktemp)"
+    trap 'rm -f "$log"' EXIT
+    # tee streams the output; PIPESTATUS[0] keeps the eval's own exit status, which the pipe would otherwise hide.
+    claude plugin eval plugins/{{ plugin }} "${allow[@]+"${allow[@]}"}" --scaffold --ablation with-without --no-publish --keep-temp {{ args }} 2>&1 | tee "$log"
+    rc="${PIPESTATUS[0]}"
+    if grep -q 'not granted' "$log"; then
+        echo "FAILED: the run printed 'not granted', so a case ran without a tool it lists and its scores are invalid (#102); add the missing grant and rerun" >&2
+        exit 1
+    fi
+    exit "$rc"
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
 # Run the held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin, outside the sandbox.
