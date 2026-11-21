@@ -50,7 +50,7 @@ eval plugin *args:
     claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish --keep-temp {{ args }}
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
-# Run your held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin (user only).
+# Run the held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin, outside the sandbox.
 eval-holdout plugin *args:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -61,7 +61,19 @@ eval-holdout plugin *args:
     cp -R "plugins/{{ plugin }}" "$work/plugin"
     rm -rf "$work/plugin/evals"
     cp -R "$src" "$work/plugin/evals"
-    claude plugin eval "$work/plugin" --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }}
+    rc=0
+    # The copy is this repo's plugin in a fresh temp dir each run, so no earlier trust answer covers it.
+    claude plugin eval "$work/plugin" --trust-plugin --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish {{ args }} || rc=$?
+    # The temp copy holds traces and prompts of unseen cases; only scores leave it (ADR-0193 rule 7).
+    keep="plugins/{{ plugin }}/evals/results"
+    mkdir -p "$keep"
+    for f in "$work"/plugin/evals/results/*/aggregate-result.json; do
+        [[ -f "$f" ]] || continue
+        jq '.cases |= map({name, aggregates, arms: (.arms | map_values(map({score, passed, costUsd, turns, error})))})' \
+            "$f" > "$keep/holdout-$(basename "$(dirname "$f")").json"
+        echo "kept $keep/holdout-$(basename "$(dirname "$f")").json"
+    done
+    exit "$rc"
 
 # Bump one plugin's patch version, e.g. `just bump claudetto`.
 bump plugin:
