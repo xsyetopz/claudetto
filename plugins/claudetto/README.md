@@ -58,13 +58,19 @@ claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin r
 
 claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many places across files, also when run by `xargs`, `find -exec` or a loop (`git grep -l old | xargs perl -pi -e ...`). The output style and the Heracles agent ask for that form when one change repeats across files. After an in-place perl edit, the model sees the diff stat of the files it changed and reads them again before it writes them.
 
+A Bash result carries a short note when the command hides its own failure: a background command ending in `; echo` without `$?`, a test, lint or build piped into `tail` or `grep` without `pipefail`, a check followed by `;` instead of `&&`, and, in zsh, an unquoted variable holding spaces. The command runs as written.
+
 ## Edit Fixes
 
 When an `Edit` call's `old_string` carries the tab that follows the line number in `Read` output on every line, and the file lacks the text as written, claudetto drops that tab from both strings and runs the edit. The model then reads a note that says so, so its next `Edit` leaves the tab out.
 
 ## Subagents
 
-claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset.
+claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. A spawn past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is refused with a reason that tells the model to wait for a running subagent to finish.
+
+## Goal
+
+claudetto serves `get_goal`, `set_goal`, `pause_goal` and `clear_goal` to the model and withdraws Claude Code's own goal tools, which a server gate withholds from many sessions. `clear_goal` ends a goal that is met and takes the condition plus the checks the model ran; claudetto refuses it when the last check failed or no tool result backs it, and shows the user what the model claimed. `set_goal` and `clear_goal` take effect when the turn ends, because Claude Code cannot run a goal command mid-turn. `/goal <condition>` warns when the condition names a path that does not exist, and the goal still starts. Two blocks before the stop cap (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`, 8 by default) the model's feedback names the cap, since the goal pauses at it. claudetto cannot raise the cap or change the evaluator.
 
 ## Settings Defaults
 
