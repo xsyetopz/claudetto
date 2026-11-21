@@ -1,5 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
+import { registerContext } from "./context/context";
 import { registerAgentNotes } from "./delegation/notes";
 import { registerOffer } from "./delegation/offer";
 import { registerRunaway } from "./delegation/runaway";
@@ -30,6 +31,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerGit(on, options);
 	registerTrailer(on, options);
 	registerPerl(on);
+	registerContext(on);
 	registerPatch(on);
 	registerToolOffer(on);
 	// ENGINE(v2.1.330): the hook registered first runs first and reaches this one through next, so this
