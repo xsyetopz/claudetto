@@ -74,14 +74,14 @@ test("isSubagentRequest refuses the main loop's follow-up that holds the Agent t
 	expect(sub).toBe(false);
 });
 
-test("deferredListing returns the text that names deferred tools", () => {
+test("deferredListing returns only the listing block of the session-context message", () => {
 	// Arrange
 	const messages = [
 		{
 			content: [
 				{
 					type: "text",
-					text: "The following deferred tools are now available"
+					text: "# Environment\n - Platform: darwin\n\nThe following deferred tools are now available:\nMonitor\nTaskStop\n\n# Output Style: X\nbody"
 				}
 			]
 		}
@@ -91,7 +91,9 @@ test("deferredListing returns the text that names deferred tools", () => {
 	const listing = deferredListing(messages);
 
 	// Assert
-	expect(listing).toContain("deferred tools");
+	expect(listing).toBe(
+		"The following deferred tools are now available:\nMonitor\nTaskStop"
+	);
 });
 
 test("deferredListing is undefined when no message names deferred tools", () => {

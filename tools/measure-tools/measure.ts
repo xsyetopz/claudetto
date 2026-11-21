@@ -63,10 +63,21 @@ const strings = (value: unknown): string[] => {
 };
 
 /**
- * The text of the message that lists the deferred tools by name.
+ * The block that lists the deferred tools by name: its lead sentence and the name lines, up to the
+ * first blank line. The engine puts that block inside the session-context message, beside the
+ * environment, output style and MCP instructions, so the whole message would overstate it.
  *
  * @param messages The `messages` field of a request body.
- * @returns The first string that mentions deferred tools, or undefined when the request has none.
+ * @returns The listing block, or undefined when the request has none.
  */
-export const deferredListing = (messages: unknown): string | undefined =>
-	strings(messages).find((text) => text.includes("deferred tools"));
+export const deferredListing = (messages: unknown): string | undefined => {
+	const text = strings(messages).find((item) =>
+		item.includes("deferred tools")
+	);
+	if (text === undefined) {
+		return undefined;
+	}
+	const start = text.lastIndexOf("\n", text.indexOf("deferred tools")) + 1;
+	const end = text.indexOf("\n\n", start);
+	return text.slice(start, end === -1 ? undefined : end);
+};

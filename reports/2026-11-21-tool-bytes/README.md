@@ -61,7 +61,7 @@ Not measured: the calls and bytes of the Bash path for the same job (`git worktr
 - Glob and Grep do not exist in this build, so they have no description.
 - Bash (1,720 to 2,552) and Monitor (about 832) input schemas grow under the plugin because it enables the sandbox, which adds an `allowed_domains` property. This is inferred from the property-list diff, not measured on its own, and is outside description work.
 - DesignSync costs 10,950 upfront in every run and is untouched.
-- The deferred-tool listing is 18,557 characters under the plugin against 7,947 for vanilla. The cause is not checked; the plugin's MCP tools are the likely source.
+- The deferred-tool listing is 356 characters under the plugin (7 names) against 347 for vanilla (9 names), rerun 2026-11-21 after `deferredListing` was cut to the listing block. The earlier 18,557 against 7,947 measured the whole session-context message that holds the listing. Under the plugin that message also carries the sandbox section (8,751), the claudetto output style (7,612) and the MCP server instructions (1,242), none of which is tool bytes.
 - `-p` runs gate some tools; deferred tools are measured by their listing only, not their schemas.
 - Descriptions may be cached by the engine across runs; each run used a fresh config dir.
 - The eval leg of REQ-TOOLS-003 is not run.
