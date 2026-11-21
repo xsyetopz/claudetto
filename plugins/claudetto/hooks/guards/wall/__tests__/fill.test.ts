@@ -132,16 +132,22 @@ describe("guard rules", () => {
 		expect(next.sandbox.filesystem.denyWrite).toContain("~/.zshrc");
 	});
 
-	test("asks before stash writes, tag pushes and process kills, and lets git stash list run", () => {
+	test("asks before a stash entry is removed, tag pushes and process kills, and lets stash saves and reads run", () => {
 		// Act
 		const next = fillOf();
 
 		// Assert
-		expect(next.permissions.ask).not.toContain("Bash(git stash*)");
+		for (const free of [
+			"Bash(git stash*)",
+			"Bash(git stash)",
+			"Bash(git stash -*)"
+		]) {
+			expect(next.permissions.ask).not.toContain(free);
+		}
 		expect(next.permissions.ask).toEqual(
 			expect.arrayContaining([
-				"Bash(git stash)",
 				"Bash(git stash drop*)",
+				"Bash(git stash clear*)",
 				"Bash(git * stash pop*)",
 				"Bash(pkill *)",
 				"Bash(killall *)",
