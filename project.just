@@ -45,13 +45,26 @@ project-verify: project-typecheck project-lint project-test
 # Paid: each run is a full Claude session. Run outside a sandboxed agent shell, whose Seatbelt makes
 # the child's own sandbox fail. Reports stay local (--no-publish); traces stay in
 # /private/tmp/e-* for diagnosis (--keep-temp).
+# ENGINE(v2.1.330): an eval's Bash sandbox cannot start inside a Seatbelt-sandboxed shell (#86).
+# macOS refuses a nested sandbox_apply, so every Bash call of the run would fail and score 0;
+# this stops before any paid run and says where to run it instead.
+[private]
+eval-preflight:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v sandbox-exec >/dev/null || exit 0
+    if ! sandbox-exec -p '(version 1)(allow default)' /usr/bin/true 2>/dev/null; then
+        echo "this shell is already sandboxed, so the eval's own Bash sandbox cannot start (#86): run it from an unsandboxed terminal, or approve running it outside the sandbox" >&2
+        exit 1
+    fi
+
 # Run one plugin's eval suite, e.g. `just eval claudetto-spec --case 'feature-*'`.
-eval plugin *args:
+eval plugin *args: eval-preflight
     claude plugin eval plugins/{{ plugin }} --scaffold --allow-tools Write Edit Bash --ablation with-without --no-publish --keep-temp {{ args }}
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
 # Run the held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin, outside the sandbox.
-eval-holdout plugin model="claude-opus-5-5" *args:
+eval-holdout plugin model="claude-opus-5-5" *args: eval-preflight
     #!/usr/bin/env bash
     set -euo pipefail
     src="$HOME/.claudetto-holdout/{{ plugin }}"

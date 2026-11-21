@@ -15,6 +15,7 @@ export const evalsDir = join(
 export interface Grader {
 	flags: string;
 	match: string;
+	path: string;
 	pattern: string;
 	type: string;
 }
@@ -30,9 +31,15 @@ function text(value: unknown): string {
 
 function toGrader(front: unknown): Grader {
 	const fields = new Map(Object.entries(front ?? {}));
+	const target: unknown = fields.get("target");
+	const path =
+		typeof target === "object" && target !== null
+			? text(new Map<string, unknown>(Object.entries(target)).get("path"))
+			: "";
 	return {
 		flags: text(fields.get("flags")),
 		match: text(fields.get("match")),
+		path,
 		pattern: text(fields.get("pattern")),
 		type: text(fields.get("type"))
 	};

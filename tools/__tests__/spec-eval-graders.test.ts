@@ -5,6 +5,7 @@ import { join } from "node:path";
 // ADR-0193 rule 3: each regex grader of the claudetto-spec eval suite has a
 // known-good and a known-bad sample, and the pattern must reject the bad one.
 
+import { contradictionCaseSamples } from "./spec-eval-contradiction-samples";
 import {
 	evalsDir,
 	loadGraders,
@@ -89,6 +90,7 @@ const v3Samples: [string, Sample][] = [
 const trivialSpecs: Sample = { bad: "specs/cart.md\n", good: "README.md\n" };
 
 const samples = new Map<string, Sample>([
+	...contradictionCaseSamples,
 	[
 		"ambiguous-headless/reply-states-assumption",
 		{

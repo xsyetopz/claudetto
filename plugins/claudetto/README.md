@@ -28,7 +28,7 @@ Each knob mirrors a compaction knob, with "handover" for "compact" and `CLAUDETT
 | `CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE` (env) | Renewal threshold as a percent of the context window. |
 | `CLAUDETTO_AUTO_HANDOVER_WINDOW` (env) or `autoHandoverWindow` (settings) | Renewal threshold in tokens, such as `70k`; the env value wins. |
 
-The handover runs as a fork of the session. When the main thread's last message is plain text rather than a tool result, that message is sent again uncached; above the renewal threshold the last message has been a tool result in every run measured.
+The handover runs as a fork of the session, which the API serves from the cached conversation. A conversation of one prompt and one reply with no tool call, up to 8,000 characters together, is handed over as written with no fork: Claude Code 2.1.330 resends its first system block in a different shape after the first request, so a fork then reads about 4,200 tokens uncached (#64).
 
 A manual `/compact` keeps Claude Code's summary and asks it to keep the user's corrections, refusals, and consents word for word.
 
