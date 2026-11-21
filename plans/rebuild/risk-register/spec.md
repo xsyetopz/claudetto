@@ -41,9 +41,9 @@
   - Consequence: a Δ understated by the grader, not by the plugin.
   - Likelihood: 3
   - Impact: 3
-  - Existing controls: ADR-0193 rule 1 (a changed case becomes `<case>-v2`).
+  - Existing controls: ADR-0193 rule 1 (a case is hardened in place; each score names the case commit).
   - Response: treat.
-  - Actions: v2 cases order a Bash `git add` of the tests before any Edit, Write, MultiEdit, redirect, `tee` or `sed -i` write of `src/cart.ts`, and ignore the skill text's own "git add" (commit 315a57a57).
+  - Actions: the `feature-*` cases order a Bash `git add` of the tests before any Edit, Write, MultiEdit, redirect, `tee` or `sed -i` write of `src/cart.ts`, and ignore the skill text's own "git add" (commit 315a57a57).
   - Trigger: a new eval case.
   - Owner: spec
   - Status: mitigated 2026-11-21 (commit 315a57a57).
