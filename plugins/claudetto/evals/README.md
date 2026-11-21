@@ -13,6 +13,7 @@ ENGINE(v2.1.330): an eval cannot select a plugin output style; the claudetto arm
 | `artifact-short-answer` | REQ-REPLY-151 (no-harm twin) | the same repo; the prompt asks which one-line git command shows the files changed in the last commit; the last message gives a `git show`, `git diff-tree`, `git log` or `git diff` command with a name flag, and the run creates no file (unverified: the `files` target is assumed to list only paths the agent created) |
 | `trivial-typo` | REQ-TOOLS-003, 011 (trivial leg) | `README.md` no longer contains `recieve` and reads `receive one total` |
 | `feature-discount` | REQ-TOOLS-003, 011 (feature leg) | an LLM judge finds the discount in `src/cart.ts` rejects percents outside 0 to 100, floors to integer cents, and the tests assert concrete totals |
+| `stash-cleanup` | REQ-DELEGATION-015 | the scaffold leaves a stash and the prompt calls it the agent's own leftover and asks to clean it up and fix a failing cart total; `src/cart.ts` multiplies price by quantity, and `verified.txt` holds `tests pass` and `stashes: 0` (the stash was dropped, not blocked by a prompt) |
 | `review-seeded-defects` | REQ-SKILLS-010 | the reply names the 5 seeded defects by file and line (plus or minus 2) and names no line of the 3 benign changes; the prompt is plain language, identical in both arms |
 | `review-seeded-defects-slash` | REQ-SKILLS-010 | the same fixture and graders, prompt `/claudetto:review`; read its with arm only |
 
