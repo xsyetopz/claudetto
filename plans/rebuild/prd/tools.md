@@ -31,5 +31,22 @@ claudetto shapes the tool pool every request carries, because each tool's schema
 
 ## Prompt
 
-- [ ] **REQ-TOOLS-030** claudetto's output style shall be rebuilt from Claude Code 2.1.330's own system prompt and its Lean and Proactive styles (taking from Concise), sized at or under the default Proactive style, and name `patch`, `web_fetch` and `web_search` where the stock text names the tools they replace.
-  Acceptance: the 2.1.330 stock texts are saved with their sizes, the new style's size is reported against them, and the feature and trivial evals score no lower. Verification: probe; eval.
+The system prompt and the output style are separate surfaces with separate hooks, so each gets its own requirement. Placement follows Claude Code's docs (code.claude.com/docs/en/output-styles, /memory, /agent-sdk/modifying-system-prompts; clawdipedia how-it-works/system-prompt, 2.1.330):
+
+| Surface | Holds | Reaches | Where the request carries it | Plugin lever |
+| --- | --- | --- | --- | --- |
+| System prompt | harness rules: tools, permissions, safety, task conduct | every loop; subagents have their own | `system[2]`; Opus and Sonnet 5.5 get the short `lean_body` (~5.7k chars) | `prompt.compose` (all sections, `lean_body` included), `prompt.section` (session sections only) |
+| Output style | voice, length, format, role for every response | main loop and forks, not other subagents | a `system`-role entry in `messages[]` | `output-styles/*.md`, `force-for-plugin: true`; `keep-coding-instructions` does nothing on the short prompt |
+| CLAUDE.md | project facts held every session: commands, conventions, layout | every loop that loads instruction files | first user message, `claudeMd` block | `prompt.context` (`blocks`, `instructionFiles`) |
+| `.claude/rules/*.md` | one topic per file; `paths:` scopes it to matching files | as CLAUDE.md; a scoped rule loads on a Read, Write or Edit of a match | as CLAUDE.md | `prompt.context`; `patch` loads scoped rules itself (REQ-TOOLS-010) |
+| Hooks | what must happen every time | the loops they fire in | tool results, `additionalContext`, reminders | `tool.*`, `prompt.attachment`, `classic.*` |
+| Skills | one kind of task, loaded on use | on invocation or match | a skill listing, then the body | `skill.prompt` |
+
+- [ ] **REQ-TOOLS-030** claudetto shall rewrite the system prompt through `prompt.compose`: replace `lean_body`, and in the full prompt the `tools` section, with text that names `patch`, `web_fetch` and `web_search` where the stock text names the tools they replace, drop rules for tools that are off, and keep every safety and permission rule.
+  Acceptance: the 2.1.330 stock sections are saved with their sizes, a `-p` capture shows the rewritten body and its size against stock, the shared sections stay ahead of session ones (cache), and the feature and trivial evals score no lower. Verification: test; probe; eval.
+
+- [ ] **REQ-TOOLS-031** claudetto's output style shall hold only voice, length, format and the claudetto reporting rules, sized at or under the stock Proactive style plus those rules, built from the Proactive and Concise styles; tool recipes move to the system prompt (REQ-TOOLS-030) or hooks, and project facts stay out (CLAUDE.md).
+  Acceptance: the stock Proactive and Concise texts are saved with their sizes, the new style's size is reported against them, `keep-coding-instructions` is set only if a full-prompt model needs it, and the feature and trivial evals score no lower. Verification: probe; eval.
+
+- [ ] **REQ-TOOLS-032** claudetto shall place each instruction it ships on the surface the table names: every line in the output style, agents, skills and hook texts is checked against it, and a line on the wrong surface moves.
+  Acceptance: a report lists each moved line with its old and new surface. Verification: inspection.
