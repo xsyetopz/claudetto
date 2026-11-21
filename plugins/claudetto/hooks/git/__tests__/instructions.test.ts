@@ -1,9 +1,12 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
+import { TOOL_DESCRIPTIONS } from "../../pool/describe";
 import { GIT_CONFLICT, gitBlock } from "../instructions";
 
 const BASE = "Executes a bash command and returns its output.";
+/** What the pool's `tool.describe` leaves of the stock Bash text; the git block goes after it. */
+const SHORT = TOOL_DESCRIPTIONS["Bash"];
 
 /** Stands in for the engine's settings and env, and records what the session logs. */
 const engine = (
@@ -76,7 +79,7 @@ describe("git instructions", () => {
 
 		// Assert
 		expect(description).toBe(
-			`${BASE}${gitBlock({ commit: "Assisted-by: X", pr: "Made with X" })}`
+			`${SHORT}${gitBlock({ commit: "Assisted-by: X", pr: "Made with X" })}`
 		);
 	});
 
@@ -92,7 +95,7 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(description).toBe(BASE);
+		expect(description).toBe(SHORT);
 	});
 
 	test("an env value that turns the builtin block off wins over the setting", async ($, on) => {
