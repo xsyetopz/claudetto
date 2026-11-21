@@ -18,19 +18,20 @@ export const minutes = (value: unknown): number =>
 		: DEFAULT_MINUTES;
 
 /**
- * Runs a Bash command under a wall-time limit. The group braces keep a `cd`
- * in the session's shell, and the command's own exit status is the result.
+ * Runs a Bash command under a wall-time limit. The command stays in the
+ * session's shell, so a `cd` holds, and its own exit status is the result. An
+ * EXIT trap stops the watchdog when the call's shell ends, so no line follows
+ * the command. Claude Code cannot split a command that holds a brace group or
+ * a subshell into subcommands, such as `{ cmd }` or `(exit $s)`, and a
+ * PreToolUse hook then ignores its `if` rule and runs for every call.
  *
  * @param command The Bash command as it reaches the tool.
  * @param seconds The limit after which the command's process tree gets SIGTERM.
- * @returns The command wrapped with a watchdog that stops when the command ends.
+ * @returns The command behind a watchdog that the shell's exit stops.
  */
 export const limitCommand = (command: string, seconds: number): string =>
 	[
 		`__claudetto_w=$(${WATCHDOG} ${Math.round(seconds)})`,
-		`{ ${command}`,
-		"}",
-		"__claudetto_s=$?",
-		"kill $__claudetto_w 2>/dev/null",
-		"(exit $__claudetto_s)"
+		"trap 'kill $__claudetto_w 2>/dev/null' EXIT",
+		command
 	].join("\n");

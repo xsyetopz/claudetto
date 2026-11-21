@@ -32,12 +32,14 @@ export const guardCommand = (command: string, limit: number): string => {
 
 /**
  * Registers the Bash rewrite and keeps it out of the permission decision.
- * Claude Code checks the rewritten command, and its parser asks about a brace
- * group or a quoted brace, so a wrapped call would always need approval. The
- * guard therefore wraps only a command that the session already allows as the
- * model wrote it, and answers the check of the wrapped call with that verdict.
- * A command that needs approval runs unwrapped, so the dialog, a saved rule and
- * the auto mode classifier all see the model's own command.
+ * Claude Code checks the rewritten command, and the lines the wrap adds (`exec`,
+ * `kill`, a watchdog) match no allow rule, so a wrapped call would always need
+ * approval. The guard therefore wraps only a command that the session already
+ * allows as the model wrote it, and answers the check of the wrapped call with
+ * that verdict, except where a PreToolUse hook denied or asked. A command that
+ * needs approval runs unwrapped, so the dialog, a saved rule and the auto mode
+ * classifier all see the model's own command. The wrap holds no brace group,
+ * which keeps the command splittable, so a hook's `if` rule filters as documented.
  */
 export function registerShell(on: On, options: PluginOptions = {}): void {
 	const limit = minutes(options["bashTimeLimitMinutes"]);
@@ -64,10 +66,17 @@ export function registerShell(on: On, options: PluginOptions = {}): void {
 		fault($, "shell guard", next.error);
 		return next(e);
 	});
-	on("tool.check", { tool: "Bash" }, (_$, e, next) => {
+	on("tool.check", { tool: "Bash" }, async (_$, e, next) => {
 		const verdict =
 			e.tool_use_id === undefined ? undefined : allowed.get(e.tool_use_id);
-		return verdict ?? next(e);
+		const beneath = await next(e);
+		// A classic PreToolUse hook that denied or asked sets `hook`, and its word
+		// stands over the remembered allow whoever configured it. Any other verdict
+		// of the wrapped call, such as an ask for the lines the wrap adds, gives way.
+		return verdict === undefined ||
+			(beneath.hook !== undefined && beneath.decision !== "allow")
+			? beneath
+			: verdict;
 	}).catch(($, e, next) => {
 		fault($, "shell check", next.error);
 		return next(e);

@@ -17,7 +17,9 @@ describe("time limit", () => {
 		const wrapped = limitCommand("make test", 120);
 
 		// Assert
-		expect(wrapped).toContain("{ make test\n}\n__claudetto_s=$?");
-		expect(wrapped).toEndWith("(exit $__claudetto_s)");
+		expect(wrapped).toEndWith(
+			"\ntrap 'kill $__claudetto_w 2>/dev/null' EXIT\nmake test"
+		);
+		expect(wrapped).not.toContain("(exit");
 	});
 });

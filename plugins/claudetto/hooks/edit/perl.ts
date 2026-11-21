@@ -6,9 +6,11 @@ import { fault } from "../shared/fault";
  * Matches a Bash call that edits files in place with perl, wherever perl sits in
  * command position: first, after a separator, or run by `xargs`, `find -exec` or
  * a loop or `if` body, because a rename is usually `git grep -l x | xargs perl -pi`.
+ * The `m` flag lets `^` match each line, because the shell guard puts the model's
+ * command on a line of its own below `exec </dev/null`.
  */
 export const PERL_EDIT =
-	/(?:^|[;&|({]|\b(?:do|then|else|xargs(?:\s+-\S+)*)|-exec)\s*perl\s+(?:-\S*\s+)*-\S*i/u;
+	/(?:^|[;&|({]|\b(?:do|then|else|xargs(?:\s+-\S+)*)|-exec)\s*perl\s+(?:-\S*\s+)*-\S*i/mu;
 
 /** The `git diff --stat` of the files, as printed. */
 async function diffStat($: EngineInterface, files: string[]): Promise<string> {
