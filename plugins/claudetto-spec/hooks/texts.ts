@@ -6,7 +6,7 @@ export const TOOL_FULL_NAME = "mcp__claudetto-spec__spec_check";
 
 /** What the model reads about the tool. */
 export const TOOL_DESCRIPTION =
-	"Checks specs/*.md: parsed requirements, malformed headings, inflated requirements, IDs no test cites, IDs tests cite that no spec defines, and test files edited since they were staged.";
+	"Checks specs/*.md: parsed requirements, malformed headings, inflated requirements, IDs no test cites, IDs tests cite that no spec defines, IDs removed or reworded since HEAD, staged test files edited, deleted, skipped or stripped of assertions, and test blocks that cite an ID without asserting.";
 
 /** What the model reads about the tool's input. */
 export const PATH_DESCRIPTION =

@@ -60,6 +60,21 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
   Basis: reported (no_human's mechanical guard covers deletions, skip markers and removed assertions; its documented gap is non-ASCII file names). Status: pending.
   Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 2.
 
+- [ ] **REQ-SPEC-013** `spec_check` shall list each test block that cites a defined requirement ID and calls no assertion (`citedUnasserted`: `id`, `file`, `line`), as a documented heuristic.
+  Acceptance: a test block with a cited ID and no `expect(` or `assert` call is listed with its declaration line, a block that asserts is not, a `describe` title citing an ID is no block, and a token such as `UTF-8` is ignored. Verification: test.
+  Basis: design (a citation count is a proxy; the grader-design page's "100% reward while exploiting" case shows a proxy can read full while the work is fake). Status: pending.
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 3.
+
+- [ ] **REQ-SPEC-014** The `spec_check` tests shall inject faults into a clean fixture: a deleted test, an added skip, a removed assertion, a citation-only test, an orphan ID, an inflated requirement, a removed ID and a reworded requirement, each reported in its own field, with the clean fixture reporting nothing.
+  Acceptance: the clean fixture yields empty finding lists and no hard finding; each planted fault yields its expected entry and no entry in another field. Verification: test (deterministic; no model run).
+  Basis: reported (Own-Check Fault Injection: 16.7% median detection for pipeline self-checks never tested this way), applied by design. Status: pending.
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 4.
+
+- [ ] **REQ-SPEC-015** claudetto-spec shall export `hardFindings(report: Report): HardFinding[]`, returning the findings that should block completion: malformed specs, `removedIds`, `reworded`, `tampered` and `orphans`.
+  Acceptance: a report with only advice fields (`inflated`, `uncovered`, `changedSinceStaged`, `citedUnasserted`) yields no hard finding; each blocking field yields one `{kind, subject, message}` per entry. Verification: test.
+  Basis: design (a later Stop hook calls it; hard signals change agent behaviour where passive text is ignored). Status: pending.
+  Source: reports/2026-11-21-research/awesome-lists.md, "Recommendations for claudetto-spec" item 5.
+
 ## Cost
 
 - [x] **REQ-SPEC-009** claudetto-spec shall add at most 150 always-on tokens: the skill description and the deferred tool name, with no agent, output style or rule text.
