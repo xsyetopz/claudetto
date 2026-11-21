@@ -8,7 +8,8 @@ Each failure pattern in the dossiers maps to the REQ, OUT or GitHub issue that c
 - The judged JSONL files hold 1,662 remedy claims: 674 adopted, 887 rejected, 50 blocked and 51 candidates. Rows J map the 51 candidates; the adopted, rejected and blocked claims carry their own evidence line.
 - Each row cites at most three items. A cited item was read and addresses the pattern. Source lines are 1-based. `Out:` in the How column marks an OUT item.
 - Rows P map the 70 numbered patterns of `external/please-use-me-often/agent-pet-peeves.md`, and rows W map the 18 agent-misconduct entries (W5-1 to W5-18) of `external/please-use-me-often/swe-worst-practices.md`, whose other sections (W1 to W4) are engineering and harness guidance. The rest of `external/please-use-me-often/` holds instructions, policies or coding guidance, not agent failure catalogs, so it has no rows: `agent-terms/` (governance instruments and enforcement settings), `swe-best-practices.md` (rules to follow), `code-readability-for-humans-and-ai-agents.md` (coding guidance; its "Rules for AI agents" section states how to write code for agents) and `users-chatgpt-web-instructions-for-gpt6.txt` (a prompt of instructions). `judged/HANDOFF-B.md` is a judging progress log; its 11 candidates (setting 2, 7, 19, 88, 107, 109, 136, 149; subagent 62; hook 27; handoff 35) are covered by rows J22, J23, J31 to J38 and J41.
-- Rows: 342.
+- The dated folders under `external/` (2026-09-29 to 2026-11-21) hold 976 raw thread captures (`export-*.jsonl`, `reddit.com-*.md`), not dossiers; `reports/2026-11-21-research/dossiers.md` (rows R) synthesizes the 2026-11-18 to 2026-11-21 exports. The other non-thread files are the two dossiers (rows B and C), user message dumps in `2026-11-16/messages-from-*.txt` (rows D), an essay (`2026-10-12/A_Lintable_Language_Is_All_You_Need.md`, language-design argument with no failure catalog) and a web page (`2026-11-21/howborisusesclaudecode.com-*.html`, workflow tips). Each was opened and classified directly.
+- Rows: 347.
 
 ## Coverage
 
@@ -400,3 +401,13 @@ Each failure pattern in the dossiers maps to the REQ, OUT or GitHub issue that c
 | W16 | W5-16 Verbose noise, restating comments, stray files | external/please-use-me-often/swe-worst-practices.md:185 | OUT-2762 (plans/rebuild/prd/README.md:10188); REQ-TOOLS-031 (plans/rebuild/prd/tools.md:63) | Same as A30 and A49. |
 | W17 | W5-17 Ignoring local conventions in an established codebase | external/please-use-me-often/swe-worst-practices.md:186 | OUT-282 (plans/rebuild/prd/README.md:1187); OUT-302 (plans/rebuild/prd/README.md:1337) | Same as A29 in part: Out: the reviewer checklist and the smallest-diff and search-first rules; no item names style conventions alone. |
 | W18 | W5-18 Sycophancy: agreeing with a flawed instruction | external/please-use-me-often/swe-worst-practices.md:187 | REQ-REPLY-146 (OUT-3060) (plans/rebuild/prd/reply.md:253); OUT-079 (plans/rebuild/prd/README.md:488) | Same as B09. |
+
+### external/2026-11-16/messages-from-*.txt (User Messages)
+
+| # | Pattern | Source | Covered by | How |
+| --- | --- | --- | --- | --- |
+| D01 | Endless edge-case hunting and review churn without a stop point | external/2026-11-16/messages-from-Claude-discord.txt:1 | OUT-244 (plans/rebuild/prd/README.md:993); OUT-2780 (plans/rebuild/prd/README.md:10269) | Same as R05. |
+| D02 | Changes start before the user has finished discussing the plan | external/2026-11-16/messages-from-Claude-discord.txt:10 | REQ-REPLY-140 (plans/rebuild/prd/reply.md:237); OUT-2762 (plans/rebuild/prd/README.md:10188) | Same as A20 and B12. |
+| D03 | Injected instructions in fetched web pages | external/2026-11-16/messages-from-quora-discord-and-repos.txt:3 | REQ-GUARDS-001 (plans/rebuild/prd/guards.md:5); REQ-GUARDS-071 (plans/rebuild/prd/guards.md:117) | Same as B37. |
+| D04 | Agreed design ignored and reinvented | external/2026-11-16/messages-from-quora-discord-and-repos.txt:15 | OUT-354 (plans/rebuild/prd/README.md:1607); OUT-282 (plans/rebuild/prd/README.md:1187) | Same as A29. |
+| D05 | "You're right, I apologize" loop and sycophancy | external/2026-11-16/messages-from-quora-discord-and-repos.txt:24 | REQ-REPLY-146 (OUT-3060) (plans/rebuild/prd/reply.md:253); OUT-299 (plans/rebuild/prd/README.md:1319) | Same as B09 and M12. |
