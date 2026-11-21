@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Use for new or changed behaviour - spec, failing tests, then code (clarify, spec, red, green, check). Skip typos, renames, dependency bumps and questions.
+description: Use for new or changed behaviour, and before changing code, tests or specs in a repo with specs/, including "make the tests pass" or "the test is wrong" requests - spec, failing tests, then code (clarify, spec, red, green, check). Skip typos, renames, dependency bumps and questions.
 license: MIT
 ---
 
