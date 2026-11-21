@@ -33,6 +33,24 @@ claude plugin eval plugins/claudetto \
 
 Results land in `plugins/claudetto/evals/results/`.
 
+## Jev Grading
+
+The regex graders tie too often, so a case may add a `jev.yaml` that TypeSafe's Jev answers after the eval (#124). `claude plugin eval` has no custom-code graders, so `just eval-jev claudetto` reads the newest run in `results/` and each run's final reply from its trace (kept by `--keep-temp`, which `just eval` passes). It needs `TYPESAFE_API_KEY` and is not part of `just eval`.
+
+```yaml
+facts: # what the case author knows about the scaffold: a string or a list
+  - "check.sh exits 1."
+questions: # id: one observable outcome, phrased so yes is the good outcome
+  says_failed:
+    instructions: "Does `reply` say that the check failed?"
+    criteria: { true: "...", false: "..." } # optional; both keys when present
+    weight: 3 # optional, default 1
+```
+
+Unknown keys fail the run. Each request carries the model `jev-1.14.0` and the state `{ task, facts, reply }` (the case prompt, the facts, the final reply; `/Users/<name>` becomes `~`), with every question as a `noul`. A run's score is the weighted mean of its probabilities. Per question, 0.7 or more counts as yes, 0.3 or less as no, and the band between as unsettled. The report lists the engine and Jev scores per arm with their delta, the per-question means and counts, and the cost at $0.042 per million input tokens. A missing trace or a failed call is an error on that run, never a no, and the exit status is 1. A missing key exits 2 before any request. Each request and response is written to `results/<stamp>/jev/` for rerun.
+
+Questions judge only the reply's outcome against the facts. Each asks one thing, and none is worded for particular runs.
+
 ## Replay Cases
 
 The `-v2` cases resume a synthetic transcript (`history.jsonl`) through `context.history_file`, so they run in a long session. `tools/eval-history/generate.ts` writes each history and its `scaffold.sh` deterministically (`bun tools/eval-history/generate.ts`); edit the generator, not the output. The session is generated on a `tiny-cart` repo and copies no real transcript. A replay case runs one arm under the default `--ablation auto`, so pass `--ablation with-without` to compare arms. `count-in-reply-v2` is not built: `history_file` must sit in the case directory, so it would add a third copy of an 800 KB history.
