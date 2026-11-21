@@ -42,7 +42,11 @@ describe("tool.describe", () => {
 		);
 
 		// Assert
-		expect(rendered.filter((r) => r.length > MAX_DESCRIPTION)).toEqual([]);
+		// Bash carries the recipes and the git block after its short text.
+		expect(
+			rendered.filter((r) => r.tool !== "Bash" && r.length > MAX_DESCRIPTION)
+		).toEqual([]);
+		expect(text("Bash").length).toBeLessThanOrEqual(MAX_DESCRIPTION);
 	});
 
 	test("covers each tool REQ-TOOLS-003 lists that Claude Code 2.1.330 ships", () => {
