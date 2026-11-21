@@ -49,6 +49,17 @@ Defects only.`, 90 bytes with its newline. The disabled command adds 0 bytes. Th
 the engine's bundled skills (this empty config has `disableBundledSkills` unset). The agent
 listing (`claudetto:Athena` and the others) is the same with and without the disabled command.
 
+## Extra findings that shaped the command
+
+- The Athena fork has no Bash (3 tools above), so the diff cannot be fetched inside it. Shell
+  injection in the skill body works: with `` !`git diff HEAD` `` and `` !`git ls-files --others
+  --exclude-standard` `` in `SKILL.md`, run in a git repo, the fork's user message held the diff
+  text and the untracked file names, and the tools stayed `Read`, `Grep`, `Glob`. The shipped skill
+  uses this, with `allowed-tools` naming the two commands.
+- Without the plugin, `claude -p "/claudetto:review"` is sent to the model as the literal text (the
+  request holds `/claudetto:review` and no skill body). A `with-without` eval prompt of that form
+  gives the vanilla arm no task.
+
 ## Consequence
 
 `/claudetto:review` can name `agent: claudetto:Athena` and costs no listing bytes. The menu line the
