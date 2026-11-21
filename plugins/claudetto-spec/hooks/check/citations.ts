@@ -1,7 +1,7 @@
 import { citedIds } from "./paths";
 import { countAssertions } from "./tamper";
 
-/** A test block that cites a requirement ID and calls no assertion. */
+/** A test block that cites a requirement ID and calls no assertion beyond a tautology. */
 export interface CitedUnasserted {
 	id: string;
 	file: string;
@@ -14,8 +14,31 @@ const TEST_START =
 	/^\s*(?:(?:test|it)(?:\.[A-Za-z]+)*\s*\(|(?:async\s+)?def\s+test_|func\s+Test)/u;
 const SUITE_START = /^\s*(?:describe|suite|context)(?:\.[A-Za-z]+)*\s*\(/u;
 
+// An assertion that compares a literal with itself passes whatever the code does, so it
+// asserts nothing a requirement states; each match holds one call `countAssertions` counts.
+const LITERAL = String.raw`(?:true|false|null|undefined|-?\d+(?:\.\d+)?|"[^"\n]*"|'[^'\n]*')`;
+const TAUTOLOGIES = [
+	new RegExp(
+		String.raw`\bexpect\(\s*(${LITERAL})\s*\)\s*\.\s*(?:toBe|toEqual|toStrictEqual)\(\s*\1\s*\)`,
+		"gu"
+	),
+	/\bexpect\(\s*(?:true|1)\s*\)\s*\.\s*toBeTruthy\(\s*\)/gu,
+	/\bexpect\(\s*(?:false|0|null)\s*\)\s*\.\s*toBeFalsy\(\s*\)/gu,
+	/\bassert\s+True[ \t]*(?:#.*)?$/gmu,
+	/\bassertTrue\(\s*True\s*\)/gu
+];
+
+function realAssertions(text: string): number {
+	const hollow = TAUTOLOGIES.reduce(
+		(sum, pattern) => sum + (text.match(pattern)?.length ?? 0),
+		0
+	);
+	return countAssertions(text) - hollow;
+}
+
 /**
- * Lists the known IDs each test block cites without any assertion call in the block.
+ * Lists the known IDs each test block cites without an assertion call in the block, where a
+ * call that compares a literal with itself, such as `expect(true).toBe(true)`, counts as none.
  *
  * This is a heuristic. A block runs from its declaration line to the next test or suite
  * line, and an assertion is any call `countAssertions` knows. It misreports a test whose
@@ -36,7 +59,7 @@ export function citedUnasserted(
 	let body: string[] = [];
 	const close = (): void => {
 		const joined = body.join("\n");
-		if (start >= 0 && countAssertions(joined) === 0) {
+		if (start >= 0 && realAssertions(joined) === 0) {
 			for (const id of citedIds(joined).filter((i) => known.has(i))) {
 				found.push({ id, file, line: start + 1 });
 			}

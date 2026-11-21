@@ -70,6 +70,34 @@ test("AUTH-2 locks out", () => {
 		]);
 	});
 
+	test("a block whose only assertions compare a literal with itself is listed", () => {
+		// Arrange
+		const js = `test("AUTH-1 logs in", () => {
+	expect(true).toBe(true);
+	expect(1).toEqual(1);
+	expect(true).toBeTruthy();
+});
+
+test("AUTH-2 locks out", () => {
+	expect(true).toBe(true);
+	expect(locked()).toBe(true);
+});
+`;
+		const py = "def test_a():\n    # AUTH-2\n    assert True\n";
+
+		// Act
+		const found = [
+			...citedUnasserted(FILE, js, IDS),
+			...citedUnasserted("tests/test_a.py", py, IDS)
+		];
+
+		// Assert
+		expect(found.map((f) => [f.file, f.id, f.line])).toEqual([
+			[FILE, "AUTH-1", 1],
+			["tests/test_a.py", "AUTH-2", 1]
+		]);
+	});
+
 	test("an ID no spec defines is not listed", () => {
 		// Arrange
 		const text = `test("UTF-8 ISO-8601", () => {});`;
