@@ -1,3 +1,4 @@
+import { type CitedUnasserted, citedUnasserted } from "./citations";
 import { driftOf, type RemovedId, type Reworded } from "./drift";
 import {
 	type Inflated,
@@ -26,6 +27,8 @@ export interface Report {
 	changedSinceStaged: string[];
 	/** Per staged test file: deleted, new skip/only markers, dropped assertions. */
 	tampered: Tampered[];
+	/** Test blocks that cite a known ID and call no assertion (a heuristic, see `citedUnasserted`). */
+	citedUnasserted: CitedUnasserted[];
 }
 
 /** The files and git outputs one check reads. */
@@ -135,6 +138,7 @@ export function checkSpecs(input: CheckInput): Report {
 			prefixOf(r.id)
 		)
 	);
+	const scopedIds = new Set(scoped.map((r) => r.id));
 	return {
 		requirements: scoped,
 		malformed: specs.malformed.filter((m) => scope(m.file)),
@@ -146,6 +150,9 @@ export function checkSpecs(input: CheckInput): Report {
 		removedIds: specs.removedIds.filter((d) => scope(d.file)),
 		reworded: specs.reworded.filter((d) => scope(d.file)),
 		changedSinceStaged: listPaths(input.diff).filter((p) => isTestFile(p)),
+		citedUnasserted: paths
+			.filter((p) => isTestFile(p) && !isSpecFile(p))
+			.flatMap((p) => citedUnasserted(p, input.texts.get(p) ?? "", scopedIds)),
 		tampered: tamperedTests(
 			input.diff,
 			input.deleted ?? "",
