@@ -42,7 +42,7 @@ test("REQ-SPEC-001 the tool registers and serves a result", async ($, on) => {
 
 test("REQ-SPEC-012 git runs with quotePath off and reads HEAD and index texts", async ($, on) => {
 	// Arrange
-	const argvs: string[][] = [];
+	const argvs: (readonly string[])[] = [];
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 	on("ui.log", () => ({ value: undefined }));
