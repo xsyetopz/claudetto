@@ -6,10 +6,7 @@ import {
 	FILL_VERSION,
 	fillNotice,
 	fillSettings,
-	fillVersion,
-	RETIRED_ALLOWS,
-	RETIRED_COMMIT_TRAILERS,
-	RETIRED_REMINDER_TEXTS
+	fillVersion
 } from "../defaults";
 import { isRecord } from "../settings";
 
@@ -17,14 +14,16 @@ interface Filled {
 	attribution: { commit?: string; pr?: string };
 	bashOutputMaxChars: number;
 	env: {
+		[key: string]: string | undefined;
 		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS?: string;
 		CLAUDE_CODE_DISABLE_ADVISOR_TOOL?: string;
 		CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS?: string;
 		CLAUDE_CODE_SILENT_TURN_REMINDER?: string;
 		CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT?: string | undefined;
 	};
+	legacy?: unknown;
 	outputStyle: string;
-	permissions: { allow: string[]; deny: string[] };
+	permissions: { allow: string[]; ask: string[]; deny: string[] };
 	sandbox: {
 		allowUnsandboxedCommands: boolean;
 		autoAllowBashIfSandboxed: boolean;
@@ -126,27 +125,28 @@ describe("defaults fill", () => {
 		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB");
 	});
 
-	test("keeps every value the user set and adds only what is missing", () => {
+	test("sets every scalar the construction names over the user's value and keeps what it does not name", () => {
 		// Arrange
 		const text = JSON.stringify({
 			skillListingMaxDescChars: 500,
 			outputStyle: "Proactive",
-			env: { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "8" },
+			env: { CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "8", MY_VAR: "1" },
 			worktree: { baseRef: "fresh", symlinkDirectories: ["node_modules"] },
 			permissions: { deny: ["Workflow", "Bash(rm *)"], allow: ["Read"] },
 			sandbox: { enabled: false, excludedCommands: ["docker *"] }
 		});
 
 		// Act
-		const next = parsed(fillSettings(text)?.text);
+		const fill = fillSettings(text);
+		const next = parsed(fill?.text);
 
 		// Assert
-		expect(next.skillListingMaxDescChars).toBe(500);
-		expect(next.outputStyle).toBe("Proactive");
-		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("8");
-		expect(next.env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL).toBe("1");
+		expect(next.skillListingMaxDescChars).toBe(60);
+		expect(next.outputStyle).toBe("claudetto:Claudetto");
+		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("3");
+		expect(next.env).toMatchObject({ MY_VAR: "1" });
 		expect(next.worktree).toEqual({
-			baseRef: "fresh",
+			baseRef: "head",
 			symlinkDirectories: ["node_modules"]
 		});
 		expect(next.permissions.allow).toEqual([
@@ -158,86 +158,56 @@ describe("defaults fill", () => {
 			next.permissions.deny.filter((d: string) => d === "Workflow").length
 		).toBe(1);
 		expect(next.permissions.deny).toContain("Bash(rm *)");
-		expect(next.sandbox.enabled).toBe(false);
+		expect(next.sandbox.enabled).toBe(true);
 		expect(next.sandbox.excludedCommands[0]).toBe("docker *");
 		expect(next.sandbox.excludedCommands).toContain("claude *");
+		expect(fill?.added).toContain("replaced outputStyle Proactive");
+		expect(fill?.added).toContain("replaced sandbox.enabled false");
 	});
 
-	test("removes a retired reminder text and keeps one the user wrote", () => {
+	test("removes the stash ask rules, and the claude -p allow in one fill", () => {
 		// Arrange
-		const retired = JSON.stringify({
-			env: { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: RETIRED_REMINDER_TEXTS[0] }
-		});
-		const own = JSON.stringify({
-			env: { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: "my own words" }
+		const text = JSON.stringify({
+			permissions: {
+				ask: ["Bash(git stash*)", "Bash(git * stash*)", "Bash(npm publish*)"],
+				allow: ["Read", "Bash(claude -p *)"]
+			}
 		});
 
 		// Act
-		const removed = parsed(fillSettings(retired)?.text);
-		const kept = parsed(fillSettings(own)?.text);
-
-		// Assert
-		expect(removed.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBeUndefined();
-		expect(kept.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBe("my own words");
-	});
-
-	test("removes the retired claude -p allow, so a paid headless run asks first", () => {
-		// Arrange
-		const held = JSON.stringify({
-			permissions: { allow: ["Read", RETIRED_ALLOWS[0]] }
-		});
-
-		// Act
-		const fill = fillSettings(held);
+		const fill = fillSettings(text);
 		const next = parsed(fill?.text);
 
 		// Assert
-		expect(next.permissions.allow).toEqual([
-			"Read",
-			"Bash(perl -0pi -e *)",
-			"Bash(perl -pi -e *)"
-		]);
+		expect(next.permissions.ask).not.toContain("Bash(git stash*)");
+		expect(next.permissions.ask).not.toContain("Bash(git * stash*)");
+		expect(next.permissions.ask).toContain("Bash(npm publish*)");
+		expect(next.permissions.allow).not.toContain("Bash(claude -p *)");
+		expect(next.permissions.allow).toContain("Read");
 		expect(fill?.added).toContain(
 			"removed permissions.allow Bash(claude -p *)"
 		);
 	});
 
-	test("replaces the retired Assisted-by commit trailer and keeps one the user wrote", () => {
+	test("is idempotent: a second fill of its own output changes nothing, also after conflicts were removed", () => {
 		// Arrange
-		const retired = JSON.stringify({
-			attribution: { commit: RETIRED_COMMIT_TRAILERS[0], pr: "mine" }
-		});
-		const own = JSON.stringify({
-			attribution: { commit: "Assisted-by: my-agent" }
-		});
+		const first = fillSettings(
+			JSON.stringify({
+				outputStyle: "Proactive",
+				permissions: {
+					ask: ["Bash(git stash*)", "Bash(npm publish*)"],
+					allow: ["Bash(claude -p *)"]
+				}
+			})
+		);
+		const text = first?.text ?? "";
 
 		// Act
-		const replaced = fillSettings(retired);
-		const kept = parsed(fillSettings(own)?.text);
+		const second = fillSettings(text, undefined, first?.owned);
 
 		// Assert
-		expect(parsed(replaced?.text).attribution).toEqual({
-			commit: "Co-Authored-By: Claude <noreply@anthropic.com>",
-			pr: "mine"
-		});
-		expect(replaced?.added).toContain(
-			"replaced attribution.commit Assisted-by: Claude Code"
-		);
-		expect(fillNotice("s.json", replaced?.added ?? [])).toContain(
-			"; replaced attribution.commit Assisted-by: Claude Code."
-		);
-		expect(kept.attribution.commit).toBe("Assisted-by: my-agent");
-	});
-
-	test("leaves complete settings unchanged", () => {
-		// Arrange
-		const text = fillSettings("{}")?.text ?? "";
-
-		// Act
-		const fill = fillSettings(text);
-
-		// Assert
-		expect(fill).toEqual({ text, added: [] });
+		expect(first?.added.length).toBeGreaterThan(0);
+		expect(second).toEqual({ text, added: [], owned: first?.owned });
 	});
 
 	test("refuses to rewrite a file that is not a JSON object", () => {
@@ -263,28 +233,28 @@ describe("fill notice", () => {
 		expect(notice).not.toMatch(/(^|, )(deny|ask|sandbox) \(/u);
 	});
 
-	test("reports a removed retired text as a removal, not as a set default", () => {
+	test("reports a replaced value and a removed rule as changes, not as set values", () => {
 		// Arrange
 		const full = parsed(fillSettings("{}")?.text);
-		full.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT = RETIRED_REMINDER_TEXTS[0];
+		full.outputStyle = "Proactive";
 		const added = fillSettings(JSON.stringify(full))?.added ?? [];
 
 		// Act
-		const notice = fillNotice("/home/u/.claude/settings.json", added);
+		const notice = fillNotice("/home/u/.claude/settings.json", [
+			...added,
+			"removed permissions.ask Bash(git stash*)"
+		]);
 
 		// Assert
-		expect(added).toEqual([
-			"removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"
-		]);
-		expect(notice).toContain(
-			"removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"
-		);
-		expect(notice).not.toMatch(/set 1 unset default/u);
+		expect(added).toEqual(["replaced outputStyle Proactive"]);
+		expect(notice).toContain("replaced outputStyle Proactive");
+		expect(notice).toContain("removed permissions.ask Bash(git stash*)");
+		expect(notice).not.toMatch(/set \d+ value/u);
 	});
 });
 
 describe("fill version", () => {
-	test("changes when any default in the filled text changes", () => {
+	test("changes when the filled text changes and is stable for one construction", () => {
 		// Arrange
 		const text = fillSettings(void 0, [])?.text ?? "";
 
@@ -294,7 +264,8 @@ describe("fill version", () => {
 		);
 
 		// Assert
-		expect(FILL_VERSION).toBe(fillVersion(text));
-		expect(changed).not.toBe(FILL_VERSION);
+		expect(FILL_VERSION).toMatch(/^[0-9a-f]{8}$/u);
+		expect(FILL_VERSION).not.toBe(fillVersion(text));
+		expect(changed).not.toBe(fillVersion(text));
 	});
 });

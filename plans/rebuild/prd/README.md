@@ -2791,8 +2791,8 @@ ADR-0192 brings the block back In as `prd/spec.md` under the name claudetto-spec
   Basis: measured, claude 2.1.327, 2026-11-19 (cc-inspect cli `tool` ToolSearch; the tool list of a `-p` request).
   Source: plans/rebuild/adr/0177-pragmatism-gate.md; plans/rebuild/adr/0190-triage-decisions-by-agent.md.
 
-- [x] **OUT-852** Out (REQ-SETUP-023, ADR-0190): no setup wizard; unset defaults are written silently at SessionStart with one notice.
-  Acceptance: `fillSettings` writes each unset key once per FILL_VERSION and logs one notice listing them.
+- [x] **OUT-852** Out (REQ-SETUP-023, ADR-0190): no setup wizard; the construction is applied silently at SessionStart with one notice.
+  Acceptance: `fillSettings` applies the construction once per FILL_VERSION and logs one notice listing the values set, the values replaced and the entries removed (REQ-SETUP-071); a user's value for a key the construction names no longer stays.
   Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
 
 - [x] **OUT-853** Out (REQ-SETUP-025, ADR-0190): no setup groups and no per-key questions; `autoMode` lists, `defaultMode`, `promptCacheTtl` and the `CONTEXT7_API_KEY` and `TYPESAFE_API_KEY` prompts are not written. `sandbox.enabled` and the builtin disable ship through the fill and REQ-SETUP-011.
