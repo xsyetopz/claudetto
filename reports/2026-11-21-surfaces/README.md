@@ -30,7 +30,7 @@ Routes are on `code` (code.claude.com/docs/en/), read through the clawdipedia-do
 
 ## Output Style: Misplaced per Table, Moved
 
-REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (ADR-0177), so each moved word for word. Move 1 (issue #115) took the three tool-recipe rows to the Bash description. Move 2 (issue #122) took the AskUserQuestion row to the AskUserQuestion tool description (`hooks/pool/question-rule.ts`, `hooks/pool/question.ts`, `tool.describe`) and the ten task-conduct and permission rows to the shared system-prompt section `claudetto:conduct` (`hooks/prompt/conduct.ts`, `prompt.compose`). Bytes per request: style 5,665 to 1,207, AskUserQuestion description +275, conduct section +4,048, net -135. Move 2 is verified by tests only; the eval is pending.
+REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (ADR-0177), so each moved word for word. Move 1 (issue #115) took the three tool-recipe rows to the Bash description. Move 2 (issue #122) took the AskUserQuestion row to the AskUserQuestion tool description (`hooks/pool/question-rule.ts`, `hooks/pool/question.ts`, `tool.describe`) and the ten task-conduct and permission rows to the shared system-prompt section `claudetto:conduct` (`hooks/prompt/conduct.ts`, `prompt.compose`). Bytes per request: style 5,665 to 1,207, AskUserQuestion description +275, conduct section +4,048, net -135. Move 2 is verified by tests and by the eval in the Result section.
 
 | Paragraph (opening words) | Table surface | New surface | Commit |
 | --- | --- | --- | --- |
@@ -75,8 +75,7 @@ REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (A
 ## Result
 
 - Lines checked: 17 style paragraphs, 19 agent paragraphs, 31 skill lines, about 110 hook strings.
-- Moved: 0.
-- Held per ADR-0177: 14 style paragraphs. On surface: 3 style paragraphs, all agent and skill lines, the hook strings, the tool descriptions and the Bash-description git block.
+- Moved: 14 style paragraphs (3 in move 1, 11 in move 2). On surface: the 3 remaining style paragraphs, all agent and skill lines, the hook strings, the tool descriptions and the Bash-description git block.
 - Hook strings below the regex's seven words: only `prompt/compose.ts` (`prompt.compose`) and `handover/clear.ts` (`prompt.context`) inject session-wide text, and both are checked; every other hook string is an event result, which is the hooks surface.
 
-REQ-TOOLS-032 is blocked by ADR-0177: the 14 held paragraphs move only after a 2.1.330 eval shows each ties vanilla.
+REQ-TOOLS-032 is met. The move-2 eval at be6e4616a (2.1.330, Opus 5.5, n=3 per arm) scores no lower than vanilla: `feature-discount`, `trivial-typo` and `handback-fix-v2` 1.00 against 1.00, `background-check-fails` 1.00 against 0.72.
