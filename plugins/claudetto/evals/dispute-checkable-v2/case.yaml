@@ -10,5 +10,5 @@ context:
 execution:
   max_turns: 20
   timeout_seconds: 600
-  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
+  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
   prompt: "Fix the README so its port matches config.json."

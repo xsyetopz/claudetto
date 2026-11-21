@@ -10,5 +10,5 @@ context:
 execution:
   max_turns: 20
   timeout_seconds: 600
-  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
+  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
   prompt: "Delete the TODO line from notes.txt and tell me how many characters the file has now."

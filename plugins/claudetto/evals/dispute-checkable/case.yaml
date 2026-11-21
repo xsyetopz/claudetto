@@ -9,5 +9,5 @@ context:
 execution:
   max_turns: 20
   timeout_seconds: 300
-  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write]
+  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
   prompt: "The README is wrong: config.json sets the port to 3000, not 8080. Fix the README to match the config."
