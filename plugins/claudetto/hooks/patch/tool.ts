@@ -7,7 +7,6 @@ import { instructionsFor, resetShown } from "./instructions";
 import { parsePatch } from "./parse";
 import { absolute, pathsOf, placePaths } from "./paths";
 import {
-	HIDDEN_TOOLS,
 	PATCH_DESCRIPTION,
 	TOOL_DESCRIPTION,
 	TOOL_FULL_NAME,
@@ -125,24 +124,6 @@ export async function runPatch(
 	return {
 		text: [plan.summary.join("\n"), ...context].join("\n\n")
 	};
-}
-
-/**
- * Hides the file and messaging tools `patch` replaces from every loop, the
- * main one and each subagent's, because `tool.offer` fires per loop
- * (REQ-TOOLS-001).
- */
-export function registerToolOffer(on: On): void {
-	on(
-		"tool.offer",
-		{ tool: new RegExp(`^(?:${HIDDEN_TOOLS.join("|")})$`, "u") },
-		() => ({
-			isOffered: false
-		})
-	).catch(($, e, next) => {
-		fault($, "tool offer", next.error);
-		return next(e);
-	});
 }
 
 /**

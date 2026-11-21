@@ -11,11 +11,3 @@ export const TOOL_DESCRIPTION =
 /** What the model reads about the `patch` input. */
 export const PATCH_DESCRIPTION =
 	"The patch text: *** Begin Patch, file sections (*** Add File: p with + lines; *** Delete File: p; *** Update File: p, optional *** Move to: q, hunks of @@ anchor, context, -removed, +added lines), *** End Patch.";
-
-/** The tools every loop loses; `patch` and Bash replace them (REQ-TOOLS-001). */
-export const HIDDEN_TOOLS: readonly string[] = [
-	"Write",
-	"Edit",
-	"NotebookEdit",
-	"SendMessage"
-];

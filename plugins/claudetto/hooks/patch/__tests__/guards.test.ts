@@ -1,39 +1,8 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { TOOL_FULL_NAME } from "../texts";
-import { registerPatch, registerToolOffer } from "../tool";
+import { registerPatch } from "../tool";
 import { CWD, disk, wireDisk, wrap } from "./harness";
-
-describe("tool.offer", () => {
-	test("hides Write, Edit, NotebookEdit and SendMessage in the main loop and a subagent's, and keeps others", async ($, on) => {
-		// Arrange
-		on("tool.offer", () => ({ isOffered: true }));
-		registerToolOffer(on);
-		const provider = { plugin: "engine", tier: "core" } as const;
-
-		// Act
-		const hidden = await Promise.all(
-			["Write", "Edit", "NotebookEdit", "SendMessage"].flatMap((tool) => [
-				$.tool.offer({ tool, provider }),
-				$.tool.offer({
-					tool,
-					provider,
-					agentId: "a1",
-					subagentType: "Heracles"
-				})
-			])
-		);
-		const kept = await Promise.all(
-			["Bash", "Read", TOOL_FULL_NAME].map((tool) =>
-				$.tool.offer({ tool, provider })
-			)
-		);
-
-		// Assert
-		expect(hidden.every((o) => !o.isOffered)).toBe(true);
-		expect(kept.every((o) => o.isOffered)).toBe(true);
-	});
-});
 
 describe("patch guard parity", () => {
 	const input = { patch: wrap("*** Update File: .env", "@@", "-A=1", "+A=2") };
