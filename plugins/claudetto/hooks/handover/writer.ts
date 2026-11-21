@@ -1,7 +1,7 @@
 import type { EngineInterface, ModelUsage } from "claude-code";
 
 import { fault } from "../shared/fault";
-import { compose, extract, FORK_PROMPT } from "./text";
+import { compose, extract, FORK_PROMPT, verbatim } from "./text";
 
 /** A written handover and, when a fork wrote it, what the fork cost. */
 export interface Handover {
@@ -71,22 +71,30 @@ async function git($: EngineInterface, argv: string[]): Promise<string> {
 export async function writeHandover($: EngineInterface): Promise<Handover> {
 	let body = "";
 	let usage: ModelUsage | undefined;
-	// The clear and the compaction wait on the fork, so the person sees why.
-	$.ui.status("Writing handover…");
-	try {
-		const r = await $.model.fork({ prompt: FORK_PROMPT, effort: "low" });
-		if (r.isAnswered && r.text.trim() !== "") {
-			body = r.text;
-			usage = r.usage;
+	const rows = await $.session.messages();
+	// ENGINE(v2.1.330): fork after request 1 misses ~4.2k tokens: messages[1] resent as string (#64)
+	// With one request the conversation is one prompt and one reply, so it is handed over as written.
+	const whole = verbatim(rows);
+	if (whole === undefined) {
+		// The clear and the compaction wait on the fork, so the person sees why.
+		$.ui.status("Writing handover…");
+		try {
+			const r = await $.model.fork({ prompt: FORK_PROMPT, effort: "low" });
+			if (r.isAnswered && r.text.trim() !== "") {
+				body = r.text;
+				usage = r.usage;
+			}
+		} catch (error) {
+			// An API error takes the fallback like nothing-to-fork does.
+			fault($, "handover fork", error);
+		} finally {
+			$.ui.status(void 0);
 		}
-	} catch (error) {
-		// An API error takes the fallback like nothing-to-fork does.
-		fault($, "handover fork", error);
-	} finally {
-		$.ui.status(void 0);
+	} else {
+		body = whole;
 	}
 	if (body === "") {
-		body = extract(await $.session.messages());
+		body = extract(rows);
 	}
 	const head = await git($, ["rev-parse", "--short", "HEAD"]);
 	const status = await git($, ["status", "--short"]);

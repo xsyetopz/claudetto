@@ -21,7 +21,17 @@ export const FORK_PROMPT = [
 export interface Row {
 	role: "user" | "assistant";
 	text: string;
+	toolUses?: readonly unknown[];
+	toolResults?: readonly unknown[];
 }
+
+/**
+ * The longest prompt plus reply handed over verbatim in place of a fork. The
+ * fork prompt asks for under 3,000 tokens (about 12,000 characters), so 8,000
+ * characters (about 2,000 tokens) is never longer than the handover the fork
+ * would write; above it the fork's summary is worth its cache miss.
+ */
+export const VERBATIM_LIMIT = 8000;
 
 const ROW_LIMIT = 500;
 const EXTRACT_LIMIT = 12_000;
@@ -80,6 +90,35 @@ export function extract(rows: readonly Row[]): string {
 	}
 	const recent = tail(parts.join("\n"), EXTRACT_LIMIT - carried.length);
 	return [carried, recent].filter((s) => s.trim() !== "").join("\n\n");
+}
+
+/**
+ * The whole conversation as written, when it is one user prompt and one
+ * assistant reply with no tool call and fits VERBATIM_LIMIT; else undefined.
+ * Such a conversation has nothing a summary could add.
+ */
+export function verbatim(rows: readonly Row[]): string | undefined {
+	const [first, second, ...rest] = rows;
+	if (
+		first?.role !== "user" ||
+		second?.role !== "assistant" ||
+		rest.length > 0 ||
+		rows.some(
+			(r) => (r.toolUses?.length ?? 0) + (r.toolResults?.length ?? 0) > 0
+		)
+	) {
+		return undefined;
+	}
+	const prompt = first.text.trim();
+	const reply = second.text.trim();
+	if (
+		prompt === "" ||
+		reply === "" ||
+		prompt.length + reply.length > VERBATIM_LIMIT
+	) {
+		return undefined;
+	}
+	return ["User prompt:", prompt, "", "Last answer:", reply].join("\n");
 }
 
 /** The handover body followed by the git state read at that moment. */
