@@ -133,3 +133,34 @@ Notes on G3: the condition references a path the evaluator cannot check; it judg
 3. Does `$.env.set` change `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`, `CLAUDE_CODE_GOAL_CHECKIN_MINUTES` or `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` live?
 4. Which `session.append` door carries the `Stop hook feedback:` row?
 5. Exact predicates `Se/Hn/gh/Qt` that gate the goal tools.
+
+## 6. Probe results (Claude Code 2.1.330, fake API, no paid calls)
+
+Harness: a throwaway plugin that logs each event through `$.ui.log` to the debug file, a local fake Messages API that answers scripted turns and a scripted haiku evaluator, run with `claude -p ... --plugin-dir` (kept in `/tmp/claude-501/gp670`, not in the repo). Origin of `/goal` in `-p` is `sdk`.
+
+| # | Hypothesis | Check | Result |
+|---|---|---|---|
+| P1 | `command.run` fires for the built-in `/goal` | log the event on `-p "/goal the file x exists"` | Fires with `command: "goal"`, `args` as typed, `origin.kind: "sdk"`. |
+| P2 | A `command.run` hook can refuse | return `{ text }` for args containing REFUSE | The goal is not set, no model or evaluator request is made, the text is the output. |
+| P3 | A `command.run` hook can rewrite args | `next({ ...e, args: "rewritten condition" })` | The evaluator request and the `Stop hook feedback` row carry `rewritten condition`. |
+| P4 | `tool.call`, `tool.offer`, `tool.describe` see SetGoal, PauseGoal, GetGoal | log the three events with a name filter | Not testable here: the fake-API session lists no goal tool (they are server-gated, `tengu_propose_goal`). The three events do fire for a plugin tool (`mcp__gp__probe_clear`). So claudetto serves its own tools and sends `tool.offer` `isOffered: false` for the built-in names. |
+| P5 | `$.command.run("goal", "clear")` works from a plugin tool | tool handler starts a timer, the timer runs the command | Returns `Goal cleared: the file x exists` after the turn ended; `No goal set` when none. Not usable inside the tool run (the turn waits), so the clear lands after the turn. |
+| P6 | `$.env.set` of `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` takes effect live | set 2 in a `command.run` hook before the goal | Baseline: 9 model requests, cap warning at the 9th block. With 2: 3 requests, warning "3 consecutive times". `env.get` reads back `2`. Live. |
+| P7 | `$.env.set` of `CLAUDE_CODE_GOAL_CHECKIN_MINUTES` takes effect | set 7 | Set and accepted; effect not observable (needs background work, 30-minute scale, server gates). Unproven. |
+| P8 | `classic.Stop` sees a goal prompt-hook block | log each Stop | Fires on every stop; from the second on `stop_hook_active` is true and `last_assistant_message` is the model's text. It carries no evaluator verdict, and cannot raise the cap. The reason reaches the model as a `note` row, which `session.append` sees. |
+
+Reading of P4 against the lead's ruling (2026-11-21): the built-ins are missing in the sessions that can be probed for free, so claudetto registers `get_goal`, `set_goal`, `pause_goal` and `clear_goal` (`mcp__claudetto__*`).
+
+## 7. What shipped, and what stays a recommendation
+
+Shipped in `plugins/claudetto/hooks`: `goal/` (tools, `/goal` path warning, stop-cap note), `delegation/limit.ts` (subagent limit refusal that says to wait), `guards/shell/notes.ts` (background `; echo`, pipeline and chain hiding a failure, zsh word splitting). Tests: `claude plugin test plugins/claudetto`.
+
+Recommendations only:
+
+| Problem | Recommendation |
+|---|---|
+| Thrashing autocompact | Cap tool output before it lands (`bashOutputMaxChars` is set; add a Read-size note). The 3-refill trip is engine-fixed. |
+| Long-running subagents | Give each spawn a bounded scope in the prompt; the cache TTL is a server property. |
+| jscpd laziness | A hook cannot judge intent; put the duplicate-removal rule in the Heracles agent text and the verify recipe. |
+| Editing bedrock-owned files | A `tool.check` hook denying edits under `justfile`, `.just/` and the shared configs is cheap, but the owner list belongs to bedrock; propose it there. |
+| Two changes in one commit | Not detectable from a hook with certainty; a commit-time note listing staged top-level directories is the cheap form. |

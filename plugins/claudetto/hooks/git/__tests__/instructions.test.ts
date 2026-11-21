@@ -125,6 +125,7 @@ describe("git instructions", () => {
 			{ HOME: "/home/u" }
 		);
 		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 		on("fs.exists", () => ({ value: true }));
 		on("fs.read", () => ({ value: '{"includeGitInstructions": true}' }));
 		on("fs.write", () => ({ value: undefined }));
@@ -150,6 +151,7 @@ describe("git instructions", () => {
 			{ HOME: "/home/u" }
 		);
 		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 		on("fs.exists", () => ({ value: true }));
 		on("fs.read", () => ({ value: "{}" }));
 		on("fs.write", () => ({ value: undefined }));
@@ -171,6 +173,7 @@ describe("git instructions", () => {
 		// Arrange
 		const logged = engine(on, {}, { HOME: "/home/u" });
 		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 		on("fs.exists", () => ({ value: true }));
 		on("fs.read", () => ({ value: "{}" }));
 		on("fs.write", () => ({ value: undefined }));
