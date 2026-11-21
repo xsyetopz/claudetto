@@ -33,6 +33,13 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
   Acceptance: a test shows the note near the cap and none earlier; the cap comes from `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (default 8). Verification: test. Status: shipped (`state.ts`, `feedback.ts`). Verified: `state.test.ts`, `goal.test.ts`.
   ENGINE(v2.1.330): no hook sees or moves the cap, so the note informs and never overrides.
 
+## Delegation
+
+- [x] **REQ-GOAL-030** When the active goal names delegation (delegate, subagent, worker) and the main loop calls Edit, Write or NotebookEdit on a non-doc file, claudetto shall add one note of at most 200 characters to that result, once per session, pointing at the Agent tool, and shall never deny.
+  Acceptance: tests show the note for a main-loop source edit under a delegating goal, and none for a subagent edit (`agentId` set), a `.md` file, a goal without delegation words, no goal, or a second edit; the edit is never denied. Verification: test. Status: shipped (`nudge.ts`). Verified: `nudge.test.ts`.
+  Basis: reported (issue #100: a goal said "Delegate to sonnet workers ... in worktrees" and the main agent wrote, tested and committed slices itself). Not yet measured against vanilla.
+  ENGINE(v2.1.330): no hook input or module event carries the goal text, so the tracker's copy from `/goal` runs stands in; a goal set before the plugin loaded is unseen.
+
 ## Limits
 
 - A goal command cannot run mid-turn, so `set_goal` and `clear_goal` land after the turn (a timer runs the command).
