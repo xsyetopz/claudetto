@@ -267,3 +267,4 @@
   Basis: issue #90 and issue #97: the agent read a figure from its own option description as the user's grant. Mechanism: PostToolUse `additionalContext` adds context beside the result and blocks nothing (code.claude.com/docs/en/hooks.md, read 2026-11-21).
   Source: issue #97.
   Verified: `claude plugin test plugins/claudetto` on 2.1.330, 2026-11-21: `hooks/question/__tests__/answers.test.ts` 6 pass, 0 fail (suite 298 pass).
+  Eval vs vanilla: blocked. `claude plugin eval` on 2.1.330 leaves AskUserQuestion out of the tool pool in both arms, though the case lists it in `allowed_tools`: a probe case (`just eval claudetto --case probe-ask --runs 1`, results `2026-11-21T14-19-42-530Z`, $0.15) asked for one call, and both traces hold no AskUserQuestion call; ToolSearch found no match. The hook fires only on a live call, so the comparison needs an interactive session.
