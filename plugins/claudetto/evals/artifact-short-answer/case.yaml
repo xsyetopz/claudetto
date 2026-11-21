@@ -10,4 +10,4 @@ execution:
   max_turns: 20
   timeout_seconds: 300
   allowed_tools: [Read, Glob, Grep, Write, Edit]
-  prompt: 'What one-line git command shows the files changed in the last commit?'
+  prompt: "What one-line git command shows the files changed in the last commit?"
