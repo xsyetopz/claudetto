@@ -143,11 +143,11 @@
 
 ## Post-Tool Context
 
-- [x] **REQ-GUARDS-079** claudetto shall add context after a Bash `git checkout` or `git switch` that names the commit HEAD now holds and its ahead/behind count against its upstream when it has one (`HEAD 6f81c479a on main, 212 behind origin/main`), and, when the output holds `unable to unlink`, that the switch is partial, the tree may be half-switched, and `git status` shows the state. Issue #95.
-  Acceptance: a PostToolUse hook returns `additionalContext` and blocks nothing. Verification: test.
-  Decision: the classic PostToolUse matcher on `tool_input.command` narrows the hook; the engine's `if` field is a hooks.json command-hook field and the module API has no equivalent.
-  Verified: 2026-11-21, claude plugin test plugins/claudetto: 304 pass, 0 fail; `hooks/context/__tests__/context.test.ts` holds 6 tests for this REQ (upstream behind, ahead and behind, no upstream, detached, unable to unlink, a non-switch command runs no git).
+- [x] **REQ-GUARDS-080** claudetto shall add context after a Bash `git checkout` or `git switch` that names the commit HEAD now holds and its ahead/behind count against its upstream when it has one (`HEAD 6f81c479a on main, 212 behind origin/main`), and, when the output holds `unable to unlink`, that the switch is partial, the tree may be half-switched, and `git status` shows the state. Issue #95.
+  Acceptance: a PostToolUse hook, and a PostToolUseFailure hook for a checkout that failed partway, return `additionalContext` and blocks nothing. Verification: test.
+  Decision: the classic PostToolUse and PostToolUseFailure matcher on `tool_input.command` narrows the hook; the engine's `if` field is a hooks.json command-hook field and the module API has no equivalent.
+  Verified: 2026-11-21, claude plugin test plugins/claudetto: 305 pass, 0 fail; `hooks/context/__tests__/context.test.ts` holds 7 tests for this REQ (upstream behind, ahead and behind, no upstream, detached, unable to unlink, a failed switch with unable to unlink in the error, a non-switch command runs no git).
 
-- [x] **REQ-GUARDS-080** claudetto shall add context after a Bash call that did not fail, whose command pipes into a filter (tail, head, grep, sed, wc, cut and the like), and whose output holds a line starting `error:` or `fatal:`: the context names that line and states that the exit status shown is the last pipe stage's. Issue #99.
+- [x] **REQ-GUARDS-081** claudetto shall add context after a Bash call that did not fail, whose command pipes into a filter (tail, head, grep, sed, wc, cut and the like), and whose output holds a line starting `error:` or `fatal:`: the context names that line and states that the exit status shown is the last pipe stage's. Issue #99.
   Acceptance: a PostToolUse hook returns `additionalContext` and blocks nothing; an indented or mid-line `error:`, a call without a filter pipe, `||` alone and an interrupted call add nothing. Verification: test.
   Verified: 2026-11-21, claude plugin test plugins/claudetto: 304 pass, 0 fail; `hooks/context/__tests__/context.test.ts` holds 6 tests for this REQ.
