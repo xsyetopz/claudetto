@@ -58,9 +58,16 @@ claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin r
 
 claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many places across files, also when run by `xargs`, `find -exec` or a loop (`git grep -l old | xargs perl -pi -e ...`). The output style and the Heracles agent ask for that form when one change repeats across files. After an in-place perl edit, the model sees the diff stat of the files it changed and reads them again before it writes them.
 
-## Edit Fixes
+## Patch Tool
 
-When an `Edit` call's `old_string` carries the tab that follows the line number in `Read` output on every line, and the file lacks the text as written, claudetto drops that tab from both strings and runs the edit. The model then reads a note that says so, so its next `Edit` leaves the tab out.
+claudetto turns off Write, Edit, NotebookEdit and SendMessage in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
+
+- Paths are relative to the session directory or absolute, and a path that lands outside it (also through a symbolic link) is refused with the reason.
+- Context matches exactly, then with trailing whitespace folded, then trimmed. A hunk whose context is missing or ambiguous refuses the whole patch and writes nothing; the error names the file, the hunk and the nearest line.
+- Each file keeps its line endings and final newline.
+- The reply has one line per file: `A path`, `M path +3 -1`, `D path`, `R old -> new`.
+- Every Edit and Write permission rule holds through `patch`: its permission check asks for the Edit and Write verdict of each path and takes the strictest.
+- Claude Code loads path-scoped rules (`.claude/rules/**/*.md` with `paths:`) and nested CLAUDE.md files only when Read, Write or Edit touches a file, so `patch` appends the matching ones to its reply, once per session.
 
 ## Subagents
 
