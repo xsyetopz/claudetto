@@ -1,7 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerContext } from "./context/context";
-import { registerHelpNote } from "./context/help";
 import { registerAgentNotes } from "./delegation/notes";
 import { registerOffer } from "./delegation/offer";
 import { registerRunaway } from "./delegation/runaway";
@@ -29,7 +28,6 @@ import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
 	// Registered first so it reads the command as the model wrote it, before the shell guard wraps it.
-	registerHelpNote(on);
 	registerStart(on, options);
 	registerGuards(on, options);
 	registerGit(on, options);
