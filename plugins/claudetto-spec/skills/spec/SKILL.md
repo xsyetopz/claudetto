@@ -30,7 +30,8 @@ First Glob `specs/*.md` and read the specs the request touches.
 ## Green
 
 - Implement without editing staged tests.
-- If the request contradicts an existing requirement, or a staged test cannot pass honestly, stop and report the conflict naming the requirement ID. Never edit the test or spec to fit.
+- A requirement changes only when the request cites its ID or says to change the spec. Describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not.
+- If the request contradicts a requirement it does not cite, or a staged test cannot pass honestly, change nothing: stop and report the conflict naming the requirement ID. Never edit the test or spec to fit.
 
 ## Check
 

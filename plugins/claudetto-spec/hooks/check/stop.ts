@@ -1,6 +1,6 @@
 import type { EngineInterface, On } from "claude-code";
 
-import { SPECS_DIR, STOP_BLOCK_HEAD } from "../texts";
+import { AMEND_RULE, SPECS_DIR, STOP_BLOCK_HEAD } from "../texts";
 import { type HardFinding, hardFindings } from "./hard";
 import { checkSpecs } from "./spec";
 import { gather, LIST_ARGV } from "./tool";
@@ -8,7 +8,7 @@ import { gather, LIST_ARGV } from "./tool";
 /** One line the agent acts on: a changed requirement needs the user's explicit word. */
 function lineOf(f: HardFinding): string {
 	if (f.kind === "reworded" || f.kind === "removedId") {
-		return `- ${f.subject} changed since HEAD (${f.message}); a requirement changes only when the user's request explicitly names that change, otherwise restore the spec, the tests citing it and the code, and report the conflict naming ${f.subject}; if the user did name it, say so in the reply`;
+		return `- ${f.subject} changed since HEAD (${f.message}); ${AMEND_RULE}. Unless the request cites ${f.subject} or the spec, restore the spec, the tests citing it and the code, then report the conflict naming ${f.subject} and change nothing else; otherwise quote the request's words that name it`;
 	}
 	if (f.kind === "tampered") {
 		return `- ${f.message}; restore the staged test and report honestly why it cannot pass`;
