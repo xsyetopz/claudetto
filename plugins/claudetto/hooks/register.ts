@@ -1,7 +1,6 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerContext } from "./context/context";
-import { registerHelpNote } from "./context/help";
 import { registerAgentNotes } from "./delegation/notes";
 import { registerOffer } from "./delegation/offer";
 import { registerRunaway } from "./delegation/runaway";
@@ -22,15 +21,12 @@ import { registerToolOffer } from "./pool/offer";
 import { registerQuestionRule } from "./pool/question";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
-import { registerAnswerNote } from "./question/answers";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { registerStatusline } from "./statusline/statusline";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
-	// Registered first so it reads the command as the model wrote it, before the shell guard wraps it.
-	registerHelpNote(on);
 	registerStart(on, options);
 	registerGuards(on, options);
 	registerGit(on, options);
@@ -48,7 +44,6 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerRenewal(on);
 	registerClear(on);
 	registerStopNotice(on);
-	registerAnswerNote(on);
 	registerSpawn(on);
 	registerThrash(on);
 	registerRunaway(on);
