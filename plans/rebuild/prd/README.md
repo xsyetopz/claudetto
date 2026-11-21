@@ -10485,3 +10485,9 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Basis: reported, the user's list of agent pet peeves. Status: not built.
   Source: external/please-use-me-often/agent-pet-peeves.md:30 (P25); :67 (P57); :68 (P58); :76 (P64); :77 (P65); :78 (P66); :80 (P68); :81 (P69); :82 (P70).
   Verified: read of the nine source lines, 2026-11-21; claudetto's `web_search` returns titles, URLs and snippets (REQ-TOOLS-021) and records no reading of the source behind them.
+
+- [x] **OUT-3072** Out (ADR-0177: rewriting unrelated content to fit a bound is a kind of unrequested edit, and on the unrequested-edit fault prompt vanilla 2.1.327 passed 3 of 3 runs (OUT-2762); both dossier lines are a rule and a recipe step with no transcript, trace or reproduction behind them, so no fixture exists that vanilla fails): when a file, reply or config value hits a size or count bound, claudetto shall make the agent split the file or ask, and shall never compress, merge, move or delete unrelated content to fit under the bound.
+  Acceptance: on a fixture whose file exceeds a stated bound, the agent's diff leaves unrelated content intact. Verification: eval.
+  Basis: inferred from the Agent Terms rule and the dossier recipe; no reported incident. Status: not built.
+  Source: external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:28 (AU-1.11); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:119.
+  Verified: read of both source lines and the surrounding sections, 2026-11-21; `grep -rn -i 'unrelated content'` over external/please-use-me-often/agent-failure-dossier/ finds only 06-autonomy-and-consent.md:119.
