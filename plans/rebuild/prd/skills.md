@@ -28,6 +28,7 @@ Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` cover
 
 - [ ] **REQ-SKILLS-010** claudetto shall ship `/claudetto:review`, a user-invoked command that reviews the working diff in a forked context for defects only (no style), returns findings as `path:line` with the failing input, and edits nothing.
   Acceptance: an eval case `review-seeded-defects` (a fixture diff with 5 seeded defects and 3 benign changes, outcome-only grader on defects named with file and line) scores recall no lower and false findings no higher than vanilla asked to "review the diff", n=3 per arm, `--no-publish` and a cost cap; the description's first 60 characters name the trigger. If the arms tie, the command is removed. Verification: eval.
+  Status: built, eval pending: `plugins/claudetto/skills/review/SKILL.md` and `plugins/claudetto/evals/review-seeded-defects/` exist; the paid runs are not made.
 
 ## Spec Plugin
 

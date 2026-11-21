@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: review-seeded-defects-slash
+description: "REQ-SKILLS-010: /claudetto:review on the same fixture; only the with arm is meaningful."
+tags: [skills, review, slash]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Bash]
+  prompt: "/claudetto:review"
