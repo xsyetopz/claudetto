@@ -9,7 +9,7 @@ context:
 execution:
   max_turns: 20
   timeout_seconds: 300
-  allowed_tools: [Read, Glob, Grep, Write, Edit]
+  allowed_tools: [Read, Glob, Grep, Write, Edit, mcp__claudetto__patch]
   prompt: |
     Fix this system prompt for our support agent. Four problems: the length rules contradict each other, the tool names do not match the tools we ship (`lookup_ticket` and `search_tickets`), "escalate when appropriate" says nothing, and it promises refunds of any amount. Keep the section headings.
 

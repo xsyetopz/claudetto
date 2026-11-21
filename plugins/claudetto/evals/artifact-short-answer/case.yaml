@@ -9,5 +9,5 @@ context:
 execution:
   max_turns: 20
   timeout_seconds: 300
-  allowed_tools: [Read, Glob, Grep, Write, Edit]
+  allowed_tools: [Read, Glob, Grep, Write, Edit, mcp__claudetto__patch]
   prompt: "What one-line git command shows the files changed in the last commit?"
