@@ -1,8 +1,12 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
+/** The cwd of each git call the last world() saw. */
+let cwds: (string | undefined)[] = [];
+
 /** Answers each git call from a table keyed by its arguments; an absent key exits 128. */
 const world = (on: On, answers: Record<string, string>) => {
+	cwds = [];
 	const ran: string[] = [];
 	on("classic.PostToolUse", () => ({}));
 	on("classic.PostToolUseFailure", () => ({}));
@@ -10,6 +14,7 @@ const world = (on: On, answers: Record<string, string>) => {
 	on("process.run", (_$, e) => {
 		const key = e.argv.slice(1).join(" ");
 		ran.push(key);
+		cwds.push(e.init?.cwd);
 		const out = answers[key];
 		return {
 			value: {
@@ -97,6 +102,37 @@ describe("switch context (REQ-GUARDS-080, issue #95)", () => {
 		expect(text).toContain("HEAD 6f81c479a on main, 212 behind origin/main");
 		expect(text).toContain("half-switched");
 		expect(text).toContain("git status");
+	});
+	test("git -C <abs path> checkout runs git in that path", async ($, on) => {
+		world(on, TRACKED);
+		const r = await $.classic.PostToolUse({
+			...bash("git -C /repo checkout main", {}),
+			cwd: "/work"
+		});
+		expect(r.additionalContext?.[0]).toContain("HEAD 6f81c479a on main");
+		expect(new Set(cwds)).toEqual(new Set(["/repo"]));
+	});
+	test("a relative -C path resolves against the call's cwd, each -C against the last", async ($, on) => {
+		world(on, TRACKED);
+		await $.classic.PostToolUse({
+			...bash("git -C sub -C deeper switch main", {}),
+			cwd: "/work"
+		});
+		expect(new Set(cwds)).toEqual(new Set(["/work/sub/deeper"]));
+	});
+	test("git -c k=v switch and --no-pager checkout match and keep the call's cwd", async ($, on) => {
+		world(on, TRACKED);
+		const a = await $.classic.PostToolUse({
+			...bash("git -c core.x=y switch dev", {}),
+			cwd: "/work"
+		});
+		const b = await $.classic.PostToolUse({
+			...bash("cd x && git --no-pager checkout dev", {}),
+			cwd: "/work"
+		});
+		expect(a.additionalContext?.[0]).toContain("HEAD 6f81c479a");
+		expect(b.additionalContext?.[0]).toContain("HEAD 6f81c479a");
+		expect(new Set(cwds)).toEqual(new Set(["/work"]));
 	});
 	test("a command that is no switch runs no git", async ($, on) => {
 		const ran = world(on, TRACKED);

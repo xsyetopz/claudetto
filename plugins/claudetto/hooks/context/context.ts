@@ -3,8 +3,33 @@ import type { EngineInterface, On } from "claude-code";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
 
-/** A Bash command that runs `git checkout` or `git switch`, alone or after `&&` or `;`. */
-const SWITCH = /(?:^|&&|;)\s*git\s+(?:checkout|switch)\b/u;
+/** One shell word: a quoted string or a run of non-space characters. */
+const WORD = String.raw`(?:"[^"]*"|'[^']*'|\S+)`;
+
+/** The git options that may precede the subcommand: `-C <path>`, `-c k=v`, `--no-pager`, `--git-dir=x`. */
+const GIT_OPTION = String.raw`(?:-[Cc]\s+${WORD}|--[\w-]+(?:=${WORD})?)`;
+
+/**
+ * A Bash command that runs `git checkout` or `git switch`, alone or after `&&` or `;`,
+ * with any leading git options. Group 1 holds those options.
+ */
+const SWITCH = new RegExp(
+	String.raw`(?:^|&&|;)\s*git((?:\s+${GIT_OPTION})*)\s+(?:checkout|switch)\b`,
+	"u"
+);
+
+/** The directory a switch command runs git in: each `-C <path>` applies to the one before it, from `cwd`. */
+export const switchDir = (command: string, cwd: string): string => {
+	const options = SWITCH.exec(command)?.[1] ?? "";
+	let dir = cwd;
+	for (const match of options.matchAll(
+		new RegExp(String.raw`-C\s+(${WORD})`, "gu")
+	)) {
+		const path = (match[1] ?? "").replace(/^(["'])(.*)\1$/u, "$2");
+		dir = path.startsWith("/") ? path : `${dir.replace(/\/$/u, "")}/${path}`;
+	}
+	return dir;
+};
 
 /** A Bash command with a pipe (not `||`) into a filter that keeps only its own exit status. */
 const FILTERED =
@@ -118,7 +143,8 @@ export function registerContext(on: On): void {
 		{ tool_name: "Bash", tool_input: { command: SWITCH } },
 		async ($, e, next) => {
 			const result = await next(e);
-			const note = await headNote($, e.cwd, outputOf(e.tool_response));
+			const dir = switchDir(String(fieldOf(e.tool_input, "command")), e.cwd);
+			const note = await headNote($, dir, outputOf(e.tool_response));
 			return withContext(result, note);
 		}
 	).catch(($, _e, next) => {
@@ -130,7 +156,8 @@ export function registerContext(on: On): void {
 		{ tool_name: "Bash", tool_input: { command: SWITCH } },
 		async ($, e, next) => {
 			const result = await next(e);
-			return withContext(result, await headNote($, e.cwd, e.error));
+			const dir = switchDir(String(fieldOf(e.tool_input, "command")), e.cwd);
+			return withContext(result, await headNote($, dir, e.error));
 		}
 	).catch(($, _e, next) => {
 		fault($, "switch failure context", next.error);
