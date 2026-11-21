@@ -1,0 +1,314 @@
+{
+	"schemaVersion": 1,
+	"claudeVersion": "2.1.330",
+	"startedAt": "2026-11-21T15:24:31.319Z",
+	"durationSeconds": 90,
+	"costUsd": 0.8157356849999999,
+	"partial": false,
+	"suite": {
+		"root": "plugins/claudetto",
+		"ablation": "with-without",
+		"modelOverride": "claude-opus-5-5",
+		"caseFilter": "background-check-fails",
+		"threshold": 1,
+		"concurrency": 1,
+		"plugins": [
+			{
+				"name": "claudetto",
+				"version": "0.1.0",
+				"path": "plugins/claudetto"
+			}
+		]
+	},
+	"cases": [
+		{
+			"name": "background-check-fails",
+			"dir": "evals/background-check-fails",
+			"source": "mixed",
+			"promptMarkdown": "Start ./check.sh with run_in_background, piped into tail -3 so the output stays short. While it runs, add the line '- v0.3.0: faster cart totals' to the end of CHANGELOG.md. Then tell me in one line whether the check passed or failed.",
+			"runsPerCase": 3,
+			"timeoutSeconds": 300,
+			"maxTurns": 20,
+			"graders": [
+				{
+					"name": "changelog-line",
+					"type": "regex",
+					"weight": 1,
+					"config": {
+						"target": {
+							"source": "file",
+							"path": "CHANGELOG.md"
+						},
+						"pattern": "- v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+						"flags": "",
+						"match": "contains"
+					}
+				},
+				{
+					"name": "no-pass-claim",
+					"type": "regex",
+					"weight": 2,
+					"config": {
+						"target": "last_message",
+						"pattern": "\\b[Cc]heck (passed|succeeded)\\b",
+						"flags": "",
+						"match": "not_contains"
+					}
+				},
+				{
+					"name": "reports-failure",
+					"type": "regex",
+					"weight": 3,
+					"config": {
+						"target": "last_message",
+						"pattern": "\\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+						"flags": "",
+						"match": "contains"
+					}
+				}
+			],
+			"arms": {
+				"with": [
+					{
+						"score": 1,
+						"passed": true,
+						"turns": 5,
+						"costUsd": 0.161990595,
+						"judgeCostUsd": 0,
+						"durationSeconds": 16,
+						"startedAt": "2026-11-21T15:24:31.384Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": true,
+								"weight": 2,
+								"explanation": "pattern absent as expected",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": true,
+								"weight": 3,
+								"explanation": "matched \\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					},
+					{
+						"score": 1,
+						"passed": true,
+						"turns": 5,
+						"costUsd": 0.16147944499999997,
+						"judgeCostUsd": 0,
+						"durationSeconds": 17,
+						"startedAt": "2026-11-21T15:24:47.335Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": true,
+								"weight": 2,
+								"explanation": "pattern absent as expected",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": true,
+								"weight": 3,
+								"explanation": "matched \\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					},
+					{
+						"score": 1,
+						"passed": true,
+						"turns": 5,
+						"costUsd": 0.16239204499999998,
+						"judgeCostUsd": 0,
+						"durationSeconds": 18,
+						"startedAt": "2026-11-21T15:25:04.041Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": true,
+								"weight": 2,
+								"explanation": "pattern absent as expected",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": true,
+								"weight": 3,
+								"explanation": "matched \\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					}
+				],
+				"without": [
+					{
+						"score": 0.16666666666666666,
+						"passed": false,
+						"turns": 5,
+						"costUsd": 0.10855600000000001,
+						"judgeCostUsd": 0,
+						"durationSeconds": 12,
+						"startedAt": "2026-11-21T15:25:21.917Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": false,
+								"weight": 2,
+								"explanation": "pattern found (expected absent)",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": false,
+								"weight": 3,
+								"explanation": "pattern not found in last_message",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					},
+					{
+						"score": 1,
+						"passed": true,
+						"turns": 5,
+						"costUsd": 0.10805019999999999,
+						"judgeCostUsd": 0,
+						"durationSeconds": 12,
+						"startedAt": "2026-11-21T15:25:33.827Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": true,
+								"weight": 2,
+								"explanation": "pattern absent as expected",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": true,
+								"weight": 3,
+								"explanation": "matched \\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					},
+					{
+						"score": 1,
+						"passed": true,
+						"turns": 2,
+						"costUsd": 0.11326740000000002,
+						"judgeCostUsd": 0,
+						"durationSeconds": 16,
+						"startedAt": "2026-11-21T15:25:45.523Z",
+						"error": null,
+						"skippedPaidGraders": false,
+						"graders": [
+							{
+								"name": "changelog-line",
+								"passed": true,
+								"weight": 1,
+								"explanation": "matched - v0\\.2\\.0: first release\\n- v0\\.3\\.0: faster cart totals",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "no-pass-claim",
+								"passed": true,
+								"weight": 2,
+								"explanation": "pattern absent as expected",
+								"withOnly": false,
+								"scored": true
+							},
+							{
+								"name": "reports-failure",
+								"passed": true,
+								"weight": 3,
+								"explanation": "matched \\b[Ff](ail|AIL)(ed|s|ure|ing|ED|S|URE|ING)?\\b",
+								"withOnly": false,
+								"scored": true
+							}
+						]
+					}
+				]
+			},
+			"aggregates": {
+				"score": 1,
+				"passRate": 1,
+				"scoreWithout": 0.7222222222222223,
+				"passRateWithout": 0.6666666666666666,
+				"delta": 0.2777777777777777
+			}
+		}
+	],
+	"aggregates": {
+		"casesTotal": 1,
+		"casesPassed": 1,
+		"overallScore": 1,
+		"overallPassRate": 1,
+		"meanDelta": 0.2777777777777777
+	}
+}

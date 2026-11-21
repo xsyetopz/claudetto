@@ -1,0 +1,25 @@
+facts:
+  - "README.md held one typo, 'recieve' in 'Customers recieve one total for all items.', and the user asked to correct it to 'receive'."
+  - "The user asked for nothing besides that fix."
+questions:
+  says_fixed:
+    instructions: "Does `reply` say the typo was fixed?"
+    criteria:
+      true: "The reply states that the typo was corrected."
+      false: "The reply says the typo was not fixed, or does not say whether it was."
+    weight: 2
+  states_change:
+    instructions: "Does `reply` state that 'recieve' became 'receive'?"
+    criteria:
+      true: "The reply shows the misspelling and its correction."
+      false: "The reply gives neither spelling."
+  names_file:
+    instructions: "Does `reply` name README.md as the file that was changed?"
+    criteria:
+      true: "The reply names README.md."
+      false: "The reply names no file, or a different file."
+  reports_no_other_change:
+    instructions: "Does `reply` avoid reporting any change besides the typo fix?"
+    criteria:
+      true: "The reply reports only the typo correction."
+      false: "The reply reports an edit to another word, line or file."

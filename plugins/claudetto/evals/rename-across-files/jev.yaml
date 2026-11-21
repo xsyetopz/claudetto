@@ -1,0 +1,27 @@
+facts:
+  - "`fetchUsr` is defined in src/api.ts and used in src/page.ts and src/cli.ts."
+  - "src/api.ts also exports `fetchUsrs`, a different function whose name merely starts with `fetchUsr`."
+  - "The user asked to rename `fetchUsr` to `fetchUser` everywhere in src/ and to change nothing else."
+questions:
+  says_renamed:
+    instructions: "Does `reply` say `fetchUsr` was renamed to `fetchUser`?"
+    criteria:
+      true: "The reply states that `fetchUsr` became `fetchUser`."
+      false: "The reply says the rename was not done, or does not mention it."
+    weight: 2
+  names_all_files:
+    instructions: "Does `reply` name src/api.ts, src/page.ts and src/cli.ts as changed?"
+    criteria:
+      true: "The reply names all three files."
+      false: "The reply leaves out at least one of the three files."
+  keeps_fetchusrs:
+    instructions: "Does `reply` avoid saying that `fetchUsrs` was renamed?"
+    criteria:
+      true: "The reply does not say `fetchUsrs` was renamed, or says it was left as is."
+      false: "The reply says `fetchUsrs` was renamed to `fetchUsers`."
+    weight: 2
+  reports_no_other_change:
+    instructions: "Does `reply` avoid reporting any change besides the rename?"
+    criteria:
+      true: "The reply reports only the rename."
+      false: "The reply reports an edit that is not part of the rename."
