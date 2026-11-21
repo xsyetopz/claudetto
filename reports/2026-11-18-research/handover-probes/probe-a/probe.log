@@ -1,0 +1,35 @@
+session.start {"cwd":"/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/cc-run-proj-JWH4we","surface":null,"isInteractive":false}
+prompt.context blocks=claudeMd,currentDate pending=no
+turn.complete #1 keys=answer,durationMs,isAborted,turnId,reason,usage
+fork result {"isAnswered":true,"text":"OK","usage":{"input_tokens":0,"output_tokens":5,"cache_read_input_tokens":0,"cache_creation_input_tokens":0},"effort":"low"}
+command.run clear origin={"kind":"sdk"}
+session.end {"reason":"clear","sessionId":"faab7df0-2af9-4691-b5d8-95da9a086e73","resume":{"id":"faab7df0-2af9-4691-b5d8-95da9a086e73"}}
+prompt.context blocks=claudeMd,currentDate pending=yes
+command.run threw the command was removed from the queue before it ran
+turn.complete #2 keys=answer,durationMs,isAborted,turnId,reason,usage
+session.end {"reason":"other","sessionId":"ed629bea-23c9-4477-a9a2-2694de4462b0","resume":{"id":"ed629bea-23c9-4477-a9a2-2694de4462b0"}}
+session.start {"cwd":"/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/cc-run-proj-BrnWIA","surface":null,"isInteractive":false}
+prompt.context blocks=claudeMd,currentDate pending=no
+turn.complete #1 keys=answer,durationMs,isAborted,turnId,reason,usage
+fork result {"isAnswered":true,"text":"OK","usage":{"input_tokens":0,"output_tokens":5,"cache_read_input_tokens":0,"cache_creation_input_tokens":0},"effort":"low"}
+command.run threw the command was removed from the queue before it ran
+turn.complete #2 keys=answer,durationMs,isAborted,turnId,reason,usage
+session.end {"reason":"other","sessionId":"81fb29f7-e414-4e0d-a3f8-946a915537e5","resume":{"id":"81fb29f7-e414-4e0d-a3f8-946a915537e5"}}
+session.start {"cwd":"/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/cc-run-proj-69EteA","surface":null,"isInteractive":false}
+prompt.context blocks=claudeMd,currentDate pending=no
+turn.complete #1 keys=answer,durationMs,isAborted,turnId,reason,usage
+fork result {"isAnswered":true,"text":"OK","usage":{"input_tokens":0,"output_tokens":5,"cache_read_input_tokens":0,"cache_creation_input_tokens":0},"effort":"low"}
+command.run clear origin={"kind":"sdk"}
+session.end {"reason":"clear","sessionId":"a84825a0-c705-4a53-9789-f517c1ee59a6","resume":{"id":"a84825a0-c705-4a53-9789-f517c1ee59a6"}}
+prompt.context blocks=claudeMd,currentDate pending=yes
+command.run threw the command was removed from the queue before it ran
+turn.complete #2 keys=answer,durationMs,isAborted,turnId,reason,usage
+session.end {"reason":"other","sessionId":"d11097d4-a483-4fd3-b4c3-4f6d578c28e1","resume":{"id":"d11097d4-a483-4fd3-b4c3-4f6d578c28e1"}}
+session.start {"cwd":"/private/var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/cc-run-proj-opPkk3","surface":null,"isInteractive":false}
+prompt.context blocks=claudeMd,currentDate pending=no
+turn.complete #1 keys=answer,durationMs,isAborted,turnId,reason,usage
+fork result {"isAnswered":true,"text":"OK","usage":{"input_tokens":0,"output_tokens":5,"cache_read_input_tokens":0,"cache_creation_input_tokens":0},"effort":"low"}
+command.run clear origin={"kind":"plugin","name":"hprobe"}
+session.end {"reason":"clear","sessionId":"dcfcb81b-4522-4a53-bd28-3e590c263435","resume":{"id":"dcfcb81b-4522-4a53-bd28-3e590c263435"}}
+command.run clear -> {"text":""}
+session.end {"reason":"other","sessionId":"01125b0c-0248-41ca-9357-565f42d333e5","resume":{"id":"01125b0c-0248-41ca-9357-565f42d333e5"}}

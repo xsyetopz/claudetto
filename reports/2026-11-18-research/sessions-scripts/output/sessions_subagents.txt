@@ -1,0 +1,55 @@
+files: main=11 sub=142 total=153; mtime range 2026-11-17T15:40:46.847841 .. 2026-11-18T17:29:34.094057
+
+## 2. session length (main sessions; first to last timestamped line)
+     909.1 min (active<=300s gaps   190.9)  requests=  717 compactions= 12 clears=1  -Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl
+     814.0 min (active<=300s gaps   201.6)  requests= 1059 compactions= 12 clears=0  -Users-krystian-CodeProjects-xsyetopz-bedrock/761e258c-a2eb-4522-97cd-89d52a939fee.jsonl
+     810.5 min (active<=300s gaps   811.3)  requests= 2753 compactions= 45 clears=0  -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded.jsonl
+     710.7 min (active<=300s gaps   427.3)  requests= 2151 compactions= 28 clears=0  -Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/276bb505-a941-4a32-a6c7-d1cede51d63f.jsonl
+     646.6 min (active<=300s gaps    11.8)  requests=   39 compactions=  0 clears=0  -Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/a9691911-c345-4f18-aef6-a15c98842b2a.jsonl
+      70.5 min (active<=300s gaps    48.7)  requests=  212 compactions=  2 clears=0  -Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/f55db43d-adb2-4084-a12b-0b7273a75fc6.jsonl
+       4.3 min (active<=300s gaps     4.3)  requests=   50 compactions=  0 clears=0  -Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/e82d87d1-ad1f-491a-ac1a-461bf5c46eb4.jsonl
+       2.1 min (active<=300s gaps     2.1)  requests=   21 compactions=  0 clears=0  -Users-krystian-CodeProjects-xsyetopz-GodHand/856556a9-f630-4eba-9a9a-c04907cbcde5.jsonl
+       1.3 min (active<=300s gaps     1.3)  requests=   10 compactions=  0 clears=0  -Users-krystian-CodeProjects-xsyetopz-GodHand/539f0efb-67c3-4c61-95a2-ca271fe886de.jsonl
+       0.7 min (active<=300s gaps     0.7)  requests=    0 compactions=  0 clears=0  -Users-krystian-CodeProjects-xsyetopz-claudetto/cef454b6-b6d9-42b5-95f2-f5b70b84ec3b.jsonl
+       0.0 min (active<=300s gaps     0.0)  requests=    0 compactions=  0 clears=1  -Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/3e6b58d3-570f-4db3-a082-ce4f2541239e.jsonl
+  active-time >=50 min: 4  >=60 min: 4
+  count >=50 min: 6  >=60 min: 6  of 11  pct: {10: 0.6814, 50: 70.5056, 90: 813.9616}
+
+## 2b. compactions (main vs subagent)
+ main: total=99 by trigger={'auto': 99} preTokens pct={10: 139942.0, 50: 140583.0, 90: 142919.4} postTokens pct={10: 9951.2, 50: 13369.0, 90: 18641.6} duration_s pct={10: 44.9282, 50: 54.951, 90: 68.4652}
+   preTokens min/max 138693 154673
+ sub: total=361 by trigger={'auto': 361} preTokens pct={10: 140022.0, 50: 140650.0, 90: 142338.0} postTokens pct={10: 5628.0, 50: 6513.0, 90: 11434.0} duration_s pct={10: 33.749, 50: 42.16, 90: 53.516}
+   preTokens min/max 138752 160013
+ /clear commands (main): 2
+ turn_duration (main; system lines, s): n=608 pct={10: 7.1982, 50: 16.8745, 90: 368.8769} max 40900
+ main requests per compaction: 70.8
+
+## 3. subagents
+ count: 142  agentType: {'general-purpose': 142}  requestShape: {'background': 142}
+ declared model: {'sonnet': 36, 'haiku': 1, '?': 105}  actual models: {'claude-sonnet-5-5': 141, 'claude-haiku-5-5': 1}
+ lifetime s p10/p50/p90: {10: 129.6369, 50: 524.009, 90: 11935.367} max 38559  >300 s: 98 = 0.69  >3600 s: 25
+ requests (turns) per subagent p10/p50/p90: {10: 18.1, 50: 71.0, 90: 714.4} max 2052
+ tokens (input+cache_read+cache_creation+output) per subagent p10/p50/p90: {10: 529008.6, 50: 5254016.5, 90: 53022470.1} sum 2789134138
+ subagents with >=1 compaction: 88  total subagent compactions: 361
+  model sonnet: n=36 life pct={10: 563.7565, 50: 7781.794, 90: 35392.2415} turns pct={10: 31.5, 50: 461.0, 90: 1815.0} tokens sum=2189898293 >300s=35
+  model haiku: n=1 life pct={10: 141.045, 50: 141.045, 90: 141.045} turns pct={10: 21.0, 50: 21.0, 90: 21.0} tokens sum=660636 >300s=0
+  model ?: n=105 life pct={10: 108.7728, 50: 440.101, 90: 991.3892} turns pct={10: 16.4, 50: 64.0, 90: 163.8} tokens sum=598575209 >300s=63
+ 8 longest:
+   642.6 min turns=1992 tok=153201024 comps=20 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-abd96494d46069bd7.jsonl
+   638.5 min turns=1863 tok=144117509 comps=21 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-ad9b0ff872fae90cd.jsonl
+   599.8 min turns=2013 tok=156847833 comps=22 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-a3bbdf96f94fc3f72.jsonl
+   592.0 min turns=2052 tok=156854341 comps=21 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-a8d1c5ca95e85ece0.jsonl
+   587.7 min turns=1588 tok=124443528 comps=17 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-a0653547cf424832a.jsonl
+   547.7 min turns=1767 tok=137141884 comps=17 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-adef4b6c32703f9b9.jsonl
+   547.6 min turns=1706 tok=133667347 comps=17 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-ae6e4cdfb7f2429ae.jsonl
+   541.6 min turns=1648 tok=129414603 comps=16 -Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-ab00eba329b116529.jsonl
+
+## 3b. parent re-reads of files a subagent of the same session already read
+ parent Read calls (sessions with a main file)=440; of which path already read by a subagent earlier: 31 (0.070)
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded.jsonl:30660', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/3da32cd2-eb12-4b12-ad64-2535dc572ded/subagents/agent-a8d1c5ca95e85ece0.jsonl:107', 'eecc.py')
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl:463', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057/subagents/agent-adea6e99e3497c63e.jsonl:36', 'Getting-Started.md')
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl:871', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057/subagents/agent-a93fe34959cfbbf65.jsonl:49', 'Troubleshooting.md')
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl:933', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057/subagents/agent-adea6e99e3497c63e.jsonl:52', 'Using-the-App.md')
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl:1261', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057/subagents/agent-adea6e99e3497c63e.jsonl:310', 'Start-Set-Up-Several-Macs.md')
+   example ('~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057.jsonl:1303', '~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b0d4fb0f-b2ca-4339-8ac2-196301829057/subagents/agent-a0f2ad77b0cf3155c.jsonl:29', 'Command-Reference.md')
+ subagent Read calls total: 640

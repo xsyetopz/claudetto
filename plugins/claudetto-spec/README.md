@@ -1,0 +1,59 @@
+# Claudetto-Spec
+
+A spec-first loop for Claude Code: requirements get IDs, tests cite the IDs, failing tests are staged before the implementation, and a deferred tool, `spec_check`, reports coverage from the files.
+
+## Install
+
+```sh
+claude plugin install claudetto-spec --marketplace xsyetopz/bedrock
+```
+
+## The Loop
+
+The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions.
+
+1. Clarify: an interactive session asks each expensive unknown through AskUserQuestion; a `-p` run writes it as an `Open:` line, takes the cheap default and lists each assumption in the reply.
+2. Spec: edit `specs/<capability>.md`.
+3. Red: write tests in the project's framework that cite the requirement ID, see them fail, then `git add` them.
+4. Green: implement without editing the staged tests. A contradiction with a requirement, or a test that cannot pass honestly, stops the work and is reported with the requirement ID.
+5. Check: call `spec_check` and the project's test command, and report both.
+
+## Spec Format
+
+```markdown
+# Auth
+
+## AUTH-3 Lockout after failures
+
+Five failed logins lock the account.
+
+Given a user with four failed logins
+When a fifth login fails
+Then the account is locked
+
+Open: how long does the lock last?
+```
+
+- One file per capability at `specs/<capability>.md`, titled `# <Capability>`.
+- Each requirement is a `## <ID> <title>` heading; the ID matches `[A-Z][A-Z0-9]*-\d+`.
+- One sentence of behaviour, at most three scenarios of `Given`/`When`/`Then` lines, optional `Open: <question>` lines.
+- Tests cite an ID anywhere in the test file, usually in the test name.
+
+## `spec_check`
+
+`mcp__claudetto-spec__spec_check` is deferred (load it through ToolSearch). It reads the files git lists (`git ls-files --cached --others --exclude-standard`) on every call and stores nothing. Optional input: `{ "path": "specs/auth.md" }` limits the report to one spec.
+
+It returns JSON text:
+
+- `requirements`: `id`, `title`, `file`, `line`, `scenarios`, `open`.
+- `malformed`: `file`, `line`, `reason` for a bad heading, a missing title or a duplicate ID.
+- `inflated`: requirements with more than one behaviour sentence or more than three scenarios.
+- `uncovered`: IDs no test file cites.
+- `orphans`: IDs cited in tests that no spec defines, limited to prefixes some spec uses, so `UTF-8` or `ISO-8601` are not orphans.
+- `changedSinceStaged`: test files in `git diff --name-only` (work tree against the index), so an edit to a staged test is visible.
+
+Test files are paths matching `*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, or under `__tests__/`, `test/` or `tests/`.
+
+## Disable
+
+Run `/plugin` and turn off claudetto-spec, or run `claude plugin disable claudetto-spec`.

@@ -1,0 +1,19 @@
+# Managed by bedrock. `just setup` installs these hooks with the lefthook the justfile
+# pins. Each hook runs one just recipe, so `just pre-commit` checks by hand what a commit
+# would; put project checks in project.just and machine-local hooks in lefthook-local.yml.
+assert_lefthook_installed: true
+
+pre-commit:
+  jobs:
+    - name: checks
+      run: just pre-commit
+
+commit-msg:
+  jobs:
+    - name: conventional commits
+      run: just bedrock commit-msg {1}
+
+pre-push:
+  jobs:
+    - name: checks
+      run: just pre-push

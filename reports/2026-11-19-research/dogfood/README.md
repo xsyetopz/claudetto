@@ -1,0 +1,378 @@
+# Dogfood on Vanilla Claude Code 2.1.327
+
+`run.sh` starts Claude Code 2.1.327 in tmux with an isolated config dir. It runs Sonnet 5.5 with claudetto and claudetto-you-should-know loaded from a second clone, and uses a fresh clone of HEAD as the working repo.
+
+## Register Check
+
+`bun tools/check-register.ts` applies the rules below and exits 1 when it lists an item. It also lists an item whose text carries two different `Likelihood: N` values, because such an item's level cannot be read.
+
+## Register Audit, 2026-11-19
+
+Clone at ba45d6dcf. The session agent parsed `plans/rebuild/risk-register/*.md` with these rules:
+
+- an entry starts at a `- [ ] **RISK-N**` or `- [x] **RISK-N**` line;
+- its status is the text after the last `Status:` in the entry, including an inline one;
+- an entry whose title reads "Moved Out as OUT-N" is settled.
+
+| Item | Count |
+| --- | --- |
+| Entries | 427 |
+| Likelihood 3 or higher and not closed, accepted, mitigated or moved Out | 0 |
+| Neither a Status nor a Moved Out title | 0 |
+| Status open (all at Likelihood 1 or 2) | 16 |
+
+The first audit in the same session reported 11 open entries at Likelihood 3 or higher. Its filter read Status only at the start of a line, so it missed a Status that follows `Owner: X.` on the same line. All 11 carry a closed status.
+
+The status line read `claude-sonnet-5-5 | ctx 6% | 7d 9% | cache 98%`.
+
+## Dogfood at 48b68fe1f, 2026-11-19
+
+Probe: `run.sh start`, claude 2.1.327 (`~/.local/share/claude/versions/2.1.327`), Sonnet 5.5, auto mode, claudetto and claudetto-you-should-know loaded.
+
+- Turn 1 ran `bun tools/check-register.ts` (428 items, 0 at Likelihood 3 or higher unsettled, 0 with two Likelihood values, exit 0) and `claude plugin test plugins/claudetto-openspec` (1 pass, 0 fail). It quoted both outputs and changed no file.
+- Turn 2 was a read-only lookup. It cited `plans/rebuild/prd/verification.md:14`, quoted the last Status line, and said which claims it had not checked.
+- Cache hit was 87% after the cold first turn and 98% after turn 2 (REQ-COST-040).
+- No new fault was seen, so no risk-register entry was added. The `⚠` before the status line is the engine's frame for a pinned plugin status (`plugins/claudetto/hooks/statusline/statusline.ts:44`).
+
+The same day, `claude plugin test` on the three plugins under claude 2.1.328 gave claudetto 128 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail each.
+
+## Dogfood at fea3d5562, 2026-11-20
+
+Probe: `run.sh start`, claude 2.1.327, Sonnet 5.5, auto mode, claudetto and claudetto-you-should-know loaded. The isolated config still held the retired `Assisted-by: Claude Code` commit value.
+
+- Session start replaced it: "replaced attribution.commit Assisted-by: Claude Code".
+- Turn 1 asked for a line in this README. The file was untracked in the clone, since `reports/` is gitignored and this README had never been force-added, so the agent reported that and asked before creating it. After a yes it asked how to commit an ignored path and offered a force-add first. Commit d6b4451b0 ends with `Co-Authored-By: Claude <noreply@anthropic.com>` (issue #47, RISK-501).
+- Turn 2 made a side branch from HEAD~1, committed there, and answered the ancestry and conflict questions from `git merge-base --is-ancestor` and `git merge-tree`. Both answers matched a recheck (issue #48, RISK-502).
+- New fault: a you-should-know card said that later edits to the force-added file would be silently ignored, which is false (issue #65, RISK-510, accepted on a replay in reports/2026-11-20-research/ysk-tool-claim).
+- The status line read `claude-sonnet-5-5 | ctx 4% | 7d 40% | cache 99%` after turn 2.
+
+## Dogfood at 37b7f8200, 2026-11-20
+
+Probe: `run.sh start`, same setup. Turn 1 asked for a surrogate-pair test for the code-point cutter in claudetto-you-should-know, run alone, then committed.
+
+- The agent chose `fitLine` (hooks/text/fit.ts, iterates by code point), added `fitLine("a😀b", 3)` -> `"a…"`, ran only that file from a scratch copy (`claude plugin test` takes a folder, per `--help`), and committed 78e1d4061 with the co-author trailer. It reported that it did not run the typecheck or the full suite.
+- A Heads up card said the function cuts by UTF-16 units and already has a surrogate-pair test. That holds for `sliceUnitsHead` (hooks/text/text.ts, test at hooks/text/__tests__/text.test.ts:17), so the card is true.
+- New fault: the agent put the test in hooks/__tests__/behaviour.test.ts next to the existing `fitLine` test and named the departure from CONTRIBUTING.md:34. The repo had taught that placement: behaviour.test.ts and rules.test.ts held single-module unit tests. Issue #66 moved them beside their modules (0ac2486b5).
+- The status line read `claude-sonnet-5-5 | ctx 5% | 7d 40% | cache 96%`.
+
+## Dogfood at 0ac2486b5, 2026-11-20
+
+Probe: `run.sh start`, same setup.
+
+- Turn 1 asked which claudetto hooks run on SessionStart and what they write. The answer named the `hooks.json` env-file line and `registerStart` (plugins/claudetto/hooks/settings/start.ts:19). It said start.ts writes user settings (line 31) and the `setup.filled` store key (line 32). All three claims match the code. `claude plugin test plugins/claudetto` gave 132 pass, 0 fail, and the agent named the checks it did not run.
+- Turn 2 kept a file list in a shell variable. The agent used `${(f)...}` and `${f:t:r}`, and the engine's rm check asked for approval although nothing was deleted (issue #67, RISK-511, accepted). After approval, the answer was correct: one file, `instructions.ts`, 96 lines, imported by `git/__tests__/instructions.test.ts`.
+- The status line read `claude-sonnet-5-5 | ctx 5% | 7d 41% | cache 99%`.
+
+## Dogfood at c6a1f1214, 2026-11-20
+
+Probe: `run.sh start`, same setup. One turn ran the release checks.
+
+- `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail in every run.
+- `bun tools/check-register.ts`: 436 items, 0 in every category. The agent listed ten items at Likelihood 3 or higher whose first Status reads open or partial, and showed that each one's last Status is settled. RISK-262 and RISK-264 read "mitigated 2026-11-19".
+- `bunx tsc --noEmit` failed with TS6053 in both plugins. `run.sh` loaded the plugins from the plug clone, so the generated types existed only there. The agent said so, typechecked a stand-in copy (exit 0), and did not start a second session. Issue #68: `start` now also loads claudetto-openspec and copies the types into the working repo. After that, tsc exits 0 in both plugins of the repo clone.
+- A Heads up card said the tsc errors come from generated type files missing from the repo. That is true.
+
+## Dogfood at e91de4382, 2026-11-20 (final round)
+
+Probe: `run.sh start`, all three plugins loaded, types copied into the working repo (issue #68).
+
+- Turn 1 ran the release checks in the session and read the test logs as well as the exit codes. `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, exit 0 every time. `bunx tsc --noEmit` exited 0 in claudetto and in claudetto-you-should-know. `bun tools/check-register.ts` read 436 items, found 0 in every category, and exited 0. No risk at Likelihood 3 or higher is unsettled.
+- Turn 2 added a width-1 `fitLine` test. It went into `hooks/text/__tests__/fit.test.ts`, beside the module (issue #66 path). The suite gave 161 pass, 0 fail, and commit 07618def4 carries the co-author trailer.
+- No new fault was seen.
+- Outside the session, a fresh clone of e91de4382 with the session-written types gave the same results: three plugins passing twice, both tsc runs exit 0, register exit 0.
+
+## Dogfood at 7f9a43bad, 2026-11-20 (final round)
+
+Probe: `run.sh start`, same setup. Before the session, a fresh clone of 7f9a43bad loaded all three plugins in its own interactive session, so core wrote the types there. On that clone, `claude plugin test` passed twice for each plugin (132, 1, 160 pass, 0 fail), `bunx tsc --noEmit` exited 0 in both plugins, and `bun tools/check-register.ts` exited 0.
+
+- Turn 1 ran the release checks in the session. `claude plugin test`, two runs each: claudetto 132 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, exit 0 every time. `bunx tsc --noEmit` exited 0 in both plugins. `bun tools/check-register.ts` read 436 items and exited 0, with no unsettled risk at Likelihood 3 or higher.
+- Turn 2 committed on a new branch `side` and on the starting branch, both editing the same line. Then it asked whether `side` is an ancestor and whether a merge would conflict. The prompt named a root README.md, which does not exist, and the agent asked which README to edit instead of guessing. Both commits, 21174e8b8 and 52fda00e3, carry the co-author trailer (issue #47). The agent answered "not an ancestor" and "would conflict", citing `git merge-base --is-ancestor` (exit 1) and `git merge-tree --write-tree` (exit 1). An outside rerun of both commands gave the same exits (issue #48). The tree stayed clean, and nothing was merged.
+- No new fault was seen.
+
+## Dogfood at 6fa79cf66, 2026-11-20 (final round)
+
+Probe: `run.sh start` setup on a fresh clone of 6fa79cf66, claude 2.1.327, Sonnet 5.5, all three plugins loaded, session 2fbfa663. The machine's load average stood near 200 from unrelated processes.
+
+- Outside the session, the fresh clone gave claudetto 149 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, twice each, with no test timeout; `bunx tsc --noEmit` exited 0 in both plugins and `bun tools/check-register.ts` exited 0. An earlier run at load 260 had timed out tests at 5000 ms in claudetto and claudetto-you-should-know. Run back to back at load 200, 6f9a832eb (before the record mask) and 6fa79cf66 both passed twice in 23 to 31 s, so the timeouts came from load, not from the `tool.call` mask.
+- Turn 1 ran the same checks in the session plus `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: every exit 0, the same counts, and 172 of 172 risks at Likelihood 3 or higher printed `ok`. Each `cd` ran in a subshell or to an absolute path, so RISK-098 (issue #71) did not recur.
+- Turn 2 wrote `.envrc` with a token, printed it with `cat`, and printed it to stderr from a command that exited 3 (issue #63). The session file's `toolUseResult` held `[REDACTED]` for all three: the Write record, the `cat` stdout, and the error. The raw token stayed only in the user's prompt, the model's own tool inputs and its reply. The error reached the model as `<tool_use_error>Exit code 3\n[REDACTED]</tool_use_error>`.
+- Turn 3 repeated the two-commit task. Both commits carry the co-author trailer, and the answers matched `git merge-base --is-ancestor` (exit 1) and `git merge-tree --write-tree` (exit 1).
+- Turn 4 kept two paths in `F` and ran `wc -l $F` unquoted; zsh split it into two arguments (81 and 209 lines). Turn 5 changed "licence" in 3 ADR files with one `git grep -l | xargs perl -pi` call and no `Edit` call, and said that its case-sensitive match left a capitalised form unchecked.
+- No new fault was seen.
+
+## Dogfood at e6909b79f, 2026-11-20
+
+Probe: `run.sh start` setup on a fresh clone of e6909b79f, which adds only the notes above to 6fa79cf66; session 48207af4.
+
+- Outside the session, the fresh clone gave claudetto 149 pass, claudetto-openspec 1 pass, claudetto-you-should-know 160 pass, 0 fail, twice each, with no test timeout; `bunx tsc --noEmit` exited 0 in both plugins and `bun tools/check-register.ts` exited 0.
+- Turn 1 ran the same checks in the session plus `audit.py --all`: every exit 0, 436 risks printed, each `ok`. 5 tool calls, 0 errored results.
+- The per-status figures in that answer were the agent's own count, because `audit.py` printed none. Issue #75 makes the script print them.
+- No new fault was seen in the plugins.
+
+## Dogfood at 72796b825, 2026-11-20 (final round)
+
+Checks run from a clean tree at 72796b825.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 98, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 436; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
+- The session agent wrote and committed the section above. A fresh clone of 72796b825 outside the session gave the same test counts twice, with no timeout, and tsc and register exit 0.
+- New fault: the agent called `Monitor` with a ToolSearch input (`select:Monitor`) and got core's InputValidationError, then waited with a Bash loop (session 1c9f6d80; issue #76, RISK-512, accepted at Likelihood 1 × Impact 1).
+
+## Dogfood at 5d1f30e46, 2026-11-20
+
+Checks run from a clean tree at 5d1f30e46.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 99, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
+- New fault: the session's `git add` of this README was refused because `.gitignore` ignored `/reports/`, which stopped its `&&` chain. The rule hid 74 register-cited report paths from git as well. Issue #77, fixed in 271c48f1c; the session's commit was applied here by cherry-pick, so this round is not the final one.
+
+## Dogfood at be012dcdd, 2026-11-20
+
+Checks run from a clean tree at be012dcdd.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0 (needed registry.npmjs.org to fetch typescript; the first attempt without it exited 1 on a blocked download, so it is not counted).
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0 (same download note).
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 99, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 437; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- All 99 distinct reports/ paths cited under plans/rebuild exist in this clone; none are missing.
+- No test failed or timed out, and the two runs of each plugin matched, so nothing was flaky.
+- The session committed this section with plain `git add` and `git commit`, which confirms the fix for #77; its commit was applied here by cherry-pick.
+- New observation: the sandbox denied `registry.npmjs.org` when `bunx` fetched typescript. It was seen once before, about a day earlier (session 4ccbdaa3), and cost one extra call. Issue #78, accepted as RISK-513 (Likelihood 2 × Impact 1). Since the round found something new, it is not the final one.
+
+## Dogfood at 326721a50, 2026-11-20
+
+Checks run from a clean tree at 326721a50.
+
+- `claude plugin test` in plugins/claudetto: 149 pass, 0 fail, exit 0; second run 149 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-openspec: 1 pass, 0 fail, exit 0; second run 1 pass, 0 fail, exit 0.
+- `claude plugin test` in plugins/claudetto-you-should-know: 160 pass, 0 fail, exit 0; second run 160 pass, 0 fail, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto: no output, exit 0.
+- `bunx tsc --noEmit` in plugins/claudetto-you-should-know: no output, exit 0.
+- `bun tools/check-register.ts`: exit 0.
+- `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register`: exit 0. Last two lines:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+- reports/ paths cited under plans/rebuild: 99 distinct, 99 exist in this clone, 0 missing.
+- No test failed and the two runs of each plugin matched, so nothing was flaky.
+- Outside check of session c7e93c52: 13 tool calls, 2 errored. One was the deferred-tool slip (`Monitor` called with `select:Monitor`), a repeat of RISK-512; follow-up issue #79 rechecked its rate (first `Monitor` call a slip in 34 of 186 sessions, never repeated) and kept it accepted. The other was core's block on a foreground `sleep 100`, the known RISK-187. `bunx tsc` ran sandboxed with no registry denial this time (RISK-513).
+- Between rounds, the RISK-507 recheck (#64) ran on the releases already on disk: 2.1.328 and 2.1.329 still resend the fork's last message as a string (reports/2026-11-20-research/fork-recheck).
+
+## Dogfood at 362326e98, 2026-11-20 (final round)
+
+Run from a clean tree at HEAD 362326e98.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 438 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 100 distinct paths, 0 missing | 0 |
+| `gh issue list --repo xsyetopz/claudetto --state open` | 1 open issue | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+
+The repo has no GitHub remote (origin is a local path), so the issue list used the explicit slug xsyetopz/claudetto.
+
+Outside check, made after the session's commit:
+
+- Session 69f630f9: 12 tool calls, 1 errored: the first `gh issue list`, because the test clone's only remote is a local path. That comes from how the round clones the repo, not from claudetto; the session asked for the slug and then ran the read with `api.github.com` allowed for that one command, as the minimal sandbox intends (ADR-0188).
+- The 100 cited paths against 99 in earlier rounds: 9e053590e added `reports/2026-11-20-research/fork-recheck/run.sh` to RISK-507, the only new path.
+- No new fault, so this is the final round. The commit that records it changes only this README, so the final HEAD's code, plans and register are the tree checked here.
+
+## Dogfood at 1ff2c04a2, 2026-11-20
+
+Clean tree, claude plugin test run twice per plugin.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 438 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 100 distinct paths, 0 missing | 0 |
+| `gh issue list --state open` (xsyetopz/claudetto) | 2 open issues: #64, #80 | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+- #80 Dogfood clone has no GitHub remote, so gh in the session cannot find the repo, labels bug, priority:low, status:in-progress
+
+Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 80 (read only, `gh issue view`, exit 0 each):
+
+- Closed, status:done, a comment starting with "Resolution": 43 44 47 48 51 52 57 59 60 61 62 63 65 66 67 68 69 70 71 72 75 76 77 78 79
+- #64: OPEN, status:blocked, no Resolution comment
+- #80: OPEN, status:in-progress, no Resolution comment
+- #73 and #74 are open Dependabot pull requests, not issues: no status label, no comments, no Resolution comment. `gh issue list` does not list them.
+
+Outside check, made after the session's commit:
+
+- Session d2ace84e: 12 tool calls, 2 errored. A `grep -c` loop exited 1 on a file with no match, which is grep's documented exit for zero matches, not a fault. The first `gh` call was denied `api.github.com`; the session reran it with that host in `allowed_domains`. The denial is the sandbox's per-command network allowance, which ADR-0188 still described as `allowedDomains ["*"]`, so issue #81 widened RISK-513 to every unlisted host and corrected the ADR (c578d6ac3).
+- `gh` found the repo through the clone's `github` remote with no slug given, which verifies the fix for #80 (1ff2c04a2).
+- One new ticket (#81), so another round follows.
+
+## Dogfood at 3f72b84bf, 2026-11-20
+
+Clean tree, claude plugin test run twice per plugin.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 438 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 100 distinct paths, 0 missing | 0 |
+| `gh issue list --state open` (xsyetopz/claudetto) | 1 open issue: #64 | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 78, transferred 1, moved out 18, unsettled 0
+risks: 438; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+
+Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 81 (read only, `gh issue view`, exit 0 each):
+
+- Closed, status:done, a comment starting with "Resolution": 43 44 47 48 51 52 57 59 60 61 62 63 65 66 67 68 69 70 71 72 75 76 77 78 79 80 81
+- #64: OPEN, status:blocked, no Resolution comment
+- #73 and #74 are open Dependabot pull requests, not issues: no status label, no comments, no Resolution comment. `gh issue list` does not list them.
+
+Outside check, made after the session's commit:
+
+- Session ba07e0d8: 10 tool calls, 0 errored. Its first test batch used `${PIPESTATUS[0]}`, which zsh leaves empty, so each line read `exit ` and the session reran all six plugin tests. That is a new fault: issue #82, fixed in f03a8e3e7 (RISK-514).
+- Its `gh issue view` loop printed `deny network-outbound cafe.github.com:443` twice and still returned every issue. The host takes gh's telemetry: issue #83, recorded under RISK-513 in 3dba9cd57.
+- Two new tickets, so another round follows.
+
+## Dogfood at 484ca6ef4, 2026-11-20
+
+First command, run exactly as written in the zsh session:
+
+```
+$ false | true; echo "upper=${PIPESTATUS[0]} lower=${pipestatus[1]}"
+upper=1 lower=1
+```
+
+Clean tree, claude plugin test run twice per plugin.
+
+| Check | Result | Exit |
+| --- | --- | --- |
+| `claude plugin test plugins/claudetto` (run 1) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto` (run 2) | 149 pass, 0 fail, 25 files | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 1) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-openspec` (run 2) | 1 pass, 0 fail, 1 file | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 1) | 160 pass, 0 fail, 21 files | 0 |
+| `claude plugin test plugins/claudetto-you-should-know` (run 2) | 160 pass, 0 fail, 21 files | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto | no output | 0 |
+| `bunx tsc --noEmit` in plugins/claudetto-you-should-know | no output | 0 |
+| `bun tools/check-register.ts` | 439 items, every count 0 | 0 |
+| `python3 -I reports/2026-11-20-research/risk-audit/audit.py plans/rebuild/risk-register` | see below | 0 |
+| `reports/` paths cited under plans/rebuild | 102 distinct paths, 0 missing | 0 |
+| `gh issue list --state open` (xsyetopz/claudetto) | 1 open issue: #64 | 0 |
+
+No flaky split: both runs of each plugin matched.
+
+Last two lines of the audit output:
+
+```
+per state: closed 241, accepted 100, mitigated 79, transferred 1, moved out 18, unsettled 0
+risks: 439; at Likelihood 3 or higher: 172; unsettled at Likelihood 3 or higher: 0; failing a check: 0
+```
+
+Open issues:
+
+- #64 Recheck on each release: handover fork cache miss on a string last message (RISK-507), labels engine-limit, task, priority:low, status:blocked
+
+Issues 43 44 47 48 51 52 57 59 60 61 62 and 63 to 83 (read only, `gh issue view`, exit 0 each):
+
+- Closed, status:done, a comment starting with "Resolution": 43 44 47 48 51 52 57 59 60 61 62 63 65 66 67 68 69 70 71 72 75 76 77 78 79 80 81 82 83
+- #64: OPEN, status:blocked, no Resolution comment
+- #73 and #74 are open Dependabot pull requests (`gh pr view` confirms), not issues: no status label, no Resolution comment. `gh issue list` does not list them.
+
+The `gh` calls printed `deny network-outbound cafe.github.com:443` (the telemetry host of issue #83) and still returned every result.
+
+Outside check, made after the session's commit:
+
+- Session 0c7e9db1: 10 tool calls, 0 errored. The first command printed `upper=1 lower=1`, so the env-file `TRAPDEBUG` from f03a8e3e7 fills `PIPESTATUS` in a live 2.1.327 session (issue #82); in round 3f72b84bf the same form printed nothing. The test batch read its codes with `${pipestatus[1]}` and got 0 each time.
+- The first `gh issue list` was denied `api.github.com` and was rerun with that host allowed for the command (RISK-513); the later `gh` calls hit the telemetry denial of issue #83 and returned every result. Both are recorded risks, not new faults.
+- No new fault, so this is the final round. The commit that adds this check changes only this README, so the code, plans and register at the final HEAD are the tree checked here.

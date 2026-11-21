@@ -1,0 +1,27 @@
+Which lab sessions run inside a sandbox (claude 2.1.327, 2026-11-18, Haiku 5.5)
+
+Discriminator: connect to the unix socket /var/run/mDNSResponder. The user's sandbox block has no
+allowAllUnixSockets, so a sandboxed command gets EPERM and an unsandboxed one connects.
+
+Command: python3 -I -c "import socket;s=socket.socket(socket.AF_UNIX);s.connect('/var/run/mDNSResponder');print('connected')"
+
+Started from an unsandboxed shell, in a fresh proj-XXXXXX folder:
+  direct, no claude                                   -> connected
+  claude -p --setting-sources project ...             -> connected   (user settings not loaded: no sandbox)
+  claude -p --setting-sources user,project ...        -> PermissionError: [Errno 1] Operation not permitted
+                                                         (sandbox active; no "failed to initialize")
+Started from this session's sandboxed shell, direct  -> PermissionError (outer sandbox)
+
+Consequence: runs6/ (--setting-sources project) ran with no sandbox. The sandbox block lives in user
+settings, so a lab arm that wants the user's sandbox without the user's hooks and plugins passes the
+sandbox block through --settings.
+
+A lab settings file with the sandbox block, under --setting-sources project:
+  claude -p --setting-sources project --settings hangwatch/vanilla-sbx.json ...  -> PermissionError: [Errno 1] Operation not permitted (sandbox active)
+
+Hooks run outside the sandbox. Same settings plus a Stop hook that runs the discriminator and writes
+its result to a file (Haiku 5.5, `--settings s.json`, prompt after `--`):
+  the agent's Bash call       -> refused (the agent reported the error and pointed at /sandbox)
+  the Stop hook, same session -> connected
+Consequence: a hook can list and signal processes that the agent's sandboxed shell cannot, such as a
+test child orphaned when a wrapper killed only its parent.

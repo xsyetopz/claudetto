@@ -1,6 +1,3 @@
-# LF everywhere, so the linters and the hooks see the same bytes in each checkout.
-* text=auto eol=lf
-
 # >>> bedrock
 * text=auto eol=lf
 *.bat text eol=crlf
@@ -9,7 +6,6 @@
 
 *.md diff=markdown
 *.sh diff=bash
-.githooks/* text eol=lf diff=bash
 
 *.png binary
 *.jpg binary
@@ -31,3 +27,6 @@
 bun.lock text linguist-generated
 *.lockb binary
 # <<< typescript-bedrock
+
+# Recorded research runs and probes stay byte-for-byte as captured, so the checks skip them.
+reports/** linguist-generated

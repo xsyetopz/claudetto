@@ -1,3 +1,0 @@
-#!/bin/sh
-echo "$PWD :: $*" >> /tmp/probe-131/git-calls.log
-exit 97

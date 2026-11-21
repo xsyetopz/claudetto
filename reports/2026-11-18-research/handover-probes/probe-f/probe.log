@@ -1,0 +1,5 @@
+turn.complete #1
+compact in turn.complete threw hprobe: $.session.compact: not available in a headless (-p / SDK) session yet: compaction here runs inside a turn (a /compact prompt); catch it and carry on
+turn.complete #2
+unawaited clear threw hprobe: $.command.run: the host has ended its input
+session.end other

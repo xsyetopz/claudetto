@@ -1,7 +1,0 @@
-{
-	"name": "scratch",
-	"type": "module",
-	"scripts": {
-		"test": "bun test"
-	}
-}

@@ -1,50 +1,50 @@
 # Contributing
 
-## Set Up
+## Setup
 
-1. Install Bun `1.4.4` (the `packageManager` field of `package.json`), `just`, and Claude Code `2.1.323` or later.
-2. Run `bun install` in the repository root.
-3. Run `just check`.
-   It runs `just lint`, `just typecheck`, `just test`, `just validate`, and `just lab`, each of which you can run alone.
-   It must pass before you open a pull request.
-
-`just --list` names every recipe.
-`just test` takes the arguments of `bun test`, such as a file or `-t RE`.
-`bun run lint:fix` applies the `biome` fixes, and `bun run lint:md` lints the Markdown files.
+- Install [Bun](https://bun.sh), [just](https://just.systems) and Claude Code.
+- Start one session with `claude --plugin-dir plugins/<plugin>` per plugin; Claude Code writes the
+  `.claude-plugin/types` folder that typechecking needs.
 
 ## Layout
 
-- `plugins/claudetto/src/` holds the shared files and one folder for each slice, and `hooks/hooks.json` names the one hooks module `src/register.ts`.
-- `tools/` holds the scripts of `just check`, and `claudekit/` holds the paid and manual tools.
-- `tests/claudetto/` holds the unit tests of the core plugin, and a `__tests__/` folder beside a source counts as well.
-- `plugins/*/tests/` holds the hook labs, which only `just lab` (`claude plugin test`) runs, because `bun test` skips them (`bunfig.toml:11`).
-- [`AGENTS.md`](AGENTS.md) has every rule of the repository, which `CLAUDE.md` imports.
+Each plugin lives in `plugins/<plugin>/`. Its `hooks/hooks.json` loads `hooks/register.ts`, which wires every
+feature folder. Code is grouped by feature folder, so a change touches one folder and a new feature adds one.
 
-## Rules
+```text
+hooks/
+  register.ts            entry point: calls each feature's register function
+  <feature>/             one concern: guards, handover, view, request, ...
+    <module>.ts
+    __tests__/<module>.test.ts
+  __tests__/             tests that mount the whole plugin, plus shared fixtures (testkit.ts)
+```
 
-[`AGENTS.md`](AGENTS.md) has the full rules.
-In short:
+- A feature folder holds one concern. Sibling files that share a stem (`check.ts`, `checks.ts`,
+  `check-two.ts`) belong in a folder named for that stem, each file named for its role.
+- Code used by several features goes in `shared/` (e.g. `shared/fault.ts`), never in a feature that others
+  then import for unrelated reasons. Only `register.ts` and `hooks.json` sit at the `hooks/` top level.
+- A feature with sub-concerns nests them the same way, e.g. `guards/shell/`, `guards/wall/`, `guards/redact/`;
+  a data file its code reads (`betterleaks.toml`) lives beside that code.
+- Keep a source module under 603 lines; past that, split it into a folder of role files (see `view/parts/`).
+- Imports are relative and extension-less (`../shared/constants`).
 
-- Keep each file at 300 lines or less, and each test file at 500 lines or less.
-- Put each code item in inline code.
-- Use `bun` and `bunx` for every package step, never `npm` or `npx`.
-- Write no internal note in source: no task ID, no path into `openspec/`, no history.
+## Tests
 
-## Tests First
+- A unit test goes in the `__tests__/` folder beside the module it covers and is named after it.
+- A test that covers several features, or mounts the plugin through `testkit.ts`, goes in `hooks/__tests__/`.
+- Tests import their kit from `claude-code/testing`.
+- Run one plugin's tests with `claude plugin test plugins/<plugin>`; repository tooling tests run with
+  `bun test --timeout 60000 tools`.
 
-Write the test first, and see it fail for the right reason.
-Then make the change.
-A regression test must fail without the fix.
-Tests give commands to the guards as strings and never run a guarded command.
+## Before a Pull Request
 
-## Changelog
+- `just verify` validates, checks gating hooks for `.catch`, typechecks and tests every shipped plugin. It
+  must pass.
+- A behaviour change updates the requirement it traces to in `plans/rebuild/prd/`, including any test path
+  the requirement cites.
+- A release bumps the plugin version first: `just release <plugin>`.
 
-Add an entry under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md), opening that section above the newest release when it is absent.
-Set the version in `package.json`; `just release-version` fails when it does not follow the tags.
-A `plugin.json` holds no `version`, so Claude Code versions each install by its commit and every commit on `main` updates it.
-The merge into `main` is the release, and no tag is cut.
+## Commits
 
-## Conduct and Security
-
-Read the [code of conduct](CODE_OF_CONDUCT.md).
-Report a vulnerability in private, as [`SECURITY.md`](SECURITY.md) says.
+Write the subject in the imperative and reference the issue, e.g. `Add the off command view (#57)`.

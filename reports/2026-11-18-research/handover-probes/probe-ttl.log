@@ -1,0 +1,12 @@
+Subagent cache TTL probe, claude 2.1.327, 2026-11-18.
+
+Tool: cc-inspect `code cli`, version 2.1.327, args ["--allowedTools","Agent"], prompts ["go"],
+calls [{"name":"Agent","input":{"description":"ttl probe","prompt":"say OK","subagent_type":"general-purpose","model":"haiku","run_in_background":false}}].
+Request 1 is the main loop; request 2 is the subagent's first call. cache_control read from the body text.
+
+Run 1: login oauth (fake claude.ai subscriber), no env.
+  request 1 (main, claude-sonnet-5-5): cache_control {"type":"ephemeral","ttl":"1h"}.
+  request 2 (subagent): cache_control {"type":"ephemeral"} (no ttl: the 5-minute default); billing header has cc_is_subagent=true.
+Run 2: API key login, env CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL=1h.
+  request 2 (subagent): cache_control {"type":"ephemeral","ttl":"1h"} on system[1] and messages[1].content[0].
+Env name from cc-inspect `surface` env TTL: CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL (enum), chunk-2ew0jg68.js:18928.
