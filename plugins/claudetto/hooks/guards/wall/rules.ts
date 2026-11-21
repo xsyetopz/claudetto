@@ -42,26 +42,18 @@ export const DENY: readonly string[] = [
 ];
 
 /**
- * The `git stash` forms that move work between the tree and the stash list:
- * bare `git stash`, its flags, and each writing subcommand. `list` and `show`
- * only read, and an ask rule matches any subcommand of a compound command, so a
- * `git stash*` prefix made a read-only survey such as `git status && git stash list` ask.
+ * The `git stash` subcommands that remove entries from the stash list, which every
+ * worktree and session of a repo shares: `pop` and `drop` take one entry, `clear`
+ * takes all. Saving (`git stash`, `push`, flags) keeps the work in the list, and
+ * `list`, `show` and `--help` only read. A rule pattern has only `*`, so a broader
+ * `git stash*` or `git stash -*` also caught those reads, also inside a compound
+ * command such as `git status && git stash list`.
  */
-const STASH_WRITES: readonly string[] = [
-	"",
-	" -*",
-	" push*",
-	" save*",
-	" pop*",
-	" apply*",
-	" drop*",
-	" clear*",
-	" branch*"
-];
+const STASH_REMOVALS: readonly string[] = [" pop*", " drop*", " clear*"];
 
 /** Prompts for actions that lose work or end other processes; each one asks, none is blocked. */
 export const ASK: readonly string[] = [
-	...STASH_WRITES.flatMap((form) => [
+	...STASH_REMOVALS.flatMap((form) => [
 		`Bash(git stash${form})`,
 		`Bash(git * stash${form})`
 	]),
