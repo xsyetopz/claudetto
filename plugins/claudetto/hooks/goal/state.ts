@@ -17,6 +17,8 @@ export interface Tracker {
 	paused?: string;
 	/** A Stop hook ran and no block has followed it yet; the turn's end then means the goal is met. */
 	stopping?: boolean;
+	/** The delegation nudge has been shown; it shows once per session. */
+	nudged?: boolean;
 }
 
 /** The block cap Claude Code uses when `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` is unset (2.1.330). */
