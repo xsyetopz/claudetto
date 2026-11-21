@@ -5,6 +5,7 @@ import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
 import { startPatch } from "../patch/tool";
 import { fault } from "../shared/fault";
 import { stringsOf } from "../shared/field";
+import { startWeb } from "../web/register";
 import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
 import { userSettingsPath } from "./settings";
 
@@ -43,13 +44,25 @@ function logChanges(
 /**
  * Repairs builtin drift (REQ-SETUP-011) and fills unset defaults (ADR-0190) in
  * one read and one write of user settings. Core allows one unmatched
- * `session.start` registration per plugin, so both share this hook.
+ * `session.start` registration per plugin, so both share this hook, and so
+ * does the web tools' registration (REQ-TOOLS-020).
  */
 export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
-		await startPatch($);
+		try {
+			await startPatch($);
+		} catch (error) {
+			// The patch tool failing to register must not stop the settings repair or the session.
+			fault($, "patch tool registration", error);
+		}
+		try {
+			await startWeb($, e);
+		} catch (error) {
+			// The web tools failing to register must not stop the settings repair or the session.
+			fault($, "web tool registration", error);
+		}
 		const path = await userSettingsPath($);
 		const repair = repairSettings(await readSettings($, path));
 		if (repair === undefined) {

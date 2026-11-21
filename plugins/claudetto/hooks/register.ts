@@ -14,6 +14,7 @@ import { registerPatch, registerToolOffer } from "./patch/tool";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { registerStatusline } from "./statusline/statusline";
+import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
 	registerStart(on, options);
@@ -31,4 +32,5 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerOffer(on);
 	registerStatusline(on);
 	registerStatuslineCommand(on);
+	registerWeb(on);
 };
