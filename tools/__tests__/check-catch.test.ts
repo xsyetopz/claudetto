@@ -7,10 +7,13 @@ const script = join(import.meta.dir, "..", "check-catch.sh");
 const plugin = join(import.meta.dir, "..", "..", "plugins", "claudetto");
 /** `claude plugin validate` takes about 10 s on 2.1.330 (measured 2026-11-21), past bun's 5 s default. */
 const VALIDATE_MS = 60_000;
-const env = {
-	...process.env,
-	CLAUDE_BIN: process.env["CLAUDE_BIN"] ?? "claude"
-};
+const bin = process.env["CLAUDE_BIN"] ?? "claude";
+const env = { ...process.env, CLAUDE_BIN: bin };
+/**
+ * The check runs Claude Code's own validator, so it needs the binary; CI runs no Claude Code
+ * (the maintainer's decision on issue #88), and `just verify` runs these tests locally.
+ */
+const withClaude = test.skipIf(Bun.which(bin) === null);
 
 async function check(dir: string) {
 	const r = Bun.spawn(["sh", script, dir], {
@@ -25,7 +28,7 @@ async function check(dir: string) {
 	return { exitCode, stderr };
 }
 
-test(
+withClaude(
 	"a gating hook without .catch fails the check and is named",
 	async () => {
 		// Arrange
@@ -48,10 +51,16 @@ test(
 	VALIDATE_MS
 );
 
-test(
+withClaude(
 	"the shipped plugin passes the check",
 	async () => {
-		const r = await check(plugin);
+		// Arrange
+		const dir = plugin;
+
+		// Act
+		const r = await check(dir);
+
+		// Assert
 		expect(r.exitCode).toBe(0);
 	},
 	VALIDATE_MS
