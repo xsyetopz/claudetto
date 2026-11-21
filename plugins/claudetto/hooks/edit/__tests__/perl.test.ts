@@ -11,7 +11,8 @@ describe("perl diff note", () => {
 			"git grep -lz a | xargs -0 perl -0pi -e 's/a/b/g'",
 			"for f in a.js b.js; do perl -pi -e 's/a/b/g' \"$f\"; done",
 			"find . -name '*.md' -exec perl -pi -e 's/a/b/' {} +",
-			"cd src && perl -pi -e 's/a/b/' a.js"
+			"cd src && perl -pi -e 's/a/b/' a.js",
+			"exec </dev/null\nperl -pi -e 's/a/b/' a.js"
 		];
 		const others = [
 			"perl -ne 'print' a.ts",

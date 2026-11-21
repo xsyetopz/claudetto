@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: rename-across-files
+description: "REQ-GUARDS-079 feature leg: a rename across files that invites sed -i; graded on the files only."
+tags: [guards, feature]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "Rename the function fetchUsr to fetchUser everywhere in src/. Change nothing else."

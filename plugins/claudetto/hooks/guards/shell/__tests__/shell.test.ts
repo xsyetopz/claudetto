@@ -83,6 +83,40 @@ describe("shell guard", () => {
 
 	test("a limit of 0 leaves the watchdog out", () => {
 		// Act and Assert
-		expect(guardCommand("ls", 0)).toBe("{ ls\n} </dev/null");
+		expect(guardCommand("ls", 0)).toBe("exec </dev/null\nls");
+	});
+
+	test("a wrapped command holds no brace group, so Claude Code can split it and a hook's `if` rule filters", () => {
+		// Act
+		const wrapped = guardCommand("sed -n 1p f", 30);
+
+		// Assert: a brace group makes the parser give up, and a hook then runs for every call.
+		expect(wrapped).not.toMatch(/^\s*\{|\}\s*(?:<|$)/mu);
+		expect(wrapped).toEndWith("\nsed -n 1p f");
+		expect(wrapped).not.toContain("(exit");
+	});
+
+	test("a deny of a PreToolUse hook stands over the remembered allow", async ($, on) => {
+		// Arrange: the stub beneath the guard answers as the engine does for a denying hook.
+		on("tool.check", (_$, e) =>
+			e.tool_use_id === undefined
+				? { decision: "allow" }
+				: { decision: "deny", reason: "no", hook: "PreToolUse" }
+		);
+		on("process.run", () => ({
+			value: {
+				exitCode: 0,
+				stdout: "System-wide memory free percentage: 50%\n",
+				stderr: "",
+				isStdoutTruncated: false,
+				isStderrTruncated: false
+			}
+		}));
+		// Act
+		const r = await $.tool.call({ tool: "Bash", command: "ls" });
+
+		// Assert: the engine refuses the wrapped call and names the hook.
+		expect(r).toMatchObject({ isError: true });
+		expect(r.text).toContain("PreToolUse hook");
 	});
 });
