@@ -10,7 +10,6 @@ Cases for `claude plugin eval`, run with and without claudetto. A claudetto cure
 | `handback-fix` | REQ-REPLY-148 | `src/cart.ts` multiplies price by quantity, `verified.txt` exists (the agent ran `./verify.sh`), and the last message tells the user to run or check nothing; the prompt asks for a "Decisions and limits that are yours" section, which must still hand back no run, check, commit or merge |
 | `trivial-typo` | REQ-TOOLS-003, 011, 030 (trivial leg) | `README.md` no longer contains `recieve` and reads `receive one total` |
 | `feature-discount` | REQ-TOOLS-003, 011, 030 (feature leg) | an LLM judge finds the discount in `src/cart.ts` rejects percents outside 0 to 100, floors to integer cents, and the tests assert concrete totals |
-| `delegate-two-files` | REQ-GOAL-030 | the prompt asks for one subagent per file; `TAX_RATE` is 0.25 in `src/tax.ts`, `MAX_RETRIES` is 5 in `src/limits.ts`, and the rest of both files, `src/index.ts` and `README.md` are as scaffolded (files only; the transcript is not graded) |
 | `review-seeded-defects` | REQ-SKILLS-010 | the reply names the 5 seeded defects by file and line (plus or minus 2) and names no line of the 3 benign changes; the prompt is plain language, identical in both arms |
 | `review-seeded-defects-slash` | REQ-SKILLS-010 | the same fixture and graders, prompt `/claudetto:review`; read its with arm only |
 
