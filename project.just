@@ -125,12 +125,13 @@ eval-holdout plugin model="claude-opus-5-5" *args: eval-preflight
     done
     exit "$rc"
 
-# Needs TYPESAFE_API_KEY (user-held) and an earlier `just eval <plugin>`, whose --keep-temp keeps the
-# traces. Each run's reply is sent to api.typesafe.ai (#124).
+# Needs TYPESAFE_API_KEY, read from the main checkout's .env (bunfig sets env = false, so Bun loads
+# no .env by itself; a missing file is skipped), and an earlier `just eval <plugin>`, whose
+# --keep-temp keeps the traces. Each run's reply is sent to api.typesafe.ai (#124).
 
 # Grade the newest eval run's replies with TypeSafe Jev, e.g. `just eval-jev claudetto`.
 eval-jev plugin:
-    bun tools/jev-grade.ts plugins/{{ plugin }}/evals/results
+    bun --env-file="$(git rev-parse --path-format=absolute --git-common-dir)/../.env" tools/jev-grade.ts plugins/{{ plugin }}/evals/results
 
 # Bump one plugin's patch version, e.g. `just bump claudetto`.
 bump plugin:

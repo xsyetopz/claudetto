@@ -32,7 +32,7 @@ export async function main(
 		return {
 			code: 2,
 			out: "",
-			err: "TYPESAFE_API_KEY is not set: export your TypeSafe API key; no request was sent"
+			err: "TYPESAFE_API_KEY is not set: set it in .env or export it; no request was sent"
 		};
 	}
 	try {

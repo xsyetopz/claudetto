@@ -35,7 +35,7 @@ Results land in `plugins/claudetto/evals/results/`.
 
 ## Jev Grading
 
-The regex graders tie too often, so a case may add a `jev.yaml` that TypeSafe's Jev answers after the eval (#124). `claude plugin eval` has no custom-code graders, so `just eval-jev claudetto` reads the newest run in `results/` and each run's final reply from its trace (kept by `--keep-temp`, which `just eval` passes). It needs `TYPESAFE_API_KEY` and is not part of `just eval`.
+The regex graders tie too often, so a case may add a `jev.yaml` that TypeSafe's Jev answers after the eval (#124). `claude plugin eval` has no custom-code graders, so `just eval-jev claudetto` reads the newest run in `results/` and each run's final reply from its trace (kept by `--keep-temp`, which `just eval` passes). It reads `TYPESAFE_API_KEY` from the main checkout's `.env` (see `.env.example`) and is not part of `just eval`.
 
 ```yaml
 facts: # what the case author knows about the scaffold: a string or a list
