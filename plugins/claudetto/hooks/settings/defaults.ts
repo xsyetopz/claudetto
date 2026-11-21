@@ -1,10 +1,14 @@
-import { fillGuards } from "../guards/wall/fill";
-import { WALLS } from "../guards/wall/rules";
+import { dropConflicts } from "../guards/wall/conflicts";
+import { guardSettings } from "../guards/wall/fill";
+import { FREE, GUARDED, WALLS } from "../guards/wall/rules";
+import { leaves, type OwnedKey, removeStale } from "./owned";
 import { indentOf, isRecord, type Json, parseSettings } from "./settings";
 
+/** The commit trailer setup writes: a co-author that git hosts link to Claude's account. */
+export const CO_AUTHOR = "Co-Authored-By: Claude <noreply@anthropic.com>";
+
 /**
- * Defaults written only where the user's settings leave a key unset. Each entry
- * carries a measured gain on 2.1.327 (fake-API probe, 2026-11-18, first `-p`
+ * The settings claudetto builds besides the guards. Each entry carries a measured gain on 2.1.327 (fake-API probe, 2026-11-18, first `-p`
  * request unless noted):
  * - the seven denied tools take 44,803 to 32,049 bytes; ExitPlanMode stays,
  *   because a plan started with shift-tab is presented through it;
@@ -17,16 +21,13 @@ import { indentOf, isRecord, type Json, parseSettings } from "./settings";
  *   DISABLE_EXPLORE_PLAN_AGENTS -913, DISABLE_CRON with DISABLE_ADVISOR_TOOL -384
  *   (the advisor stays off by product rule);
  * - SILENT_TURN_REMINDER 0 drops the reminder text, -487 bytes per turn.
- * - `outputStyle` selects the claudetto style when the user picked none: on the
- *   flaky-test prompt its line reran the test and reported the split in 7 of 7
- *   Sonnet runs, vanilla in 0 of 6 (paid probe, 2026-11-19). A style the user
- *   chose stays, so the plugin style is selected here, not forced.
- * The sandbox block and the guard rules come from fillGuards (ADR-0188), the one
- * writer of `sandbox`, so the two never disagree.
+ * - `outputStyle` selects the claudetto style: on the flaky-test prompt its line
+ *   reran the test and reported the split in 7 of 7 Sonnet runs, vanilla in 0 of 6
+ *   (paid probe, 2026-11-19). The fill sets it over a style the user chose,
+ *   because the style belongs to what this release measured.
+ * The sandbox block and the guard rules come from guardSettings, the one source
+ * of `sandbox`, so the two never disagree.
  */
-/** The commit trailer setup fills: a co-author that git hosts link to Claude's account. */
-export const CO_AUTHOR = "Co-Authored-By: Claude <noreply@anthropic.com>";
-
 export const DEFAULTS: Json = {
 	skillListingMaxDescChars: 60,
 	outputStyle: "claudetto:Claudetto",
@@ -68,140 +69,122 @@ export const DEFAULTS: Json = {
 	}
 };
 
-/**
- * Texts that earlier setup versions wrote to CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT.
- * An env entry equal to one is removed; a text the user wrote is kept.
- */
-export const RETIRED_REMINDER_TEXTS: readonly string[] = [
-	"The user hasn't heard from you in a while. When you have a finding or a result, report it in one sentence, then continue. Keep your next call unannounced.",
-	"A progress update is due: when you have a finding or a result, report it to user in one sentence, then make your next call."
-];
-
-/**
- * Allow entries that earlier setup versions wrote. `Bash(claude -p *)` let a paid
- * headless run start with no prompt (RISK-391, RISK-393), so the fill removes it.
- */
-export const RETIRED_ALLOWS: readonly string[] = ["Bash(claude -p *)"];
-
-/**
- * Commit trailers that earlier setup versions wrote to `attribution.commit`. No git
- * host credits an `Assisted-by` line to an account, so the fill replaces one equal
- * to an entry with CO_AUTHOR; a trailer the user wrote is kept.
- */
-export const RETIRED_COMMIT_TRAILERS: readonly string[] = [
-	"Assisted-by: Claude Code"
-];
-
+/** The outcome of a fill. */
 export interface Fill {
+	/** The settings text to write; the input text when nothing changed. */
 	readonly text: string;
+	/** What changed: keys set, `replaced` values, `removed` entries and keys. */
 	readonly added: readonly string[];
+	/** The scalar keys this release's construction names, to store for the next fill. */
+	readonly owned: readonly OwnedKey[];
 }
 
-/** Merges defaults into held: scalars when unset, records by key, arrays by missing entry. */
-const merge = (
-	held: Json,
-	defaults: Json,
-	path: string,
-	added: string[]
-): Json => {
-	const out: Json = { ...held };
-	for (const [key, value] of Object.entries(defaults)) {
-		const here = path === "" ? key : `${path}.${key}`;
+/** Joins two settings objects; records recurse, lists union, a scalar of `extra` wins. */
+const combine = (base: Json, extra: Json): Json => {
+	const out: Json = { ...base };
+	for (const [key, value] of Object.entries(extra)) {
 		const current = out[key];
-		if (isRecord(value)) {
-			if (current === undefined || isRecord(current)) {
-				out[key] = merge(isRecord(current) ? current : {}, value, here, added);
-			}
-		} else if (Array.isArray(value)) {
-			if (current === undefined || Array.isArray(current)) {
-				const kept: unknown[] = Array.isArray(current) ? current : [];
-				const wanted: unknown[] = value;
-				const missing = wanted.filter((entry) => !kept.includes(entry));
-				if (missing.length > 0) {
-					out[key] = [...kept, ...missing];
-					added.push(...missing.map((entry) => `${here} ${String(entry)}`));
-				}
-			}
-		} else if (current === undefined) {
+		if (isRecord(value) && isRecord(current)) {
+			out[key] = combine(current, value);
+		} else if (Array.isArray(value) && Array.isArray(current)) {
+			const have: unknown[] = current;
+			const more: unknown[] = value;
+			out[key] = [...have, ...more.filter((entry) => !have.includes(entry))];
+		} else {
 			out[key] = value;
-			added.push(here);
 		}
 	}
 	return out;
 };
 
-/** Drops a reminder text an earlier release wrote, so core's own text applies again. */
-const dropRetiredReminder = (next: Json, added: string[]): void => {
-	const env = next["env"];
-	if (
-		isRecord(env) &&
-		typeof env["CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"] === "string" &&
-		RETIRED_REMINDER_TEXTS.includes(
-			env["CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT"]
-		)
-	) {
-		const { CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT: _retired, ...rest } = env;
-		next["env"] = rest;
-		added.push("removed env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT");
+/**
+ * Builds claudetto's settings from this release's sources only: the defaults, the
+ * guard rules and the walls. Nothing in it reads a user's file, so the same
+ * release always builds the same object.
+ *
+ * @param walls Protected paths for the guard rules and the sandbox.
+ * @returns The settings object the fill applies.
+ */
+export const construct = (walls: readonly string[] = WALLS): Json =>
+	combine(DEFAULTS, guardSettings(walls));
+
+const show = (value: unknown): string =>
+	typeof value === "string" ? value : JSON.stringify(value);
+
+/**
+ * Applies the construction to `held` in place. A scalar takes the construction's
+ * value, a record recurses and a list gains the entries it lacks. A held value of
+ * another shape than the construction's is replaced, because the construction
+ * names the key.
+ */
+const apply = (
+	held: Json,
+	wanted: Json,
+	path: readonly string[],
+	added: string[]
+): void => {
+	for (const [key, value] of Object.entries(wanted)) {
+		const here = [...path, key].join(".");
+		const current = held[key];
+		const shaped =
+			(isRecord(value) && isRecord(current)) ||
+			(Array.isArray(value) && Array.isArray(current));
+		if (current !== undefined && !shaped && current !== value) {
+			added.push(`replaced ${here} ${show(current)}`);
+		}
+		if (isRecord(value)) {
+			const target = isRecord(current) ? current : {};
+			held[key] = target;
+			apply(target, value, [...path, key], added);
+		} else if (Array.isArray(value)) {
+			const have: unknown[] = Array.isArray(current) ? current : [];
+			const missing: unknown[] = value.filter((entry) => !have.includes(entry));
+			held[key] = [...have, ...missing];
+			added.push(...missing.map((entry) => `${here} ${show(entry)}`));
+		} else if (current === undefined) {
+			held[key] = value;
+			added.push(here);
+		} else if (current !== value) {
+			held[key] = value;
+		}
 	}
 };
 
-/** Drops the allow entries an earlier release wrote and a later one retired. */
-const dropRetiredAllows = (next: Json, added: string[]): void => {
-	const permissions = next["permissions"];
-	if (!isRecord(permissions) || !Array.isArray(permissions["allow"])) {
-		return;
-	}
-	const allow: unknown[] = permissions["allow"];
-	const retired = allow.filter(
-		(entry) => typeof entry === "string" && RETIRED_ALLOWS.includes(entry)
-	);
-	if (retired.length > 0) {
-		next["permissions"] = {
-			...permissions,
-			allow: allow.filter((entry) => !retired.includes(entry))
-		};
-		added.push(
-			...retired.map((entry) => `removed permissions.allow ${String(entry)}`)
-		);
-	}
-};
-
-/** Replaces a commit trailer an earlier release wrote with the current one. */
-const replaceRetiredTrailer = (next: Json, added: string[]): void => {
-	const attribution = next["attribution"];
-	if (
-		isRecord(attribution) &&
-		typeof attribution["commit"] === "string" &&
-		RETIRED_COMMIT_TRAILERS.includes(attribution["commit"])
-	) {
-		next["attribution"] = { ...attribution, commit: CO_AUTHOR };
-		added.push(`replaced attribution.commit ${attribution["commit"]}`);
-	}
-};
-
-/** Adds each default the settings text lacks; undefined when the text is not a JSON object. */
+/**
+ * Builds the construction and applies it to the settings text: its scalars win
+ * over the user's, its records recurse, its list entries are added, each
+ * `Bash(...)` rule that conflicts with a free or guarded command is removed, and
+ * a key the previous fill wrote and this one no longer names is deleted while it
+ * still holds the value claudetto wrote.
+ *
+ * @param text The user settings text, or undefined when the file does not exist.
+ * @param walls Protected paths for the guard rules and the sandbox.
+ * @param previous The keys the previous fill recorded as written.
+ * @returns The fill, or undefined when the text is not a JSON object.
+ */
 export const fillSettings = (
 	text?: string,
-	walls: readonly string[] = WALLS
+	walls: readonly string[] = WALLS,
+	previous: readonly OwnedKey[] = []
 ): Fill | undefined => {
 	const held =
 		text === undefined || text.trim() === "" ? {} : parseSettings(text);
 	if (held === undefined) {
 		return undefined;
 	}
+	const wanted = construct(walls);
+	const owned = leaves(wanted);
 	const added: string[] = [];
-	const next = merge(held, DEFAULTS, "", added);
-	dropRetiredReminder(next, added);
-	dropRetiredAllows(next, added);
-	replaceRetiredTrailer(next, added);
-	fillGuards(next, added, walls);
+	const next = removeStale(held, previous, owned, added);
+	apply(next, wanted, [], added);
+	dropConflicts(next, added);
 	if (added.length === 0) {
-		return { text: text ?? "", added };
+		return { text: text ?? "", added, owned };
 	}
 	return {
 		text: `${JSON.stringify(next, null, indentOf(text ?? ""))}\n`,
-		added
+		added,
+		owned
 	};
 };
 
@@ -214,7 +197,7 @@ const isChange = (entry: string): boolean =>
  * draws a `$.ui.log` line up to 2000 characters and a first fill names over 3000.
  *
  * @param path User settings file the fill wrote.
- * @param added Entries `fillSettings` reported, each a key or a key and a list entry.
+ * @param added Entries `fillSettings` reported: a set key, a key and a list entry, or a `replaced` or `removed` line.
  * @returns One line naming each set key, the count of entries added per list, and each removal or replacement on its own.
  */
 export const fillNotice = (path: string, added: readonly string[]): string => {
@@ -232,7 +215,7 @@ export const fillNotice = (path: string, added: readonly string[]): string => {
 	);
 	const parts: string[] = [];
 	if (sets.length > 0) {
-		parts.push(`set ${sets.length} unset default(s): ${named.join(", ")}`);
+		parts.push(`set ${sets.length} value(s): ${named.join(", ")}`);
 	}
 	if (removals.length > 0) {
 		parts.push(removals.join(", "));
@@ -250,11 +233,15 @@ export const fillVersion = (text: string): string => {
 };
 
 /**
- * Identifies the current defaults set, so a fill runs once per set and never
- * undoes a user's later edit. Derived from the filled text of empty settings, so
- * any change to a default or a guard rule starts a new fill; a hand-bumped
- * number was missed when the git -C rules landed (#41).
+ * Identifies the current construction, so a fill runs once per release and never
+ * undoes a user's later edit. Derived from the filled text of empty settings and
+ * the probe commands, so a change to a default, a guard rule or a probe starts a
+ * new fill; a hand-bumped number was missed when the git -C rules landed (#41).
  */
 export const FILL_VERSION = fillVersion(
-	fillSettings(undefined, [])?.text ?? ""
+	JSON.stringify([
+		fillSettings(undefined, [])?.text ?? "",
+		FREE.map((probe) => probe.command),
+		GUARDED.map((probe) => probe.command)
+	])
 );

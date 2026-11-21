@@ -72,6 +72,126 @@ export const ASK: readonly string[] = [
 	"Write(~/.claude/settings.json)"
 ];
 
+/** A command named with the reason it belongs on its list. */
+export interface Probe {
+	readonly command: string;
+	readonly why: string;
+}
+
+/**
+ * Commands claudetto keeps free of a prompt. An ask or deny rule that matches one
+ * is removed from user settings, so a rule an earlier release wrote and a later
+ * one narrowed stops prompting without a list of retired rules.
+ */
+export const FREE: readonly Probe[] = [
+	{ command: "git stash", why: "saving keeps the work in the stash list" },
+	{ command: "git stash list", why: "listing only reads" },
+	{ command: "git stash show", why: "showing only reads" },
+	{ command: "git stash --help", why: "help only reads" },
+	{
+		command: "git stash push -m x",
+		why: "pushing keeps the work in the stash list"
+	},
+	{
+		command: "git -C repo stash",
+		why: "a -C directory does not change what a save does"
+	},
+	{
+		command: "git -C repo stash list",
+		why: "a -C directory does not change what a list does"
+	},
+	{
+		command: "git status && git stash list",
+		why: "a read inside a compound command stays a read"
+	},
+	{ command: "git push origin main", why: "a plain push loses no history" }
+];
+
+/**
+ * Commands claudetto guards: one per ask or deny rule, plus the paid `claude -p`
+ * run. An allow rule that matches one is removed from user settings, because an
+ * allow would let it run with no prompt.
+ */
+export const GUARDED: readonly Probe[] = [
+	{
+		command: "git stash pop",
+		why: "removes an entry the shared stash list holds"
+	},
+	{
+		command: "git stash drop",
+		why: "removes an entry the shared stash list holds"
+	},
+	{
+		command: "git stash clear",
+		why: "removes every entry of the shared stash list"
+	},
+	{
+		command: "git -C repo stash pop",
+		why: "a -C directory does not change what a pop does"
+	},
+	{
+		command: "git -C repo stash drop",
+		why: "a -C directory does not change what a drop does"
+	},
+	{
+		command: "git -C repo stash clear",
+		why: "a -C directory does not change what a clear does"
+	},
+	{ command: "git reset --hard", why: "discards uncommitted work" },
+	{ command: "git clean -fd", why: "deletes untracked files" },
+	{
+		command: "git branch -D x",
+		why: "deletes a branch that may hold unmerged commits"
+	},
+	{
+		command: "git -C repo reset --hard",
+		why: "a -C directory does not change what a reset does"
+	},
+	{
+		command: "git -C repo clean -fd",
+		why: "a -C directory does not change what a clean does"
+	},
+	{
+		command: "git -C repo branch -D x",
+		why: "a -C directory does not change what a delete does"
+	},
+	{ command: "git push --tags", why: "publishes every local tag" },
+	{ command: "git push origin --tags", why: "publishes every local tag" },
+	{ command: "git push origin refs/tags/v1", why: "publishes a tag" },
+	{ command: "pkill node", why: "ends processes of other sessions" },
+	{ command: "killall node", why: "ends processes of other sessions" },
+	{ command: "git push --force", why: "rewrites remote history" },
+	{
+		command: "git push origin --force",
+		why: "a flag after the remote still rewrites history"
+	},
+	{
+		command: "git -C repo push --force origin",
+		why: "a -C directory does not change what a force push does"
+	},
+	{ command: "git push -f", why: "the short flag rewrites remote history" },
+	{
+		command: "git push -f origin",
+		why: "the short flag rewrites remote history"
+	},
+	{
+		command: "git -C repo push origin -f",
+		why: "a trailing short flag rewrites remote history"
+	},
+	{
+		command: "git config core.hooksPath x",
+		why: "a hooks override skips the repo's checks"
+	},
+	{
+		command: "git -c core.hooksPath=x commit",
+		why: "a one-off hooks override skips the repo's checks"
+	},
+	{
+		command: "claude -p x",
+		why: "a headless run is paid, so it stays behind the prompt"
+	}
+];
+
 /** Files that run later, plus plugin and hook folders: a sandboxed shell may not write them (ADR-0159, RISK-091). */
 export const DENY_WRITE: readonly string[] = [
 	"~/.zshrc",

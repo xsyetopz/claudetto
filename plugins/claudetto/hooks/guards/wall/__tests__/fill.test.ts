@@ -2,11 +2,12 @@ import { describe, expect, test } from "claude-code/testing";
 
 import { fillSettings } from "../../../settings/defaults";
 import { isRecord } from "../../../settings/settings";
-import { wallRule } from "../rules";
+import { matchesPattern } from "../conflicts";
+import { ASK, DENY, FREE, GUARDED, wallRule } from "../rules";
 
 interface Filled {
 	attribution: { commit: string };
-	permissions: { ask: string[]; deny: string[] };
+	permissions: { allow: string[]; ask: string[]; deny: string[] };
 	sandbox: {
 		enabled: boolean;
 		excludedCommands: string[];
@@ -117,7 +118,7 @@ describe("guard rules", () => {
 		);
 	});
 
-	test("turns the sandbox on only when unset and keeps a user's own list entries", () => {
+	test("turns the sandbox on over a user's false and keeps a user's own list entries", () => {
 		// Arrange
 		const text = JSON.stringify({
 			sandbox: { enabled: false, filesystem: { denyWrite: ["/mine"] } }
@@ -127,7 +128,7 @@ describe("guard rules", () => {
 		const next = fillOf(text);
 
 		// Assert
-		expect(next.sandbox.enabled).toBe(false);
+		expect(next.sandbox.enabled).toBe(true);
 		expect(next.sandbox.filesystem.denyWrite).toContain("/mine");
 		expect(next.sandbox.filesystem.denyWrite).toContain("~/.zshrc");
 	});
@@ -156,6 +157,45 @@ describe("guard rules", () => {
 		);
 	});
 
+	test("removes a stash ask rule an earlier release wrote and keeps an unrelated user ask", () => {
+		// Arrange
+		const text = JSON.stringify({
+			permissions: {
+				ask: ["Bash(git stash*)", "Bash(git * stash*)", "Bash(npm publish*)"]
+			}
+		});
+
+		// Act
+		const fill = fillSettings(text);
+		const next = fillOf(text);
+
+		// Assert
+		expect(next.permissions.ask).not.toContain("Bash(git stash*)");
+		expect(next.permissions.ask).not.toContain("Bash(git * stash*)");
+		expect(next.permissions.ask).toContain("Bash(npm publish*)");
+		expect(next.permissions.ask).toContain("Bash(git stash drop*)");
+		expect(fill?.added).toContain("removed permissions.ask Bash(git stash*)");
+	});
+
+	test("removes a deny rule that blocks a free push and an allow that lets a paid run start", () => {
+		// Arrange
+		const text = JSON.stringify({
+			permissions: {
+				deny: ["Bash(git push*)", "Bash(rm -rf /*)"],
+				allow: ["Bash(claude -p *)", "Bash(ls *)"]
+			}
+		});
+
+		// Act
+		const next = fillOf(text);
+
+		// Assert
+		expect(next.permissions.deny).not.toContain("Bash(git push*)");
+		expect(next.permissions.deny).toContain("Bash(rm -rf /*)");
+		expect(next.permissions.allow).not.toContain("Bash(claude -p *)");
+		expect(next.permissions.allow).toContain("Bash(ls *)");
+	});
+
 	test("sets one commit trailer that git hosts link to the claude account, and no Signed-off-by line", () => {
 		// Act
 		const next = fillOf();
@@ -166,5 +206,62 @@ describe("guard rules", () => {
 		);
 		expect(next.attribution.commit.match(/^[\w-]+:/gmu)).toHaveLength(1);
 		expect(JSON.stringify(next)).not.toContain("Signed-off-by");
+	});
+});
+
+describe("rule patterns", () => {
+	test("a star matches any run, an escaped star is literal, and no other wildcard exists", () => {
+		// Act and Assert
+		expect(matchesPattern("git stash*", "git stash list")).toBe(true);
+		expect(matchesPattern("git * stash*", "git stash")).toBe(false);
+		expect(matchesPattern("git * stash*", "git -C r stash x")).toBe(true);
+		expect(matchesPattern(String.raw`echo \*`, "echo *")).toBe(true);
+		expect(matchesPattern(String.raw`echo \*`, "echo hi")).toBe(false);
+		expect(matchesPattern("ls ?", "ls a")).toBe(false);
+		expect(matchesPattern("ls [ab]", "ls a")).toBe(false);
+		expect(matchesPattern("a.c", "abc")).toBe(false);
+	});
+
+	test("a trailing space and star also match the bare command, and :* is a prefix", () => {
+		// Act and Assert
+		expect(matchesPattern("git clean *", "git clean")).toBe(true);
+		expect(matchesPattern("git push:*", "git push origin")).toBe(true);
+	});
+});
+
+describe("free and guarded probes", () => {
+	const rules = [...ASK, ...DENY].flatMap((rule) => {
+		const pattern = /^Bash\((.+)\)$/su.exec(rule)?.[1];
+		return pattern === undefined ? [] : [{ rule, pattern }];
+	});
+
+	test("no free command matches a rule the construction keeps", () => {
+		// Act
+		const hits = FREE.flatMap((probe) =>
+			rules
+				.filter(({ pattern }) => matchesPattern(pattern, probe.command))
+				.map(({ rule }) => `${probe.command} -> ${rule}`)
+		);
+
+		// Assert
+		expect(hits).toEqual([]);
+	});
+
+	test("every Bash ask and deny rule matches a guarded command", () => {
+		// Act
+		const unmatched = rules.filter(
+			({ pattern }) =>
+				!GUARDED.some((probe) => matchesPattern(pattern, probe.command))
+		);
+
+		// Assert
+		expect(unmatched).toEqual([]);
+	});
+
+	test("every probe states its reason", () => {
+		// Act and Assert
+		for (const probe of [...FREE, ...GUARDED]) {
+			expect(probe.why.length).toBeGreaterThan(0);
+		}
 	});
 });

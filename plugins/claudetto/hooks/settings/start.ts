@@ -1,10 +1,5 @@
 import type { EngineInterface, On, PluginOptions } from "claude-code";
 
-import {
-	retireDenyKey,
-	type RetiredKey,
-	WROTE_MARK
-} from "../autonomy/autonomy";
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
 import { startPatch } from "../patch/tool";
@@ -12,10 +7,14 @@ import { fault } from "../shared/fault";
 import { stringsOf } from "../shared/field";
 import { startWeb } from "../web/register";
 import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
+import { type OwnedKey, readOwned } from "./owned";
 import { userSettingsPath } from "./settings";
 
 /** Store key holding the defaults set last filled, so a user's later edit is never undone. */
 const MARK = "setup.filled";
+
+/** Store key holding the keys the last fill wrote, so a release that stops naming one can take it back. */
+const OWNED = "setup.owned";
 
 /** The text of the user settings file, or undefined when it does not exist. */
 async function readSettings(
@@ -46,54 +45,45 @@ function logChanges(
 	}
 }
 
-/** The repaired settings after the cleanup and the fill, with what each changed. */
+/** The repaired settings after the fill, with what it changed. */
 interface Settled {
 	readonly text: string;
 	readonly added: readonly string[];
-	readonly retired: RetiredKey;
-	readonly filled: boolean;
-	readonly owned: boolean;
+	readonly owned: readonly OwnedKey[] | undefined;
 }
 
-/** Retires the key claudetto wrote (REQ-SETUP-070), then fills if this fill version has not run. */
+/** Fills when this fill version has not run; the repaired text passes through otherwise. */
 async function settle(
 	$: EngineInterface,
 	text: string,
 	walls: readonly string[] | undefined
 ): Promise<Settled> {
-	const owned = (await $.store.get(WROTE_MARK)) === true;
-	const retired = retireDenyKey(text, owned);
-	const filled = (await $.store.get(MARK)) === FILL_VERSION;
-	const fill = filled ? undefined : fillSettings(retired.text, walls);
+	if ((await $.store.get(MARK)) === FILL_VERSION) {
+		return { text, added: [], owned: undefined };
+	}
+	const previous = readOwned(await $.store.get(OWNED));
+	const fill = fillSettings(text, walls, previous);
 	return {
-		text: fill?.text ?? retired.text,
+		text: fill?.text ?? text,
 		added: fill?.added ?? [],
-		retired,
-		filled,
-		owned
+		owned: fill?.owned
 	};
 }
 
-/** After the write, stores the fill version, clears the written-key mark, shows the notice. */
+/** After the write, stores the fill version and the keys the fill wrote. */
 async function record($: EngineInterface, settled: Settled): Promise<void> {
-	if (!settled.filled) {
+	if (settled.owned !== undefined) {
+		await $.store.set(OWNED, settled.owned);
 		await $.store.set(MARK, FILL_VERSION);
-	}
-	if (settled.retired.owned !== settled.owned) {
-		await $.store.set(WROTE_MARK, settled.retired.owned);
-	}
-	if (settled.retired.notice !== undefined) {
-		$.ui.log(settled.retired.notice);
 	}
 }
 
 /**
- * Repairs builtin drift (REQ-SETUP-011), removes the
- * `permissions.denyInsteadOfPrompting` an earlier release wrote
- * (REQ-SETUP-070), and fills unset defaults (ADR-0190) in one read and one
- * write of user settings. Core allows one unmatched `session.start`
- * registration per plugin, so all three share this hook, and so does the web
- * tools' registration (REQ-TOOLS-020).
+ * Repairs builtin drift (REQ-SETUP-011) and applies claudetto's own
+ * construction to user settings once per fill version, in one read and one
+ * write. Core allows one unmatched `session.start` registration per plugin, so
+ * both share this hook, and so does the web tools' registration
+ * (REQ-TOOLS-020).
  */
 export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
@@ -118,10 +108,7 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 			return result;
 		}
 		const settled = await settle($, repair.text, walls);
-		const changed =
-			repair.drifted.length > 0 ||
-			settled.added.length > 0 ||
-			settled.retired.notice !== undefined;
+		const changed = repair.drifted.length > 0 || settled.added.length > 0;
 		if (changed) {
 			await $.fs.write(path, settled.text);
 		}
