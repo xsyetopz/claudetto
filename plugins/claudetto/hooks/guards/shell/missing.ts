@@ -12,6 +12,13 @@ export interface BashAnswer {
 export const GREP_COUNT_NOTE =
 	"`grep -c` exits 1 when the count is 0: zero matches, not a failure. Take the 0 as the answer; do not retry or switch tools.";
 
+/** The note for `gh pr checks` that found no check, within 200 characters. */
+export const NO_CHECKS_NOTE =
+	"No check has registered yet, so this is not a pass. Wait until the checks appear and finish, then rerun `gh pr checks` before merging.";
+
+/** `gh pr checks`, bare or behind `gh` flags, in command position. */
+const GH_PR_CHECKS = /(?:^|[;&|(]\s*)gh\s+(?:-\S+\s+)*pr\s+checks\b/u;
+
 /** `bash: line 1: jscpd: command not found` and zsh's `zsh: command not found: jscpd`. */
 const NOT_FOUND = [
 	/(?:^|\n)[^\n]*command not found: (\S+)/u,
@@ -101,3 +108,14 @@ export const isZeroCount = (command: string, answer: BashAnswer): boolean => {
 	const [first, ...rest] = answer.text.split("\n");
 	return first?.trim() === "Exit code 1" && rest.join("\n").trim() === "0";
 };
+
+/**
+ * Whether a Bash answer is `gh pr checks` reporting that no check exists yet:
+ * the command runs `gh pr checks` and its output says "no checks reported".
+ * The exit status is 0 there, so a watch looks like a pass.
+ *
+ * @param command The Bash command as the model wrote it.
+ * @param answer What the call returned.
+ */
+export const hasNoChecks = (command: string, answer: BashAnswer): boolean =>
+	GH_PR_CHECKS.test(command) && /no checks reported/iu.test(textOf(answer));

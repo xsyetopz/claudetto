@@ -5,9 +5,11 @@ import { fieldOf } from "../../shared/field";
 import {
 	type BashAnswer,
 	GREP_COUNT_NOTE,
+	hasNoChecks,
 	isZeroCount,
 	missingCommand,
-	missingNote
+	missingNote,
+	NO_CHECKS_NOTE
 } from "./missing";
 
 const stringOf = (value: unknown): string | undefined =>
@@ -114,7 +116,8 @@ export const shellNotes = (command: string, facts: ShellFacts): string[] => {
  * Adds a note to a Bash result when the command hides a failure (ISSUES
  * 2026-11-21: background `; echo`, pipe and chain status, zsh word splitting),
  * and to a result that shows a missing command (install it and keep the check)
- * or a `grep -c` zero count (zero matches, not a failure). The command runs as
+ * a `grep -c` zero count (zero matches, not a failure), or a `gh pr checks`
+ * that reports no checks (none registered yet, not a pass; ISSUES #127). The command runs as
  * written; the notes only tell the model what its exit status can and cannot show.
  */
 export function registerNotes(on: On): void {
@@ -146,6 +149,9 @@ export function registerNotes(on: On): void {
 		}
 		if (isZeroCount(e.command, answer)) {
 			notes.push(GREP_COUNT_NOTE);
+		}
+		if (hasNoChecks(e.command, answer)) {
+			notes.push(NO_CHECKS_NOTE);
 		}
 		if (notes.length === 0) {
 			return r;
