@@ -13,7 +13,8 @@ project-typecheck:
             echo "$p/.claude-plugin/types is missing: Claude Code writes it when a session loads the plugin, so start one session with --plugin-dir $p first" >&2
             exit 1
         fi
-        # Only an interactive session rewrites the types, so they lag a Claude Code update (issue #84).
+        # ENGINE(v2.1.330): only an interactive session rewrites the types; `claude plugin test`, `-p`
+        # and `plugin validate` do not, so they lag a Claude Code update (#84).
         written="$(head -1 "$p/.claude-plugin/types/claude-code/index.d.ts" | awk '{print $NF}')"
         if [[ "${written%.}" != "$installed" ]]; then
             echo "$p/.claude-plugin/types were written by Claude Code ${written%.}, not the installed $installed: start one session with --plugin-dir $PWD/$p to rewrite them" >&2

@@ -14,7 +14,9 @@ claudetto is three Claude Code plugins, described at baseline `088a227c` as foll
 | `claudetto-openspec` | The OpenSpec workflow in one deferred tool and seven skills. It uses the upstream layout, runs no `openspec` binary, makes no network calls, and archives no change with an unticked task. | `plugins/claudetto-openspec/.claude-plugin/plugin.json:4` at `088a227c` |
 | `claudetto-you-should-know` | A note above the prompt of what a side check finds the user likely missed. Off by default; on, one small request per three changing calls. No telemetry. | `plugins/claudetto-you-should-know/.claude-plugin/plugin.json:4` at `088a227c` |
 
-The rebuild targets Claude Code 2.1.327. Source: user decision, 2026-11-16 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); user decision, 2026-11-18, 2.1.327 replaces 2.1.326 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7`).
+Since ADR-0192, `claudetto-spec` (`plugins/claudetto-spec`) replaces `claudetto-openspec`: requirement IDs that tests cite, failing tests staged before implementation, and the `spec_check` tool. Rows and evidence below that name `claudetto-openspec` or `openspec/` record that plugin's history.
+
+The rebuild targets Claude Code 2.1.329, verified on 2.1.330; interactive sessions first, `-p` second. Source: user decision, 2026-11-20 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/058ea2d3-793b-495e-912a-323a9453747d.jsonl:7`). Earlier targets: user decision, 2026-11-16 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); user decision, 2026-11-18, 2.1.327 replaces 2.1.326 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7`).
 
 ## Scope
 

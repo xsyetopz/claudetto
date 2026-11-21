@@ -58,13 +58,55 @@ claudetto runs each Bash command with stdin from `/dev/null`, so a stray stdin r
 
 claudetto allows `perl -0pi -e` and `perl -pi -e`, so one call can edit many places across files, also when run by `xargs`, `find -exec` or a loop (`git grep -l old | xargs perl -pi -e ...`). The output style and the Heracles agent ask for that form when one change repeats across files. After an in-place perl edit, the model sees the diff stat of the files it changed and reads them again before it writes them.
 
-## Edit Fixes
+A Bash result carries a short note when the command hides its own failure: a background command ending in `; echo` without `$?`, a test, lint or build piped into `tail` or `grep` without `pipefail`, a check followed by `;` instead of `&&`, and, in zsh, an unquoted variable holding spaces. The command runs as written.
 
-When an `Edit` call's `old_string` carries the tab that follows the line number in `Read` output on every line, and the file lacks the text as written, claudetto drops that tab from both strings and runs the edit. The model then reads a note that says so, so its next `Edit` leaves the tab out.
+## Patch Tool
+
+claudetto turns off Write, Edit, NotebookEdit and SendMessage in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
+
+- Paths are relative to the session directory or absolute, and a path that lands outside it (also through a symbolic link) is refused with the reason.
+- Context matches exactly, then with trailing whitespace folded, then trimmed. A hunk whose context is missing or ambiguous refuses the whole patch and writes nothing; the error names the file, the hunk and the nearest line.
+- Each file keeps its line endings and final newline.
+- The reply has one line per file: `A path`, `M path +3 -1`, `D path`, `R old -> new`.
+- Every Edit and Write permission rule holds through `patch`: its permission check asks for the Edit and Write verdict of each path and takes the strictest.
+- Claude Code loads path-scoped rules (`.claude/rules/**/*.md` with `paths:`) and nested CLAUDE.md files only when Read, Write or Edit touches a file, so `patch` appends the matching ones to its reply, once per session.
+
+## Tool Pool
+
+claudetto hides `Write`, `Edit`, `NotebookEdit`, `SendMessage` and `ListAgents` from every loop through `tool.offer`, and replaces the description of 16 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`). Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+
+## Web Tools
+
+claudetto registers `mcp__claudetto__web_fetch` and `mcp__claudetto__web_search`, and hides the built-in `WebFetch` and `WebSearch` from every loop (`tool.offer` answers `isOffered: false`).
+
+`web_fetch` takes `url`, `max_chars` (default 8000) and `offset`.
+
+- It requests the page directly with a desktop Chrome User-Agent and the cookies saved for that exact host. claudetto attaches a saved cookie only to a request for the exact host it came from, never to a subdomain or another host.
+- HTML goes through a readability-style pick of the main block (navigation, footers, asides, scripts, forms and long link-only menus dropped) and becomes compact Markdown with headings, lists, code, tables, quotes and links. JSON, plain text and Markdown pass through unchanged. Other content types are refused.
+- The reply holds at most `max_chars` characters. The full Markdown is saved under the plugin data folder in `web/`, the reply names the path and the next `offset`, and a call with `offset` pages through the saved copy without a new request.
+- A 401, 403, 407, 408, 425, 429 or 5xx status, a failed request, a page with no readable content, or a script-only shell falls back to `chrome --headless=new --dump-dom`. Any other 4xx, such as a 404, is the page's answer and starts no browser.
+- A captcha that survives the headless render is handled by the session. In an interactive session claudetto notifies the user and opens a visible Chrome on a dedicated profile under the plugin data folder, waits up to 3 minutes, and renders again. Chrome keeps the solved cookies in that profile, so later headless renders of the site pass. Under `-p` and the SDK, which have no one to solve it, the reply says a captcha blocks and gives the URL.
+- Chrome comes from `CHROME_PATH`, then the macOS app bundles (Chrome, Chromium, Edge, Brave), then `google-chrome`, `chromium` and similar names on `PATH`. With none, the reply says so and names `CHROME_PATH`.
+
+`web_search` takes `query` and `max_results` (default 8) and answers `1. Title — url` lines with the snippet indented beneath.
+
+- With `BRAVE_SEARCH_API_KEY` set, it asks the Brave Search API first.
+- Otherwise, or when Brave fails, it reads DuckDuckGo's HTML endpoint and decodes each `uddg=` redirect to the real URL. Sponsored results are dropped.
+- DuckDuckGo answers many automated requests with a bot check (HTTP 202). The search then renders the same URL in headless Chrome, and in an interactive session opens the visible window. When all of that fails, the reply names `BRAVE_SEARCH_API_KEY`, which avoids the check.
+
+Permissions and the sandbox:
+
+- Page requests go through `$.http.fetch`, which the host performs, so the Bash sandbox's network allowlist does not apply to them.
+- Chrome runs through `$.process.run`, which executes locally outside the Bash sandbox. The same Chrome binary started from a sandboxed Bash command fails under Seatbelt, so the tools could not move into Bash.
+- `$.process.run` is one-shot (30 seconds by default, 10 minutes at most) and has no pipe to a running browser, so claudetto drives Chrome by command-line flags and a persistent profile and not by the DevTools protocol.
 
 ## Subagents
 
-claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset.
+claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. A spawn past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is refused with a reason that tells the model to wait for a running subagent to finish.
+
+## Goal
+
+claudetto serves `get_goal`, `set_goal`, `pause_goal` and `clear_goal` to the model and withdraws Claude Code's own goal tools, which a server gate withholds from many sessions. `clear_goal` ends a goal that is met and takes the condition plus the checks the model ran; claudetto refuses it when the last check failed or no tool result backs it, and shows the user what the model claimed. `set_goal` and `clear_goal` take effect when the turn ends, because Claude Code cannot run a goal command mid-turn. `/goal <condition>` warns when the condition names a path that does not exist, and the goal still starts. Two blocks before the stop cap (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`, 8 by default) the model's feedback names the cap, since the goal pauses at it. claudetto cannot raise the cap or change the evaluator.
 
 ## Settings Defaults
 

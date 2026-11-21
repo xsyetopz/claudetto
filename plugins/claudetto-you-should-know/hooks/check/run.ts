@@ -72,32 +72,17 @@ async function accept(
 	return "shown";
 }
 
-/** Runs one check for the step `at`; never throws. */
-export async function runCheck(
+/** Adds one entry to the debug check log when CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG is on; best effort. */
+export async function recordCheck(
 	$: EngineInterface,
-	at: CheckAt,
-	ctx: Ctx
+	at: { readonly id: string; readonly index: number },
+	outcome: Outcome,
+	latencyMs: number
 ): Promise<void> {
-	await writeRow($, at.id, { askedTurn: at.turnId });
-	const seen = stringLines(await $.store.get("seen"));
-	const known = stringLines(await $.store.get("known"));
-	const debug = await switchOf($.env.get("CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG"));
-	const started = Date.now();
-	let outcome: Outcome;
 	try {
-		const reply = await $.model.fork({ prompt: proposePrompt(seen, known) });
-		outcome = reply.isAnswered
-			? await accept($, at, ctx, reply.text, seen, known)
-			: (UNANSWERED_OUTCOMES[reply.reason] ?? "error");
-	} catch (error) {
-		fault($, "check", error);
-		outcome = "error";
-	}
-	const latencyMs = Date.now() - started;
-	if (!debug) {
-		return;
-	}
-	try {
+		if (!(await switchOf($.env.get("CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG")))) {
+			return;
+		}
 		const row = rowOf(await $.store.get("sessions"), at.id);
 		const number = (row?.checked ?? 0) + 1;
 		const check: Check = {
@@ -116,4 +101,27 @@ export async function runCheck(
 		// the debug line is best effort
 		fault($, "check debug row", error);
 	}
+}
+
+/** Runs one check for the step `at`; never throws. */
+export async function runCheck(
+	$: EngineInterface,
+	at: CheckAt,
+	ctx: Ctx
+): Promise<void> {
+	await writeRow($, at.id, { askedTurn: at.turnId });
+	const seen = stringLines(await $.store.get("seen"));
+	const known = stringLines(await $.store.get("known"));
+	const started = Date.now();
+	let outcome: Outcome;
+	try {
+		const reply = await $.model.fork({ prompt: proposePrompt(seen, known) });
+		outcome = reply.isAnswered
+			? await accept($, at, ctx, reply.text, seen, known)
+			: (UNANSWERED_OUTCOMES[reply.reason] ?? "error");
+	} catch (error) {
+		fault($, "check", error);
+		outcome = "error";
+	}
+	await recordCheck($, at, outcome, Date.now() - started);
 }

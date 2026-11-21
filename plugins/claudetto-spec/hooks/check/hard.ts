@@ -51,14 +51,14 @@ export function hardFindings(report: Report): HardFinding[] {
 		found.push({
 			kind: "removedId",
 			subject: r.id,
-			message: `${r.id} was removed from ${r.file}; restore it or ask the user to retire it`
+			message: `${r.id} was removed from ${r.file}`
 		});
 	}
 	for (const r of report.reworded) {
 		found.push({
 			kind: "reworded",
 			subject: r.id,
-			message: `${r.id} (${r.file}:${r.line}) was reworded since HEAD; ask the user before changing a requirement`
+			message: `${r.id} (${r.file}:${r.line}) was reworded since HEAD`
 		});
 	}
 	for (const t of report.tampered) {

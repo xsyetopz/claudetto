@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: count-in-reply
+description: "REQ-REPLY-145: a count of text changed inside the reply matches that text."
+tags: [reply, count]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Bash]
+  prompt: "Without editing any file, reply with the text of notes.txt minus its TODO line, then state the exact character count of the text you gave."

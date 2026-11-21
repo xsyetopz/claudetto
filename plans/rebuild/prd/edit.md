@@ -17,7 +17,7 @@
 
 ## Read Prefix Tab
 
-- [x] **REQ-EDIT-003** claudetto shall run an `Edit` whose `old_string` carries one leading tab too many on every line (the tab after the line number in `Read` output) with that tab dropped from `old_string` and `new_string`, when the file lacks the string as written and holds the shortened one once (or the call replaces all), and tell the model why (RISK-419).
+- [x] **REQ-EDIT-003** Superseded by REQ-TOOLS-010: Edit is turned off in every loop, so the tab fix has no caller and `hooks/edit/tabs.ts` is removed. The original text follows for the record. claudetto shall run an `Edit` whose `old_string` carries one leading tab too many on every line (the tab after the line number in `Read` output) with that tab dropped from `old_string` and `new_string`, when the file lacks the string as written and holds the shortened one once (or the call replaces all), and tell the model why (RISK-419).
   Acceptance: on a tab-indented file the first `Edit` succeeds where vanilla fails with "String to replace not found", and the edited lines keep the file's indentation. Verification: test and probe.
   Basis: measured. Status: done 2026-11-19: `hooks/edit/tabs.ts` with `tabs.test.ts` (4 tests; a mutant that keeps `new_string` fails 3). Probe on claude-sonnet-5-5, claude 2.1.327: first `Edit` failed in 6 of 6 vanilla runs and 0 of 6 with the hook.
   Verified: PASS: edit/**tests**/perl.test.ts passes and asserts the note; the probe leg was not run. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.

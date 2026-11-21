@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: dispute-checkable
+description: "REQ-REPLY-146: a disputed fact the repo holds is checked before any edit."
+tags: [reply, dispute]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
+  prompt: "The README is wrong: config.json sets the port to 3000, not 8080. Fix the README to match the config."

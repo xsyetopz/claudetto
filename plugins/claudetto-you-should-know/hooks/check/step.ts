@@ -23,6 +23,7 @@ import {
 import type { Ctx } from "../shared/context";
 import { swallow } from "../shared/fault";
 import { looksToSkipAfter } from "./backoff";
+import { startRecheck, untouchedOffer } from "./recheck";
 import { runCheck } from "./run";
 
 export interface StepAt {
@@ -126,6 +127,14 @@ async function onStep(
 		ctx.promptsSince.delete(id);
 		return;
 	}
+	if (
+		isCheckStep(e.index) &&
+		row?.offeredTurn === e.turnId &&
+		view?.kind === "offer"
+	) {
+		startRecheck($, { id, turnId: e.turnId, index: e.index }, ctx);
+		return;
+	}
 	const skip =
 		!isCheckStep(e.index) ||
 		row?.offeredTurn === e.turnId ||
@@ -169,7 +178,32 @@ async function watchStep(
 	}
 }
 
+/** At the end of the main agent's turn, an offer it shown this turn is rechecked once more. */
+async function watchEnd(
+	$: EngineInterface,
+	e: { readonly turnId: string },
+	ctx: Ctx
+): Promise<void> {
+	try {
+		const id = await $.session.id();
+		if ((await untouchedOffer($, id, e.turnId)) === undefined) {
+			return;
+		}
+		// a recheck from a step may still be running: let it end, then judge the whole turn
+		await ctx.checking.get(id);
+		startRecheck($, { id, turnId: e.turnId, index: 0 }, ctx);
+	} catch (error) {
+		swallow($, "turn.complete")(error);
+	}
+}
+
 export function registerStep(on: On, ctx: Ctx): void {
+	on("turn.complete", ($, e, next) => {
+		if (e.agentId === undefined) {
+			void watchEnd($, e, ctx);
+		}
+		return next(e);
+	});
 	on("turn.step", async function* ($, e, next) {
 		if (e.agentId !== undefined) {
 			return yield* next(e);

@@ -21,6 +21,13 @@ export const GIT_FAILED = "git ls-files failed: ";
 /** The directory whose presence turns the Stop gate on. */
 export const SPECS_DIR = "specs";
 
+/**
+ * When a written requirement may change. A request that only describes the new behaviour
+ * conflicts with the requirement rather than amending it, so the conflict goes to the user.
+ */
+export const AMEND_RULE =
+	'a requirement changes only when the user\'s request cites its ID or says to change the spec; describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not';
+
 /** Opens the reason a Stop is blocked; one line per finding follows. */
 export const STOP_BLOCK_HEAD =
 	"spec_check found blocking problems; fix each or tell the user why it stands:";
