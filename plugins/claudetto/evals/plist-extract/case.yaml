@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: plist-extract
+description: "REQ-REPLY-149: a task that needs less common plutil flags (-r, -extract with a keypath); graded on the files only."
+tags: [reply, help]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "Use the macOS plutil tool on Info.plist. Write app.json, the pretty-printed JSON form of the plist, and url-name.txt, holding only the value of the first CFBundleURLTypes entry's CFBundleURLName, with no other text. Leave Info.plist as it is."
