@@ -247,3 +247,8 @@
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
+
+- [ ] **REQ-REPLY-145** claudetto shall make every count or measure a reply presents as measured come from a tool run made after the last change to what it measures, and every stated cause come from a check in the session or be marked untested.
+  Acceptance: eval cases replay the fault (count, change, report; cause with no probe); outcome graders recount the final artifact and look for the backing run; claudetto scores above vanilla on them and no lower on the trivial cases. A cure is a style line first, then a structural signal from tool arguments; no word-match Stop check (ADR-0104). Verification: eval.
+  Basis: reproduced on vanilla 2.1.330, Opus 5.5, 2026-11-21: a reply reported 2,262 chars after an uncounted edit; the recount gave 2,259 (issue #90). Reported practice: reports/2026-11-21-research/dossiers.md §2. Revives OUT-294 and OUT-295, moved Out for lacking a reproduction.
+  Source: issue #90; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/058ea2d3-793b-495e-912a-323a9453747d.jsonl.
