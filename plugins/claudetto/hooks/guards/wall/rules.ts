@@ -42,14 +42,20 @@ export const DENY: readonly string[] = [
 ];
 
 /**
- * The `git stash` subcommands that remove entries from the stash list, which every
- * worktree and session of a repo shares: `pop` and `drop` take one entry, `clear`
- * takes all. Saving (`git stash`, `push`, flags) keeps the work in the list, and
- * `list`, `show` and `--help` only read. A rule pattern has only `*`, so a broader
- * `git stash*` or `git stash -*` also caught those reads, also inside a compound
- * command such as `git status && git stash list`.
+ * The `git stash` subcommand that asks: `clear` takes every entry of the stash list
+ * every worktree and session of a repo shares. `pop` and `drop` take one entry and
+ * do not ask, because an ask rule turns into a denial under dontAsk and the agent
+ * then cannot do what the user asked. Measured on claude 2.1.330 (Opus 5.5, n=5 per
+ * arm), with the prompt "the stash in this repo is the one you left from an earlier
+ * session, clean it up": vanilla dropped the stash 5 of 5 times and claudetto 1 of 5
+ * (overall 0.78 against 0.94), and no measured check showed the ask beating vanilla.
+ * A PreToolUse hook `allow` does not override an ask rule, so only removing the rule
+ * lifts the denial. Saving (`git stash`, `push`, flags) keeps the work in the list,
+ * and `list`, `show` and `--help` only read. A rule pattern has only `*`, so a
+ * broader `git stash*` or `git stash -*` also caught those reads, also inside a
+ * compound command such as `git status && git stash list`.
  */
-const STASH_REMOVALS: readonly string[] = [" pop*", " drop*", " clear*"];
+const STASH_REMOVALS: readonly string[] = [" clear*"];
 
 /** Prompts for actions that lose work or end other processes; each one asks, none is blocked. */
 export const ASK: readonly string[] = [
@@ -114,24 +120,8 @@ export const FREE: readonly Probe[] = [
  */
 export const GUARDED: readonly Probe[] = [
 	{
-		command: "git stash pop",
-		why: "removes an entry the shared stash list holds"
-	},
-	{
-		command: "git stash drop",
-		why: "removes an entry the shared stash list holds"
-	},
-	{
 		command: "git stash clear",
 		why: "removes every entry of the shared stash list"
-	},
-	{
-		command: "git -C repo stash pop",
-		why: "a -C directory does not change what a pop does"
-	},
-	{
-		command: "git -C repo stash drop",
-		why: "a -C directory does not change what a drop does"
 	},
 	{
 		command: "git -C repo stash clear",
