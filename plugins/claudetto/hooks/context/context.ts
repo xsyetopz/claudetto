@@ -51,7 +51,7 @@ export const standing = (counts: string, upstream: string): string => {
 export const PARTIAL =
 	"The switch is partial: git reported `unable to unlink`, so the working tree may be half-switched. Run `git status` to see which files are in which state.";
 
-/** Where HEAD stands after a switch (REQ-GUARDS-079): its commit, branch and upstream count. */
+/** Where HEAD stands after a switch (REQ-GUARDS-080): its commit, branch and upstream count. */
 export async function headNote(
 	$: EngineInterface,
 	cwd: string,
@@ -86,7 +86,7 @@ export async function headNote(
 	return partial ? `${head}. ${PARTIAL}` : head;
 }
 
-/** The note for a filtered pipeline that printed a failure line (REQ-GUARDS-080), or "". */
+/** The note for a filtered pipeline that printed a failure line (REQ-GUARDS-081), or "". */
 export const pipeNote = (output: string): string => {
 	const line = FAILURE_LINE.exec(output)?.[0];
 	return line === undefined
@@ -107,7 +107,7 @@ const withContext = (
 			};
 
 /**
- * Adds context after a Bash call and blocks nothing (REQ-GUARDS-079, REQ-GUARDS-080).
+ * Adds context after a Bash call and blocks nothing (REQ-GUARDS-080, REQ-GUARDS-081).
  * The classic PostToolUse matcher narrows each hook to its command, so a handler runs
  * only for a `git checkout` / `git switch` or a filtered pipeline. A leaf matcher cannot
  * span stdout and stderr, so the output test stays in the handler.
@@ -123,6 +123,17 @@ export function registerContext(on: On): void {
 		}
 	).catch(($, _e, next) => {
 		fault($, "switch context", next.error);
+	});
+	// A checkout that stops partway fails the call, and its error text carries the output.
+	on(
+		"classic.PostToolUseFailure",
+		{ tool_name: "Bash", tool_input: { command: SWITCH } },
+		async ($, e, next) => {
+			const result = await next(e);
+			return withContext(result, await headNote($, e.cwd, e.error));
+		}
+	).catch(($, _e, next) => {
+		fault($, "switch failure context", next.error);
 	});
 	on(
 		"classic.PostToolUse",

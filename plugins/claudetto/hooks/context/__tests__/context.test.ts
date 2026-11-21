@@ -5,6 +5,7 @@ import { describe, expect, test } from "claude-code/testing";
 const world = (on: On, answers: Record<string, string>) => {
 	const ran: string[] = [];
 	on("classic.PostToolUse", () => ({}));
+	on("classic.PostToolUseFailure", () => ({}));
 	on("ui.log", () => ({ value: undefined }));
 	on("process.run", (_$, e) => {
 		const key = e.argv.slice(1).join(" ");
@@ -37,7 +38,7 @@ const bash = (command: string, response: unknown) => ({
 	tool_use_id: "u1"
 });
 
-describe("switch context (REQ-GUARDS-079, issue #95)", () => {
+describe("switch context (REQ-GUARDS-080, issue #95)", () => {
 	test("git checkout names HEAD and its distance from the upstream", async ($, on) => {
 		world(on, TRACKED);
 		const r = await $.classic.PostToolUse(
@@ -84,6 +85,19 @@ describe("switch context (REQ-GUARDS-079, issue #95)", () => {
 		expect(text).toContain("half-switched");
 		expect(text).toContain("git status");
 	});
+	test("a switch that failed partway still gets HEAD and the partial-switch note", async ($, on) => {
+		world(on, TRACKED);
+		const r = await $.classic.PostToolUseFailure({
+			tool_name: "Bash",
+			tool_input: { command: "git checkout main" },
+			tool_use_id: "u2",
+			error: "Exit code 1\nerror: unable to unlink old 'a/b': Permission denied"
+		});
+		const text = r.additionalContext?.[0] ?? "";
+		expect(text).toContain("HEAD 6f81c479a on main, 212 behind origin/main");
+		expect(text).toContain("half-switched");
+		expect(text).toContain("git status");
+	});
 	test("a command that is no switch runs no git", async ($, on) => {
 		const ran = world(on, TRACKED);
 		const r = await $.classic.PostToolUse(bash("git status", {}));
@@ -92,7 +106,7 @@ describe("switch context (REQ-GUARDS-079, issue #95)", () => {
 	});
 });
 
-describe("pipe context (REQ-GUARDS-080, issue #99)", () => {
+describe("pipe context (REQ-GUARDS-081, issue #99)", () => {
 	test("an error: line behind a filter is named with the last-stage note", async ($, on) => {
 		world(on, {});
 		const r = await $.classic.PostToolUse(
