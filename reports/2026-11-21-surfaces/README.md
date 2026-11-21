@@ -1,6 +1,6 @@
 # Instruction Placement Audit (2026-11-21)
 
-REQ-TOOLS-032: each instruction claudetto and claudetto-spec ship is checked against the surface table in `plans/rebuild/prd/tools.md` ("Prompt" section). Result: no line moved. Every line on the wrong surface is either held by ADR-0177 with a measured-gain commit or is not a mechanical move.
+REQ-TOOLS-032: each instruction claudetto and claudetto-spec ship is checked against the surface table in `plans/rebuild/prd/tools.md` ("Prompt" section). Result: 3 style paragraphs moved in move 1 (issue #115) and 11 in move 2 (issue #122); no other line moved. Every other line is on its surface or is not a mechanical move.
 
 ## Doc Grounding
 
@@ -24,28 +24,30 @@ Routes are on `code` (code.claude.com/docs/en/), read through the clawdipedia-do
 
 | Line | Old surface | New surface | Reason | Doc route |
 | --- | --- | --- | --- | --- |
-| none | - | - | No agent, skill or hook line is clearly misplaced without a measured-gain record; see the next tables | - |
+| 3 Bash-recipe style paragraphs | output style | Bash description | tool recipe (move 1, issue #115) | code `output-styles` |
+| `AskUserQuestion` style paragraph | output style | AskUserQuestion description | tool use (move 2, issue #122) | code `output-styles` |
+| 10 task-conduct and permission style paragraphs | output style | system prompt section `claudetto:conduct` | task conduct, permissions (move 2, issue #122) | code `output-styles` |
 
-## Output Style: Misplaced per Table, Held by ADR-0177
+## Output Style: Misplaced per Table, Moved
 
-REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (ADR-0177). Worker commit a4a62c344 (not merged) shows the cost of dropping them. Nothing here moved.
+REQ-TOOLS-031 records that each paragraph traces to a measured run on 2.1.327 (ADR-0177), so each moved word for word. Move 1 (issue #115) took the three tool-recipe rows to the Bash description. Move 2 (issue #122) took the AskUserQuestion row to the AskUserQuestion tool description (`hooks/pool/question-rule.ts`, `hooks/pool/question.ts`, `tool.describe`) and the ten task-conduct and permission rows to the shared system-prompt section `claudetto:conduct` (`hooks/prompt/conduct.ts`, `prompt.compose`). Bytes per request: style 5,665 to 1,207, AskUserQuestion description +275, conduct section +4,048, net -135. Move 2 is verified by tests only; the eval is pending.
 
-| Paragraph (opening words) | Table surface | Commit |
-| --- | --- | --- |
-| "When a choice belongs to the user ... AskUserQuestion" | system prompt (tool use) | 917d88b97 |
-| "Before a commit or push, read the check's exit status" | system prompt (task conduct) | ea8a04371 (0 of 15 against 9 of 18) |
-| "Background subagents keep running through /clear" | system prompt (task conduct) | 3409889ea (8 of 8 against 8 of 16) |
-| "When an action needs an input that no file ... holds" | system prompt (task conduct) | f2804f700; 1b094765a (r497i 6/6 against 0/6) |
-| "Uncommitted edits in the working tree" | system prompt (task conduct) | d686402bc (3/3 against 0/3); de184e8ab |
-| "A defect you find while working" | system prompt (task conduct) | 57e6bba94 (sib 6/6 against 0/6) |
-| "A step that would touch something off-limits runs on a stand-in" | system prompt (task conduct) | bed24d9d1 |
-| "A permission or approval prompt belongs to the user" | system prompt (permissions) | 853cd0969 (r171b 6/6 against 0/6) |
-| "A test checks what a caller of the public interface can observe" | system prompt (task conduct) | 3d00f59ec (r466b 6/6 against 1/6) |
-| "When a function's name and its body disagree" | system prompt (task conduct) | 4228a2d9c; 1b094765a |
-| "A command started with `run_in_background` reports the exit status" | system prompt (tool recipe) | 407f41f04 (r451a 6/6 against 2/6) |
-| "When the reply depends on the result of a command started with `run_in_background`" | system prompt (tool recipe) | 407f41f04 (r185a 6/6 against 1/6) |
-| "Make one change that repeats across several places ... `perl -pi -e`" | system prompt (tool recipe) | 0d90f8c84 (ADR-0097) |
-| "Edit files only inside the directory the session started in" | system prompt (task conduct) | 9a8df859d (starting tree, 6/6 against 2/6) |
+| Paragraph (opening words) | Table surface | New surface | Commit |
+| --- | --- | --- | --- |
+| "When a choice belongs to the user ... AskUserQuestion" | system prompt (tool use) | AskUserQuestion description (move 2) | 917d88b97 |
+| "Before a commit or push, read the check's exit status" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | ea8a04371 (0 of 15 against 9 of 18) |
+| "Background subagents keep running through /clear" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | 3409889ea (8 of 8 against 8 of 16) |
+| "When an action needs an input that no file ... holds" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | f2804f700; 1b094765a (r497i 6/6 against 0/6) |
+| "Uncommitted edits in the working tree" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | d686402bc (3/3 against 0/3); de184e8ab |
+| "A defect you find while working" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | 57e6bba94 (sib 6/6 against 0/6) |
+| "A step that would touch something off-limits runs on a stand-in" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | bed24d9d1 |
+| "A permission or approval prompt belongs to the user" | system prompt (permissions) | system prompt section `claudetto:conduct` (move 2) | 853cd0969 (r171b 6/6 against 0/6) |
+| "A test checks what a caller of the public interface can observe" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | 3d00f59ec (r466b 6/6 against 1/6) |
+| "When a function's name and its body disagree" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | 4228a2d9c; 1b094765a |
+| "A command started with `run_in_background` reports the exit status" | system prompt (tool recipe) | Bash description (move 1) | 407f41f04 (r451a 6/6 against 2/6) |
+| "When the reply depends on the result of a command started with `run_in_background`" | system prompt (tool recipe) | Bash description (move 1) | 407f41f04 (r185a 6/6 against 1/6) |
+| "Make one change that repeats across several places ... `perl -pi -e`" | system prompt (tool recipe) | Bash description (move 1) | 0d90f8c84 (ADR-0097) |
+| "Edit files only inside the directory the session started in" | system prompt (task conduct) | system prompt section `claudetto:conduct` (move 2) | 9a8df859d (starting tree, 6/6 against 2/6) |
 
 ## Output Style: On Surface
 
