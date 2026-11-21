@@ -2,6 +2,7 @@ import type { EngineInterface, On, PluginOptions } from "claude-code";
 
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
+import { startPatch } from "../patch/tool";
 import { fault } from "../shared/fault";
 import { stringsOf } from "../shared/field";
 import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
@@ -48,6 +49,7 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
+		await startPatch($);
 		const path = await userSettingsPath($);
 		const repair = repairSettings(await readSettings($, path));
 		if (repair === undefined) {
