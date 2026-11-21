@@ -413,20 +413,21 @@
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > the prompt that opened the turn stays after the handover" (the committed test that encodes the probe outcome); the stub probe was not re-run.
   - Source: probe, `claude` 2.1.327, 2026-11-18, `$TMPDIR/hprobe3` (stub from reports/2026-11-18-research/handover-probes/probe-h/stub.ts with input tokens 195000), command `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`.
 
-- [x] **RISK-507** The handover fork misses the cache on the parent's last message when that message has string content (issue #60).
+- [x] **RISK-507** The handover fork misses the cache on the engine's system block when it is the parent's last message (issue #60, #64).
   - Category: engine limit.
-  - Cause: the parent's last message carries `cache_control`, so it goes out as a one-block list, while `$.model.fork` (chunk-m14bt1pz.js:241015-241040, built from forkContextMessages) resends it as a plain string, so the cache prefix ends one message early.
-  - Event: paid runs on claude 2.1.327, 2026-11-19, 8 per arm: on a one-line prompt with no tool call the fork read 13,406 of 16,380 cached tokens (Haiku 5.5) and 12,604 of 15,559 (Sonnet 5.5); after a Read it read 36,798 of 36,800 and 35,955 of 35,957.
-  - Consequence: one uncached message per handover fork.
+  - Cause: Claude Code 2.1.330 puts a role-system message (the environment, skills and date block, about 4,200 tokens) at messages[1]. The first request sends it as a one-block list with `cache_control`; every later request and `$.model.fork` (chunk-bzyb60p0.js, function `Gbo`, built from forkContextMessages) send it as a string. The API does not serve the string from the entry the list wrote. A string user message does not miss: that shape change costs no more than 27 tokens.
+  - Event: paid Haiku 5.5 runs on 2.1.330, 2026-11-21: a fork after the first request read 14,987 of 19,195 tokens and wrote 4,209 (3 of 3 runs, 4,208 missed); with a first prompt 6,900 tokens longer it read 21,917 and still missed 4,208, so the miss is a fixed block. After the second request, with a large string prompt last, a fork missed 27 of about 26,000 tokens (27 on 5 of 6 runs, 2 on one), with or without a `prompt.submit` context block that makes the prompt multi-block. The main thread's own second request misses the same block (read 15,028 of 19,236). Earlier, on 2.1.327, after a Read the fork read 36,798 of 36,800.
+  - Consequence: one fork after exactly one main-thread request writes about 4,200 tokens it should have read, once.
   - Likelihood: 1
-  - Impact: 2
-  - Existing controls: above the 70,000-token renewal threshold the last message is a tool result, so the measured cost there is 0 in 8 of 8.
-  - Response: transfer.
-  - Actions: recheck on each release by sending a first-request fork and comparing its cache read with the parent request's total.
+  - Impact: 1
+  - Existing controls: automatic compaction and the renewal run in long sessions, past the first request; only a manual `/clear` after a single request reaches the miss.
+  - Response: mitigate.
+  - Actions: `writeHandover` skips the fork for a conversation of one user prompt and one assistant reply with no tool call, up to 8,000 characters together (the fork prompt caps its output near 12,000 characters, so the verbatim text is never longer than the handover the fork writes), and hands the prompt and reply over as written; marked `ENGINE(v2.1.330)` in `plugins/claudetto/hooks/handover/writer.ts`, tests in `plugins/claudetto/hooks/handover/__tests__/writer.test.ts`. On each release, `reports/2026-11-20-research/fork-recheck/run.sh` shows whether messages[1] still differs; when it matches, the branch and its marker go.
   - Trigger: a Claude Code release.
   - Owner: handover
-  - Status: transferred 2026-11-20 (issue #60): the engine site is located, the cost at the renewal threshold measured 0, and recheck-on-release ticket #64 carries the check.
-  - Verified: 2026-11-19, claude 2.1.327, fake-API request bodies and the paid runs above (issue #60); Likelihood 1 × Impact 2 = 2.
-  - Verified: rechecked 2026-11-20 on 2.1.328 and 2.1.329 (issue #64), free: `reports/2026-11-20-research/fork-recheck/run.sh` shows the fork's copy of the parent's last message is still a string where the parent sent a cached one-block list, on 2.1.327 (control), 2.1.328 and 2.1.329.
-  - Verified: rechecked 2026-11-21 on 2.1.330 (issue #64), free, same script: same bytes False; the fault stays.
+  - Status: mitigated 2026-11-21 (commit 0e9e07018); #64 stays open to track the engine fault.
+  - Verified: 2026-11-21, claude 2.1.330, fake-API request diff of the parent and the fork: system, tools and every message but messages[1] equal; messages[1] is a list with `cache_control` in the parent and a string in the fork, same text.
+  - Verified: 2026-11-21, paid Haiku 5.5 runs above (about $0.2 in all, under the $1 cap).
+  - Verified: 2026-11-21, the repo's claudetto plugin on 2.1.330 against the fake API: a `/clear` after one prompt sends 0 handover requests; after two prompts it sends 1.
+  - Verified: 2026-11-21, `claude plugin test plugins/claudetto` -> 154 pass, 0 fail, including "handover after one request"; Likelihood 1 × Impact 1 = 1.
   - Source: issue #60.
