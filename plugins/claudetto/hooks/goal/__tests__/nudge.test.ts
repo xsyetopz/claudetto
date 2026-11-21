@@ -115,6 +115,18 @@ describe("goal delegation nudge", () => {
 		expect(notes).not.toContain(NUDGE_NOTE);
 	});
 
+	test("stays quiet when the goal refuses delegation", async ($, on) => {
+		// Arrange
+		engine(on);
+		await setGoal($, "Don't delegate; no subagents, tests pass");
+
+		// Act
+		const notes = await edit($, "/work/src/a.ts");
+
+		// Assert
+		expect(notes).toEqual([]);
+	});
+
 	test("stays quiet when no goal is set", async ($, on) => {
 		// Arrange
 		engine(on);
@@ -171,6 +183,35 @@ describe("goal delegation words", () => {
 
 		// Assert
 		expect(hits).toEqual([true, true, true, true, false, false, false]);
+	});
+
+	test("a goal that refuses delegation does not count", () => {
+		// Arrange
+		const refusals = [
+			"Don't delegate; fix the bug yourself",
+			"do not delegate to subagents",
+			"no subagents, one agent only",
+			"Never use workers",
+			"tests pass without sub-agents",
+			"Avoid delegating the work",
+			"don\u2019t use subagents",
+			"Delegation is not allowed",
+			"instead of workers, edit directly"
+		];
+		const requests = [
+			"Delegate the slices, don't edit yourself",
+			"Do not stop until tests pass; delegate to workers",
+			"Fix it. No shortcuts, delegate each file to a subagent",
+			"all tests pass, but delegate the refactor to workers"
+		];
+
+		// Act
+		const refused = refusals.map((text) => namesDelegation(text));
+		const asked = requests.map((text) => namesDelegation(text));
+
+		// Assert
+		expect(refused.every((hit) => !hit)).toBe(true);
+		expect(asked.every(Boolean)).toBe(true);
 	});
 
 	test("a note stays within 200 characters and docs are not source", () => {
