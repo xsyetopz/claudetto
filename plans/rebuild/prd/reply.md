@@ -261,3 +261,9 @@
   Source: issue #90.
   Status: blocked (2026-11-21, 2.1.330, Opus 5.5): `dispute-checkable` scored 1.00 in both arms over two n=3 runs ($0.32 and $0.74), so the fixture shows no gap. `dispute-checkable-v2` did not run: the $12 cost ceiling stopped the run after `count-after-change-v2`. Running it costs about $12 for n=3 per arm: `claude plugin eval plugins/claudetto --case dispute-checkable-v2 --scaffold --runs 3 --ablation with-without --no-publish --max-cost-usd 14 --model claude-opus-5-5`.
   Verified: results `2026-11-21T02-27-26-647Z` and `02-27-47-469Z` (`aggregate-result.json`, local, gitignored).
+
+- [x] **REQ-REPLY-147** After an AskUserQuestion call, claudetto shall add context that lists, per question, the option labels the user selected and the text the user typed, and states that option labels and descriptions are the agent's wording: a number, budget, limit or scope that appears only in option text is not a user grant.
+  Acceptance: a PostToolUse hook matched on `tool_name` `AskUserQuestion` returns `additionalContext` naming each question's selected labels and typed text (the `answers` map and `response`), with a fixed reminder of at most 300 characters; any other tool gets nothing. Verification: test.
+  Basis: issue #90 and issue #97: the agent read a figure from its own option description as the user's grant. Mechanism: PostToolUse `additionalContext` adds context beside the result and blocks nothing (code.claude.com/docs/en/hooks.md, read 2026-11-21).
+  Source: issue #97.
+  Verified: `claude plugin test plugins/claudetto` on 2.1.330, 2026-11-21: `hooks/question/__tests__/answers.test.ts` 6 pass, 0 fail (suite 298 pass).
