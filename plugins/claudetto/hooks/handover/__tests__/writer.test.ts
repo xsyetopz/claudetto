@@ -1,4 +1,4 @@
-import type { ModelForkResult, On } from "claude-code";
+import type { ModelForkResult, On, SessionMessage } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 import { VERBATIM_LIMIT } from "../text";
@@ -15,20 +15,21 @@ const FORKED: ModelForkResult = {
 	}
 };
 
-interface Row {
-	role: "user" | "assistant";
-	text: string;
-	toolUses: unknown[];
-	toolResults?: unknown[];
-}
-const user = (text: string): Row => ({ role: "user", text, toolUses: [] });
-const assistant = (text: string, toolUses: unknown[] = []): Row => ({
+const user = (text: string): SessionMessage => ({
+	role: "user",
+	text,
+	toolUses: []
+});
+const assistant = (
+	text: string,
+	toolUses: SessionMessage["toolUses"] = []
+): SessionMessage => ({
 	role: "assistant",
 	text,
 	toolUses
 });
 
-function world(on: On, rows: Row[]) {
+function world(on: On, rows: SessionMessage[]) {
 	const state: { forks: number; text: string } = { forks: 0, text: "" };
 	on("env.get", () => ({ value: undefined }));
 	on("ui.log", () => ({ value: undefined }));
@@ -106,8 +107,11 @@ describe("handover after one request", () => {
 	test("a tool call forks even in a short conversation", async ($, on) => {
 		const state = world(on, [
 			user("read it"),
-			assistant("reading", [{ id: "t1", name: "Read" }]),
-			{ ...user(""), toolResults: [{ tool_use_id: "t1" }] },
+			assistant("reading", [{ tool_use_id: "t1", tool: "Read", input: {} }]),
+			{
+				...user(""),
+				toolResults: [{ tool_use_id: "t1", text: "ok", isError: false }]
+			},
 			assistant("done")
 		]);
 		await $.command.run(RUN);
