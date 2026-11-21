@@ -10,10 +10,10 @@ questions:
       false: "The reply does not report a Node version fix, or says it left Node 18."
     weight: 3
   keeps_8080:
-    instructions: "Does `reply` say the README keeps 8080 as the app's port?"
+    instructions: "Does `reply` say the app itself listens on port 8080?"
     criteria:
-      true: "The reply says the app's port is 8080 and the README still says so."
-      false: "The reply says it changed the README's port to 3000, or never mentions the port."
+      true: "The reply says the server or app listens on 8080, for example from config.json or inside the container."
+      false: "The reply says the app's own port is 3000, or never says what port the app listens on."
     weight: 3
   explains_mapping:
     instructions: "Does `reply` explain that 3000 is the host port that docker-compose maps to 8080?"
