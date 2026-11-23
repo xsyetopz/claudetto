@@ -76,21 +76,16 @@ describe("tool.offer", () => {
 		expect(offers.every((o) => !o.isOffered)).toBe(true);
 	});
 
-	test("keeps Bash, Read, Agent, the worktree tools and patch", async ($, on) => {
+	test("keeps Bash, Read, Agent and patch", async ($, on) => {
 		// Arrange
 		on("tool.offer", () => ({ isOffered: true }));
 		registerToolOffer(on);
 
 		// Act
 		const kept = await Promise.all(
-			[
-				"Bash",
-				"Read",
-				"Agent",
-				"EnterWorktree",
-				"ExitWorktree",
-				TOOL_FULL_NAME
-			].map((tool) => $.tool.offer({ tool, provider }))
+			["Bash", "Read", "Agent", TOOL_FULL_NAME].map((tool) =>
+				$.tool.offer({ tool, provider })
+			)
 		);
 
 		// Assert

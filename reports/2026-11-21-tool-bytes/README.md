@@ -86,3 +86,7 @@ The 2026-11-23 user ruling keeps cross-session messaging for when the user asks,
 | Subagent request, tools upfront | both present | neither present |
 
 ListAgents stays inline because, given `isDeferred: true`, Claude Code 2.1.330 drops it from both the tools array and the deferred listing.
+
+## Addendum 2026-11-23: Worktree Tools, DesignSync and RemoteTrigger Off
+
+By user ruling, `tool.offer` hides EnterWorktree, ExitWorktree, DesignSync and RemoteTrigger in every loop (REQ-TOOLS-002, REQ-TOOLS-004). Probe, same command: the default-mode main request stays at 10,507 characters, since all four were already deferred and now drop from the name listing; the tools-upfront main request drops from 29,088 to 16,317 (vanilla 64,155). None of the four appears in any plugin request. RemoteTrigger appears only in interactive sessions.

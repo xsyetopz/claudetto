@@ -65,9 +65,7 @@ describe("tool.describe", () => {
 				"Agent",
 				"AskUserQuestion",
 				"Bash",
-				"EnterWorktree",
 				"ExitPlanMode",
-				"ExitWorktree",
 				"Monitor",
 				"Read",
 				"Skill",
@@ -118,7 +116,6 @@ describe("tool.describe", () => {
 		// Assert
 		expect(text("Read")).toContain("file_path");
 		expect(text("TaskStop")).toContain("task_id");
-		expect(text("ExitWorktree")).toContain("action");
 		expect(text("Agent")).toContain("subagent_type");
 	});
 });
