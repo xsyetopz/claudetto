@@ -9,5 +9,15 @@ context:
 execution:
   max_turns: 40
   timeout_seconds: 600
-  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash, mcp__claudetto-spec__spec_check]
+  allowed_tools:
+    [
+      Read,
+      Glob,
+      Grep,
+      Skill,
+      Write,
+      Edit,
+      Bash,
+      mcp__claudetto-spec__spec_check
+    ]
   prompt: "In src/cart.ts, rename the local variable `acc` inside cartTotal to `subtotal`. Nothing else should change."

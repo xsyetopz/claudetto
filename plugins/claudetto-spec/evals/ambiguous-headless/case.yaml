@@ -9,5 +9,15 @@ context:
 execution:
   max_turns: 40
   timeout_seconds: 600
-  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash, mcp__claudetto-spec__spec_check]
+  allowed_tools:
+    [
+      Read,
+      Glob,
+      Grep,
+      Skill,
+      Write,
+      Edit,
+      Bash,
+      mcp__claudetto-spec__spec_check
+    ]
   prompt: "Add a totalWithTax function to the cart that takes a cart and a tax rate and returns the total including tax. Put it in src/cart.ts and add tests in src/cart.test.ts. I am away and cannot answer questions."
