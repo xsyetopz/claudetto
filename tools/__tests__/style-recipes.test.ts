@@ -43,12 +43,12 @@ describe("output style holds no Bash recipes (REQ-TOOLS-031, issue #115)", () =>
 });
 
 describe("output style holds no task conduct or tool use (REQ-TOOLS-031 and 032, issue #122)", () => {
-	test("the 11 moved paragraphs are gone from the style", async () => {
+	test("the moved paragraphs and the conduct paragraphs are not in the style", async () => {
 		// Arrange
 		const style = await Bun.file(styleFile).text();
 
 		// Assert
-		expect(CONDUCT_PARAGRAPHS).toHaveLength(10);
+		expect(CONDUCT_PARAGRAPHS).toHaveLength(11);
 		expect(style).not.toContain(QUESTION);
 		expect(style).not.toContain("AskUserQuestion");
 		for (const paragraph of CONDUCT_PARAGRAPHS) {
@@ -57,7 +57,7 @@ describe("output style holds no task conduct or tool use (REQ-TOOLS-031 and 032,
 		}
 	});
 
-	test("the AskUserQuestion paragraph is on its tool description once, and the other ten in the conduct section once", () => {
+	test("the AskUserQuestion paragraph is on its tool description once, and each conduct paragraph in the conduct section once", () => {
 		// Assert
 		expect(count(QUESTION_RULE, QUESTION)).toBe(1);
 		for (const paragraph of CONDUCT_PARAGRAPHS) {
