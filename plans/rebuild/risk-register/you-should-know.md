@@ -70,7 +70,7 @@
   Verified: 2026-11-20, claude 2.1.327, claude-sonnet-5-5, replay of the propose request on the dogfood session, 6 per arm, $0.913 (reports/2026-11-20-research/ysk-tool-claim): current prompt 1 false card of 6 replies, with a sentence tying tool-behaviour claims to session output 2 false of 6.
   Source: issue #65.
 
-- [x] **RISK-511** A you-should-know offer stays up after later steps of the same turn make it untrue.
+- [x] **RISK-527** A you-should-know offer stays up after later steps of the same turn make it untrue.
   Category: you-should-know
   Cause: After an offer was stored for a turn, every later check of that turn was skipped and nothing revisited the shown line, so a note such as "the test fails because X" stayed above the prompt after the agent fixed X.
   Event: An offer shown at step 3 described a failure the agent repaired in the following steps; the card stayed until two prompts had passed.
