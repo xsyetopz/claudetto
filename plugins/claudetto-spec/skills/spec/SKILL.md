@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Use for every request to add or change behaviour, such as a new feature or rule, also in a repo with no specs/ yet; and before changing code, tests or specs in a repo with specs/, including "make the tests pass" or "the test is wrong" requests - spec, failing tests, then code (clarify, spec, red, green, check). Skip typos, renames, dependency bumps and questions.
+description: Use before writing code for any request that adds or changes behaviour (a new function, feature or rule), also in a repo with no specs/ yet; and before changing code, tests or specs in a repo with specs/, including "make the tests pass" or "the test is wrong" requests - spec, failing tests, then code (clarify, spec, red, green, check). Skip typos, renames, dependency bumps and questions.
 license: MIT
 ---
 

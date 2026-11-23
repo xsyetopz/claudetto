@@ -98,10 +98,12 @@ The block ships `plugins/claudetto-spec/` (ADR-0192), a default-on add-in to cla
 ## Cost
 
 - [x] **REQ-SPEC-009** claudetto-spec shall add at most 150 always-on tokens: the skill description and the deferred tool name, with no agent, output style or rule text.
-  Acceptance: `claude --plugin-dir <abs path> plugin details claudetto-spec` reports always-on tokens at or below 150. Verification: probe.
+  Acceptance: `claude --plugin-dir <abs path> plugin details claudetto-spec` reports at most 150 always-on tokens summed over the components the model is shown. A command with `disable-model-invocation: true` is not in the model's skill listing, so it is left out of the sum, though `plugin details` counts it. Verification: probe.
   Basis: inferred (ADR-0177 cost side). Status: done at 9c0f589c1 (`claude plugin details claudetto-spec` on 2.1.330: always-on ~68 tokens, on-invoke ~530).
   Source: ADR-0192; REQ-VERIFICATION-073 (method).
   Verified: probe 2026-11-23, `claude --plugin-dir plugins/claudetto-spec plugin details claudetto-spec` (claude 2.1.330, after #169): Always-on ~140 tok (the `spec` skill description), Agents 0, Hooks 0 listed.
+  Evidence: 2026-11-24, claude 2.1.331, the same probe: Always-on ~225 tok, because the `implement` (~50) and `specify` (~40) commands of #176 are counted; the Verified line above no longer matched the acceptance as written.
+  Verified: 2026-11-24, claude 2.1.331. `plugin details`: `spec` ~140 always-on, `implement` ~50, `specify` ~40. Probe of what the model is shown: `claude -p --model haiku --plugin-dir plugins/claudetto-spec "List, verbatim, every skill name in your available skills listing whose name starts with claudetto-spec ..."` named only `claudetto-spec:spec`, so the model-facing sum is ~140, at or below 150.
 
 ## Gain Over Vanilla
 
