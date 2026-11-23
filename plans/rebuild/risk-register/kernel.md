@@ -448,6 +448,7 @@
   - Status: mitigated 2026-11-20. `ksh_arrays` was the other candidate and is rejected: its probe turned `exit ${pipestatus[1]}` from `exit 1` into `exit 0`, and 297 recorded commands use a 1-based subscript.
   - Verified: 2026-11-20, claude 2.1.327, paid batchZE (claude-sonnet-5-5, zsh 5.9, 6 per arm, $1.261): `C="echo hi there"; $C` vanilla 0/6, claudetto 6/6; `F="a.txt notes.md"; wc -l $F` vanilla 0/6, claudetto 6/6; control `${pipestatus[1]}` 6/6 on both. Probe (reports/2026-11-20-research/zsh/probe.sh with the user's shell snapshot): 6 of 6 split cases fixed, 8 of 8 controls unchanged; the one changed case is an unquoted path with a space. Transcript scan (scan.ts, 104,848 Bash commands): 0 such paths, 0 of 107 literal cases and 0 of a 58-case substitution sample harmed.
   - Source: issue #61; reports/2026-11-20-research/zsh/README.md.
+  - Evidence: 2026-11-23, vanilla with no claudetto loaded: an unquoted variable reached a script as one word, and the agent first blamed `grep -c` (ISSUES-part4.txt:95). This matches the vanilla baseline; the zsh option was not loaded and the mitigation stands.
 
 - [x] **RISK-509** zsh rejects bash-only syntax that no zsh option restores: `${a,,}` and `${a^^}`, `"$var[...]"`, and `[ a \< b ]` (issue #61, clusters F, G and H).
   - Category: host behaviour.

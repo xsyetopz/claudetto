@@ -159,12 +159,12 @@
 
 ## Subagent Cache Goes Cold
 
-- [x] **RISK-383** Subagent Cache Goes Cold.
+- [ ] **RISK-383** Subagent Cache Goes Cold.
   Category: Cost.
   Cause: Subagents default to a 5-minute cache TTL against 1 hour on the main thread.
   Event: A subagent that waits on a nested subagent, is resumed, or blocks on a build or test over 5 minutes goes cold. One commenter saw +40% usage. Cache creation bills 1.25x input at 5 minutes and 2x at 60 minutes. One cache bust in a 400k subagent transcript can cost more than running at 60 minutes, and iterative-test subagents may bust 10-20 times.
   Consequence: Spend.
-  Likelihood: 1. Impact: 3.
+  Likelihood: 3 (raised 2026-11-23: hour-long subagents in the user's session; earlier 1). Impact: 3.
   Existing controls: None known at 088a227c.
   Response: accept; planned before settlement: mitigate.
   Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
@@ -174,6 +174,8 @@
   Source: external/2026-11-06/reddit.com-r-claudecode-comments-1xo6dfy-thanks-to-two-lines-in-the-cla-20261105T084836Z.md:380,388,392-397 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xo6dfy/thanks_to_two_lines_in_the_claude_setting_i_was/>)
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
+  Evidence: 2026-11-23, vanilla, the user's own session: decomp-writer subagents ran 1h39m to 4h14m each, far past the 5-minute and 1-hour cache windows, and two failed when autocompact thrashed three times in a row on an oversized read (ISSUES-part4.txt:5,95-101). Third-party reports give the cost scale: 97.4-97.9% of tokens are cache reads in two users' totals (external/2026-11-21/reddit.com-r-claudecode-comments-1y167r2-*:29-33; external/2026-11-21/reddit.com-r-buildwithclaude-comments-1y13peq-*:37-39).
+  Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions at hours per subagent, so the acceptance above at Likelihood 1 does not hold.
 
 ## Audit Skill at Top Effort
 
