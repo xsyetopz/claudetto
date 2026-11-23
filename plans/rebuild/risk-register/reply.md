@@ -52,7 +52,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2254; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2272.
 
-- [ ] **RISK-228** Claude builds or keeps what nobody asked for, or reads the user's scope wrong.
+- [x] **RISK-228** Claude builds or keeps what nobody asked for, or reads the user's scope wrong.
   Category: agent behaviour.
   Cause: P3 (sessions c2ca5f8a, fb2f3d30, 26191031 the finish stop-loop; 8a569f82 "for now" scope; b4a5276c prose offered for CLAUDE.md; 1c7f7362 branch and commit; 317e19a9 openspec lint; 1430cd69 tooling layers; 037d3b8c an extra AGENTS.md line; 8a7bc06f goal cancelled). P6 (037d3b8c rule narrowed to one repo; dd0191a1 a paste routed instead of treated as a plugin defect).
   Event: extra work or a narrowed rule the user did not ask for.
@@ -69,6 +69,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
   Evidence: 2026-11-23, vanilla, the user's own session: on a task the user scoped as the whole program, the agent declared one record type a known limit "rather than widening scope" on its own authority, and the user overruled it (ISSUES-part3.txt:256-268).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the closing above does not hold.
+  Status: accepted 2026-11-23 (ADR-0177): a fresh-session case that invites the same move does not reproduce it on vanilla on Sonnet 5.5 or Opus 5.5, so no conduct line can show a gain. The fault seen in the user's session came about an hour into a long run; the `whole-scope` case stays as the regression check.
+  Verified: 2026-11-23, claude 2.1.330, `just eval claudetto --case whole-scope --model <m> -j 3 --threshold 0`: vanilla 3/3 at 1.00 on claude-sonnet-5-5 and 3/3 at 1.00 on claude-opus-5-5. Each run made all four samples round-trip, comments included, instead of keeping the README's known limit. With claudetto, 3/3 on both. Results /tmp/claude-501/r228/{w1,o1}.json.
 
 - [x] **RISK-229** Claude states "impossible" or "not supported" without checking.
   Category: agent behaviour.
@@ -384,7 +386,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Verified: reports/2026-11-19-research/conduct/README.md, Sonnet 5.5 on claude 2.1.327, 2026-11-19: vanilla passed cure 4 (act before handoff: it used the .env token instead of asking) in 3 of 3 runs each, so the fault did not reproduce.
   - Evidence: 2026-11-23, vanilla Claude Code with no claudetto loaded, the user's own sessions: after a fix the agent ended on a plain-text question whether to commit it or shut the VM down, and later listed two bugs as the turn's result instead of fixing them; the user had to order both done (ISSUES-part3.txt:277-284).
   - Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above (measured runs did not reproduce it) does not hold.
-  - Status: mitigated 2026-11-23: claudetto's conduct paragraph 5 (`plugins/claudetto/hooks/prompt/conduct.ts`, a defect found while working is part of the task, with no closing offer) beats vanilla on the new `second-defect` eval case. A question whether to commit, when the user never asked for one, stays a preference question under paragraph 7 and is not measured here.
+  - Status: mitigated 2026-11-23: claudetto's conduct paragraph 5 (`plugins/claudetto/hooks/prompt/conduct.ts`, a defect found while working is part of the task, with no closing offer) beats vanilla on the new `second-defect` eval case. The `no-offer` grader also fails a closing question such as "Do you want me to make the fix as a local commit?" from the same evidence, and no claudetto run ended with one.
   - Verified: 2026-11-23, claude 2.1.330, Sonnet 5.5, `just eval claudetto --case second-defect --model claude-sonnet-5-5 -j 3 --threshold 0`, two rounds: with claudetto 1.00 in 6 of 6 runs (both defects fixed, no offer); vanilla 0.29 in 6 of 6 (it fixed `cartTotal`, then ended with "Want me to fix it too?" or "I can fix that too if you want"). No-harm: `trivial-typo` 1.00 with and without. Results /tmp/claude-501/r263/{s1,s2,typo}.json.
 
 - [x] **RISK-264** Premature stop: the agent ends a turn with work left.
