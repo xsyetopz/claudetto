@@ -1791,3 +1791,45 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Verified: batches 15 to 17, 2026-11-19, claude 2.1.327, Sonnet 5.5, 6 runs per arm (reports/2026-11-19-research/goal/fixtures503.sh; the source each answer names is hand-labelled in labels503.tsv, because the earlier pattern scorer misjudged "rejected on your side" as no blame). Target fixtures, a project deny rule: an answer fails when it names the user or a permission prompt, since no prompt was shown. dk (pkill, tuned): vanilla 4/6, claudetto before the cure 3/6, claudetto with the cure 6/6. dr (rm -rf, untouched confirm): vanilla 6/6, before 3/6, with the cure 6/6. Controls, the person declines at the prompt (driver DRIVE_DENY, default permission mode): an answer passes when it names the person or the prompt. dkc: vanilla 2/6, before 1/6, with the cure 3/6. drc: vanilla 1/6, before 3/6, with the cure 4/6. No control answer in any arm named a wrong source; the rest said only "was rejected". The batch15 drc runs are void: acceptEdits allowed `rm` without a prompt, so the driver denied nothing. Cost $2.36.
   - Status: mitigated 2026-11-19 by an engine-limit workaround, hooks/guards/denial.ts: a `tool.check` hook adds the source that core's verdict names (`rule`, `hook` or `setting`) to the deny reason, with "no permission prompt was shown and no person declined it". A person's decline is not a `tool.check` deny and keeps its text. Remove it once core's deny text names its source (issue #50).
   - Evidence: 2026-11-23, vanilla with no claudetto loaded: the agent named the user as the source of a permission-layer denial (ISSUES-part3.txt:151-157). This matches the vanilla rate above; the hook was not loaded and the mitigation stands.
+
+- [ ] **RISK-520** A goal stays open on a step only the user can take, and the agent idles through repeated goal checks.
+  Category: agent conduct.
+  Cause: the agent writes a goal condition that includes a step it cannot take (a move the permission gate refused, a result only the user can produce), so each goal check finds it unmet and the agent replies "nothing changed" again.
+  Event: 2026-11-23, vanilla Claude Code, the user's own sessions: the goal check blocked the turn 9 times in a row until the engine's block cap ended it, in two separate sessions (ISSUES-part3.txt:70-85; ISSUES-part4.txt:9-15).
+  Consequence: paid turns with no work, and the user must clear the goal by hand.
+  Likelihood: 3. Impact: 2.
+  Existing controls: the engine stops after 9 blocks; nothing earlier.
+  Response: mitigate.
+  Actions: build CONDUCT: a goal condition names only steps the agent can take; a step only the user holds goes to the user once, with the exact command, and the goal is marked complete or narrowed, never left to loop.
+  Trigger: a second goal check in one turn that finds the same unmet step.
+  Owner: reply.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part3.txt:70-85; ISSUES-part4.txt:9-15.
+
+- [ ] **RISK-521** The agent calls an unfamiliar CLI with a guessed flag.
+  Category: agent conduct.
+  Cause: the agent assumes GNU-style flags and runs the program before reading its help or docs.
+  Event: 2026-11-23, vanilla, the user's own session: the agent passed `--help` to PCSX2, which rejected it as unknown; its documented flag is `-help` (ISSUES-part3.txt:137-143).
+  Consequence: a wasted run, and a risk of side effects when a guessed flag reaches a program that touches user data.
+  Likelihood: 2. Impact: 2.
+  Existing controls: the user's global CLAUDE.md requires flags from `--help` or versioned docs read in the session; the fault happened under it.
+  Response: mitigate.
+  Actions: build CONDUCT: before the first call of an unfamiliar CLI, read its documented help form or docs, and take each flag from that text.
+  Trigger: a tool result that reports an unknown option or parameter.
+  Owner: reply.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part3.txt:137-143.
+
+- [ ] **RISK-522** The agent names its own breach of a user rule and defers the fix.
+  Category: agent conduct.
+  Cause: the agent reports the breach as a note and schedules the repair after other work.
+  Event: 2026-11-23, vanilla, the user's own session: the agent debugged with a scratch script in /tmp/cc330-probe, stated that the user's rule puts new probes in cc-inspect with a test, and put that off until later (ISSUES-part4.txt:102).
+  Consequence: the breach outlives the turn, and the probe is lost with /tmp.
+  Likelihood: 2. Impact: 2.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: build CONDUCT: a known breach of a user rule is repaired in the same turn, before other work, and the report says it is repaired.
+  Trigger: a reply that names a user rule it broke and a later time for the fix.
+  Owner: reply.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part4.txt:102.

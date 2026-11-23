@@ -1004,3 +1004,17 @@
   - Source: issue #52; commit c1dd92abc; `bun tools/check-register.ts`, 2026-11-19.
   - Status: mitigated 2026-11-19.
   - Verified: 2026-11-19, `bun test tools/__tests__/check-register.test.ts` -> 7 pass, run twice; mutation: the Verified rule disabled in a copy -> 1 fail ("a closed item with no Verified line is listed").
+
+- [ ] **RISK-523** A watcher's failure branch can never fire, so a failure goes unreported.
+  Category: verification.
+  Cause: the agent writes a polling loop and checks only its success exit; the lookup the failure test reads returns nothing, so the failure condition stays false.
+  Event: 2026-11-23, vanilla, the user's own sessions: a release watcher looked up the E2E run with `gh run list --commit <short hash>`, which returned nothing, so it could catch the release but never an E2E failure; the same broken lookup appeared in an earlier monitor (ISSUES-part4.txt:24-34; ISSUES-part3.txt:164).
+  Consequence: the agent waits on a monitor that cannot report the outcome that matters, and states a status it never observed.
+  Likelihood: 3. Impact: 3.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: build CONDUCT: before trusting a watcher, run its lookup once and show that it returns the watched item, key it by a stable id (a run id, not a short hash), and make it exit on any end state other than success.
+  Trigger: a watcher whose lookup output is empty on its first poll.
+  Owner: verification.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part4.txt:24-34; ISSUES-part3.txt:164.

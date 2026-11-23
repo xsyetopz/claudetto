@@ -1376,3 +1376,17 @@
   - Verified: 2026-11-20, cc-inspect code search of claude 2.1.327 for `toolUseResult:`: the row is built at chunk-m14bt1pz.js@4545258 from the tool's own output, apart from the content the append hook rewrites; the 2026-11-19 batch-11 env2 runs (fixtures in reports/2026-11-19-research/goal/fixtures227.sh, observation in issue #59) show the raw value in the structured record.
   - Verified: 2026-11-20, reports/2026-11-20-research/redact-record/run.sh on claude 2.1.327, Haiku, a printed token, an errored command and an env-style file Read: raw values in `toolUseResult` vanilla 3 of 3, claudetto 0 of 3 in 2 of 2 runs ($0.0108); `claude plugin test plugins/claudetto` 149 pass, 0 fail, twice.
   - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts (registerRedact); issue #63.
+
+- [ ] **RISK-524** Installing a differently signed build of an app resets its macOS privacy grants, and the agent reports the earlier state.
+  Category: guards.
+  Cause: macOS ties Input Monitoring and Accessibility grants to the code signature; the agent replaced the app without checking that, and kept the permission reading taken before the install.
+  Event: 2026-11-23, vanilla, the user's own session: after the install the agent told the user to toggle switches that belonged to the old signature and planned tests on stale permission state, until the user pointed it out (ISSUES-part3.txt:88-106).
+  Consequence: device tests run without the grants, and the user redoes privacy settings.
+  Likelihood: 2. Impact: 4.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: build CONDUCT: before replacing an installed app, compare the new signature with the installed one and say which grants the swap resets; after any install, read live permission state again before reporting it.
+  Trigger: an install over an app that holds privacy grants.
+  Owner: guards.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part3.txt:88-106.
