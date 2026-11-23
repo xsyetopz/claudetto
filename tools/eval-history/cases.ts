@@ -107,6 +107,17 @@ const COMPOSE = `services:
       - "9100:9100"
 `;
 
+/** RISK-339: the base repo as is; the history's last turn breaks a shipping test unrun. */
+export const CORRECTION_CASE: CaseRepo = {
+	crlf: [],
+	executable: [],
+	files: new Map(),
+	reads: ["package.json", "README.md", "config.json"],
+	remove: [],
+	summary:
+		"tiny-cart is a cart-pricing library: one module per concern in src/ with a matching test file in test/. config.json sets the demo server to port 8080 on 127.0.0.1 and the README agrees. notes.txt is the 0.2.0 release checklist."
+};
+
 /** REQ-REPLY-146: the app port is spread over config.json, docker-compose.yml and .env.example. */
 export const DISPUTE_CASE: CaseRepo = {
 	crlf: [],

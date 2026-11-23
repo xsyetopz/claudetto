@@ -60,7 +60,7 @@ describe("REQ-TOOLS-032 prompt.compose", () => {
 		const conduct = sections.filter((s) => s.id === CONDUCT_ID);
 
 		// Assert
-		expect(CONDUCT_PARAGRAPHS).toHaveLength(11);
+		expect(CONDUCT_PARAGRAPHS).toHaveLength(12);
 		expect(conduct).toHaveLength(1);
 		expect(conduct[0]?.scope).toBe("shared");
 		expect(conduct[0]?.text).toBe(CONDUCT);

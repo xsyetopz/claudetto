@@ -48,7 +48,7 @@ describe("output style holds no task conduct or tool use (REQ-TOOLS-031 and 032,
 		const style = await Bun.file(styleFile).text();
 
 		// Assert
-		expect(CONDUCT_PARAGRAPHS).toHaveLength(11);
+		expect(CONDUCT_PARAGRAPHS).toHaveLength(12);
 		expect(style).not.toContain(QUESTION);
 		expect(style).not.toContain("AskUserQuestion");
 		for (const paragraph of CONDUCT_PARAGRAPHS) {
