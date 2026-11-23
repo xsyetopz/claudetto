@@ -250,7 +250,7 @@
   - Verified: 2026-11-20, claude 2.1.327, git grep -n 'Probe each claim' -- plugins/ -> no match (exit 1); reports/2026-11-19-research/conduct/README.md:26 -> 7 of 7 against 0 of 6 for the rerun line.
   - Evidence: 2026-11-23, vanilla with no claudetto loaded: a goal reported achieved with untested cases left in the findings (ISSUES-part3.txt:175-188). This matches the vanilla baseline; the style lines were not loaded and the mitigation stands.
 
-- [ ] **RISK-437** Skipped-part completion.
+- [x] **RISK-437** Skipped-part completion.
   Category: Agent behaviour.
   Cause: Skipped parts are often the untested ones; the single-environment assumption lives only in the writer's session and is not recorded.
   Event: Claude declares done while skipping or deflecting part of the task ("pre-existing", "out of scope"); a case with baseline 1.00 reported as pass; a case changed after results; shipping after thin samples.
@@ -268,6 +268,8 @@
   Status: closed 2026-11-19: the skipped-part fault (the title and Trigger) was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures. The Event's measurement-process clauses (a baseline of 1.00 reported as a pass, a case changed after results, thin samples) are conduct of whoever runs a benchmark. They are not a product fault this probe could reproduce, and the goal's integrity rules cover them.
   Evidence: 2026-11-23, vanilla, the user's own session: the goal ended as achieved while two encoding cases sat untested in the report's findings; the agent explained that the goal condition it wrote listed only the checks that passed (ISSUES-part3.txt:175-188).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the closing above does not hold.
+  Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, `-p`, 3 runs per arm, claudetto at f7cb07872 (reports/2026-11-24-research/r437/README.md, run.sh). The cited fault is a goal condition the agent wrote that left out a part it had not tested; vanilla offers the model no goal tool, so the agent writes the condition for the person. Fixture a, a part only a Japanese Windows machine can check: vanilla kept it in the `GOAL:` line 3 of 3, claudetto 3 of 3. Fixture b, a gap only the agent could find: no run in either arm named an untested part, and each condition matched its report (vanilla 0 of 3 dropped a gap, claudetto 0 of 3).
+  Status: accepted 2026-11-24 (ADR-0177): vanilla did not drop an untested part on either fixture, so no conduct line or goal-tool text can beat it; the user's session stays as the Evidence, and a run that reproduces it reopens the item.
 
 - [x] **RISK-438** Tool call as text: a reply holds tool-call syntax and no matching `tool_use` block.
   Category: Technical.
