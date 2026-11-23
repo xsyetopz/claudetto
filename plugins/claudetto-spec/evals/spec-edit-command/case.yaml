@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: spec-edit-command
-description: "/claudetto-spec:implement after a reviewer added a cap and a floor that look like conflicts with DISC-1 and are narrowing requirements; all three get tests and code."
+description: "/claudetto-spec:implement after a review: the specs on disk, not the stale review note or the earlier turn, set the scope; a second spec file holds SHIP-1, the cap is 50, and two added scenarios fail a float factor and a blunt floor."
 tags: [spec, implement]
 plugins: ["../.."]
 runs: 3

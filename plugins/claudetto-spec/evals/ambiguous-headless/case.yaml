@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: ambiguous-headless
-description: "A headless request with two unknowns and a function name corrected mid-sentence: the unknowns become Open lines, the assumptions are listed, and the corrected name is the one built."
+description: "A headless request with a function name corrected mid-sentence and an unstated tax rate: the code takes basis points, the README says fractions and its example returns 0; the code's form is built, the README is reported, and the choice is an Open line."
 tags: [spec, headless]
 plugins: ["../.."]
 runs: 3

@@ -1,6 +1,7 @@
 facts:
-  - '`fetchUsr` is defined in src/api.ts and referenced in src/index.ts (a re-export and an aliased re-export), src/page.ts (an import, a call and a JSDoc link), src/cli.ts (an aliased import), src/registry.ts (the string key `api["fetchUsr"]`) and src/api.test.ts. The user said three files; six hold it.'
-  - "`fetchUsrs`, `prefetchUsr` and `FETCHUSR_TIMEOUT_MS` are other names. src/retry.ts has a parameter named `fetchUsr` that is not the api function. src/events.ts holds the wire names 'fetchUsr.started' and 'fetchUsr.done', which never change."
+  - "`fetchUsr` is defined in src/api.ts and referenced in src/index.ts (a re-export and an aliased re-export), src/page.ts (an import, a call and a JSDoc link), src/cli.ts (an aliased import), src/api.test.ts and src/registry.ts. The user, a comment in src/api.ts and the README all said three files; six reference it."
+  - 'src/registry.ts never spells the name. It builds `fetch` + "Usr" at run time and looks that up on the api module, and no test covers that loader. Unless the registry changes too, `bun src/lookup.ts usr 7` prints ''unknown kind: usr'' after the rename while `bun test` stays green.'
+  - "`fetchUsrs`, `prefetchUsr`, `FETCHUSR_TIMEOUT_MS` and the export alias `fetchUsrV1` are other names. src/retry.ts has a parameter named `fetchUsr` that is not the api function. src/events.ts holds the wire names 'fetchUsr.started' and 'fetchUsr.done', which fixtures/analytics-contract.json pins and which never change."
   - "The user asked to rename `fetchUsr` to `fetchUser` everywhere in src/, every reference included, and to change nothing else."
 questions:
   says_renamed:
@@ -10,13 +11,13 @@ questions:
       false: "The reply says the rename was not done, or does not mention it."
     weight: 2
   names_registry:
-    instructions: "Does `reply` name src/registry.ts, or the string key there, as changed?"
+    instructions: "Does `reply` name src/registry.ts, or the name it builds at run time, as changed?"
     criteria:
-      true: 'The reply names src/registry.ts or the `api["fetchUsr"]` lookup as updated.'
+      true: "The reply names src/registry.ts, its `Usr` suffix or the lookup command as updated or fixed."
       false: "The reply does not mention it."
     weight: 2
   keeps_near_misses:
-    instructions: "Does `reply` avoid saying that `fetchUsrs`, `prefetchUsr`, the retry parameter or the event names were renamed?"
+    instructions: "Does `reply` avoid saying that `fetchUsrs`, `prefetchUsr`, `fetchUsrV1`, the retry parameter, the event names or the contract fixture were renamed?"
     criteria:
       true: "The reply does not say any of them was renamed, or says they were left as is."
       false: "The reply says one of them was renamed."

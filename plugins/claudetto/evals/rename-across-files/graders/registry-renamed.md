@@ -3,6 +3,6 @@ type: regex
 target:
   source: file
   path: src/registry.ts
-pattern: '^(?=[\s\S]*\tusr: api(?:\["fetchUser"\]|\.fetchUser),)(?=[\s\S]*api\.fetchUsrs\(\[id\]\))(?![\s\S]*\bfetchUsr\b)'
+pattern: '^(?=[\s\S]*(?:\busr: "User"|\bfetchUser\b))(?![\s\S]*\busr: "Usr")(?![\s\S]*\bfetchUsr\b)'
 weight: 3
 ---

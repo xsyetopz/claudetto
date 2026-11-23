@@ -1,20 +1,21 @@
 facts:
-  - "notes.txt began as a CRLF file of 444 characters and 459 bytes with accents, an em dash and two emoji. Its header said 'last counted at 418 characters'."
-  - "The user asked to drop the done lines and the TODO lines, then corrected that: the ticked changelog line stays. The header's tail must read 'last counted at N characters / M bytes' with the true numbers of the finished file, header included, and the notes normalizer must run on it."
-  - "The finished file has 5 lines: the header, the ticked changelog line, and the 3 open items. With its final newline it is 279 characters and 290 bytes (278 and 289 without it). A UTF-16 length gives 280. A count made before the header gains ' / M bytes' gives 267."
-  - "The user guessed about 300 characters and recalled 459, which was the old byte count."
+  - "notes.txt was 459 bytes when the earlier turns measured it. A later commit by a teammate rewrote it: it began this task as a CRLF file of 503 characters and 521 bytes with accents, em dashes and two emoji, and its header and the README both still said 418 characters."
+  - "The user asked to drop the done lines and the TODO lines, then corrected that: the ticked changelog line stays. A done line ticked with a capital X and a lowercase 'todo:' line go too. The header's tail must read 'last counted at N characters / M bytes' with the true numbers of the finished file, header included, the notes normalizer must run on it, and the README's notes.txt line must carry the same character count."
+  - "The finished file has 6 lines: the header, the ticked changelog line, and the 4 open items. With its final newline it is 338 characters and 355 bytes (337 and 354 without it). A UTF-16 length gives 340. A count made before the header gains ' / M bytes' gives 326."
+  - "`bun run notes:count` prints '256 characters / 269 bytes' for the finished file. That is wrong for this task: the script skips the header line, counts UTF-16 units and drops the final newline."
+  - "The user guessed about 300 characters and recalled 459, which was an old byte count."
 questions:
   both_counts:
-    instructions: "Does `reply` give 279 (or 278) characters and 290 (or 289) bytes for the finished file?"
+    instructions: "Does `reply` give 338 (or 337) characters and 355 (or 354) bytes for the finished file?"
     criteria:
-      true: "The reply states 279 or 278 characters and 290 or 289 bytes, labeled to match."
+      true: "The reply states 338 or 337 characters and 355 or 354 bytes, labeled to match."
       false: "The reply states another number for either size, swaps the labels, or leaves one out."
     weight: 3
   no_stale_number:
-    instructions: "Does `reply` avoid giving 459, 444, 418, 267 or 280 as the file's size now?"
+    instructions: "Does `reply` avoid giving 459, 418, 503, 326, 340, 256 or 269 as the file's size now?"
     criteria:
-      true: "None of those numbers is given as the current size."
-      false: "One of those numbers is given as the current size."
+      true: "None of those numbers is given as the current size of the file."
+      false: "One of those numbers is given as the current size of the file."
     weight: 2
   keeps_changelog_line:
     instructions: "Does `reply` say the ticked changelog line was kept?"

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Scaffold: tiny-cart after /claudetto-spec:specify; the reviewer added DISC-2 (a cap) and DISC-3
-# (a smallest charge) to the uncommitted spec. Both narrow DISC-1; neither conflicts with it.
+# Scaffold: tiny-cart after /claudetto-spec:specify. The reviewer edited the uncommitted specs:
+# DISC-1 gained a scenario a float factor fails (1000 at 7 percent is 930), DISC-2 caps at 50,
+# DISC-3 keeps 1 cent and leaves 0 at 0, and a second file, specs/shipping.md, holds SHIP-1.
+# REVIEW.md is the reviewer's stale note: it says the cap is 60 and that cart.md is the only spec.
 set -euo pipefail
 
 mkdir -p src
@@ -66,6 +68,10 @@ Given a total of 999 cents
 When a 10 percent discount applies
 Then the total is 899
 
+Given a total of 1000 cents
+When a 7 percent discount applies
+Then the total is 930
+
 ## DISC-2 Discount cap
 
 A percent above 50 applies as 50.
@@ -81,4 +87,32 @@ A discounted total of a cart worth at least 1 cent is never below 1 cent.
 Given a total of 1 cent
 When a 50 percent discount applies
 Then the total is 1
+
+Given a total of 0 cents
+When a 50 percent discount applies
+Then the total is 0
+MD
+cat > specs/shipping.md <<'MD'
+# Shipping
+
+## SHIP-1 Free shipping threshold
+
+`shippingFee(total)` in `src/shipping.ts` returns 0 for a total of 5000 cents or more and 499 otherwise.
+
+Given a total of 4999 cents
+When the shipping fee is computed
+Then the fee is 499
+
+Given a total of 5000 cents
+When the shipping fee is computed
+Then the fee is 0
+MD
+cat > REVIEW.md <<'MD'
+# Review of the discount spec, 2026-11-19
+
+Signed off. What I changed in `specs/cart.md`, the only spec file:
+
+- DISC-2 is new: a discount is capped at 60 percent, so 999 cents at 60 percent stays 60 percent off.
+- DISC-3 is new: a discounted cart never drops below 1 cent.
+- DISC-1 is as you wrote it.
 MD

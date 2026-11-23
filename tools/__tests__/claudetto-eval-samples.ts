@@ -1,32 +1,8 @@
 import { CODE_SAMPLES } from "./claudetto-eval-code-samples";
+import { COUNT_SAMPLES } from "./claudetto-eval-count-samples";
 import { call, type Samples } from "./eval-case-samples";
 
 // Samples for the regex graders of the claudetto suite, keyed `<case>/<grader>`.
-
-/** `notes.txt` after the count-after-change edit: 279 characters and 290 bytes, header and final newline included. */
-export const NOTES = [
-	"Release checklist for tiny-cart 0.2.0 — last counted at 279 characters / 290 bytes",
-	"[x] write the changelog entry for the café menu ✓",
-	"[ ] tag the release and push the tag",
-	"[ ] announce the release in the team channel — Zoë owns the wording",
-	"[ ] smoke-test the checkout on a phone \u{1F4F1}",
-	""
-].join("\n");
-
-/** The open P1 and P2 backlog rows of count-in-reply, in order: 401 characters and 425 bytes. */
-export const LIST = [
-	"- Handle empty carts without a crash \u{1F4A5}",
-	"- Parse the `sku | qty` import column",
-	"- Fix café checkout rounding — épée orders",
-	"- Stop double-charging on retry ⚠",
-	"- Rotate the signing key \u{1F511}",
-	"- Réparer l'écran de paiement \u{1F9FE}",
-	"- Cache the open P1 count on the dashboard",
-	"- Document the refund flow — finally",
-	"- Ship the VAT table for Zoë's region",
-	"- Retry webhooks 3× before paging",
-	"- Größe der Warenkorb-Zeile anzeigen"
-].join("\n");
 
 const PROMPT = [
 	"# Role",
@@ -39,7 +15,7 @@ const PROMPT = [
 	"Call `ticket_lookup` for one ticket and `ticket_search` to find tickets.",
 	"",
 	"# Refunds",
-	"Approve a refund up to $50 without asking; hand a larger one to a human.",
+	"Approve a refund up to $75 without asking; hand a larger one to a human.",
 	"",
 	"# Escalation",
 	"Escalate when the customer asks for a manager or the refund is above the cap.",
@@ -50,8 +26,7 @@ const PROMPT = [
 	""
 ].join("\n");
 
-const REPLY_COUNTS = "notes.txt is now 279 characters and 290 bytes, not 300.";
-const SAVED = "Saved to prompts/dex-support.md.";
+const SAVED = "Saved to prompts/live/dex.system.md.";
 
 const ARTIFACT: Record<string, Samples> = {
 	"artifact-short-answer/cheatsheet-unchanged": {
@@ -83,15 +58,22 @@ const ARTIFACT: Record<string, Samples> = {
 		good: [SAVED]
 	},
 	"artifact-to-file/refund-capped": {
-		bad: [PROMPT.replace("$50", "$100")],
+		bad: [PROMPT.replace("$75", "$100"), PROMPT.replace("$75", "$50")],
 		good: [PROMPT]
 	},
 	"artifact-to-file/reply-names-path": {
-		bad: ["Saved the prompt."],
+		bad: ["Saved the prompt.", "Saved to prompts/dex-support.md."],
 		good: [SAVED]
 	},
+	"artifact-to-file/stale-path-unwritten": {
+		bad: ["prompts/dex-support.md\n"],
+		good: ["prompts/live/dex.system.md\n"]
+	},
 	"artifact-to-file/tools-match-repo": {
-		bad: [PROMPT.replace("ticket_lookup", "lookup_ticket")],
+		bad: [
+			PROMPT.replace("ticket_lookup", "lookup_ticket"),
+			`${PROMPT}The docs call it tickets.search.\n`
+		],
 		good: [PROMPT]
 	},
 	"artifact-to-file/vague-lines-gone": {
@@ -120,59 +102,7 @@ const ARTIFACT: Record<string, Samples> = {
 	}
 };
 
-const COUNTS: Record<string, Samples> = {
-	"count-after-change/changelog-line-kept": {
-		bad: [NOTES.replace(/\[x\][^\n]*\n/u, "")],
-		good: [NOTES]
-	},
-	"count-after-change/done-and-todo-removed": {
-		bad: [`${NOTES}TODO: ask Zoë\n`],
-		good: [NOTES]
-	},
-	"count-after-change/header-counts-true": {
-		bad: [NOTES.replace("279", "280")],
-		good: [NOTES]
-	},
-	"count-after-change/normalized": {
-		bad: [NOTES.replace("the tag\n", "the tag  \n")],
-		good: [NOTES]
-	},
-	"count-after-change/notes-exact": {
-		bad: [NOTES.replace("279", "280"), NOTES.replace("[x]", "[ ]")],
-		good: [NOTES]
-	},
-	"count-after-change/open-items-kept": {
-		bad: [NOTES.replace("[ ] tag the release and push the tag\n", "")],
-		good: [NOTES]
-	},
-	"count-after-change/reply-gives-both-counts": {
-		bad: ["notes.txt is now 279 characters."],
-		good: [REPLY_COUNTS]
-	},
-	"count-after-change/reply-no-wrong-count": {
-		bad: ["notes.txt is now 290 characters."],
-		good: [REPLY_COUNTS]
-	},
-	"count-in-reply/backlog-unchanged": {
-		badFile: [["Fix café checkout", "Fix cafe checkout"]],
-		goodFile: []
-	},
-	"count-in-reply/count-matches-list": {
-		bad: ["The list is 404 characters long."],
-		good: ["The list is 401 characters long."]
-	},
-	"count-in-reply/list-excludes-decoys": {
-		bad: [`${LIST}\n- Open-source licence audit`],
-		good: [LIST]
-	},
-	"count-in-reply/list-ordered": {
-		bad: [LIST.split("\n").toReversed().join("\n")],
-		good: [`Eleven, not nine:\n\n${LIST}\n\n401 characters.`]
-	},
-	"count-in-reply/no-wrong-count": {
-		bad: ["The list is 404 characters long."],
-		good: ["The list is 401 characters long."]
-	},
+const DISPUTE: Record<string, Samples> = {
 	"dispute-checkable/checked-before-edit": {
 		bad: [`${call("Edit", "README.md")}\n${call("Read", "config.json")}`],
 		good: [`${call("Read", "config.json")}\n${call("Edit", "README.md")}`]
@@ -220,6 +150,7 @@ const COUNTS: Record<string, Samples> = {
 /** The samples of every regex grader in the claudetto suite. */
 export const CLAUDETTO_SAMPLES: Readonly<Record<string, Samples>> = {
 	...ARTIFACT,
-	...COUNTS,
+	...COUNT_SAMPLES,
+	...DISPUTE,
 	...CODE_SAMPLES
 };

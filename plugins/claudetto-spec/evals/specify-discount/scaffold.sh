@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny Bun cart project with a spec (CART-1, CART-2), a throwing applyDiscount stub and
-# a todo test. /claudetto-spec:specify writes the requirement and leaves the stub and the todo alone.
+# Scaffold: a tiny Bun cart project with a spec (CART-1, CART-2), a todo test, and an applyDiscount
+# that the request and the README call a stub. It is live: it returns legacyDiscount, which rounds
+# half up, so 995 at 10 percent is 896 today. /claudetto-spec:specify writes the requirement, leaves
+# code and tests alone, and says what the code does now. Offline and deterministic.
 set -euo pipefail
 
-mkdir -p src specs
+mkdir -p src/legacy specs
 cat > package.json <<'JSON'
 {
   "name": "tiny-cart",
@@ -13,6 +15,8 @@ cat > package.json <<'JSON'
 }
 JSON
 cat > src/cart.ts <<'TS'
+import { legacyDiscount } from "./legacy/pricing";
+
 export interface Item {
 	price: number;
 	qty: number;
@@ -26,9 +30,23 @@ export function cartTotal(items: Item[]): number {
 	return Math.max(0, acc);
 }
 
-export function applyDiscount(_total: number, _percent: number): number {
-	throw new Error("not implemented");
+export function applyDiscount(total: number, percent: number): number {
+	return legacyDiscount(total, percent);
 }
+TS
+cat > src/legacy/pricing.ts <<'TS'
+// Pricing helpers kept from the 0.1 checkout.
+export function legacyDiscount(total: number, percent: number): number {
+	return Math.round((total * (100 - percent)) / 100);
+}
+TS
+cat > src/legacy/pricing.test.ts <<'TS'
+import { expect, test } from "bun:test";
+import { legacyDiscount } from "./pricing";
+
+test("ten percent off a round total", () => {
+	expect(legacyDiscount(1000, 10)).toBe(900);
+});
 TS
 cat > src/cart.test.ts <<'TS'
 import { expect, test } from "bun:test";
@@ -72,6 +90,8 @@ cat > README.md <<'MD'
 # tiny-cart
 
 A tiny cart library. Prices are integer cents. Customers recieve one total for all items.
+
+`applyDiscount` in `src/cart.ts` is a stub that throws until the discount work lands.
 
 Run the tests with `bun test`.
 MD

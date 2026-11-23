@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: artifact-to-file
-description: "REQ-REPLY-151: a long reusable text artifact that no file holds yet goes to the file the repo names for it, not into the chat (issue #139)."
+description: "REQ-REPLY-151: a long reusable text artifact that no file holds yet goes to the file the code computes for it, with the tool names and the refund cap the code yields, not into the chat and not to the path, names and cap the docs give (issue #139)."
 tags: [reply, artifact]
 plugins: ["../.."]
 runs: 3

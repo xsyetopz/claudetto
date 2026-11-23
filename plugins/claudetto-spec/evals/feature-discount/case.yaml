@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: feature-discount
-description: "The loop under a two-part request with a rounding rule corrected mid-sentence: a new ID beside CART-1 and CART-2, tests staged before the code."
+description: "The loop under a two-part request: the README names a taken ID as free and a helper that rounds the wrong way, a float factor is a cent short, and the README typo sits beside an option really spelled that way."
 tags: [spec, feature]
 plugins: ["../.."]
 runs: 3

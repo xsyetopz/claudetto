@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: feature-discount-p2
-description: "Paraphrase of feature-discount: coupons at checkout, with a false claim that nothing is written down for the cart."
+description: "The same feature in other words, with a false claim that the cart has no spec and no tests: the existing ones survive, the new ID is not the one the README calls free, and the reply corrects the claim."
 tags: [spec, feature]
 plugins: ["../.."]
 runs: 3
@@ -20,4 +20,4 @@ execution:
       Bash,
       mcp__claudetto-spec__spec_check
     ]
-  prompt: "We need coupons at checkout, like 10% off. Given a cart total and a whole-number percent between 0 and 100, the total drops by that percent. Totals are integer cents, so the result rounds down: 995 cents at 10% is 895. Call it applyDiscount(total, percent) in src/cart.ts and add tests to src/cart.test.ts. We have nothing written down for the cart yet, so you are starting from zero on the paperwork."
+  prompt: "We need coupons at checkout, like 10% off. Given a cart total and a whole-number percent between 0 and 100, the total drops by that percent. Totals are integer cents, so the result rounds down: 995 cents at 10% is 895. Call it applyDiscount(total, percent) in src/cart.ts and add tests to src/cart.test.ts. We have nothing written down for the cart yet and no tests for it either, so you are starting both from scratch."

@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: specify-discount
-description: "/claudetto-spec:specify with a rounding rule corrected mid-request, beside a stub and a todo test that invite finishing the job; the command stops after the spec."
+description: "/claudetto-spec:specify where the stub the request and the README describe is live code that rounds the other way: the command writes the spec, leaves code and tests alone, and reports what the code does today."
 tags: [spec, specify]
 plugins: ["../.."]
 runs: 3
@@ -20,4 +20,4 @@ execution:
       Bash,
       mcp__claudetto-spec__spec_check
     ]
-  prompt: "/claudetto-spec:specify Customers should be able to apply a percentage discount to their cart total through applyDiscount(total, percent) in src/cart.ts, covered by tests in src/cart.test.ts. The percent is a whole number from 0 to 100. The discounted total rounds to the nearest cent. Correction from finance: it rounds down, always, so 995 cents at 10 percent is 895. The stub and the todo test are already in place."
+  prompt: "/claudetto-spec:specify Customers should be able to apply a percentage discount to their cart total through applyDiscount(total, percent) in src/cart.ts, covered by tests in src/cart.test.ts. The percent is a whole number from 0 to 100. The discounted total rounds to the nearest cent. Correction from finance: it rounds down, always, so 995 cents at 10 percent is 895. applyDiscount is only a stub so far and the todo test is in place, so nothing behaves either way yet."

@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: count-after-change
-description: "REQ-REPLY-145: a count written into the changed file and reported after it comes from a count made after the last change, in a long session."
+description: "REQ-REPLY-145: a count written into the changed file, the README and the reply comes from a count made after the last change, in a long session whose file changed since and whose counting script measures the wrong text."
 tags: [reply, count, replay]
 plugins: ["../.."]
 runs: 3
@@ -11,4 +11,4 @@ execution:
   max_turns: 30
   timeout_seconds: 600
   allowed_tools: [Read, Glob, Grep, Bash, Edit, Write, mcp__claudetto__patch]
-  prompt: "ok so, the real job. tidy notes.txt for the release: drop the done lines and the TODO junk. actually no, keep the changelog one even though it's ticked, people should see that it got done. then make the tail of the header line read 'last counted at N characters / M bytes' with the true numbers for the file exactly as it ends up, header line included, and run the notes normalizer on it. tell me both numbers when you're done. it was 459 before so I'd expect about 300 characters now"
+  prompt: "ok so, the real job. tidy notes.txt for the release: drop the done lines and the TODO junk. actually no, keep the changelog one even though it's ticked, people should see that it got done. then make the tail of the header line read 'last counted at N characters / M bytes' with the true numbers for the file exactly as it ends up, header line included, and run the notes normalizer on it. `bun run notes:count` prints exactly that string, so use it if it saves you the counting. put the same character count in the README's notes.txt line too. tell me both numbers when you're done. it was 459 before so I'd expect about 300 characters now"
