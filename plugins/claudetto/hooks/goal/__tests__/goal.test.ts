@@ -196,6 +196,52 @@ describe("goal tools", () => {
 		expect(await stateOf($)).toContain('Paused goal: "lint passes"');
 	});
 
+	test("a block after pause_goal ends the main turn, and one before it does not", async ($, on) => {
+		// Arrange
+		engine(on);
+		const aborted: string[] = [];
+		on("turn.abort", (_$, e) => {
+			aborted.push(e.turnId);
+			return { value: undefined };
+		});
+		on("turn.start", (_$, e) => ({ turnId: e.turnId }));
+		await $.turn.start({ text: "go", turnId: "main" });
+		await $.turn.start({ text: "", turnId: "sub", agentId: "a1" });
+		await setGoal($, "x exists");
+		const feedback =
+			"Stop hook feedback:\n[x exists]: the user has not confirmed";
+		await $.session.append(row("note", feedback));
+		const before = [...aborted];
+
+		// Act
+		await $.tool.call({ tool: PAUSE });
+		await $.session.append(row("note", feedback));
+
+		// Assert
+		expect(before).toEqual([]);
+		expect(aborted).toEqual(["main"]);
+	});
+
+	test("pause_goal runs without the engine's ask, and set_goal and a settings rule keep theirs", async ($, on) => {
+		// Arrange
+		engine(on);
+		on("tool.check", (_$, e) =>
+			e.tool === CLEAR
+				? { decision: "ask", rule: "mcp__claudetto__clear_goal" }
+				: { decision: "ask" }
+		);
+
+		// Act
+		const pause = await $.tool.check({ tool: PAUSE, input: {} });
+		const set = await $.tool.check({ tool: SET, input: { condition: "x" } });
+		const ruled = await $.tool.check({ tool: CLEAR, input: {} });
+
+		// Assert
+		expect(pause.decision).toBe("allow");
+		expect(set.decision).toBe("ask");
+		expect(ruled.decision).toBe("ask");
+	});
+
 	test("clear_goal refuses a failed check and clears a backed one", async ($, on) => {
 		// Arrange
 		const { ran, clock } = engine(
