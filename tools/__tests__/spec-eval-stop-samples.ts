@@ -140,13 +140,21 @@ export const STOP_SAMPLES: Readonly<Record<string, Samples>> = {
 			"gap-stock-6",
 			"| STOCK-6 | no `history` method |",
 			"- STOCK-3: hollow test."
-		),
-		gap(
-			"covered-not-listed",
-			"- STOCK-1: no test; the STOCK-10 and STOCK-11 tests are not it.",
-			"- STOCK-1: no test.\n- STOCK-10: no test."
 		)
 	]),
+	// RISK-528: a closing line that names the covered IDs as covered is not a gap line.
+	"spec-review-hollow-test/covered-not-listed": {
+		good: [
+			"- STOCK-1: no test; the STOCK-10 and STOCK-11 tests are not it.",
+			"- STOCK-1: no test.\n\nSTOCK-2, STOCK-4, STOCK-10 and STOCK-11 are covered.",
+			"- STOCK-6: no code.\nSTOCK-2 is fine."
+		],
+		bad: [
+			"- STOCK-1: no test.\n- STOCK-10: no test.",
+			"- STOCK-2: the test asserts nothing.",
+			"STOCK-4 is not covered: no test."
+		]
+	},
 	"spec-review-hollow-test/no-edit-tools": noEdit("src/stock.test.ts"),
 	"trivial-rename/new-name-used": {
 		badFile: [],
