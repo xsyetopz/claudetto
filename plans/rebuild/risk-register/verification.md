@@ -1009,7 +1009,7 @@
   - Status: mitigated 2026-11-19.
   - Verified: 2026-11-19, `bun test tools/__tests__/check-register.test.ts` -> 7 pass, run twice; mutation: the Verified rule disabled in a copy -> 1 fail ("a closed item with no Verified line is listed").
 
-- [ ] **RISK-523** A watcher's failure branch can never fire, so a failure goes unreported.
+- [x] **RISK-523** A watcher's failure branch can never fire, so a failure goes unreported.
   Category: verification.
   Cause: the agent writes a polling loop and checks only its success exit; the lookup the failure test reads returns nothing, so the failure condition stays false.
   Event: 2026-11-23, vanilla, the user's own sessions: a release watcher looked up the E2E run with `gh run list --commit <short hash>`, which returned nothing, so it could catch the release but never an E2E failure; the same broken lookup appeared in an earlier monitor (ISSUES-part4.txt:24-34; ISSUES-part3.txt:164).
@@ -1021,6 +1021,11 @@
   Trigger: a watcher whose lookup output is empty on its first poll.
   Owner: verification.
   Status: open 2026-11-23, build CONDUCT.
+  Status: accepted 2026-11-23 (ADR-0177): a measured run shows vanilla checks the empty lookup, keys the watcher by
+  the full SHA and reports the failure, so no conduct line ships; `watch-run` stays as the regression case.
+  Verified: 2026-11-23, claude 2.1.330, `just eval claudetto --case watch-run -j 3 --threshold 0`: 1.00 with and
+  without on Sonnet 5.5 and Opus 5.5; a `claude -p` background-watcher probe on Opus 5.5
+  (/tmp/claude-501/r523/arm.sh) named the failure and its step in 3 of 3 runs per arm.
   Source: ISSUES-part4.txt:24-34; ISSUES-part3.txt:164.
 
 - [ ] **RISK-528** The `covered-not-listed` grader of `spec-review-hollow-test` fails a reply that names a covered requirement as covered.
