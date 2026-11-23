@@ -154,6 +154,12 @@ const samples = new Map<string, Sample>([
 	],
 	...specReviewSamples,
 	...reviewPointSamples,
+	...featureSamples
+		.filter(([grader]) => grader.startsWith("spec-"))
+		.map(([grader, sample]): [string, Sample] => [
+			`specify-discount/${grader}`,
+			sample
+		]),
 	...["feature-discount", "feature-discount-p2"].flatMap((name) =>
 		[...featureSamples, ...stagingSamples, ...endRunSamples].map(
 			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]
@@ -248,6 +254,7 @@ test("the shared scaffold is identical in every case that uses it", async () => 
 		"ambiguous-headless",
 		"feature-discount",
 		"feature-discount-p2",
+		"specify-discount",
 		"trivial-rename",
 		"trivial-typo"
 	];

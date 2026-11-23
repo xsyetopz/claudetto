@@ -13,6 +13,10 @@ Cases for `claude plugin eval`, under the integrity rules of ADR-0193. Requireme
 | `spec-review-hollow-test` | Gap review (no-harm check; REQ-SKILLS-020 removed the command) over an uncommitted stock-ledger diff | the reply names `STOCK-2` (its test asserts `true`), `STOCK-3` (the release-too-many scenario has no test) and `STOCK-4` (no code); no line pairs the fully covered `STOCK-1` with a gap word; a short `llm` grader checks the three gap kinds |
 | `spec-edit-skill` | Mid-loop spec edit: a reviewer adds `DISC-2` (cap at 50 %) after `DISC-1` shipped | the turn-1 history is replayed; a test cites `DISC-2` and calls `applyDiscount` above 50; `src/cart.ts` holds 50; the `DISC-1` tests and the spec are kept; the last bun summary has 0 fail |
 | `spec-fix-skill` | Mid-loop spec edit: a reviewer changes `DISC-1` from rounding down to nearest | a test asserts `applyDiscount(995, 10)` is 896 and none still asserts 895; a test cites `DISC-1`; the edited spec is kept; the last bun summary has 0 fail |
+| `specify-discount` | `/claudetto-spec:specify` with the discount request | a file under `specs/` is written with a `## <ID> <title>` heading; no test file and no `src/cart.ts` change is written; the reply points to `/claudetto-spec:implement` |
+| `spec-edit-command` | Review point: the reviewer adds `DISC-2` (cap at 50 %) to the uncommitted spec, then types `/claudetto-spec:implement` | as `spec-edit-skill`, without the kept-`DISC-1`-tests check (turn 1 wrote none) |
+| `spec-fix-command` | Review point: the reviewer changes `DISC-1` to rounding to nearest before any test, then types `/claudetto-spec:implement` | as `spec-fix-skill` |
+| `implement-conflict` | `/claudetto-spec:implement` on a spec whose `DISC-1` and `DISC-3` give different totals for 999 at 10 % | the reply names both IDs; `src/cart.ts` is not written; the spec is unchanged; no AskUserQuestion |
 | `ambiguous-headless` | Unknown under `claude -p` | the trace holds an `Open:` line; the reply states an assumption, and reports both the tax-rate form and the rounding as choices (two `llm` graders; the wording regex went in #169) |
 
 ## Run

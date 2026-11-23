@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: spec-fix-command
+description: "Review point, turn 2 of the command path: the reviewer changed DISC-1 to round to the nearest cent after /claudetto-spec:specify stopped, before any test or code."
+tags: [spec, command, review-point]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+  history_file: history.jsonl
+execution:
+  max_turns: 40
+  timeout_seconds: 600
+  allowed_tools:
+    [
+      Read,
+      Glob,
+      Grep,
+      Skill,
+      Write,
+      Edit,
+      Bash,
+      mcp__claudetto-spec__spec_check
+    ]
+  prompt: "/claudetto-spec:implement"
