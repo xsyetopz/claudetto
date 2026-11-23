@@ -62,7 +62,7 @@ A Bash result carries a short note when the command hides its own failure: a bac
 
 ## Patch Tool
 
-claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
+claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (a new path only; lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
 
 - Paths are relative to the session directory or absolute, and a path that lands outside it (also through a symbolic link) is refused with the reason.
 - Context matches exactly, then with trailing whitespace folded, then trimmed. A hunk whose context is missing or ambiguous refuses the whole patch and writes nothing; the error names the file, the hunk and the nearest line.
