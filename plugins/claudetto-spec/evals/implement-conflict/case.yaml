@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: implement-conflict
-description: "No-harm check for the narrowing rule: DISC-1 rounds 899.1 down to 899, DISC-3 rounds it to 900, so /claudetto-spec:implement must stop and name both."
-tags: [spec, command, review-point]
+description: "/claudetto-spec:implement on a spec with two narrowing requirements and one true conflict whose examples do not collide on their face; the passing behaviour is to stop and name DISC-1 and DISC-4."
+tags: [spec, implement, contradiction]
 plugins: ["../.."]
 runs: 3
 context:

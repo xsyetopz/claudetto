@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: artifact-short-answer
-description: "REQ-REPLY-151 (no-harm twin): a short answer stays in the reply and no file is created (issue #139)."
+description: "REQ-REPLY-151 (no-harm twin): a short answer stays in the reply and no file is created or edited, though the request names a file it will land in later (issue #139)."
 tags: [reply, artifact, trivial]
 plugins: ["../.."]
 runs: 3
@@ -10,4 +10,4 @@ execution:
   max_turns: 20
   timeout_seconds: 300
   allowed_tools: [Read, Glob, Grep, Write, Edit, mcp__claudetto__patch]
-  prompt: "What one-line git command shows the files changed in the last commit?"
+  prompt: "What one-line git command shows the files changed in the last commit? Give me the command and one short line on what each flag does. I keep losing it, it belongs in the Git section of docs/cheatsheet.md, and I'll paste it there myself after standup because that file is mid-edit on my side."

@@ -81,3 +81,18 @@
   - Status: mitigated 2026-11-23. `hooks/check/baseline.ts` records each spec text, each test that already differed from the index, and the malformed and orphan findings at `session.start`; the Stop gate and `spec_check` both compare against that record, so the user's pre-session edits are the spec, not drift. The Stop text lists findings with the next action and no "blocking" verdict. SKILL.md states that the spec as the session found it is the spec to implement. The harder regression cases stay on the unmerged branch `test/harder-eval-cases` (RISK-529).
   - Verified: 2026-11-23, claude 2.1.330. `claude plugin test plugins/claudetto-spec`: 54 pass, 0 fail, six of them RISK-519 cases (Stop and `spec_check`, the user's edit versus the session's own). Forcing `readBaseline` to return undefined makes 3 of the 4 Stop cases fail. Eval with Haiku 5.5, `claude plugin eval --ablation with-without --case <c> -j 3 --threshold 0`, the harder cases of 77ebbd7f0: `spec-edit-skill` with-plugin 3/3 (score 1.0), without 2/3 (0.94); `spec-review-hollow-test` with-plugin 3/3 and 2/3 over two rounds, without 3/3 and 3/3. The one with-plugin miss is a grader false fail (RISK-528); `no-edit-tools` and `spec-kept` passed in every run, and no trace held a Stop block. The held-out run (`just eval-holdout`) is user-held under ADR-0193 rule 7.
   - Source: /private/tmp/claude-501/haiku-evals/claudetto-spec.json and r2/claudetto-spec.json (runs of 2026-11-23); traces /private/tmp/e-ZV8v2o/out/trace.jsonl:55,62 and /private/tmp/e-XaiUzy/out/trace.jsonl:30,56; after the fix /tmp/claude-501/r519h/{edit2,hollow,hollow2}.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
+
+- [ ] **RISK-530** On Haiku the `spec` skill does not fire for a headless feature request with unstated choices, so no `Open:` line is written and the plugin scores no better than vanilla.
+  - Category: spec, skill triggering.
+  - Cause: the plugin reaches the loop only through the skill's auto-trigger (`plugins/claudetto-spec/skills/spec/SKILL.md:3`); no hook points a feature request at it, and Haiku answers "add a function" requests directly.
+  - Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --model haiku -j 3 --threshold 0`, case `ambiguous-headless` at 77ebbd7f0: 0 Skill calls in 3 with-plugin runs (traces /private/tmp/e-BGqpX9, e-0ugDJK, e-e9ACs2), `spec-has-open-line` failed in all 6 runs, scores with 0.42 0.67 0.58 against without 0.67 ×3. In the same run the skill fired in 2 of 3 `feature-discount` runs and 0 of 3 `implement-conflict` runs.
+  - Consequence: under `claude -p` the unstated rate form and rounding are guessed and not recorded as `Open:` lines, and the plugin fails the ADR-0177 ship bar on this case.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: the skill description names "every request to add or change behaviour".
+  - Response: treat.
+  - Actions: find on vanilla why the skill does not fire, then cure at that cause for every feature request, and rerun `ambiguous-headless` in both arms.
+  - Trigger: a with-plugin run of a feature-request case with no Skill call.
+  - Owner: spec
+  - Status: open 2026-11-23.
+  - Source: /tmp/claude-501/r529/h.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.

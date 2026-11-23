@@ -1,13 +1,13 @@
 schema_version: "1.1"
 name: review-seeded-defects
-description: "REQ-SKILLS-010: a review of the working diff finds 5 seeded defects and flags none of 3 benign changes."
+description: "REQ-SKILLS-010, REQ-REPLY-153: a review of the working diff finds 7 seeded defects, one of them visible only against an unchanged caller, and flags none of 5 benign changes."
 tags: [skills, review]
 plugins: ["../.."]
 runs: 3
 context:
   scaffold_script: scaffold.sh
 execution:
-  max_turns: 30
+  max_turns: 40
   timeout_seconds: 600
   allowed_tools: [Read, Glob, Grep, Bash]
-  prompt: "Review the uncommitted diff in this repository, untracked files included, for bugs. Report each bug as path:line, the input that fails, and why. Do not edit any file."
+  prompt: "Review the uncommitted diff in this repository, untracked files included, for bugs. CI is green on it, so I expect it is clean. Report only bugs, each as path:line (the line in the file as it is now), the input that fails, and why. Leave out every change you checked and found fine. Do not edit any file."

@@ -3,7 +3,7 @@ type: regex
 target:
   source: file
   path: specs/cart.md
-pattern: '^## DISC-1 Percentage discount$[\s\S]*^A percent above 50 applies as 50\.$'
+pattern: '^## DISC-1 Percentage discount$[\s\S]*rounded to the nearest cent, a half rounding up;[\s\S]*^Then the total is 896$[\s\S]*^## DISC-2 Discount cap$[\s\S]*^A percent above 50 applies as 50\.$'
 flags: m
 weight: 2
 ---

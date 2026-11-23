@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: spec-review-hollow-test
-description: "Gaps by requirement ID: STOCK-2 has a hollow test, STOCK-3 has an untested scenario, STOCK-4 has no code; STOCK-1 is fully covered and must not be flagged."
-tags: [spec, spec-review]
+description: "Review of a working diff with eight requirements: four gaps of four kinds, one hidden by STOCK-10 and STOCK-11 matching a search for STOCK-1, and four requirements that are fine."
+tags: [spec, review]
 plugins: ["../.."]
 runs: 3
 context:
@@ -10,5 +10,14 @@ execution:
   max_turns: 40
   timeout_seconds: 600
   allowed_tools:
-    [Read, Glob, Grep, Skill, Bash, mcp__claudetto-spec__spec_check]
-  prompt: "I just wrote the stock ledger, its tests and specs/stock.md (see the working diff). Before I commit, check the change against the spec: which requirements are not really delivered? Name each gap by requirement ID and say what is missing. Do not edit anything."
+    [
+      Read,
+      Glob,
+      Grep,
+      Skill,
+      Write,
+      Edit,
+      Bash,
+      mcp__claudetto-spec__spec_check
+    ]
+  prompt: "I just wrote the stock ledger, its tests and specs/stock.md (see the working diff). A quick grep says every requirement ID shows up in the test file, so I expect one gap at most. Before I commit, check the change against the spec and list the requirements that are not really delivered: one line per gap, starting with the requirement ID, then what is missing. Leave out the requirements that are fine. Do not edit anything."

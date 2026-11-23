@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Scaffold: tiny-cart after the spec skill shipped DISC-1; the reviewer then added DISC-2 to the spec.
+# Scaffold: tiny-cart after the spec skill shipped DISC-1 (rounded down). The reviewer's uncommitted
+# spec edit adds DISC-2 and also changes DISC-1 to round to the nearest cent, with a new example
+# (995 at 10 percent is 896). The committed tests pass under both roundings.
 set -euo pipefail
 
 mkdir -p src
@@ -86,7 +88,16 @@ Then the total is 899
 MD
 git add -A
 git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "feat: percentage discount (DISC-1)"
-cat >> specs/cart.md <<'MD'
+cat > specs/cart.md <<'MD'
+# Cart
+
+## DISC-1 Percentage discount
+
+`applyDiscount(total, percent)` returns the total minus `percent` percent, in integer cents rounded to the nearest cent, a half rounding up; `percent` is a whole number from 0 to 100.
+
+Given a total of 995 cents
+When a 10 percent discount applies
+Then the total is 896
 
 ## DISC-2 Discount cap
 
