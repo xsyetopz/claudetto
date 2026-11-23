@@ -1,11 +1,8 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerContext } from "./context/context";
-import { registerAgentNotes } from "./delegation/notes";
 import { registerOffer } from "./delegation/offer";
-import { registerRunaway } from "./delegation/runaway";
 import { registerSpawn } from "./delegation/spawn";
-import { registerThrash } from "./delegation/thrash";
 import { registerPerl } from "./edit/perl";
 import { registerGit } from "./git/instructions";
 import { registerTrailer } from "./git/trailer";
@@ -47,9 +44,6 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerClear(on);
 	registerStopNotice(on);
 	registerSpawn(on);
-	registerThrash(on);
-	registerRunaway(on);
-	registerAgentNotes(on);
 	registerOffer(on);
 	registerGoal(on);
 	registerStatusline(on);

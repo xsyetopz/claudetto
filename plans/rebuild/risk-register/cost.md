@@ -159,7 +159,7 @@
 
 ## Subagent Cache Goes Cold
 
-- [ ] **RISK-383** Subagent Cache Goes Cold.
+- [x] **RISK-383** Subagent Cache Goes Cold.
   Category: Cost.
   Cause: Subagents default to a 5-minute cache TTL against 1 hour on the main thread.
   Event: A subagent that waits on a nested subagent, is resumed, or blocks on a build or test over 5 minutes goes cold. One commenter saw +40% usage. Cache creation bills 1.25x input at 5 minutes and 2x at 60 minutes. One cache bust in a 400k subagent transcript can cost more than running at 60 minutes, and iterative-test subagents may bust 10-20 times.
@@ -176,6 +176,21 @@
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
   Evidence: 2026-11-23, vanilla, the user's own session: decomp-writer subagents ran 1h39m to 4h14m each, far past the 5-minute and 1-hour cache windows, and two failed when autocompact thrashed three times in a row on an oversized read (ISSUES-part4.txt:5,95-101). Third-party reports give the cost scale: 97.4-97.9% of tokens are cache reads in two users' totals (external/2026-11-21/reddit.com-r-claudecode-comments-1y167r2-*:29-33; external/2026-11-21/reddit.com-r-buildwithclaude-comments-1y13peq-*:37-39).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions at hours per subagent, so the acceptance above at Likelihood 1 does not hold.
+  Status: accepted 2026-11-23 (ADR-0110, ADR-0177): the hour-long subagents kept their cache warm, so a 1h TTL
+  would add cost; the two delegation notes claudetto had shipped for this (a 30-minute "finish and report"
+  note and an autocompact-thrash note) are removed, since neither had a measured gain (OUT-242).
+  Verified: 2026-11-23, read of the user's session behind the Evidence line
+  (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-GodHand/4ec97367-fe41-4682-9a87-42689ea384b4/subagents`,
+  75 decomp-writer transcripts, 4,574 requests): 2 requests followed a gap over 300 s, none over 3,600 s, and they
+  re-created 46.7K of 20.7M cache-write tokens (0.23%). A 1h TTL saves at most 46.7K x 0.967 = 45K and adds
+  0.06 x 20.7M = 1.24M of write premium at the Sonnet meter point (ADR-0110, CTX-846), so vanilla's 5m default
+  is the cheaper one there.
+  Verified: 2026-11-23, claude 2.1.330, Sonnet 5.5, `claude -p` with `--setting-sources project` on a fixture of
+  ten 195KB logs read by a Haiku `reader` agent with `autoCompactWindow: 100000` (/tmp/claude-501/thrash):
+  told to run the reader in the foreground, vanilla listed 10 of 10 codes for $0.32 and claudetto 10 of 10 for
+  $0.35; neither arm thrashed. In a background run that did thrash, the engine itself stopped the reader with
+  "Autocompact is thrashing ... Try reading in smaller chunks" and the lead still listed all 10 codes; claudetto's
+  thrash note never appeared in the stream. The engine already gives the note's advice, so the note adds nothing.
 
 ## Audit Skill at Top Effort
 
