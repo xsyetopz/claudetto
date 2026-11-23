@@ -3,7 +3,8 @@
 // - a settled item with no `Verified:` line or Verified clause after its Status, because a status with no recorded check is one picked to pass (issue #52);
 // - an item Moved Out for any reason other than a part plugins/ does not ship, because Out removes a live fault from
 //   the count while it still occurs (issue #52);
-// - an item whose text carries two different `Likelihood: N` values, because its level cannot be read.
+// - an item whose text carries two different `Likelihood: N` values, because its level cannot be read;
+// - an ID used by more than one item, because a citation of it cannot say which item it means.
 // An item runs from its `- [ ] **RISK-N**` or `- [x] **RISK-N**` line to the next item. Its status is the text after its
 // last `Status:`, inline ones included (a Status often follows `Owner: X.` on the same line). Settled statuses start
 // with closed, accepted, mitigated, transferred or moved Out; an item with no Status is settled only when its title
@@ -74,6 +75,13 @@ const open: string[] = [];
 const unverified: string[] = [];
 const movedLive: string[] = [];
 const ambiguous: string[] = [];
+const owners = new Map<string, string[]>();
+for (const it of all) {
+	owners.set(it.id, [...(owners.get(it.id) ?? []), it.file]);
+}
+const duplicates = [...owners]
+	.filter(([, where]) => where.length > 1)
+	.map(([id, where]) => `${id}: ${where.join(", ")}`);
 for (const it of all) {
 	const levels = [
 		...new Set([...it.text.matchAll(LIKELIHOOD)].map((m) => m[1]))
@@ -126,7 +134,13 @@ report(
 	movedLive
 );
 report("two Likelihood values", ambiguous);
+report("ID used by more than one item", duplicates);
 process.exitCode =
-	open.length + unverified.length + movedLive.length + ambiguous.length > 0
+	open.length +
+		unverified.length +
+		movedLive.length +
+		ambiguous.length +
+		duplicates.length >
+	0
 		? 1
 		: 0;

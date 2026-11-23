@@ -1149,3 +1149,17 @@
   - Status: Moved Out as OUT-2772. The failure appears only in sessions of hours (CTX-836: up to 592 minutes, 22 compactions), which a paid run of minutes cannot reproduce or measure under the spend limit; the cure text is already OUT-757. Compaction is core behaviour, and the only plugin-visible knob in 2.1.327 is the `autoCompactWindow` setting (cc-inspect `code` search, chunk-ja5z738t.js@279536).
   - Verified: 2026-11-19, claude 2.1.327, grep -a -c autoCompactWindow $HOME/.local/share/claude/versions/2.1.327 -> 166 hits; plugins/claudetto/agents/Artemis.md:7 sets `autoCompactWindow: 100000`, the one plugin-visible knob.
   - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.
+
+- [ ] **RISK-525** The agent spawns past the concurrent subagent limit.
+  Category: delegation.
+  Cause: the agent fans out without counting the subagents still running.
+  Event: 2026-11-23, vanilla, the user's own session: an Agent call failed with the 20-subagent concurrency error while long decomp-writer subagents were still running (ISSUES-part4.txt:22-23).
+  Consequence: a failed call and a turn spent on it; the user had to say the agent should stay within the limit.
+  Likelihood: 2. Impact: 2.
+  Existing controls: the engine refuses the call and says not to retry.
+  Response: mitigate.
+  Actions: build CONDUCT: count running subagents before a fan-out and queue the rest; size each subagent task so it ends well inside the cache window (RISK-383).
+  Trigger: an Agent tool result with the concurrency-limit error.
+  Owner: delegation.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part4.txt:22-23.

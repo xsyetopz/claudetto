@@ -130,3 +130,5 @@ coverage/
 
 # Plugin eval results (ADR-0193).
 /plugins/claudetto-spec/evals/results/
+
+ISSUES-*

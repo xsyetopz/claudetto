@@ -1054,9 +1054,9 @@
   Status: closed 2026-11-18: the built-in Read pages with offset and limit (OUT-178 text, read this session); claudetto adds no read guard. Weak evidence: read from the OUT item, not probed.
   Verified: 2026-11-19, claude 2.1.327, `grep -a -o 'The line number to start reading from. Only provide if the file is too large to read at once' /Users/krystian/.local/share/claude/versions/2.1.327` -> 2 matches, so the engine Read tool still takes offset and limit; not a read-cap probe.
 
-- [x] **RISK-098** The agent runs `cd` in place of using absolute paths.
+- [ ] **RISK-098** The agent runs `cd` in place of using absolute paths.
   Category: conduct. Cause: relative habit. Event: a `cd` before a command.
-  Consequence: a compound command refused whole; an extra turn. Likelihood: 2. Impact: 1. Existing controls: none found.
+  Consequence: a compound command refused whole; an extra turn. Likelihood: 2. Impact: 2 (raised 2026-11-23: a whole batch of runs voided; earlier 1). Existing controls: none found.
   Response: accept; planned before settlement: mitigate. Actions: use absolute paths.
   Trigger: a command that starts with `cd`. Owner: guards.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:31@088a227c9^ records two `cd ... ; sed -n ...` chains denied whole, which does not state this fault.
@@ -1065,8 +1065,10 @@
   Source: dogfood session 42befa61 at ae4ea6359, claude 2.1.327, 2026-11-20 (issue #71). `cd plugins/claudetto && bunx tsc --noEmit` moved the shell, so later relative paths in the same batch failed ("no such file or directory", "Module not found"). The agent reran from absolute paths and reported the first failure.
   Status: accepted 2026-11-20 (issue #71): Likelihood 2 × Impact 1 = 2, at or below 5. The main session's shell keeps its working directory between calls by engine design, and claudetto does not change it. The cost is one extra turn, and the reported results stayed correct.
   Verified: 2026-11-20, scan of the 87 top-level dogfood transcripts in the isolated config (`-private-tmp-claude-501-df-repo`, `-fin2-repo`; 665 Bash calls), counting results with `cd:1: no such file or directory` or `Module not found "tools/`: 2 sessions (2ac0f4b6, 42befa61), 3 failed calls, each after a relative `cd`; both sessions recovered in the next turn.
+  Evidence: 2026-11-23, vanilla, the user's own session: the agent passed repo-relative paths after a `cd` into the test folder, and every run failed (ISSUES-part4.txt:40).
+  Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions and voided a whole batch of runs, so the acceptance above at Impact 1 does not hold.
 
-- [x] **RISK-099** The agent deletes things nobody asked it to remove.
+- [ ] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
   Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
   Response: accept; planned before settlement: mitigate. Actions: remove only what the user names.
@@ -1074,6 +1076,8 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:39 (reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:71 (`fold.ts`, reported); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (task counter). The clause about restoring sections on an unchecked claim was dropped on 2026-11-18: no source line holds it.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 4 = 4, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 4.
+  Evidence: 2026-11-23, vanilla, the user's own session: the agent deleted the report files under /tmp/ojd-work/zd-report that a goal needed, then said the folder the goal named had never existed (ISSUES-part4.txt:9).
+  Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above does not hold.
 
 - [x] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
   Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
@@ -1372,3 +1376,31 @@
   - Verified: 2026-11-20, cc-inspect code search of claude 2.1.327 for `toolUseResult:`: the row is built at chunk-m14bt1pz.js@4545258 from the tool's own output, apart from the content the append hook rewrites; the 2026-11-19 batch-11 env2 runs (fixtures in reports/2026-11-19-research/goal/fixtures227.sh, observation in issue #59) show the raw value in the structured record.
   - Verified: 2026-11-20, reports/2026-11-20-research/redact-record/run.sh on claude 2.1.327, Haiku, a printed token, an errored command and an env-style file Read: raw values in `toolUseResult` vanilla 3 of 3, claudetto 0 of 3 in 2 of 2 runs ($0.0108); `claude plugin test plugins/claudetto` 149 pass, 0 fail, twice.
   - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts (registerRedact); issue #63.
+
+- [ ] **RISK-524** Installing a differently signed build of an app resets its macOS privacy grants, and the agent reports the earlier state.
+  Category: guards.
+  Cause: macOS ties Input Monitoring and Accessibility grants to the code signature; the agent replaced the app without checking that, and kept the permission reading taken before the install.
+  Event: 2026-11-23, vanilla, the user's own session: after the install the agent told the user to toggle switches that belonged to the old signature and planned tests on stale permission state, until the user pointed it out (ISSUES-part3.txt:88-106).
+  Consequence: device tests run without the grants, and the user redoes privacy settings.
+  Likelihood: 2. Impact: 4.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: build CONDUCT: before replacing an installed app, compare the new signature with the installed one and say which grants the swap resets; after any install, read live permission state again before reporting it.
+  Trigger: an install over an app that holds privacy grants.
+  Owner: guards.
+  Status: open 2026-11-23, build CONDUCT.
+  Source: ISSUES-part3.txt:88-106.
+
+- [ ] **RISK-526** A secret the user pastes into a prompt is stored in plain text in the session transcript.
+  Category: guards.
+  Cause: nothing checks the prompt text before it is sent and written to the session file; RISK-506 covers masked tool results only.
+  Event: third-party report of a production database password pasted into a prompt, then rotated (external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37); probe 2026-11-23, claude 2.1.330, Haiku 5.5, vanilla, one prompt holding a password-shaped and an AWS-key-shaped fake value: each appears 6 times in plain text in the session file under `~/.claude/projects/` (reports/2026-11-23-research/repro/README.md).
+  Consequence: a live credential sits in the transcript and goes to the model; the owner must rotate it.
+  Likelihood: 2. Impact: 4.
+  Existing controls: none on vanilla.
+  Response: mitigate.
+  Actions: a UserPromptSubmit hook detects credential-shaped strings in the prompt, blocks the submit, and tells the user to pass the value through the environment or a secret manager instead.
+  Trigger: a prompt that contains a credential-shaped string.
+  Owner: guards.
+  Status: open 2026-11-23.
+  Source: external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37; probe 2026-11-23, claude 2.1.330, Haiku 5.5, session 48a095da.

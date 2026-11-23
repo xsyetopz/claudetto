@@ -198,3 +198,5 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0192](../adr/0192-claudetto-spec-replaces-openspec.md) | `claudetto-spec` Replaces `claudetto-openspec` | accepted | 2026-11-21 |
 | [ADR-0193](../adr/0193-plugin-evals-with-integrity-rules.md) | Plugin Evals Through `claude plugin eval`, Under Integrity Rules | accepted | 2026-11-21 |
 | [ADR-0194](../adr/0194-standards-basis.md) | Two Standards Bases: The Claude Code Harness and Open Industry Standards | accepted | 2026-11-21 |
+| [ADR-0195](../adr/0195-target-claude-code-2-1-329.md) | Target Claude Code 2.1.329 | accepted | 2026-11-21 |
+| [ADR-0196](../adr/0196-solo-run-merges-each-slice-to-main.md) | A Solo Run Merges Each Slice to Main | accepted | 2026-11-23 |
