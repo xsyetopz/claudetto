@@ -8,6 +8,8 @@ license: MIT
 
 Loop: clarify, spec, red, green, check. Formats and `spec_check` output: `references/FORMAT.md`.
 
+A user who wants to review the spec before any test or code splits the loop with two commands: `/claudetto-spec:specify <request>` stops after the spec, and `/claudetto-spec:implement` runs red, green and check from the spec as the user left it. This skill runs the whole loop.
+
 First Glob `specs/*.md` and read the specs the request touches.
 
 ## Clarify

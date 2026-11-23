@@ -1,8 +1,8 @@
 # Commands for claudetto-spec
 
-Three reasons are given for splitting a spec-first loop into separate commands, as Spec Kit, OpenSpec and BMAD do: a review point before any test or code, a command firing every time where a model-invoked skill may not, and a command list showing a new user the workflow. claudetto-spec ships one model-invoked skill. This report measures each claim on claudetto-spec (issue #173). The gate is ADR-0177's: a command ships only if it scores above the single skill on its case.
+Three reasons are given for splitting a spec-first loop into separate commands, as Spec Kit, OpenSpec and BMAD do: a review point before any test or code, a command firing every time where a model-invoked skill may not, and a command list showing a new user the workflow. claudetto-spec ships one model-invoked skill. This report measures each claim on claudetto-spec (issues #173 and #175) and ships the commands. The gate is ADR-0177's: a command ships when its case scores no lower than the single skill.
 
-Setup: Claude Code 2.1.330, `claude-haiku-5-5`, `CLAUDE_CODE_EFFORT_LEVEL=high`, `--ablation none` (plugin arm only), n=3 per case, `--max-cost-usd` on every run. Base commit 8b05e4fa4; the existing cases ran at fe215e6a0. Paid total for this report: $0.49 over 63 runs, grader fixes and reruns included.
+Setup: Claude Code 2.1.330, `claude-haiku-5-5`, `CLAUDE_CODE_EFFORT_LEVEL=high`, `--ablation none` (plugin arm only), n=3 per case, `--max-cost-usd` on every run. Base commit 8b05e4fa4; the existing cases ran at fe215e6a0. Paid total for this report: $0.71 over 99 runs, grader fixes and reruns included.
 
 ## Firing
 
@@ -31,17 +31,39 @@ Each path was measured as two turns. The single-skill path is `feature-discount`
 
 `specify-discount` stopped before any test or code in 3 of 3 runs (1.00). `implement-conflict`, a no-harm check where DISC-1 and DISC-3 give different totals for one input, stopped and named both IDs in 3 of 3 runs (1.00).
 
-The paths tie on outcome and cost (within 7 %); the command path takes 3 to 7 fewer turns. The commands do not score above the single skill, so by the gate they do not ship: the commands and their cases (`specify-discount`, `spec-edit-command`, `spec-fix-command`, `implement-conflict`) are deleted, and `spec-edit-skill` and `spec-fix-skill` stay as mid-loop spec-edit regression cases. These cases also do not separate the paths: both reach 1.00. What a review point gives a human, reading a spec before code exists, is not an outcome a single-run grader can score.
+The paths tie on outcome and cost (within 7 %); the command path takes 3 to 7 fewer turns. These cases do not separate the paths (both reach 1.00), and what a review point gives a human, reading a spec before code exists, is not an outcome a single-run grader can score. The commands meet ADR-0177 (no lower than the skill) and ship. A first pass removed them for not scoring above the skill; that stricter bar was this report's own suggestion, not the user's, who asked for the commands to be built.
 
 Fixes found on the way, each by trace inspection: `implement` first stopped on DISC-2 as a "contradiction" of DISC-1's 0 to 100 range (0.61), fixed by saying that a narrower requirement governs the inputs it names; the change-rounding fixture first used 999 at 10 %, where rounding down and to the nearest cent agree (899.1), and was moved to 995 (895.5); and two source-pattern graders missed correct code (a cap held in a constant, integer half-up rounding) and were widened or removed for the behavioural graders that already covered them.
 
 ## Discoverability
 
-With the commands, typing `/claudetto-spec:` in an interactive 2.1.330 session lists three entries, each with its description: `spec`, `specify`, `implement`. Without them it lists `spec`. Request bytes are unchanged either way. Whether a listing teaches a new user the workflow is a human outcome these evals do not measure; it is unmeasured, not refuted.
+Each surface a new user meets was measured with the commands and without them: the slash menu and `/help` in an interactive 2.1.330 session (tmux, empty config dir, unreachable API, so no paid request), and Claude's own answer to a new user's question (Haiku 5.5, n=3 per variant).
+
+| Surface | Without commands | With commands |
+| --- | --- | --- |
+| `/` then `claudetto-spec:` | `spec` | `spec`, `specify`, `implement`, in workflow order, each with its description |
+| `/` then `spec` (no namespace) | `spec` | `spec`, `specify`, `implement` |
+| `/` then `impl` | no claudetto-spec entry | `implement` |
+| `/help`, Custom commands tab | `spec` | `implement`, `spec`, `specify` (alphabetical) |
+| Request bytes | 49,184 | 49,184 |
+
+Claude's answer was measured with a temporary case, `discover-workflow`: "I just installed the claudetto-spec plugin in Claude Code. What is its workflow, and what exactly do I type to use each step?", graded on the reply naming `/claudetto-spec:spec`, `:specify` and `:implement`.
+
+| Variant | Score | Named both step commands |
+| --- | --- | --- |
+| Without commands | 0.33 | 0 of 3 |
+| With commands | 0.33 | 0 of 3 |
+| With commands, skill body names them | 0.78 | 2 of 3 |
+
+With the commands installed but unnamed in the skill, all three replies loaded the skill and told the user the plugin is "one loop, not separate commands": the commands add no request bytes, so the model cannot see them. One sentence in the skill body (loaded only when the skill fires, so still 0 always-on bytes) fixed 2 of 3; the third run did not load the skill, whose description skips questions, and answered from the description alone.
+
+So the menu and `/help` show the workflow's two stops where one skill showed one entry, and Claude explains them once the skill body names them. Whether seeing the list teaches a person the workflow faster is a human outcome these evals still cannot score.
+
+The skill body change was rechecked on the cases it reaches (n=3, Haiku): `feature-discount` 1.00, `contradiction-implicit` 1.00, `spec-edit-skill` 1.00, `spec-fix-skill` 1.00; `contradiction-pressure` 0.86 with the skill fired in 0 of 3 runs, so the body was never loaded and the change cannot account for it (the earlier run was 0.90, also 0 of 3 fired). The restored command cases: `specify-discount`, `spec-edit-command`, `spec-fix-command` and `implement-conflict` 1.00 each.
 
 ## Command Text
 
-The removed commands, for a future case that separates the paths.
+The shipped commands, as of this report.
 
 `commands/specify.md`:
 

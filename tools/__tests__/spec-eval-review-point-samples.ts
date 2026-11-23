@@ -1,7 +1,9 @@
 import type { Sample } from "./spec-eval-graders";
 
-// Known-good and known-bad samples for the mid-loop spec-edit cases (ADR-0193 rule 3): a reviewer
-// adds DISC-2 (`spec-edit-skill`) or changes DISC-1 (`spec-fix-skill`) after DISC-1 shipped.
+// Known-good and known-bad samples for the review-point cases (ADR-0193 rule 3): a reviewer adds
+// DISC-2 (`spec-edit-*`) or changes DISC-1 (`spec-fix-*`), after DISC-1 shipped (`-skill`) or after
+// `/claudetto-spec:specify` stopped (`-command`); `specify-discount` stops after the spec, and
+// `implement-conflict` stops on two requirements no code can satisfy.
 
 const greenRun = String.raw`{"type":"tool_result","content":" 4 pass\n 0 fail\n 5 expect() calls\nRan 4 tests"}`;
 const redRun = String.raw`{"type":"tool_result","content":"(fail) DISC-2\n\n 3 pass\n 1 fail\nRan 4 tests"}`;
@@ -68,7 +70,52 @@ const fixSamples: [string, Sample][] = [
 	)
 ];
 
-/** One entry per regex grader of `spec-edit-skill` and `spec-fix-skill`. */
+const commandSamples: [string, Sample][] = [
+	[
+		"specify-discount/no-impl-written",
+		{
+			bad: "export function applyDiscount(total: number, percent: number): number {\n\treturn total;\n}\n",
+			good: "export function cartTotal(items: Item[]): number {\n\treturn 0;\n}\n"
+		}
+	],
+	[
+		"specify-discount/no-test-written",
+		{
+			bad: 'test("DISC-1 applies the percent", () => {});\n',
+			good: 'test("cartTotal sums the items", () => {});\n'
+		}
+	],
+	[
+		"specify-discount/reply-points-to-implement",
+		{
+			bad: "I wrote specs/cart.md with DISC-1. Shall I write the tests?",
+			good: "I wrote specs/cart.md with DISC-1. Review it, then run `/claudetto-spec:implement`."
+		}
+	],
+	[
+		"implement-conflict/impl-not-written",
+		{
+			bad: "export function applyDiscount(total: number, percent: number): number {\n\treturn total;\n}\n",
+			good: "export function cartTotal(items: Item[]): number {\n\treturn 0;\n}\n"
+		}
+	],
+	[
+		"implement-conflict/reply-names-both",
+		{
+			bad: "Stopping: DISC-1 cannot be implemented as written.",
+			good: "Stopping: DISC-1 rounds 899.1 down to 899, DISC-3 rounds it to 900."
+		}
+	],
+	[
+		"implement-conflict/spec-unchanged",
+		{
+			bad: "## DISC-1 Percentage discount\n\nRounded down.\n",
+			good: "## DISC-1 Percentage discount\n\nRounded down.\n\n## DISC-3 Round to the nearest cent\n\nA discounted total rounds to the nearest cent.\n"
+		}
+	]
+];
+
+/** One entry per regex grader of the review-point cases: both paths of each spec edit, `specify-discount` and `implement-conflict`. */
 export const reviewPointSamples: [string, Sample][] = [
 	[
 		"spec-edit-skill/disc1-tests-kept",
@@ -77,12 +124,17 @@ export const reviewPointSamples: [string, Sample][] = [
 			good: 'test("DISC-1 takes 10 percent off 999 cents", () => {\n\texpect(applyDiscount(999, 10)).toBe(899);\n});\n'
 		}
 	],
-	...fixSamples.map(([grader, sample]): [string, Sample] => [
-		`spec-fix-skill/${grader}`,
-		sample
-	]),
-	...capSamples.map(([grader, sample]): [string, Sample] => [
-		`spec-edit-skill/${grader}`,
-		sample
-	])
+	...commandSamples,
+	...["spec-fix-skill", "spec-fix-command"].flatMap((name) =>
+		fixSamples.map(([grader, sample]): [string, Sample] => [
+			`${name}/${grader}`,
+			sample
+		])
+	),
+	...["spec-edit-skill", "spec-edit-command"].flatMap((name) =>
+		capSamples.map(([grader, sample]): [string, Sample] => [
+			`${name}/${grader}`,
+			sample
+		])
+	)
 ];

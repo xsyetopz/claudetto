@@ -10,13 +10,25 @@ claude plugin install claudetto-spec --marketplace xsyetopz/bedrock
 
 ## The Loop
 
-The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions. The model decides when to load it, and under pressure a smaller model may skip it; type `/claudetto-spec:spec <request>` to run the loop every time. The Stop gate below checks the result either way.
+The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions. The model decides when to load it, and under pressure a smaller model may skip it; the commands below run it every time. The Stop gate below checks the result either way.
 
 1. Clarify: an interactive session asks each expensive unknown through AskUserQuestion; a `-p` run writes it as an `Open:` line, takes the cheap default and lists each assumption in the reply.
 2. Spec: edit `specs/<capability>.md`.
 3. Red: write tests in the project's framework that cite the requirement ID, see them fail, then `git add` them.
 4. Green: implement without editing the staged tests. A contradiction with a requirement, or a test that cannot pass honestly, stops the work and is reported with the requirement ID.
 5. Check: call `spec_check` and the project's test command, and report both.
+
+## Commands
+
+The commands fire every time they are typed, whatever the model would decide, and split the loop at the spec so a reviewer can read and edit it before any test or code exists.
+
+| Command | Runs |
+| --- | --- |
+| `/claudetto-spec:spec <request>` | the whole loop, as the skill does |
+| `/claudetto-spec:specify <request>` | clarify and spec, then stops with the requirement IDs and any `Open:` lines |
+| `/claudetto-spec:implement [IDs]` | red, green and check from the spec as you left it; with no IDs, every requirement no test cites yet |
+
+A requirement that narrows another, such as a cap, governs the inputs it names; `implement` stops and names both IDs only when no implementation can satisfy them. The model cannot invoke `specify` or `implement` (`disable-model-invocation: true`), so they add nothing to each request.
 
 ## Spec Format
 
