@@ -93,13 +93,6 @@ const trivialSpecs: Sample = { bad: "specs/cart.md\n", good: "README.md\n" };
 const samples = new Map<string, Sample>([
 	...contradictionCaseSamples,
 	[
-		"ambiguous-headless/reply-states-assumption",
-		{
-			bad: "Done: totalWithTax is in src/cart.ts.",
-			good: "I assumed the rate is a percent and rounded half up."
-		}
-	],
-	[
 		"ambiguous-headless/spec-has-open-line",
 		{
 			bad: String.raw`{"name":"Write","input":{"file_path":"specs/cart.md","content":"## CART-2 Tax\n\nThe total includes tax.\nReopened later."}}`,

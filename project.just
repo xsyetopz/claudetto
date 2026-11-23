@@ -64,21 +64,17 @@ eval-preflight:
 # runs without it, still exits 0, and scores as if the tool did not exist (#102). So the recipe grants
 # every gated tool (anything outside the read-only set the docs list) that a case's allowed_tools
 # names, mcp__ tools included, by name; and it fails when the output holds "not granted".
-# Needs flow-style `allowed_tools: [A, B]` lines in case.yaml.
+# The lists are read as YAML, because the formatter wraps a long flow list over several lines.
 eval plugin *args: eval-preflight
     #!/usr/bin/env bash
     set -euo pipefail
     cases=(plugins/{{ plugin }}/evals/*/case.yaml)
     [[ -f "${cases[0]}" ]] || { echo "no plugins/{{ plugin }}/evals/*/case.yaml: is {{ plugin }} a plugin with eval cases?" >&2; exit 1; }
-    if grep -H '^[[:space:]]*allowed_tools:' "${cases[@]}" | grep -v 'allowed_tools:[[:space:]]*\['; then
-        echo "the allowed_tools lines above are not flow lists like [Read, Bash]: extend project.just to read them" >&2
-        exit 1
-    fi
     grants=()
     while IFS= read -r tool; do
         [[ -n "$tool" ]] && grants+=("$tool")
     done < <(
-        grep -h '^[[:space:]]*allowed_tools:' "${cases[@]}" | sed 's/^[^[]*\[//; s/\].*$//' | tr ',' '\n' | tr -d ' "'"'" \
+        bun -e 'for (const f of Bun.argv.slice(1)) for (const t of Bun.YAML.parse(await Bun.file(f).text())?.execution?.allowed_tools ?? []) console.log(t)' "${cases[@]}" \
             | grep -vxE 'Read|Glob|Grep|NotebookRead|Skill|AskUserQuestion|Agent|TodoWrite|TaskCreate|TaskGet|TaskList|TaskUpdate|TaskStop' | sort -u
     )
     allow=()
