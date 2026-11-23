@@ -134,6 +134,14 @@ const applyOne = async (state: State, op: FileOp): Promise<string | null> => {
 		return `${op.path}: ${at.error}`;
 	}
 	if (op.kind === "add") {
+		// A retyped file loses lines the model never meant to drop (REQ-TOOLS-012), so an
+		// existing path, or one this patch deleted, changes through Update hunks instead.
+		if (
+			state.changes.has(at.abs) ||
+			(await state.files.read(at.abs)) !== undefined
+		) {
+			return `${op.path}: exists; change it with *** Update File hunks (-old, +new lines) so the lines you keep stay as they are`;
+		}
 		state.changes.set(
 			at.abs,
 			op.lines.length === 0 ? "" : `${op.lines.join("\n")}\n`
