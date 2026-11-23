@@ -11,9 +11,11 @@ The user's settings bound the design: `skillListingMaxDescChars: 60` cuts each l
 | claudetto | Artemis | agent | exists |
 | claudetto | Athena | agent | exists |
 | claudetto | Heracles | agent | exists |
+| claudetto | Hermes | agent | exists (REQ-DELEGATION amendment, REQ-TOOLS-005) |
 | claudetto | review | user command, forked | removed: tied vanilla (REQ-SKILLS-010) |
-| claudetto-spec | spec | skill | exists |
-| claudetto-spec | spec-review | user command, forked | eval first (REQ-SKILLS-020) |
+| claudetto-spec | spec | skill, also typed as `/claudetto-spec:spec` | exists |
+| claudetto-spec | spec-review | user command, forked | removed: tied the plain request (REQ-SKILLS-020) |
+| claudetto-spec | specify, implement | user commands | removed: tied the skill (REQ-SKILLS-021) |
 
 Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` covers it), `simplify` (a plain request to review the diff tied the removed `review` command, so it needs an eval that vanilla fails), `bugfix` (an extension of `spec`'s description, measured first). Rejected items and the reasons are in the catalog, sections 4 and 5.
 
@@ -37,3 +39,8 @@ Watchlist, not built: `audit-instructions` (bundled `/doctor prompt-audit` cover
   Acceptance: an eval case `spec-review-hollow-test` (3 requirements: one test cites its ID and asserts `true`, one scenario has no test, one requirement is unimplemented; outcome-only grader on the three IDs named) passes in the plugin arm and scores no lower than the `spec` skill alone, n=3 per arm, `--no-publish` and a cost cap. If the arms tie, the command is removed. Verification: eval.
   Status: removed by its acceptance rule (2026-11-21, 2.1.330, Opus 5.5). The plain-prompt case `spec-review-hollow-test` scored 0.98 with the plugin (5.9 of 6) and 1.00 without over two n=3 runs ($0.87 and $0.86); the command case, a slash prompt under `--ablation none`, scored 0.87 over 3 runs (1.0, 1.0, 0.6; the 0.6 run named the covered `STOCK-1` as a gap; $0.14). The command did not score above the plain request, so `skills/spec-review/` and the `spec-review-command` case are deleted; the plain case stays as a no-harm check. Bash failed with `sandbox_apply: Operation not permitted` in all six kept traces of `2026-11-21T03-06-41-579Z`, in both arms (the other runs' traces were not kept), so neither arm could run `git diff`; the agents read the files instead.
   Verified: PASS: `plugins/claudetto-spec/evals/results/2026-11-21T03-02-48-497Z`, `2026-11-21T03-06-41-579Z` and `2026-11-21T03-05-17-766Z` (`aggregate-result.json`, local, gitignored).
+
+- [x] **REQ-SKILLS-021** claudetto-spec shall ship `/claudetto-spec:specify <request>` (clarify and spec, then stop before any test or code) and `/claudetto-spec:implement [IDs]` (red, green and check from the spec as the user left it) as user commands with `disable-model-invocation: true`, so a reviewer can read and edit the spec before red.
+  Acceptance: on a two-turn case where the user edits the spec mid-loop, once adding a narrowing requirement and once changing an existing one, the command path scores above the single `spec` skill path (the skill delivers, the user edits the spec, the skill matches it), n=3 per path, `claude-haiku-5-5`, `--max-cost-usd` on every run. If the paths tie, the commands are removed. Verification: eval.
+  Status: removed by its acceptance rule (2026-11-23, 2.1.330, Haiku 5.5, issue #173). Both edits scored 1.00 on both paths; cost per path was within 7 % ($0.0165 to $0.0176 for both turns) and the command path took 3 to 7 fewer turns. The commands, `specify-discount`, `spec-edit-command`, `spec-fix-command` and `implement-conflict` are deleted; `spec-edit-skill` and `spec-fix-skill` stay as regression cases. The firing claim held separately: under deadline pressure (`contradiction-pressure`) the plain prompt loaded the skill in 0 of 3 runs (0.90) and the typed `/claudetto-spec:spec` followed it in 3 of 3 (1.00), so the typed skill is the deterministic entry and needs no new command. Command text, tables and fixes: reports/2026-11-23-spec-commands/README.md.
+  Verified: PASS: `plugins/claudetto-spec/evals/results/` runs of 2026-11-23 (`aggregate-result.json`, local, gitignored); $0.49 over 63 runs.
