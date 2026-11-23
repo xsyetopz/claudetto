@@ -82,17 +82,19 @@
   - Verified: 2026-11-23, claude 2.1.330. `claude plugin test plugins/claudetto-spec`: 54 pass, 0 fail, six of them RISK-519 cases (Stop and `spec_check`, the user's edit versus the session's own). Forcing `readBaseline` to return undefined makes 3 of the 4 Stop cases fail. Eval with Haiku 5.5, `claude plugin eval --ablation with-without --case <c> -j 3 --threshold 0`, the harder cases of 77ebbd7f0: `spec-edit-skill` with-plugin 3/3 (score 1.0), without 2/3 (0.94); `spec-review-hollow-test` with-plugin 3/3 and 2/3 over two rounds, without 3/3 and 3/3. The one with-plugin miss is a grader false fail (RISK-528); `no-edit-tools` and `spec-kept` passed in every run, and no trace held a Stop block. The held-out run (`just eval-holdout`) is user-held under ADR-0193 rule 7.
   - Source: /private/tmp/claude-501/haiku-evals/claudetto-spec.json and r2/claudetto-spec.json (runs of 2026-11-23); traces /private/tmp/e-ZV8v2o/out/trace.jsonl:55,62 and /private/tmp/e-XaiUzy/out/trace.jsonl:30,56; after the fix /tmp/claude-501/r519h/{edit2,hollow,hollow2}.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
 
-- [ ] **RISK-530** On Haiku the `spec` skill does not fire for a headless feature request with unstated choices, so no `Open:` line is written and the plugin scores no better than vanilla.
+- [x] **RISK-530** On Haiku the `spec` skill does not fire for a headless feature request with unstated choices, so no `Open:` line is written and the plugin scores no better than vanilla.
   - Category: spec, skill triggering.
   - Cause: the plugin reaches the loop only through the skill's auto-trigger (`plugins/claudetto-spec/skills/spec/SKILL.md:3`); no hook points a feature request at it, and Haiku answers "add a function" requests directly.
   - Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --model haiku -j 3 --threshold 0`, case `ambiguous-headless` at 77ebbd7f0: 0 Skill calls in 3 with-plugin runs (traces /private/tmp/e-BGqpX9, e-0ugDJK, e-e9ACs2), `spec-has-open-line` failed in all 6 runs, scores with 0.42 0.67 0.58 against without 0.67 ×3. In the same run the skill fired in 2 of 3 `feature-discount` runs and 0 of 3 `implement-conflict` runs.
   - Consequence: under `claude -p` the unstated rate form and rounding are guessed and not recorded as `Open:` lines, and the plugin fails the ADR-0177 ship bar on this case.
-  - Likelihood: 3
+  - Likelihood: 2
   - Impact: 3
   - Existing controls: the skill description names "every request to add or change behaviour".
   - Response: treat.
   - Actions: find on vanilla why the skill does not fire, then cure at that cause for every feature request, and rerun `ambiguous-headless` in both arms.
   - Trigger: a with-plugin run of a feature-request case with no Skill call.
   - Owner: spec
-  - Status: open 2026-11-23.
+  - Status: mitigated 2026-11-24. The description now opens on any request that adds or changes behaviour (a new function, feature or rule), also in a repo with no `specs/` yet, and still skips typos, renames, bumps and questions (`plugins/claudetto-spec/skills/spec/SKILL.md:3`). The always-on cost stays about 140 tokens (`claude plugin details`), inside REQ-SPEC-009.
+  - Verified: 2026-11-24, claude 2.1.331, Haiku 5.5. Probe: the case prompt under `claude -p` with the plugin, 4 runs per wording: the old description fired the skill in 2 of 4, the new one in 4 of 4; `trivial-rename` and `trivial-typo` fired it in 0 of 3 each. Suite: `just eval claudetto-spec --model haiku -j 3 --threshold 0` (results `2026-11-23T22-04-36-418Z`, $0.49): `ambiguous-headless` with 0.75 0.92 0.67 against without 0.25 0.67 0.5; the skill fired in 2 of 3 with-plugin runs and `spec-has-open-line` passed in 2 of 3 with against 0 of 3 without. No case fell: contradiction .86 ×3 against .36 ×3, implement-conflict 1 .92 1 against .5 ×3, specify-discount 1 ×3 against .59 .35 .35, trivial-rename and trivial-typo 1 ×3 in both arms. `spec-review-hollow-test` gave 1 .73 1 against .8 1 1, with no Skill call in any with run, so the description did not reach it; both arms missed `covered-not-listed` once.
+  - Residual: Haiku still skips the skill in about 1 run in 7 on this prompt (6 of 7 fired across probe and suite), and `reply-flags-readme` fails in both arms (with 2 of 3, without 3 of 3). Likelihood falls from 3 to 2.
   - Source: /tmp/claude-501/r529/h.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
