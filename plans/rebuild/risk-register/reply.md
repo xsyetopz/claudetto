@@ -1814,12 +1814,12 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: mitigated 2026-11-19 by an engine-limit workaround, hooks/guards/denial.ts: a `tool.check` hook adds the source that core's verdict names (`rule`, `hook` or `setting`) to the deny reason, with "no permission prompt was shown and no person declined it". A person's decline is not a `tool.check` deny and keeps its text. Remove it once core's deny text names its source (issue #50).
   - Evidence: 2026-11-23, vanilla with no claudetto loaded: the agent named the user as the source of a permission-layer denial (ISSUES-part3.txt:151-157). This matches the vanilla rate above; the hook was not loaded and the mitigation stands.
 
-- [ ] **RISK-520** A goal stays open on a step only the user can take, and the agent idles through repeated goal checks.
+- [x] **RISK-520** A goal stays open on a step only the user can take, and the agent idles through repeated goal checks.
   Category: agent conduct.
   Cause: the agent writes a goal condition that includes a step it cannot take (a move the permission gate refused, a result only the user can produce), so each goal check finds it unmet and the agent replies "nothing changed" again.
   Event: 2026-11-23, vanilla Claude Code, the user's own sessions: the goal check blocked the turn 9 times in a row until the engine's block cap ended it, in two separate sessions (ISSUES-part3.txt:70-85; ISSUES-part4.txt:9-15).
   Consequence: paid turns with no work, and the user must clear the goal by hand.
-  Likelihood: 3. Impact: 2.
+  Likelihood: 2 (3 before the 2026-11-24 cure). Impact: 2.
   Existing controls: the engine stops after 9 blocks; nothing earlier.
   Response: mitigate.
   Actions: build CONDUCT: a goal condition names only steps the agent can take; a step only the user holds goes to the user once, with the exact command, and the goal is marked complete or narrowed, never left to loop.
@@ -1827,6 +1827,25 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Owner: reply.
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part3.txt:70-85; ISSUES-part4.txt:9-15.
+  Evidence: 2026-11-24, claude 2.1.331, Sonnet 5.5, ``claude -p '/goal app.js prints "hello" ... and the user has logged in to Fly.io with `fly auth login` and confirmed it in chat'`` in a scratch repo, `--setting-sources project --permission-mode acceptEdits`: vanilla blocked 9 times in 4 of 4 runs and repeated the hand-off after each block; the evaluator never answered `impossible`. claudetto at 754c8c5cf blocked 16 times: its `pause_goal` hit the engine's ask for an MCP tool, which `-p` refuses, and a queued `/goal clear` only lands after the turn, so the loop ran on.
+  Evidence: a CONDUCT line (hand off once, then one line per check) left 9 blocks in 2 of 2 runs, so it was dropped (ADR-0177).
+  Status: mitigated 2026-11-24: `get_goal`, `pause_goal` and `clear_goal` run without the engine's ask (a settings rule keeps its verdict), `pause_goal` sits in the prompt rather than behind ToolSearch, and a block of a goal the model paused or cleared ends the turn (`plugins/claudetto/hooks/goal/tools.ts`, `feedback.ts`).
+  Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, same command with `--plugin-dir plugins/claudetto`: 3 blocks in 3 of 3 runs (one hand-off, `pause_goal`, then `Goal cleared` after the turn), against 9 in 4 of 4 vanilla. With `pause_goal` deferred it took 7 blocks in 5 of 5 runs, because the model loaded it only at the cap note. Controls that the agent can finish (`bun app.js` prints hello; `bun test` passes and README.md documents math.js): claudetto met both in 3 of 3 with no `pause_goal` call, as vanilla did in 2 of 2. `claude plugin test plugins/claudetto`: 327 pass, 0 fail.
+  Residual: the pause is the model's own judgment; a goal it could still finish may be paused, and `set_goal` resumes it. The traces are in /tmp/claude-501/r520.
+
+- [ ] **RISK-531** The note claudetto adds to `/goal` at set time does not reach a headless model.
+  Category: goal tools.
+  Cause: `registerCommand` returns the note as the command's `context`; under `-p` the transcript holds no copy of it.
+  Event: 2026-11-24, claude 2.1.331, the RISK-520 probe traces (/tmp/claude-501/r520/fix6.jsonl): `grep -c "goal tools are available"` printed 0, and the model loaded `pause_goal` through ToolSearch only after the cap note named it.
+  Consequence: a headless model does not learn of `get_goal`, `set_goal` and `clear_goal` until the cap note; `pause_goal` is in the prompt since RISK-520, so the loop itself stays short.
+  Likelihood: 2. Impact: 1.
+  Existing controls: the cap note names `clear_goal` and `pause_goal`.
+  Response: mitigate.
+  Actions: probe whether the note reaches the model in an interactive session; if it does not, carry it in the first block's feedback row.
+  Trigger: a goal run where the model never calls `clear_goal` on a met condition.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: the RISK-520 probe, 2026-11-24.
 
 - [ ] **RISK-521** The agent calls an unfamiliar CLI with a guessed flag.
   Category: agent conduct.

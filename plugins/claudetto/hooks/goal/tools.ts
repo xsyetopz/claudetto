@@ -11,6 +11,9 @@ const WINDOW = 40;
 /** Pause before a queued `/goal` runs; the engine holds it until the session is idle anyway. */
 const DELAY_MS = 50;
 
+/** The goal tools that run without a permission prompt: read, pause, and an evidence-checked clear. */
+const SELF_SERVED = /^mcp__claudetto__(?:get|pause|clear)_goal$/u;
+
 /**
  * The goal tools. Claude Code 2.1.330 offers SetGoal, PauseGoal and GetGoal to
  * no session (probed interactive and `-p`: the server gate is closed), so
@@ -36,7 +39,10 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "pause_goal",
 		description:
-			"Pauses the goal: stops the stop-hook loop but keeps the condition for get_goal. Use when blocked on the user, not when done. set_goal resumes it."
+			"Pauses the goal: stops the stop-hook loop but keeps the condition for get_goal. Use when blocked on the user, not when done. set_goal resumes it.",
+		// In the prompt, not behind ToolSearch: a deferred pause_goal was first
+		// loaded at the cap note, five blocks into a loop on a user-held step (RISK-520).
+		isDeferred: false
 	},
 	{
 		name: "clear_goal",
@@ -112,6 +118,7 @@ function pause($: EngineInterface, tracker: Tracker): string {
 		return "No active goal to pause.";
 	}
 	endGoal(tracker, true);
+	tracker.ended = goal.condition;
 	queue($, "clear");
 	$.ui.log(`claudetto: goal paused by the model: ${goal.condition}`, {
 		to: "debug"
@@ -134,6 +141,7 @@ async function clear(
 		return `Refused: ${verdict.reason}`;
 	}
 	endGoal(tracker, false);
+	tracker.ended = goal.condition;
 	queue($, "clear");
 	const checks = claim.checks
 		.map((check) => `${check.command} (${check.outcome})`)
@@ -147,6 +155,34 @@ async function clear(
 
 async function registerSpecs($: EngineInterface): Promise<void> {
 	await Promise.all(SPECS.map((spec) => $.tool.register(spec)));
+}
+
+/**
+ * Keeps the built-in goal tools out of the pool, and lets three of claudetto's
+ * run unasked. The engine asks before any MCP tool, and a goal check keeps the
+ * person away from the prompt: an unanswered ask kept the loop going to the
+ * cap (RISK-520). Reading, pausing and an evidence-backed clear run unasked; a
+ * settings rule keeps its verdict, and set_goal keeps the engine's ask.
+ */
+function registerPolicy(on: On): void {
+	on("tool.offer", { tool: /^(?:Set|Pause|Get)Goal$/u }, () => ({
+		isOffered: false
+	})).catch(($, e, next) => {
+		fault($, "goal tool offer", next.error);
+		return next(e);
+	});
+	on("tool.check", { tool: SELF_SERVED }, async (_$, e, next) => {
+		const verdict = await next(e);
+		return verdict.decision === "deny" || verdict.rule !== undefined
+			? verdict
+			: { decision: "allow" };
+	}).catch(($, _e, next) => {
+		fault($, "goal tool check", next.error);
+		return {
+			decision: "ask",
+			reason: "claudetto could not check the goal tool"
+		};
+	});
 }
 
 /**
@@ -170,12 +206,7 @@ export function registerTools(on: On, tracker: Tracker): void {
 		fault($, "goal tool register", next.error);
 		return next(e);
 	});
-	on("tool.offer", { tool: /^(?:Set|Pause|Get)Goal$/u }, () => ({
-		isOffered: false
-	})).catch(($, e, next) => {
-		fault($, "goal tool offer", next.error);
-		return next(e);
-	});
+	registerPolicy(on);
 	on("tool.run", { tool: /^mcp__claudetto__get_goal$/u }, () => ({
 		result: show(tracker)
 	})).catch(($, e, next) => {

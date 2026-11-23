@@ -12,11 +12,21 @@ const SUMMARY = "stop_hook_summary";
 
 /** Tracks the turn: a prompt resets the block count, a response awaits the Stop hook, a summary with no block means met. */
 function registerTurn(on: On, tracker: Tracker): void {
+	on("turn.start", (_$, e, next) => {
+		if (e.agentId === undefined) {
+			tracker.turnId = e.turnId;
+		}
+		return next(e);
+	}).catch(($, e, next) => {
+		fault($, "goal turn start", next.error);
+		return next(e);
+	});
 	// A prompt starts a new run of blocks.
 	on("session.append", { door: "prompt" }, (_$, e, next) => {
 		if (tracker.goal !== undefined) {
 			tracker.goal.blocks = 0;
 		}
+		delete tracker.ended;
 		return next(e);
 	}).catch(($, e, next) => {
 		fault($, "goal prompt row", next.error);
@@ -47,7 +57,8 @@ function registerTurn(on: On, tracker: Tracker): void {
 /**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
- * evidence or pause. It also notices when the evaluator judged the goal met.
+ * evidence or pause. It also notices when the evaluator judged the goal met,
+ * and ends the turn when a goal the model paused or cleared blocks again.
  * The rows are the only signal a plugin gets: `classic.Stop` is taken by the
  * stop notice, and the engine's cap override is not a hook, so claudetto warns
  * and never lifts it (ENGINE(v2.1.330): no hook sees or moves the cap).
@@ -57,6 +68,17 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 	on("session.append", { door: "note" }, async ($, e, next) => {
 		const goal = tracker.goal;
 		const text = fieldOf(e.message.content[0], "text");
+		if (
+			typeof text === "string" &&
+			tracker.ended !== undefined &&
+			tracker.turnId !== undefined &&
+			text.startsWith(`${FEEDBACK}${tracker.ended}]`)
+		) {
+			// The model paused or cleared this goal; the engine's clear waits for
+			// the turn's end, so end the turn rather than answer more blocks.
+			await $.turn.abort({ turnId: tracker.turnId });
+			return next(e);
+		}
 		if (
 			goal === undefined ||
 			typeof text !== "string" ||

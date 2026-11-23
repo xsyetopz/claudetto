@@ -4,9 +4,9 @@ import { fault } from "../shared/fault";
 import { pathsIn } from "./paths";
 import { endGoal, setGoal, type Tracker } from "./state";
 
-/** What the model reads once, when a goal is set, because the goal tools sit behind ToolSearch. */
+/** What the model reads once, when a goal is set, because three of the goal tools sit behind ToolSearch. */
 const TOOLS_NOTE =
-	"claudetto: goal tools are available through ToolSearch: mcp__claudetto__get_goal, set_goal, pause_goal and clear_goal. " +
+	"claudetto: mcp__claudetto__pause_goal is loaded; get_goal, set_goal and clear_goal are available through ToolSearch. " +
 	"When the condition is met, call clear_goal with the checks you ran.";
 
 /** The warning for paths in a condition that do not exist. */

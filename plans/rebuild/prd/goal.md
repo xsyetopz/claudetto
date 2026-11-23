@@ -21,6 +21,10 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
 - [x] **REQ-GOAL-002** `clear_goal` shall end a goal only with evidence: it is refused when the last cited check failed, or a check cited as passed has no Bash run of that exact command with a result in the transcript, or its newest run errored, and an accepted claim is echoed to the user through `$.ui`.
   Acceptance: tests cover a refusal after a failed check, a refusal for a cited check with no run, an acceptance after a rerun that passed, and an accepted claim with its echo. Verification: test. Status: shipped (`evidence.ts`). Verified: `evidence.test.ts`, `goal.test.ts`.
 
+- [x] **REQ-GOAL-003** `get_goal`, `pause_goal` and `clear_goal` shall run without the engine's ask for an MCP tool, unless a settings rule decides; `pause_goal` shall sit in the prompt; and a Stop-hook block of a goal the model paused or cleared shall end the main turn.
+  Acceptance: on a goal whose last step only the user holds, claudetto ends the turn in fewer blocks than vanilla, and on a goal the agent can finish it calls no `pause_goal`. Verification: test and probe. Status: shipped 2026-11-24 (`tools.ts`, `feedback.ts`). Verified: `goal.test.ts` (the check verdicts, an abort after a pause and none before); the RISK-520 probe on claude 2.1.331, Sonnet 5.5: 3 blocks in 3 of 3 runs against vanilla's 9 in 4 of 4, and no pause on two finishable goals in 3 of 3.
+  ENGINE(v2.1.331): a queued `/goal clear` lands only after the turn, so without the abort the evaluator keeps judging the paused condition until the cap.
+
 ## Set Time
 
 - [x] **REQ-GOAL-010** `/goal <condition>` that names a path missing from the session directory shall warn the user at set time, and still set the goal.
@@ -41,5 +45,6 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
 
 - A goal command cannot run mid-turn, so `set_goal` and `clear_goal` land after the turn (a timer runs the command).
 - Met detection reads the absence of a feedback row after a stop; an evaluator error can look like met.
-- The goal tools run only where the session is interactive; end-to-end runs on the fake API with the repo plugin are not done.
+- The goal tools are registered in `-p` sessions too and ran there in the 2026-11-24 RISK-520 probe; no end-to-end run covers an interactive session.
+- The note `/goal` returns at set time did not reach the model under `-p` (the 2026-11-24 traces hold no copy of it), so a headless model learns of the deferred goal tools only from the cap note.
 - `CLAUDE_CODE_GOAL_CHECKIN_MINUTES` has no test.

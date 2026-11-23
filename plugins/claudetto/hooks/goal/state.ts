@@ -17,6 +17,14 @@ export interface Tracker {
 	paused?: string;
 	/** A Stop hook ran and no block has followed it yet; the turn's end then means the goal is met. */
 	stopping?: boolean;
+	/**
+	 * The condition `pause_goal` or `clear_goal` ended this turn. The engine
+	 * runs the queued `/goal clear` only once the turn is over, so its Stop
+	 * hook still judges this condition until then.
+	 */
+	ended?: string;
+	/** The main loop's running turn, the one a block of an ended goal aborts. */
+	turnId?: string;
 }
 
 /** The block cap Claude Code uses when `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` is unset (2.1.330). */
@@ -53,6 +61,7 @@ export const capNote = (blocks: number, cap: number): string =>
 export const setGoal = (tracker: Tracker, condition: string): void => {
 	tracker.goal = { condition, blocks: 0 };
 	delete tracker.paused;
+	delete tracker.ended;
 };
 
 /** Ends the tracked goal; `pause` keeps its condition for `get_goal`. */
@@ -61,4 +70,5 @@ export const endGoal = (tracker: Tracker, pause: boolean): void => {
 		tracker.paused = tracker.goal.condition;
 	}
 	delete tracker.goal;
+	delete tracker.ended;
 };
