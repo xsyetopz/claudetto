@@ -26,12 +26,26 @@ export const HIDDEN_TOOLS: readonly string[] = [
  */
 export const MAIN_ONLY_TOOLS: readonly string[] = ["SendMessage", "ListAgents"];
 
+/**
+ * The tools a subagent loses: Monitor, TaskStop and the goal tools. A goal
+ * belongs to the main session, so a worker that sets or clears it acts on the
+ * lead's state (REQ-TOOLS-005). The main loop keeps all of them.
+ */
+export const SUBAGENT_HIDDEN_TOOLS: readonly string[] = [
+	"Monitor",
+	"TaskStop",
+	"mcp__claudetto__set_goal",
+	"mcp__claudetto__get_goal",
+	"mcp__claudetto__pause_goal",
+	"mcp__claudetto__clear_goal"
+];
+
 const pattern = (tools: readonly string[]): RegExp =>
 	new RegExp(`^(?:${tools.join("|")})$`, "u");
 
 /**
- * Hides {@link HIDDEN_TOOLS} from every loop and {@link MAIN_ONLY_TOOLS} from
- * each subagent's loop, because `tool.offer` fires per loop.
+ * Hides {@link HIDDEN_TOOLS} from every loop, and {@link MAIN_ONLY_TOOLS} and
+ * {@link SUBAGENT_HIDDEN_TOOLS} from each subagent's loop, because `tool.offer` fires per loop.
  *
  * @param on The engine's hook registrar.
  */
@@ -43,6 +57,12 @@ export function registerToolOffer(on: On): void {
 		return next(e);
 	});
 	on("tool.offer", { tool: pattern(MAIN_ONLY_TOOLS) }, (_$, e, next) =>
+		e.agentId === undefined ? next(e) : { isOffered: false }
+	).catch(($, e, next) => {
+		fault($, "tool offer", next.error);
+		return next(e);
+	});
+	on("tool.offer", { tool: pattern(SUBAGENT_HIDDEN_TOOLS) }, (_$, e, next) =>
 		e.agentId === undefined ? next(e) : { isOffered: false }
 	).catch(($, e, next) => {
 		fault($, "tool offer", next.error);
