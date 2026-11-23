@@ -65,3 +65,18 @@
   - Status: mitigated 2026-11-21.
   - Verified: 2026-11-21, claude 2.1.330, the same probe after the edit: the skill fired first and asked about the tax rate form and rounding through AskUserQuestion (one run each way, so a small sample); Likelihood 3 × Impact 4 = 12 before the fix.
   - Source: this session, 058ea2d3-793b-495e-912a-323a9453747d.
+
+- [ ] **RISK-519** The Stop-time `spec_check` treats the user's own uncommitted work as the agent's drift and orders it reverted or edited.
+  - Category: spec, hook feedback.
+  - Cause: `hooks/check/hard.ts:61` compares each requirement to `git show HEAD:<file>` and `hooks/check/hard.ts:68` compares each test to its staged copy, so a spec edit or a staged test the user made before the session counts as a change by the agent; `hooks/check/stop.ts:11` then tells the agent to restore the spec, and `hooks/texts.ts:33` calls each finding a blocking problem to fix.
+  - Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `claude plugin eval --ablation with-without`, two rounds of 3 runs per arm. `spec-edit-skill` (the user says they added DISC-2 to `specs/cart.md`): the hook flagged the user's uncommitted DISC-1 rewording, and Haiku restored DISC-1 to HEAD, erasing the user's edit; with-plugin 0/3 and 0/3, without-plugin 3/3 and 2/3. `spec-review-hollow-test` (the prompt says "Do not edit anything"): the hook flagged a `test.todo(` that the user's staged empty file did not hold, and Haiku edited `src/stock.test.ts`; with-plugin 0/3 and 0/3, without-plugin 1/3 and 3/3.
+  - Consequence: the plugin destroys user work and breaks an explicit no-edit order, and it scores below vanilla on both cases, so it fails the ADR-0177 ship bar.
+  - Likelihood: 4
+  - Impact: 4
+  - Existing controls: none; the hook text says to quote the request when it names the ID, which a user's own edit does not do.
+  - Response: treat.
+  - Actions: record the spec and staged-test state at SessionStart and compare against that record, so only changes made in the session count; write the Stop text as facts plus the next action, with no "blocking" verdict (RISK-346); add both cases as regression evals, with a no-plugin arm.
+  - Trigger: a Stop finding that names a file the session never wrote.
+  - Owner: spec
+  - Status: open 2026-11-23.
+  - Source: /private/tmp/claude-501/haiku-evals/claudetto-spec.json and r2/claudetto-spec.json (runs of 2026-11-23); traces /private/tmp/e-ZV8v2o/out/trace.jsonl:55,62 and /private/tmp/e-XaiUzy/out/trace.jsonl:30,56; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
