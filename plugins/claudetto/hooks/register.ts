@@ -17,6 +17,7 @@ import { registerRenewal } from "./handover/renewal";
 import { registerStopNotice } from "./notice/stop";
 import { registerPatch } from "./patch/tool";
 import { registerToolDescribe } from "./pool/describe";
+import { registerMessagingDescribe } from "./pool/messaging";
 import { registerToolOffer } from "./pool/offer";
 import { registerQuestionRule } from "./pool/question";
 import { registerBashRecipes } from "./pool/recipes";
@@ -40,6 +41,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	// ENGINE(v2.1.330): the hook registered first runs first and reaches this one through next, so this
 	// stays after registerGit and the git block lands on the short Bash text.
 	registerToolDescribe(on);
+	registerMessagingDescribe(on);
 	registerCompact(on);
 	registerRenewal(on);
 	registerClear(on);

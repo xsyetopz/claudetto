@@ -72,3 +72,17 @@ The Bash path costs one call and about 100 to 140 characters per job against 921
 - `-p` runs gate some tools; deferred tools are measured by their listing only, not their schemas.
 - Descriptions may be cached by the engine across runs; each run used a fresh config dir.
 - The eval leg of REQ-TOOLS-003 ran at adf7ecfea (result `2026-11-21T03-19-35-641Z`, n=3 per arm, $1.93): `feature-discount` and `trivial-typo` scored 1.00 in both arms; the plugin arm cost more per run ($0.72 against $0.53, $0.41 against $0.27). Bash failed with `sandbox_apply: Operation not permitted` in every `feature-discount` run of both arms, so that leg is void and REQ-TOOLS-003 stays open until it reruns outside a sandboxed session. Rerun outside the session sandbox at d43f0162a (result `2026-11-21T13-47-24-440Z`, $1.87): both cases 1.00 in both arms with Bash working (18 calls, 0 errors); turns 4.7 against 5.7 and 3 against 4; cost $0.67 against $0.51 and $0.42 against $0.28 per three runs. REQ-TOOLS-003 is met.
+
+## Addendum 2026-11-23: Messaging Kept in the Main Loop
+
+The 2026-11-23 user ruling keeps cross-session messaging for when the user asks, so SendMessage and ListAgents are offered in the main loop and hidden from subagents (REQ-TOOLS-001). Probe: `bun tools/measure-tools.ts --plugin-dir plugins/claudetto`, Claude Code 2.1.330, fake API.
+
+| Request | Vanilla | claudetto |
+| --- | --- | --- |
+| Default mode, main, all tools | 29,825 | 10,507 (9,781 with both hidden) |
+| ListAgents, inline | 1,963 | 725 |
+| SendMessage, tools upfront | 6,179 | 1,741 |
+| SendMessage, default mode | deferred name line | deferred name line |
+| Subagent request, tools upfront | both present | neither present |
+
+ListAgents stays inline because, given `isDeferred: true`, Claude Code 2.1.330 drops it from both the tools array and the deferred listing.
