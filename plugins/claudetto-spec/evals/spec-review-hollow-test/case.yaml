@@ -9,5 +9,5 @@ context:
 execution:
   max_turns: 40
   timeout_seconds: 600
-  allowed_tools: [Read, Glob, Grep, Skill, Bash]
+  allowed_tools: [Read, Glob, Grep, Skill, Bash, mcp__claudetto-spec__spec_check]
   prompt: "I just wrote the stock ledger, its tests and specs/stock.md (see the working diff). Before I commit, check the change against the spec: which requirements are not really delivered? Name each gap by requirement ID and say what is missing. Do not edit anything."

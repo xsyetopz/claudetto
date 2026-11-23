@@ -14,12 +14,12 @@ First Glob `specs/*.md` and read the specs the request touches.
 
 - Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root, if present, for constraints before writing the spec. Never create a constitution file.
 - Interactive session: ask each expensive unknown through AskUserQuestion.
-- No one to answer (non-interactive `-p` run): write the unknown as an `Open:` line, take the cheap default if one exists, and list each assumption in the final reply.
+- No one to answer (non-interactive `-p` run): write each unknown as an `Open:` line in the spec, also when you take a cheap default for it (`Open: rate form; assumed a fraction`), and list each assumption in the final reply.
 
 ## Spec
 
 - Edit the capability's existing `specs/<capability>.md`, or add one. Never create a proposal, plan or tasks file.
-- Per requirement: `## <ID> <title>`, one sentence of behaviour, at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
+- Per requirement: `## <ID> <title>`, where the ID is an uppercase prefix, one hyphen and a number (`[A-Z][A-Z0-9]*-\d+`, such as `CART-1`), one sentence of behaviour, at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
 
 ## Red
 
