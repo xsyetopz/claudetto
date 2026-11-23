@@ -87,6 +87,41 @@ describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
 		expect(offers.map((o) => o.isOffered)).toEqual([false, false, false]);
 	});
 
+	test("the web tools are offered in the main loop and to Hermes only", async ($, on) => {
+		// Arrange
+		on("tool.offer", { tool: /^mcp__/u }, () => ({ isOffered: true }));
+		registerWeb(on);
+		const provider = { plugin: "claudetto", tier: "core" } as const;
+		const ask = (tool: string, agent?: string) =>
+			$.tool.offer(
+				agent === undefined
+					? { tool, provider }
+					: { tool, provider, agentId: "a1", subagentType: agent }
+			);
+
+		// Act
+		const offers = await Promise.all(
+			[FETCH_FULL_NAME, SEARCH_FULL_NAME].flatMap((tool) => [
+				ask(tool),
+				ask(tool, "claudetto:Heracles"),
+				ask(tool, "Hermes"),
+				ask(tool, "claudetto:Hermes")
+			])
+		);
+
+		// Assert
+		expect(offers.map((o) => o.isOffered)).toEqual([
+			true,
+			false,
+			true,
+			true,
+			true,
+			false,
+			true,
+			true
+		]);
+	});
+
 	test("session start registers both tools", async ($, on) => {
 		// Arrange
 		const names: string[] = [];

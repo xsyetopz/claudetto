@@ -73,11 +73,11 @@ claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and
 
 ## Tool Pool
 
-claudetto hides `Write`, `Edit`, `NotebookEdit`, `EnterWorktree`, `ExitWorktree`, `DesignSync` and `RemoteTrigger` from every loop through `tool.offer`, and `SendMessage` and `ListAgents` from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 14 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+claudetto hides `Write`, `Edit`, `NotebookEdit`, `EnterWorktree`, `ExitWorktree`, `DesignSync` and `RemoteTrigger` from every loop through `tool.offer`, and `SendMessage`, `ListAgents`, Monitor, TaskStop and the goal tools from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 14 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
 
 ## Web Tools
 
-claudetto registers `mcp__claudetto__web_fetch` and `mcp__claudetto__web_search`, and hides the built-in `WebFetch` and `WebSearch` from every loop (`tool.offer` answers `isOffered: false`).
+claudetto registers `mcp__claudetto__web_fetch` and `mcp__claudetto__web_search`, and hides the built-in `WebFetch` and `WebSearch` from every loop (`tool.offer` answers `isOffered: false`). The two claudetto tools stay in the main loop and reach a subagent only when it is `Hermes`.
 
 `web_fetch` takes `url`, `max_chars` (default 8000) and `offset`.
 
@@ -102,7 +102,7 @@ Permissions and the sandbox:
 
 ## Subagents
 
-claudetto ships three agents: `Artemis` (Haiku, read-only search), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. A spawn past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is refused with a reason that tells the model to wait for a running subagent to finish.
+claudetto ships four agents: `Artemis` (Haiku, read-only search), `Hermes` (Haiku, read-only web research; the only subagent offered `web_fetch` and `web_search`), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. A spawn past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is refused with a reason that tells the model to wait for a running subagent to finish.
 
 ## Goal
 

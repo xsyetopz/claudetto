@@ -56,6 +56,19 @@ export const SEARCH_TOOL = {
 /** The built-in tools these two replace; the engine never offers them. */
 const REPLACED = new Set(["WebFetch", "WebSearch"]);
 
+const WEB_TOOLS = new RegExp(
+	`^(?:${FETCH_FULL_NAME}|${SEARCH_FULL_NAME})$`,
+	"u"
+);
+
+/**
+ * Whether a subagent type is the Hermes agent, bare or namespaced by its
+ * plugin (`claudetto:Hermes`). Only Hermes gathers online intelligence
+ * (REQ-TOOLS-005).
+ */
+const isHermes = (type: string | undefined): boolean =>
+	type === "Hermes" || type?.endsWith(":Hermes") === true;
+
 const JAR_KEY = "web.cookies";
 
 /** Wires the real collaborators of one call: the host's HTTP, Chrome and the plugin's data folder. */
@@ -145,6 +158,14 @@ export function registerWeb(on: On): void {
 	});
 	on("tool.offer", (_$, e, next) =>
 		REPLACED.has(e.tool) ? { isOffered: false } : next(e)
+	).catch(($, e, next) => {
+		$.ui.log("claudetto: web tool offer failed", { to: "debug" });
+		return next(e);
+	});
+	on("tool.offer", { tool: WEB_TOOLS }, (_$, e, next) =>
+		e.agentId !== undefined && !isHermes(e.subagentType)
+			? { isOffered: false }
+			: next(e)
 	).catch(($, e, next) => {
 		$.ui.log("claudetto: web tool offer failed", { to: "debug" });
 		return next(e);
