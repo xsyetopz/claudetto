@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: reuse-helper
+description: "RISK-230: a new module reuses the repo's money formatter instead of writing its own."
+tags: [conduct, reuse]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "Add src/receipt.py with a function receipt(lines) that takes a list of (name, cents) pairs and returns the receipt as text: one line per item with its name and price in dollars, then a total line."

@@ -88,7 +88,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
 
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2500.
 
-- [ ] **RISK-230** Claude uses habit over the repo, or a workaround in place of a fix.
+- [x] **RISK-230** Claude uses habit over the repo, or a workaround in place of a fix.
   Category: agent behaviour.
   Cause: P5 (session f2d2eba3 ran `bunx tsc` without reading `justfile` or `package.json`; 87157ef5 asked for general-purpose while it was denied). P7 (f7e13273 a workaround in place of a fix).
   Event: a wrong build command, an agent type that is not offered, or a patch that leaves the root cause.
@@ -104,6 +104,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Verified: reports/2026-11-19-research/conduct/README.md, Sonnet 5.5 on claude 2.1.327, 2026-11-19: vanilla passed cure 7 (narrowest check from package.json) and cure 8 (fix the code, not the check) in 3 of 3 runs each, so the fault did not reproduce.
   Evidence: 2026-11-23, reports/2026-11-23-research/repro (dup fixture), claude 2.1.330, Sonnet 5.5, vanilla: asked to add a receipt module beside `src/money.py`, 4 of 6 runs wrote their own `_dollars` formatter instead of importing `format_cents`; third-party reports describe the same habit (external/2026-11-21/reddit.com-r-claudecode-comments-1y13bgi-how-do-you-stop-claude-code-fr-20261120T174757Z.md:27,78; external/2026-11-21/reddit.com-r-claudecode-comments-1y0t4tj-claude-code-litteraly-ignored-20261120T103326Z.md:95; external/2026-11-21/reddit.com-r-claudecode-comments-1y11grf-how-to-use-claude-code-without-20261120T193524Z.md:99). This contradicts the 2026-11-20 acceptance.
   Status: open 2026-11-23, build CONDUCT: before writing a helper, search the repo for one that does the job and reuse it.
+  Status: mitigated 2026-11-23: claudetto as shipped already reuses the repo's helper where vanilla writes its own, so no new conduct line is added. The `reuse-helper` eval case ties at 1.00 under `claude plugin eval`, where vanilla reads `src/money.py` first; the fault shows under `claude -p`, where vanilla writes the file in one Bash call.
+  Verified: 2026-11-23, claude 2.1.330, Sonnet 5.5, `reports/2026-11-23-research/repro/run-arm.sh dup <rep> <root> [--plugin-dir plugins/claudetto]` for reps 1-6: vanilla FAULT 6 of 6 (own `_dollars` formatter), claudetto PASS 6 of 6 (imports `format_cents`). `just eval claudetto --case reuse-helper --model claude-sonnet-5-5 -j 3 --threshold 0`, two rounds: 1.00 in both arms.
 
 - [x] **RISK-231** Claude writes jargon names and low-value tests.
   Category: agent behaviour.
