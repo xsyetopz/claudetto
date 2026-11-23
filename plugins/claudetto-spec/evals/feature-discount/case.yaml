@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: feature-discount
-description: "New behaviour, phrasing one: percentage discount on a cart total."
+description: "The loop under a two-part request: the README names a taken ID as free and a helper that rounds the wrong way, a float factor is a cent short, and the README typo sits beside an option really spelled that way."
 tags: [spec, feature]
 plugins: ["../.."]
 runs: 3
@@ -20,4 +20,4 @@ execution:
       Bash,
       mcp__claudetto-spec__spec_check
     ]
-  prompt: "Customers should be able to apply a percentage discount to their cart. Add that to the cart module in src/cart.ts and cover it with tests in src/cart.test.ts. The percent is a whole number from 0 to 100, and the discounted total stays in integer cents, rounded down."
+  prompt: "Two things. Customers should be able to apply a percentage discount to their cart total: add applyDiscount(total, percent) to src/cart.ts and cover it with tests in src/cart.test.ts. The percent is a whole number from 0 to 100. Round the discounted total to the nearest cent. No, scratch that, finance wants it rounded down, always, so 995 cents at 10 percent is 895. Also fix the 'recieve' typo in README.md while you are in there."

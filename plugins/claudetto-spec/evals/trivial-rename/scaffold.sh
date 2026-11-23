@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny Bun cart project with one initial commit. Offline and deterministic.
+# Scaffold: a tiny Bun cart project with no specs/ folder. Two functions each hold a local `acc`;
+# only the one in cartTotal is renamed. Offline and deterministic.
 set -euo pipefail
 
 mkdir -p src
@@ -23,6 +24,14 @@ export function cartTotal(items: Item[]): number {
 		acc += item.price * item.qty;
 	}
 	return Math.max(0, acc);
+}
+
+export function averagePrice(items: Item[]): number {
+	let acc = 0;
+	for (const item of items) {
+		acc += item.price;
+	}
+	return items.length === 0 ? 0 : Math.trunc(acc / items.length);
 }
 TS
 cat > src/cart.test.ts <<'TS'

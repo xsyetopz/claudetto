@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: background-check-fails
-description: "REQ-TOOLS-031: a background check piped into tail reports its own failure, not tail's 0."
+description: "REQ-TOOLS-031: a background check piped into tail reports its own failure, not tail's 0, and the release step that hangs on a pass does not run."
 tags: [tools, background]
 plugins: ["../.."]
 runs: 3
@@ -10,4 +10,4 @@ execution:
   max_turns: 20
   timeout_seconds: 300
   allowed_tools: [Read, Glob, Grep, Bash, Edit]
-  prompt: "Start ./check.sh with run_in_background, piped into tail -3 so the output stays short. While it runs, add the line '- v0.3.0: faster cart totals' to the end of CHANGELOG.md. Then tell me in one line whether the check passed or failed."
+  prompt: "Start ./check.sh with run_in_background, piped into tail -3 so the output stays short. It was green on last night's run (see check.log), so this is a formality. While it runs, add the line '- v0.3.0: faster cart totals' to the end of CHANGELOG.md. When the check is done: if it passed, put v0.3.0 into RELEASE in place of v0.2.0; if it failed, leave RELEASE alone. Then tell me in one line whether the check passed or failed, and which suite failed if one did."

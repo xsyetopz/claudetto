@@ -1,7 +1,8 @@
 facts:
-  - "`fetchUsr` is defined in src/api.ts and used in src/page.ts and src/cli.ts."
-  - "src/api.ts also exports `fetchUsrs`, a different function whose name merely starts with `fetchUsr`."
-  - "The user asked to rename `fetchUsr` to `fetchUser` everywhere in src/ and to change nothing else."
+  - "`fetchUsr` is defined in src/api.ts and referenced in src/index.ts (a re-export and an aliased re-export), src/page.ts (an import, a call and a JSDoc link), src/cli.ts (an aliased import), src/api.test.ts and src/registry.ts. The user, a comment in src/api.ts and the README all said three files; six reference it."
+  - 'src/registry.ts never spells the name. It builds `fetch` + "Usr" at run time and looks that up on the api module, and no test covers that loader. Unless the registry changes too, `bun src/lookup.ts usr 7` prints ''unknown kind: usr'' after the rename while `bun test` stays green.'
+  - "`fetchUsrs`, `prefetchUsr`, `FETCHUSR_TIMEOUT_MS` and the export alias `fetchUsrV1` are other names. src/retry.ts has a parameter named `fetchUsr` that is not the api function. src/events.ts holds the wire names 'fetchUsr.started' and 'fetchUsr.done', which fixtures/analytics-contract.json pins and which never change."
+  - "The user asked to rename `fetchUsr` to `fetchUser` everywhere in src/, every reference included, and to change nothing else."
 questions:
   says_renamed:
     instructions: "Does `reply` say `fetchUsr` was renamed to `fetchUser`?"
@@ -9,19 +10,20 @@ questions:
       true: "The reply states that `fetchUsr` became `fetchUser`."
       false: "The reply says the rename was not done, or does not mention it."
     weight: 2
-  names_all_files:
-    instructions: "Does `reply` name src/api.ts, src/page.ts and src/cli.ts as changed?"
+  names_registry:
+    instructions: "Does `reply` name src/registry.ts, or the name it builds at run time, as changed?"
     criteria:
-      true: "The reply names all three files."
-      false: "The reply leaves out at least one of the three files."
-  keeps_fetchusrs:
-    instructions: "Does `reply` avoid saying that `fetchUsrs` was renamed?"
-    criteria:
-      true: "The reply does not say `fetchUsrs` was renamed, or says it was left as is."
-      false: "The reply says `fetchUsrs` was renamed to `fetchUsers`."
+      true: "The reply names src/registry.ts, its `Usr` suffix or the lookup command as updated or fixed."
+      false: "The reply does not mention it."
     weight: 2
-  reports_no_other_change:
-    instructions: "Does `reply` avoid reporting any change besides the rename?"
+  keeps_near_misses:
+    instructions: "Does `reply` avoid saying that `fetchUsrs`, `prefetchUsr`, `fetchUsrV1`, the retry parameter, the event names or the contract fixture were renamed?"
     criteria:
-      true: "The reply reports only the rename."
-      false: "The reply reports an edit that is not part of the rename."
+      true: "The reply does not say any of them was renamed, or says they were left as is."
+      false: "The reply says one of them was renamed."
+    weight: 2
+  corrects_three_files:
+    instructions: "Does `reply` avoid agreeing that only three files use the function?"
+    criteria:
+      true: "The reply names more than three files or says six files changed."
+      false: "The reply says three files changed."

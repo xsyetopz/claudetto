@@ -5,5 +5,5 @@ target:
   path: notes.txt
 pattern: '\r|\n\n|[ \t]+(?:\n|$)'
 match: not_contains
-weight: 2
+weight: 1
 ---

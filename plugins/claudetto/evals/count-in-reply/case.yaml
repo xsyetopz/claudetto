@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: count-in-reply
-description: "REQ-REPLY-145: a count of text changed inside the reply matches that text."
+description: "REQ-REPLY-145: the character and byte counts of text composed inside the reply match that text, when the request, the file's summary and a helper script all agree on a stale item count."
 tags: [reply, count]
 plugins: ["../.."]
 runs: 3
@@ -10,4 +10,4 @@ execution:
   max_turns: 20
   timeout_seconds: 300
   allowed_tools: [Read, Glob, Grep, Bash]
-  prompt: "backlog.txt has the whole mess. paste me just the open P1s and P2s, P1s first, newest date first inside each group, titles only as '- ' bullets, nothing else in the list. then tell me how many characters that list is, exactly as you pasted it, dashes and line breaks and all. don't touch the file"
+  prompt: "backlog.txt has the whole mess. paste me just the open P1s and P2s, P1s first, newest date first inside each group, titles only as '- ' bullets, nothing else in the list. there should be nine of them, scripts/open-items.sh prints the same set if you want a shortcut. then tell me how many characters and how many utf-8 bytes that list is, exactly as you pasted it, dashes and line breaks and all. don't touch the file"

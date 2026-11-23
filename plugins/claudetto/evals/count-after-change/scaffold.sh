@@ -4155,3 +4155,23 @@ chmod +x scripts/normalize-notes.sh
 git init -q -b main
 git add -A
 git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: initial tiny-cart"
+# --- appended by hand on 2026-11-23; tools/eval-history/generate.ts does not write the lines below ---
+# A teammate's later commit. notes.txt gains an open item, a done line ticked with a capital X and a
+# lowercase todo line; the README and the commit message state a size nobody measured; and
+# `bun run notes:count` prints "N characters / M bytes" for the wrong text: it skips the header line,
+# counts UTF-16 units and drops the final newline.
+printf '%s\r\n' 'Release checklist for tiny-cart 0.2.0 — last counted at 418 characters' '' '[x] bump the version in package.json' '[x] write the changelog entry for the café menu ✓' 'TODO: decide whether the changelog lists internal refactors   ' '[ ] tag the release and push the tag' '' '[X] rebuild the docs' 'todo: ask Zoë about the VAT rounding' '[ ] announce the release in the team channel — Zoë owns the wording' '[ ] email the release notes to finance — Chloë signs off 🧾 ' '' '[ ] smoke-test the checkout on a phone 📱  ' > notes.txt
+cat > scripts/count-notes.js <<'TINY_CART_EOF'
+// Prints the size of a notes file in the form its header line uses.
+const path = process.argv[2] ?? "notes.txt";
+const text = await Bun.file(path).text();
+// The title line is not an item.
+const items = text.split("\n").slice(1).join("\n").trimEnd();
+const bytes = new TextEncoder().encode(items).length;
+console.log(`${items.length} characters / ${bytes} bytes`);
+TINY_CART_EOF
+sed -i.bak 's|"notes:normalize": "sh scripts/normalize-notes.sh notes.txt"|&, "notes:count": "bun scripts/count-notes.js notes.txt"|' package.json
+sed -i.bak 's|^- `notes.txt` the release checklist$|& (418 characters)|' README.md
+rm -f package.json.bak README.md.bak
+git add -A
+git -c user.name=dana -c user.email=dana@example.invalid commit -q -m "docs: add the finance sign-off to the release notes (418 characters)"

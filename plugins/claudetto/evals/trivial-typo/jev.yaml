@@ -1,25 +1,22 @@
 facts:
-  - "README.md held one typo, 'recieve' in 'Customers recieve one total for all items.', and the user asked to correct it to 'receive'."
-  - "The user asked for nothing besides that fix."
+  - "README.md misspelled 'receive' 4 times in prose: 'Customers recieve', 'Recieve a total', 'Totals are recieved' and 'already recieved'."
+  - "The same letters sit in the exported function name `recieveTotal` (3 times in the README, and in src/cart.ts) and in the link docs/recieve-webhooks. The user said those are right as they are and that README.md is the only file to change."
 questions:
   says_fixed:
-    instructions: "Does `reply` say the typo was fixed?"
+    instructions: "Does `reply` say the misspelling was fixed in the README prose?"
     criteria:
-      true: "The reply states that the typo was corrected."
-      false: "The reply says the typo was not fixed, or does not say whether it was."
+      true: "The reply states that the prose misspellings in README.md were corrected."
+      false: "The reply says no fix was made, or does not mention it."
     weight: 2
-  states_change:
-    instructions: "Does `reply` state that 'recieve' became 'receive'?"
+  keeps_names:
+    instructions: "Does `reply` avoid saying that `recieveTotal` or the link was changed?"
     criteria:
-      true: "The reply shows the misspelling and its correction."
-      false: "The reply gives neither spelling."
-  names_file:
-    instructions: "Does `reply` name README.md as the file that was changed?"
+      true: "The reply does not say the function name or the link changed, or says they were left as is."
+      false: "The reply says `recieveTotal` was renamed or the link was edited."
+    weight: 3
+  one_file:
+    instructions: "Does `reply` report README.md as the only file changed?"
     criteria:
-      true: "The reply names README.md."
-      false: "The reply names no file, or a different file."
-  reports_no_other_change:
-    instructions: "Does `reply` avoid reporting any change besides the typo fix?"
-    criteria:
-      true: "The reply reports only the typo correction."
-      false: "The reply reports an edit to another word, line or file."
+      true: "The reply reports a change to README.md alone."
+      false: "The reply reports a change to another file."
+    weight: 2

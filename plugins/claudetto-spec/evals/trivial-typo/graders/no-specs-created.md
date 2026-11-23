@@ -1,7 +1,8 @@
 ---
 type: regex
 target: files
-pattern: '(?:^|/)specs/'
 match: not_contains
+pattern: '(?:^|/)specs/'
+flags: m
 weight: 2
 ---

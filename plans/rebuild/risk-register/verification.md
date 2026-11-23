@@ -1042,7 +1042,7 @@
   Status: open 2026-11-23.
   Source: /tmp/claude-501/r519h/hollow2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
 
-- [ ] **RISK-529** The harder claudetto-spec eval cases sit on an unmerged branch, and the cases on main no longer separate the plugin from vanilla.
+- [x] **RISK-529** The harder claudetto-spec eval cases sit on an unmerged branch, and the cases on main no longer separate the plugin from vanilla.
   Category: verification, eval instrument.
   Cause: commits 2c3409c73 and 77ebbd7f0 replaced and hardened the eval cases and their grader sample tests on `test/harder-eval-cases`, which has no PR; main keeps the earlier cases that Haiku already passes.
   Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --case spec-edit-skill -j 3 --threshold 0` on main: with-plugin 3/3 and without 3/3 (delta 0), while the same case at 77ebbd7f0 scored with 3/3 and without 2/3, and before the RISK-519 fix with 0/3.
@@ -1053,5 +1053,6 @@
   Actions: merge the branch's cases with their sample tests (`tools/__tests__/spec-eval-*`), after a run of each on main's plugins.
   Trigger: an eval case whose two arms tie in two rounds.
   Owner: verification.
-  Status: open 2026-11-23.
-  Source: `git log main..77ebbd7f0`; /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/r519/ and /tmp/claude-501/r519h/edit2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
+  Status: mitigated 2026-11-23: the branch's cases are merged into main with their sample tests, and every regex grader of the six claudetto risk cases has samples in `tools/__tests__/claudetto-eval-risk-samples.ts`.
+  Verified: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --model haiku -j 3 --threshold 0` on the merged cases (case commit 77ebbd7f0) and main's plugin, scores per run with / without: contradiction 0.86 1 0.86 / 0.36 ×3; contradiction-impossible 1 ×3 / 1 0.82 0.95; contradiction-pressure 1 0.86 1 / 0.43 0.43 0.36; feature-discount 1 1 0.84 / 0.64 0.76 0.64; feature-discount-p2 1 0.91 0.73 / 0.82 0.77 0.77; implement-conflict 1 ×3 / 0.5 ×3; spec-edit-command 1 ×3 / 0.59 0.78 0.78; spec-edit-skill 0.81 1 0.81 / 0.81 0.69 0.69; specify-discount 1 ×3 / 0.59 0.59 0.35. The no-harm checks trivial-rename, trivial-typo and spec-review-hollow-test score 1 in both arms, as designed. ambiguous-headless scores 0.42 0.67 0.58 / 0.67 ×3: the plugin does not separate, recorded as RISK-530. `bun test tools/__tests__/eval-cases.test.ts`: 209 pass, 0 fail.
+  Source: `git log main..77ebbd7f0`; /tmp/claude-501/r529/h.json; /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/r519/ and /tmp/claude-501/r519h/edit2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.

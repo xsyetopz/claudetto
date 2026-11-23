@@ -1,8 +1,8 @@
 ---
 type: regex
 target: last_message
-pattern: '\b(?!(?:259|260)\b)(?:2\d\d|30\d)\s*(?:characters|chars)\b'
 match: not_contains
+pattern: '\b(?:582|583|584|610|611)\s*(?:characters|chars|code points)\b|\b(?:580|581|583|584)\s*bytes\b'
 flags: i
 weight: 2
 ---
