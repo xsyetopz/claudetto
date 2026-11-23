@@ -63,15 +63,19 @@ It returns JSON text:
 - `uncovered`: IDs no test file cites.
 - `orphans`: IDs cited in tests that no spec defines, limited to prefixes some spec uses, so `UTF-8` or `ISO-8601` are not orphans.
 - `changedSinceStaged`: test files in `git diff --name-only` (work tree against the index), so an edit to a staged test is visible.
-- `removedIds`, `reworded`: spec drift against `git show HEAD:<file>`. An ID HEAD had that no spec defines now is removed; an ID whose one behaviour sentence changed (whitespace aside) is reworded. New IDs and spec files new since HEAD are not drift.
-- `tampered`: for each test in `changedSinceStaged`, `deleted` from the work tree, `addedMarkers` (`.skip(`, `.only(`, `xit(`, `xdescribe(`, `test.todo(`, `it.todo(`) the work tree has more of than the index, and `assertions` `{before, after}` when the count of `expect(` and `assert` calls dropped.
+- `removedIds`, `reworded`: spec drift against the spec text the session started with (`git show HEAD:<file>` when the plugin holds no session-start record; see Stop Gate). An ID the start spec had that no spec defines now is removed; an ID whose one behaviour sentence changed (whitespace aside) is reworded. New IDs and new spec files are not drift.
+- `tampered`: for each test in `changedSinceStaged`, `deleted` from the work tree, `addedMarkers` (`.skip(`, `.only(`, `xit(`, `xdescribe(`, `test.todo(`, `it.todo(`) the work tree has more of than the index, and `assertions` `{before, after}` when the count of `expect(` and `assert` calls dropped. With a session-start record, a test the user had already changed counts only when the session changed it that way again.
 - `citedUnasserted`: `{id, file, line}` for each test block that cites a defined ID and calls no assertion. A heuristic: a block runs from a `test(`, `it(`, `def test_` or `func Test` line to the next test or `describe` line, and an assertion is `expect(`, `assert` or `assertX(`. It misreports a test that asserts through a helper or a framework with other names, such as Go's `t.Errorf`.
 
 `hardFindings(report)` (`hooks/check/hard.ts`) returns the findings that should block completion: malformed, `removedIds`, `reworded`, `tampered` and `orphans`. The rest is advice.
 
 ## Stop Gate
 
-When the main agent is about to finish a turn in a repo with a `specs/` directory, a `classic.Stop` hook (`hooks/check/stop.ts`) runs the same gather and check and blocks the stop once if `hardFindings` is non-empty. The block reason holds one line per finding; a `reworded` or `removedId` line tells the agent to restore the spec, its tests and the code unless the user named the change, and to report the conflict by ID. It blocks at most once per turn: a Stop that follows a block (`stop_hook_active`) passes. It never blocks a subagent, never blocks on advice findings, and fails open on any error (logged to the debug log). A repo without `specs/` costs one `fs.exists`. The hook adds no always-on tokens.
+When the main agent is about to finish a turn in a repo with a `specs/` directory, a `classic.Stop` hook (`hooks/check/stop.ts`) runs the same gather and check and blocks the stop once if `hardFindings` is non-empty.
+
+Only the session's own changes count. At `session.start` the plugin records a baseline (`hooks/check/baseline.ts`) in session state: each spec file's text, the text of each test file that already differed from the index, and the malformed and orphan findings already present. At Stop, specs are compared with that baseline instead of HEAD; a tamper finding counts only when the test also changed that way since the start; and a malformed or orphan finding the start had is dropped. A user's uncommitted spec edit or unstaged test is therefore never reported as the agent's drift. Without a baseline (it failed, or the plugin loaded mid-session), the gate compares with HEAD and the index as before.
+
+The block reason holds one line per finding; a `reworded` or `removedId` line names the wording the requirement had at session start and tells the agent to restore the spec, its tests and the code unless the user named the change, and to report the conflict by ID. It blocks at most once per turn: a Stop that follows a block (`stop_hook_active`) passes. It never blocks a subagent, never blocks on advice findings, and fails open on any error (logged to the debug log). A repo without `specs/` costs one `fs.exists`. The hook adds no always-on tokens.
 
 Test files are paths matching `*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, or under `__tests__/`, `test/` or `tests/`.
 

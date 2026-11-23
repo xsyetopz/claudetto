@@ -58,7 +58,7 @@ export function hardFindings(report: Report): HardFinding[] {
 		found.push({
 			kind: "reworded",
 			subject: r.id,
-			message: `${r.id} (${r.file}:${r.line}) was reworded since HEAD`
+			message: `${r.id} (${r.file}:${r.line}) was reworded`
 		});
 	}
 	for (const t of report.tampered) {

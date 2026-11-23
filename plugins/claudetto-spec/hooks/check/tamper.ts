@@ -50,7 +50,8 @@ export function countMarkers(text: string): Map<string, number> {
 	);
 }
 
-function compare(
+/** The tampering one staged test shows between `index` and `now`, or `undefined` when none. */
+export function compareTest(
 	file: string,
 	index: string,
 	now: string
@@ -97,7 +98,7 @@ export function tamperedTests(
 		if (gone.has(file)) {
 			found.push({ file, deleted: true, addedMarkers: [], assertions: null });
 		} else if (staged !== undefined && now !== undefined) {
-			const change = compare(file, staged, now);
+			const change = compareTest(file, staged, now);
 			if (change !== undefined) {
 				found.push(change);
 			}

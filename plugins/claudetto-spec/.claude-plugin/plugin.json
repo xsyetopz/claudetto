@@ -12,5 +12,6 @@
 		"claude-code": ">=2.1.329"
 	},
 	"keywords": ["spec", "tdd", "bdd"],
+	"types": "./hooks/state.d.ts",
 	"version": "0.1.0"
 }

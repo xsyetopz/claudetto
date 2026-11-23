@@ -30,4 +30,4 @@ export const AMEND_RULE =
 
 /** Opens the reason a Stop is blocked; one line per finding follows. */
 export const STOP_BLOCK_HEAD =
-	"spec_check found blocking problems; fix each or tell the user why it stands:";
+	"spec_check findings; for each, fix it or tell the user why it stands:";
