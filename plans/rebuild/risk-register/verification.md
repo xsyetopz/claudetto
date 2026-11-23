@@ -1020,3 +1020,31 @@
   Owner: verification.
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part4.txt:24-34; ISSUES-part3.txt:164.
+
+- [ ] **RISK-528** The `covered-not-listed` grader of `spec-review-hollow-test` fails a reply that names a covered requirement as covered.
+  Category: verification, eval instrument.
+  Cause: `plugins/claudetto-spec/evals/spec-review-hollow-test/graders/covered-not-listed.md@77ebbd7f0` (branch `test/harder-eval-cases`) fails any line that starts with `STOCK-2`, `STOCK-4`, `STOCK-10` or `STOCK-11`, so a closing line such as "STOCK-2, STOCK-4, STOCK-10 and STOCK-11 are covered" counts as listing them as gaps.
+  Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `claude plugin eval --case spec-review-hollow-test -j 3`: run e-SfT9sl named exactly the four real gaps and closed with that line, and scored 0.8 (trace /private/tmp/e-SfT9sl/out/trace.jsonl, last line).
+  Consequence: a correct reply scores as a failure, so the case can show a plugin below vanilla when it is not.
+  Likelihood: 2. Impact: 2.
+  Existing controls: none.
+  Response: treat.
+  Actions: match only a line that lists a covered ID as a gap, and add a check that the corrected grader still fails a reply listing STOCK-2 as a gap.
+  Trigger: a `covered-not-listed` failure whose reply names no covered ID as a gap.
+  Owner: verification.
+  Status: open 2026-11-23.
+  Source: /tmp/claude-501/r519h/hollow2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
+
+- [ ] **RISK-529** The harder claudetto-spec eval cases sit on an unmerged branch, and the cases on main no longer separate the plugin from vanilla.
+  Category: verification, eval instrument.
+  Cause: commits 2c3409c73 and 77ebbd7f0 replaced and hardened the eval cases and their grader sample tests on `test/harder-eval-cases`, which has no PR; main keeps the earlier cases that Haiku already passes.
+  Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --case spec-edit-skill -j 3 --threshold 0` on main: with-plugin 3/3 and without 3/3 (delta 0), while the same case at 77ebbd7f0 scored with 3/3 and without 2/3, and before the RISK-519 fix with 0/3.
+  Consequence: a regression such as RISK-519 passes main's evals, so an ADR-0177 ship decision rests on cases that cannot fail it (ADR-0193 rule 6).
+  Likelihood: 3. Impact: 3.
+  Existing controls: the branch's cases can be run from a copy of the plugin, as for RISK-519.
+  Response: treat.
+  Actions: merge the branch's cases with their sample tests (`tools/__tests__/spec-eval-*`), after a run of each on main's plugins.
+  Trigger: an eval case whose two arms tie in two rounds.
+  Owner: verification.
+  Status: open 2026-11-23.
+  Source: `git log main..77ebbd7f0`; /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/r519/ and /tmp/claude-501/r519h/edit2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.

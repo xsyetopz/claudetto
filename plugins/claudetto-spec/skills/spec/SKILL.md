@@ -32,7 +32,7 @@ First Glob `specs/*.md` and read the specs the request touches.
 ## Green
 
 - Implement without editing staged tests.
-- A requirement changes only when the request cites its ID or says to change the spec. Describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not.
+- The spec as the session found it, with the user's uncommitted edits, is the spec to implement. A requirement changes only when the request cites its ID or says to change the spec. Describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not.
 - If the request contradicts a requirement it does not cite, or a staged test cannot pass honestly, change nothing: stop and report the conflict naming the requirement ID. Never edit the test or spec to fit.
 
 ## Check
