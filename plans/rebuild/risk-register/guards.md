@@ -1395,7 +1395,7 @@
   Verified: rerun `/tmp/claude-501/r524/run3.sh u1..u3` (vanilla) and `c1..c3` (with the sentence), claude 2.1.331, Sonnet 5.5, 2026-11-24: vanilla calls `permcheck PadDriver` after `padctl install` in 3 of 3 and names both grants denied. Residual: an interactive session with real TCC state was not reproduced.
   Source: ISSUES-part3.txt:88-106.
 
-- [ ] **RISK-526** A secret the user pastes into a prompt is stored in plain text in the session transcript.
+- [x] **RISK-526** A secret the user pastes into a prompt is stored in plain text in the session transcript.
   Category: guards.
   Cause: nothing checks the prompt text before it is sent and written to the session file; RISK-506 covers masked tool results only.
   Event: third-party report of a production database password pasted into a prompt, then rotated (external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37); probe 2026-11-23, claude 2.1.330, Haiku 5.5, vanilla, one prompt holding a password-shaped and an AWS-key-shaped fake value: each appears 6 times in plain text in the session file under `~/.claude/projects/` (reports/2026-11-23-research/repro/README.md).
@@ -1407,4 +1407,7 @@
   Trigger: a prompt that contains a credential-shaped string.
   Owner: guards.
   Status: open 2026-11-23.
+  Evidence: probe 2026-11-24, claude 2.1.331, Haiku 5.5, `-p` from `/tmp/claude-501/r526/w`, one prompt pasting a password, an AWS key ID and a secret key in prose: vanilla's session file held the password 8 times and the key ID 6 (it also handed the password to a subagent); claudetto at f0f460976 5 and 5. betterleaks 1.10.1 finds neither: its AWS rule needs the secret key beside the ID in `key = value` form, and its password rule needs `=` or `:`; the redact guard applies its fallback shapes only when betterleaks is missing.
+  Status: mitigated 2026-11-24: REQ-GUARDS-083, a `prompt.submit` guard (`plugins/claudetto/hooks/guards/redact/prompt.ts`) holds back a typed prompt or slash command line that holds a secret, and sends it when submitted again; the engine puts the dropped text back in the box.
+  Verified: the same probe with the guard: 0 copies in the session file, the run ended with the reason; control prompt ran; `claude plugin test plugins/claudetto` 331 pass, 0 fail; 0 of 757 local history prompts held. Interactive probe 2026-11-24, claude 2.1.331, Haiku 5.5, tmux: held once, box text once, Enter sent it (a first build that refilled the box doubled the text and held it forever; the refill was removed). Slash command arguments: vanilla `-p "/count ... password <value>"` 6 copies; guard 0, held; control `/count db.internal user app` ran.
   Source: external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37; probe 2026-11-23, claude 2.1.330, Haiku 5.5, session 48a095da.

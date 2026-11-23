@@ -153,7 +153,7 @@ async function scan(
 }
 
 /** Builds the mask for one text: env-file values plus scanner findings, or SHAPES when the scanner is missing or fails. */
-async function maskFor(
+export async function maskFor(
 	$: EngineInterface,
 	text: string
 ): Promise<(t: string) => string> {
@@ -167,7 +167,7 @@ async function maskFor(
 }
 
 /** The SHAPES-only mask a failed hook falls back to, so a fault never passes raw output. */
-const shapesOnly = (t: string): string => redact(t, [], true);
+export const shapesOnly = (t: string): string => redact(t, [], true);
 
 /**
  * Masks secrets in every tool result before the model reads it and before the
