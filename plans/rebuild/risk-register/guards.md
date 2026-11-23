@@ -1390,3 +1390,17 @@
   Owner: guards.
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part3.txt:88-106.
+
+- [ ] **RISK-526** A secret the user pastes into a prompt is stored in plain text in the session transcript.
+  Category: guards.
+  Cause: nothing checks the prompt text before it is sent and written to the session file; RISK-506 covers masked tool results only.
+  Event: third-party report of a production database password pasted into a prompt, then rotated (external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37); probe 2026-11-23, claude 2.1.330, Haiku 5.5, vanilla, one prompt holding a password-shaped and an AWS-key-shaped fake value: each appears 6 times in plain text in the session file under `~/.claude/projects/` (reports/2026-11-23-research/repro/README.md).
+  Consequence: a live credential sits in the transcript and goes to the model; the owner must rotate it.
+  Likelihood: 2. Impact: 4.
+  Existing controls: none on vanilla.
+  Response: mitigate.
+  Actions: a UserPromptSubmit hook detects credential-shaped strings in the prompt, blocks the submit, and tells the user to pass the value through the environment or a secret manager instead.
+  Trigger: a prompt that contains a credential-shaped string.
+  Owner: guards.
+  Status: open 2026-11-23.
+  Source: external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37; probe 2026-11-23, claude 2.1.330, Haiku 5.5, session 48a095da.
