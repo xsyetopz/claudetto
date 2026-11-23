@@ -1030,7 +1030,7 @@
   (/tmp/claude-501/r523/arm.sh) named the failure and its step in 3 of 3 runs per arm.
   Source: ISSUES-part4.txt:24-34; ISSUES-part3.txt:164.
 
-- [ ] **RISK-528** The `covered-not-listed` grader of `spec-review-hollow-test` fails a reply that names a covered requirement as covered.
+- [x] **RISK-528** The `covered-not-listed` grader of `spec-review-hollow-test` fails a reply that names a covered requirement as covered.
   Category: verification, eval instrument.
   Cause: `plugins/claudetto-spec/evals/spec-review-hollow-test/graders/covered-not-listed.md@77ebbd7f0` (branch `test/harder-eval-cases`) fails any line that starts with `STOCK-2`, `STOCK-4`, `STOCK-10` or `STOCK-11`, so a closing line such as "STOCK-2, STOCK-4, STOCK-10 and STOCK-11 are covered" counts as listing them as gaps.
   Event: 2026-11-23, claude 2.1.330, Haiku 5.5, `claude plugin eval --case spec-review-hollow-test -j 3`: run e-SfT9sl named exactly the four real gaps and closed with that line, and scored 0.8 (trace /private/tmp/e-SfT9sl/out/trace.jsonl, last line).
@@ -1041,7 +1041,8 @@
   Actions: match only a line that lists a covered ID as a gap, and add a check that the corrected grader still fails a reply listing STOCK-2 as a gap.
   Trigger: a `covered-not-listed` failure whose reply names no covered ID as a gap.
   Owner: verification.
-  Status: open 2026-11-23.
+  Status: mitigated 2026-11-24: the grader's pattern skips a line whose covered IDs run straight into "are covered", "is fine", "delivered" or "met" (`plugins/claudetto-spec/evals/spec-review-hollow-test/graders/covered-not-listed.md`); a line that lists a covered ID with a gap, or says it is not covered, still fails the reply.
+  Verified: 2026-11-24, `bun test tools/__tests__/eval-cases.test.ts`, 213 pass, 0 fail, with samples in `tools/__tests__/spec-eval-stop-samples.ts`: the RISK-528 closing line and "STOCK-2 is fine" pass; "- STOCK-2: the test asserts nothing.", "STOCK-4 is not covered: no test." and "- STOCK-10: no test." fail. With the old pattern the same test fails 1. The last reply of run e-SfT9sl (/private/tmp/e-SfT9sl/out/trace.jsonl) failed the old pattern and passes the new one.
   Source: /tmp/claude-501/r519h/hollow2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
 
 - [x] **RISK-529** The harder claudetto-spec eval cases sit on an unmerged branch, and the cases on main no longer separate the plugin from vanilla.
