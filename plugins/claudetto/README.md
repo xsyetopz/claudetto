@@ -62,7 +62,7 @@ A Bash result carries a short note when the command hides its own failure: a bac
 
 ## Patch Tool
 
-claudetto turns off Write, Edit, NotebookEdit and SendMessage in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
+claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and each subagent's, and registers one tool in their place: `patch`, which the model sees as `mcp__claudetto__patch`. Its input is one string in an `apply_patch`-style envelope with no line numbers: `*** Begin Patch` and `*** End Patch` around `*** Add File:` (lines start with `+`), `*** Delete File:` and `*** Update File:` (with an optional `*** Move to:`) sections. An update holds `@@ anchor` hunks of context lines (a space prefix), `-` lines and `+` lines, and `*** End of File` pins a hunk to the end.
 
 - Paths are relative to the session directory or absolute, and a path that lands outside it (also through a symbolic link) is refused with the reason.
 - Context matches exactly, then with trailing whitespace folded, then trimmed. A hunk whose context is missing or ambiguous refuses the whole patch and writes nothing; the error names the file, the hunk and the nearest line.
@@ -73,7 +73,7 @@ claudetto turns off Write, Edit, NotebookEdit and SendMessage in every loop, the
 
 ## Tool Pool
 
-claudetto hides `Write`, `Edit`, `NotebookEdit`, `SendMessage` and `ListAgents` from every loop through `tool.offer`, and replaces the description of 16 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`). Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+claudetto hides `Write`, `Edit` and `NotebookEdit` from every loop through `tool.offer`, and `SendMessage` and `ListAgents` from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 16 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
 
 ## Web Tools
 
