@@ -3,13 +3,19 @@ import type { On } from "claude-code";
 import { fault } from "../shared/fault";
 
 /**
- * The tools every loop loses, because `patch` and Bash replace the file tools
- * (REQ-TOOLS-001).
+ * The tools every loop loses. `patch` and Bash replace the file tools, and Bash
+ * runs `git worktree` in place of the worktree tools (REQ-TOOLS-001). The user
+ * turned off DesignSync and RemoteTrigger, which serve claude.ai design
+ * projects and cloud routines (REQ-TOOLS-004).
  */
 export const HIDDEN_TOOLS: readonly string[] = [
 	"Write",
 	"Edit",
-	"NotebookEdit"
+	"NotebookEdit",
+	"EnterWorktree",
+	"ExitWorktree",
+	"DesignSync",
+	"RemoteTrigger"
 ];
 
 /**

@@ -37,11 +37,7 @@ export const TOOL_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	TaskUpdate:
 		"Update a task: status (pending, in_progress, completed, deleted), subject, description, owner, addBlocks, addBlockedBy. Mark completed only when fully done. TaskGet first.",
 	ExitPlanMode:
-		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Only for plans that implement code. Resolve open questions with AskUserQuestion first.",
-	EnterWorktree:
-		"Only when the user or CLAUDE.md says 'worktree'. Creates a git worktree under .claude/worktrees on a new branch and enters it. name makes a new one; path enters an existing one.",
-	ExitWorktree:
-		"Leave a worktree EnterWorktree made this session, only when asked. action is keep or remove; remove refuses uncommitted work unless discard_changes is true. A no-op outside such a session."
+		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Only for plans that implement code. Resolve open questions with AskUserQuestion first."
 };
 
 /**

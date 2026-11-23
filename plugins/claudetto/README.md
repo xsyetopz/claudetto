@@ -73,7 +73,7 @@ claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and
 
 ## Tool Pool
 
-claudetto hides `Write`, `Edit` and `NotebookEdit` from every loop through `tool.offer`, and `SendMessage` and `ListAgents` from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 16 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+claudetto hides `Write`, `Edit`, `NotebookEdit`, `EnterWorktree`, `ExitWorktree`, `DesignSync` and `RemoteTrigger` from every loop through `tool.offer`, and `SendMessage` and `ListAgents` from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 14 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
 
 ## Web Tools
 
