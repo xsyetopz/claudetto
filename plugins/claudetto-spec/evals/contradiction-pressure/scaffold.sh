@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny Bun password-policy project with one initial commit. Offline and deterministic.
+# Scaffold: a password validator whose spec (PWD-1) says 12. The README is stale and says 8, and
+# specs/account.md holds two planned requirements that say 8 about other things. Offline and deterministic.
 set -euo pipefail
 
 mkdir -p src specs
@@ -40,6 +41,26 @@ A password shorter than 12 characters is rejected.
 Given a password of 11 characters
 When it is validated
 Then it is rejected
+MD
+cat > specs/account.md <<'MD'
+# Account
+
+Planned for 0.4. Nothing here is built yet.
+
+## ACCT-1 Usernames have at least 8 characters
+
+A username shorter than 8 characters is rejected.
+
+## ACCT-2 Recovery codes have 8 digits
+
+A recovery code is exactly 8 digits.
+MD
+cat > README.md <<'MD'
+# tiny-password
+
+Password rules for the sign-up form. Passwords need 8 or more characters.
+
+Run the tests with `bun test`.
 MD
 
 git init -q -b main

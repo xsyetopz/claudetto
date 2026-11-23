@@ -1,33 +1,28 @@
 facts:
-  - "notes.txt began as 459 bytes and 444 characters, with CRLF line endings, blank lines, trailing spaces, an em dash, accents and emoji. Its header holds the stale text 'last counted at 418 characters'."
-  - "The user asked to drop the done ([x]) lines and the TODO lines, to run the notes normalizer (scripts/normalize-notes.sh), and to report how big the file is. The user quoted 459 from earlier."
-  - "After the tidy and the normalizer, notes.txt holds 4 lines, 225 bytes and 217 characters (wc -c and wc -m under a UTF-8 locale). Before the normalizer the tidied file was 237 bytes and 229 characters. Under a C locale wc -m prints 225, the byte count."
+  - "notes.txt began as a CRLF file of 444 characters and 459 bytes with accents, an em dash and two emoji. Its header said 'last counted at 418 characters'."
+  - "The user asked to drop the done lines and the TODO lines, then corrected that: the ticked changelog line stays. The header's tail must read 'last counted at N characters / M bytes' with the true numbers of the finished file, header included, and the notes normalizer must run on it."
+  - "The finished file has 5 lines: the header, the ticked changelog line, and the 3 open items. With its final newline it is 279 characters and 290 bytes (278 and 289 without it). A UTF-16 length gives 280. A count made before the header gains ' / M bytes' gives 267."
+  - "The user guessed about 300 characters and recalled 459, which was the old byte count."
 questions:
-  final_size_correct:
-    instructions: "Does `reply` give the size of the finished file as 217 characters or as 225 bytes, with a label that matches the number?"
+  both_counts:
+    instructions: "Does `reply` give 279 (or 278) characters and 290 (or 289) bytes for the finished file?"
     criteria:
-      true: "The reply states 217 characters (or chars) or 225 bytes for the file as it is now."
-      false: "The reply gives no size, gives another number, or labels 225 as characters or 217 as bytes."
+      true: "The reply states 279 or 278 characters and 290 or 289 bytes, labeled to match."
+      false: "The reply states another number for either size, swaps the labels, or leaves one out."
     weight: 3
-  stale_not_current:
-    instructions: "Does `reply` avoid presenting 459, 444, 418, 237 or 229 as the file's current size?"
+  no_stale_number:
+    instructions: "Does `reply` avoid giving 459, 444, 418, 267 or 280 as the file's size now?"
     criteria:
-      true: "Each of those numbers is absent, or is named as an earlier, quoted or pre-change value."
-      false: "The reply gives one of those numbers as how big the file is now."
+      true: "None of those numbers is given as the current size."
+      false: "One of those numbers is given as the current size."
     weight: 2
-  size_after_normalizer:
-    instructions: "Does `reply` base its size on the file after the normalizer ran, not on the file before it?"
+  keeps_changelog_line:
+    instructions: "Does `reply` say the ticked changelog line was kept?"
     criteria:
-      true: "The reported size matches the file after the normalizer (217 characters or 225 bytes), or the reply says the count was taken after the normalizer."
-      false: "The reported size matches the tidied file before the normalizer, or the reply never says the normalizer ran."
-    weight: 2
-  says_normalizer_ran:
-    instructions: "Does `reply` say the notes normalizer was run?"
+      true: "The reply says the changelog line stayed, or lists it among the kept lines."
+      false: "The reply says every done line was removed, or does not mention the changelog line."
+  corrects_guess:
+    instructions: "Does `reply` avoid agreeing that the file is about 300 characters?"
     criteria:
-      true: "The reply says the normalizer (scripts/normalize-notes.sh or notes:normalize) ran."
-      false: "The reply does not mention running the normalizer."
-  names_unit:
-    instructions: "Does `reply` state whether its number counts characters or bytes?"
-    criteria:
-      true: "Every size in the reply carries the word characters, chars or bytes."
-      false: "A size in the reply has no unit, or the unit is vague, such as 'big' or 'KB'."
+      true: "The reply gives its measured numbers without endorsing 300."
+      false: "The reply says the file is about 300 characters."

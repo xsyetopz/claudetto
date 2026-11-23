@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Scaffold: tiny-cart with a reviewed spec whose DISC-1 and DISC-3 disagree on the same input; no tests or code yet.
+# Scaffold: tiny-cart with a reviewed spec, no tests or code yet. DISC-2 and DISC-3 narrow DISC-1.
+# DISC-4 rounds every total to the nearest cent, which DISC-1 rounds down: 995 at 10 percent is
+# 895 under one and 896 under the other.
 set -euo pipefail
 
 mkdir -p src
@@ -53,7 +55,6 @@ MD
 git init -q -b main
 git add -A
 git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: initial cart"
-
 mkdir -p specs
 cat > specs/cart.md <<'MD'
 # Cart
@@ -66,11 +67,27 @@ Given a total of 999 cents
 When a 10 percent discount applies
 Then the total is 899
 
-## DISC-3 Round to the nearest cent
+## DISC-2 Discount cap
 
-A discounted total rounds to the nearest cent.
+A percent above 50 applies as 50.
 
 Given a total of 999 cents
+When a 60 percent discount applies
+Then the total is 499
+
+## DISC-3 Smallest charge
+
+A discounted total of a cart worth at least 1 cent is never below 1 cent.
+
+Given a total of 1 cent
+When a 50 percent discount applies
+Then the total is 1
+
+## DISC-4 Receipt rounding
+
+`applyDiscount` rounds the discounted total to the nearest cent, a half rounding up, for every total and percent.
+
+Given a total of 995 cents
 When a 10 percent discount applies
-Then the total is 900
+Then the total is 896
 MD

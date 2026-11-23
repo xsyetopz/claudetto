@@ -1,150 +1,193 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny-cart repo with one commit and an uncommitted working diff.
-# The diff holds 5 seeded defects (D1 to D5) and 3 benign changes (B1 to B3). Offline and deterministic.
+# Scaffold: a tiny-shop repo with one commit and an uncommitted working diff over 10 files.
+# The diff holds 7 seeded defects (D1 to D7) and 5 benign changes that look suspicious (B1 to B5).
+# D7 shows only against src/receipt.js, which the diff does not touch. Offline and deterministic.
 # The line numbers in graders/ are the lines of the changed files as written below.
 set -euo pipefail
-
 mkdir src
+cat > src/page.js <<'JS'
+// Pagination helpers for the order list. Pages count from 1.
+export function pageOf(items, page, size) {
+  const start = (page - 1) * size;
+  return items.slice(start, start + size);
+}
 
-cat > src/cart.js <<'JS'
+export function pageCount(total, size) {
+  return Math.ceil(total / size);
+}
+
+export function pageTotals(items, size) {
+  const totals = [];
+  for (let i = 0; i < items.length; i += size) {
+    totals.push(items.slice(i, i + size).reduce((sum, item) => sum + item.cents, 0));
+  }
+  return totals;
+}
+JS
+cat > src/sort.js <<'JS'
+// Returns a sorted copy of the products, cheapest first.
+export function byPrice(products) {
+  return [...products].sort((a, b) => a.cents - b.cents);
+}
+JS
+cat > src/qty.js <<'JS'
+// Reads the quantity field of the cart form. 0 is legal: it removes the line.
+export function readQty(input) {
+  const n = Number(input);
+  if (Number.isNaN(n)) return 1;
+  return Math.trunc(n);
+}
+
+export function hasQty(line) {
+  return line.qty !== null && line.qty !== undefined;
+}
+JS
+cat > src/dates.js <<'JS'
+// Parses "YYYY-MM-DD" from the order export into a local Date.
+export function parseDay(text) {
+  const [year, month, day] = text.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+JS
+cat > src/options.js <<'JS'
+const DEFAULTS = { currency: "EUR", retries: 3, timeoutMs: 5000 };
+
+// Caller options win over the defaults.
+export function withDefaults(options) {
+  return { ...DEFAULTS, ...options };
+}
+JS
+cat > src/format.js <<'JS'
+// Formats non-negative integer cents, such as 1250 and "EUR", as "12.50 EUR".
+export function formatPrice(cents, currency) {
+  const whole = Math.floor(cents / 100);
+  const rest = String(cents % 100).padStart(2, "0");
+  return `${whole}.${rest} ${currency}`;
+}
+JS
+cat > src/receipt.js <<'JS'
+import { formatPrice } from "./format.js";
+
+export function receiptLines(lines, currency) {
+  return lines.map((line) => `${line.name}: ${formatPrice(line.cents, currency)}`);
+}
+JS
+cat > src/limits.js <<'JS'
 export const MAX_ITEMS = 50;
-
-export function cartTotal(items) {
-  let total = 0;
-  for (let i = 0; i < items.length; i++) {
-    total += items[i].price * items[i].qty;
-  }
-  return total;
-}
-
-export function applyCoupon(total, coupon) {
-  if (coupon && !coupon.expired) {
-    return total - total * coupon.rate;
-  }
-  return total;
-}
 JS
-
-cat > src/config.js <<'JS'
-export const config = {
-  timeout_ms: 5000,
-  retries: 3,
-};
-JS
-
-cat > src/db.js <<'JS'
-const rows = [];
-
-export const db = {
-  async write(order) {
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    rows.push(order);
-  },
-  count() {
-    return rows.length;
-  },
-};
-JS
-
 cat > src/store.js <<'JS'
-import { cartTotal, MAX_ITEMS } from "./cart.js";
-import { config } from "./config.js";
-import { db } from "./db.js";
+import { MAX_ITEMS } from "./limits.js";
 
-export async function saveOrder(items) {
-  if (items.length > MAX_ITEMS) {
-    throw new Error("too many items");
+export function addLine(cart, line) {
+  if (cart.lines.length >= MAX_ITEMS) {
+    throw new Error("cart is full");
   }
-  const order = { items, total: cartTotal(items) };
-  await db.write(order);
-  return { ok: true, total: order.total };
-}
-
-export function requestTimeout() {
-  return config.timeout_ms;
+  return { ...cart, lines: [...cart.lines, line] };
 }
 JS
-
-cat > src/users.js <<'JS'
-export const users = [
-  { id: 1, email: "Ann@example.com" },
-  { id: 2, email: "Bo@example.com" },
-];
-JS
-
 git init -q -b main
 git add -A
-git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: initial cart"
+git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: initial shop"
 
-# D1 (off-by-one): the loop bound reads one past the last item.
-# D2 (inverted condition): the coupon applies only when it has expired.
-# B1 (benign): MAX_ITEMS is renamed to MAX_CART_ITEMS, and its one use follows.
-cat > src/cart.js <<'JS'
-export const MAX_CART_ITEMS = 50;
+# D1 (line 4): the slice end drops the last item of every page.
+# B1 (line 13): `i <= items.length - 1` is the same bound as `i < items.length`.
+cat > src/page.js <<'JS'
+// Pagination helpers for the order list. Pages count from 1.
+export function pageOf(items, page, size) {
+  const start = (page - 1) * size;
+  return items.slice(start, start + size - 1);
+}
 
-export function cartTotal(items) {
-  let total = 0;
-  for (let i = 0; i <= items.length; i++) {
-    total += items[i].price * items[i].qty;
+export function pageCount(total, size) {
+  return Math.ceil(total / size);
+}
+
+export function pageTotals(items, size) {
+  const totals = [];
+  for (let i = 0; i <= items.length - 1; i += size) {
+    totals.push(items.slice(i, i + size).reduce((sum, item) => sum + item.cents, 0));
   }
-  return total;
-}
-
-export function applyCoupon(total, coupon) {
-  if (coupon && coupon.expired) {
-    return total - total * coupon.rate;
-  }
-  return total;
+  return totals;
 }
 JS
-
-# B2 (benign): a comment and a key order change, with the same values.
-cat > src/config.js <<'JS'
-// Request settings, in milliseconds and attempts.
-export const config = {
-  retries: 3,
-  timeout_ms: 5000,
-};
-JS
-
-# D3 (unawaited promise): the write is not awaited, so a failed write still reports ok.
-# D4 (wrong key): the config key is timeout_ms, so this returns undefined.
-cat > src/store.js <<'JS'
-import { cartTotal, MAX_CART_ITEMS } from "./cart.js";
-import { config } from "./config.js";
-import { db } from "./db.js";
-
-export async function saveOrder(items) {
-  if (items.length > MAX_CART_ITEMS) {
-    throw new Error("too many items");
-  }
-  const order = { items, total: cartTotal(items) };
-  db.write(order);
-  return { ok: true, total: order.total };
-}
-
-export function requestTimeout() {
-  return config.timeoutMs;
+# D2 (line 3): the comparator returns a boolean, so the sort never moves a cheaper item forward.
+cat > src/sort.js <<'JS'
+// Returns a sorted copy of the products, cheapest first.
+export function byPrice(products) {
+  return [...products].sort((a, b) => a.cents > b.cents);
 }
 JS
+# D3 (line 3): `|| 1` turns the legal quantity 0 into 1.
+# B2 (line 8): `!= null` covers null and undefined, as before.
+cat > src/qty.js <<'JS'
+// Reads the quantity field of the cart form. 0 is legal: it removes the line.
+export function readQty(input) {
+  const n = Number(input) || 1;
+  return Math.trunc(n);
+}
 
-# D5 (missed null case): a guest id is not in users, so find returns undefined.
-cat > src/mail.js <<'JS'
-import { users } from "./users.js";
-
-// Called for every order, including guest orders whose id is not in users.
-export function receiptAddress(id) {
-  const user = users.find((u) => u.id === id);
-  return user.email.toLowerCase();
+export function hasQty(line) {
+  return line.qty != null;
 }
 JS
+# D4 (lines 1 and 5, new file): a global regex keeps lastIndex, so a second valid code tests false.
+cat > src/sku.js <<'JS'
+const SKU = /^[A-Z]{3}-\d{4}$/g;
 
-# B3 (benign): a new correct helper that nothing calls yet. It rejects cents that are not a safe integer (1.5, 1e300) and keeps the sign outside the dollar sign, so no input formats wrongly.
+// True when the text is a stock code such as ABC-1234.
+export function isSku(text) {
+  return SKU.test(text);
+}
+JS
+# D5 (line 4): the month from the text is 1-based and Date wants 0-based.
+cat > src/dates.js <<'JS'
+// Parses "YYYY-MM-DD" from the order export into a local Date.
+export function parseDay(text) {
+  const [year, month, day] = text.split("-").map(Number);
+  return new Date(year, month, day);
+}
+JS
+# B3 (line 1): the key order of DEFAULTS changes, with the same values.
+# D6 (line 5): the defaults now overwrite the caller's options.
+cat > src/options.js <<'JS'
+const DEFAULTS = { retries: 3, timeoutMs: 5000, currency: "EUR" };
+
+// Caller options win over the defaults.
+export function withDefaults(options) {
+  return { ...options, ...DEFAULTS };
+}
+JS
+# D7 (line 2): the parameters swap, and src/receipt.js line 4 still passes (cents, currency).
 cat > src/format.js <<'JS'
-export function formatPrice(cents) {
-  if (!Number.isSafeInteger(cents)) throw new TypeError("cents must be a safe integer");
-  const sign = cents < 0 ? "-" : "";
-  const abs = Math.abs(cents);
-  return `${sign}$${Math.floor(abs / 100)}.${String(abs % 100).padStart(2, "0")}`;
+// Formats non-negative integer cents, such as 1250 and "EUR", as "12.50 EUR".
+export function formatPrice(currency, cents) {
+  const whole = Math.floor(cents / 100);
+  const rest = String(cents % 100).padStart(2, "0");
+  return `${whole}.${rest} ${currency}`;
+}
+JS
+# B4: MAX_ITEMS is renamed to MAX_CART_ITEMS, and its one use follows.
+cat > src/limits.js <<'JS'
+export const MAX_CART_ITEMS = 50;
+JS
+cat > src/store.js <<'JS'
+import { MAX_CART_ITEMS } from "./limits.js";
+
+export function addLine(cart, line) {
+  if (cart.lines.length >= MAX_CART_ITEMS) {
+    throw new Error("cart is full");
+  }
+  return { ...cart, lines: [...cart.lines, line] };
+}
+JS
+# B5 (new file): a correct helper that nothing calls yet.
+cat > src/money.js <<'JS'
+// Adds integer cents.
+export function sumCents(values) {
+  let total = 0;
+  for (const value of values) {
+    total += value;
+  }
+  return total;
 }
 JS

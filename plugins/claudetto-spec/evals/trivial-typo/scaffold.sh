@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny Bun cart project with one initial commit. Offline and deterministic.
+# Scaffold: a tiny Bun cart project with no specs/ folder. The README misspells "receive" once in
+# prose and names the alias `recieveTotal`, which keeps its spelling. Offline and deterministic.
 set -euo pipefail
 
 mkdir -p src
@@ -24,6 +25,9 @@ export function cartTotal(items: Item[]): number {
 	}
 	return Math.max(0, acc);
 }
+
+// Misspelled alias, kept until 2.0 because callers import it.
+export const recieveTotal = cartTotal;
 TS
 cat > src/cart.test.ts <<'TS'
 import { expect, test } from "bun:test";
@@ -46,6 +50,8 @@ cat > README.md <<'MD'
 # tiny-cart
 
 A tiny cart library. Prices are integer cents. Customers recieve one total for all items.
+
+The legacy alias `recieveTotal` in `src/cart.ts` keeps its spelling until 2.0.
 
 Run the tests with `bun test`.
 MD

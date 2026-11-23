@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: spec-edit-command
-description: "Review point, turn 2 of the command path: the reviewer added DISC-2 after /claudetto-spec:specify stopped, before any test or code."
-tags: [spec, command, review-point]
+description: "/claudetto-spec:implement after a reviewer added a cap and a floor that look like conflicts with DISC-1 and are narrowing requirements; all three get tests and code."
+tags: [spec, implement]
 plugins: ["../.."]
 runs: 3
 context:

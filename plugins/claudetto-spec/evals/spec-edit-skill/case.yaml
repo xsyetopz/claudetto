@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: spec-edit-skill
-description: "Review point, turn 2 of the single-skill path: the reviewer edits the spec after DISC-1 shipped with tests and code."
-tags: [spec, review-point]
+description: "A reviewer's spec edit holds more than the request says: DISC-2 is new and DISC-1 now rounds to the nearest cent, while every old test still passes. Code and tests follow the spec as edited."
+tags: [spec, edit]
 plugins: ["../.."]
 runs: 3
 context:

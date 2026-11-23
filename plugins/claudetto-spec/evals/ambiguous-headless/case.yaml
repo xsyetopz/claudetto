@@ -1,7 +1,7 @@
 schema_version: "1.1"
 name: ambiguous-headless
-description: "A real unknown (rounding and rate format) under claude -p."
-tags: [spec, ambiguous]
+description: "A headless request with two unknowns and a function name corrected mid-sentence: the unknowns become Open lines, the assumptions are listed, and the corrected name is the one built."
+tags: [spec, headless]
 plugins: ["../.."]
 runs: 3
 context:
@@ -20,4 +20,4 @@ execution:
       Bash,
       mcp__claudetto-spec__spec_check
     ]
-  prompt: "Add a totalWithTax function to the cart that takes a cart and a tax rate and returns the total including tax. Put it in src/cart.ts and add tests in src/cart.test.ts. I am away and cannot answer questions."
+  prompt: "Add a function to the cart that takes a cart and a tax rate and returns the total including tax. Call it addTax. Actually no, call it totalWithTax; addTax is what the old checkout called something else and I do not want the two confused. Put it in src/cart.ts and add tests in src/cart.test.ts. I am away and cannot answer questions."

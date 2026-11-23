@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold: tiny-cart after /claudetto-spec:specify; the reviewer added DISC-2 to the uncommitted spec.
+# Scaffold: tiny-cart after /claudetto-spec:specify; the reviewer added DISC-2 (a cap) and DISC-3
+# (a smallest charge) to the uncommitted spec. Both narrow DISC-1; neither conflicts with it.
 set -euo pipefail
 
 mkdir -p src
@@ -53,7 +54,6 @@ MD
 git init -q -b main
 git add -A
 git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: initial cart"
-
 mkdir -p specs
 cat > specs/cart.md <<'MD'
 # Cart
@@ -70,7 +70,15 @@ Then the total is 899
 
 A percent above 50 applies as 50.
 
-Given a total of 1000 cents
-When an 80 percent discount applies
-Then the total is 500
+Given a total of 999 cents
+When a 60 percent discount applies
+Then the total is 499
+
+## DISC-3 Smallest charge
+
+A discounted total of a cart worth at least 1 cent is never below 1 cent.
+
+Given a total of 1 cent
+When a 50 percent discount applies
+Then the total is 1
 MD

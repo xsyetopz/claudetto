@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Scaffold: a tiny Bun cart project with one initial commit. Offline and deterministic.
+# Scaffold (shared with feature-discount): a tiny Bun cart project that already has a spec with CART-1 and CART-2 and tests that
+# cite them. A new requirement needs a new ID, and the two old ones must survive. Offline and deterministic.
 set -euo pipefail
 
-mkdir -p src
+mkdir -p src specs
 cat > package.json <<'JSON'
 {
   "name": "tiny-cart",
@@ -29,7 +30,7 @@ cat > src/cart.test.ts <<'TS'
 import { expect, test } from "bun:test";
 import { cartTotal } from "./cart";
 
-test("sums price times quantity", () => {
+test("CART-2 sums price times quantity", () => {
 	expect(
 		cartTotal([
 			{ price: 250, qty: 2 },
@@ -38,10 +39,29 @@ test("sums price times quantity", () => {
 	).toBe(600);
 });
 
-test("an empty cart totals zero", () => {
-	expect(cartTotal([])).toBe(0);
+test("CART-1 total is never negative", () => {
+	expect(cartTotal([{ price: -5, qty: 1 }])).toBe(0);
 });
 TS
+cat > specs/cart.md <<'MD'
+# Cart
+
+## CART-1 Totals are never negative
+
+`cartTotal` returns 0 when the line totals sum below zero.
+
+Given an item priced at -5 cents with quantity 1
+When the cart is totalled
+Then the total is 0
+
+## CART-2 Line totals multiply price by quantity
+
+`cartTotal` adds price times quantity for each item.
+
+Given an item priced at 250 cents with quantity 2 and one priced at 100 cents with quantity 1
+When the cart is totalled
+Then the total is 600
+MD
 cat > README.md <<'MD'
 # tiny-cart
 
