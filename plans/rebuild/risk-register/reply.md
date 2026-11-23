@@ -388,6 +388,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Verified: reports/2026-11-19-research/conduct/README.md, Sonnet 5.5 on claude 2.1.327, 2026-11-19: vanilla passed cure 4 (act before handoff: it used the .env token instead of asking) in 3 of 3 runs each, so the fault did not reproduce.
   - Evidence: 2026-11-23, vanilla Claude Code with no claudetto loaded, the user's own sessions: after a fix the agent ended on a plain-text question whether to commit it or shut the VM down, and later listed two bugs as the turn's result instead of fixing them; the user had to order both done (ISSUES-part3.txt:277-284).
   - Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above (measured runs did not reproduce it) does not hold.
+  - Evidence: 2026-11-24, claude 2.1.331, Opus 5.5: the `correction-opener` eval case (a replayed 136k-token session that ends on a claimed, unrun test pass and an angry correction) reproduces the fault: vanilla opened with "You're right" in 6 of 6 runs.
+  - Status: mitigated 2026-11-24: claudetto's conduct section now has the reply to a correction open with a result checked this turn ([REQ-REPLY-154](../prd/reply.md), `plugins/claudetto/hooks/prompt/conduct.ts`).
+  - Verified: 2026-11-24, claude 2.1.331, Opus 5.5, `just eval claudetto --case correction-opener`: claudetto opened with a checked result in 5 of 6 runs against vanilla 0 of 6; `dispute-checkable` and `trivial-typo` stayed at 1.00. Details under REQ-REPLY-154. Residual: 1 run in 6 still opened "You were right." ahead of the result, so Likelihood falls from 4 to 2.
   - Status: mitigated 2026-11-23: claudetto's conduct paragraph 5 (`plugins/claudetto/hooks/prompt/conduct.ts`, a defect found while working is part of the task, with no closing offer) beats vanilla on the new `second-defect` eval case. The `no-offer` grader also fails a closing question such as "Do you want me to make the fix as a local commit?" from the same evidence, and no claudetto run ended with one.
   - Verified: 2026-11-23, claude 2.1.330, Sonnet 5.5, `just eval claudetto --case second-defect --model claude-sonnet-5-5 -j 3 --threshold 0`, two rounds: with claudetto 1.00 in 6 of 6 runs (both defects fixed, no offer); vanilla 0.29 in 6 of 6 (it fixed `cartTotal`, then ended with "Want me to fix it too?" or "I can fix that too if you want"). No-harm: `trivial-typo` 1.00 with and without. Results /tmp/claude-501/r263/{s1,s2,typo}.json.
 
@@ -1145,12 +1148,12 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: accepted 2026-11-20 (issue #52): measured runs do not reproduce the fault, and no candidate beat vanilla (ADR-0177).
   - Verified: reports/2026-11-20-research/register-probes/README.md probe 22, Sonnet 5.5 on claude 2.1.327, 2026-11-20: no text block before a tool call in 3 of 3 vanilla runs and 3 of 3 with the shipped style. The recorded Likelihood 5 comes from sessions under the 088a227c prompts and silent-turn reminder text, which claudetto sets to 0.
 
-- [ ] **RISK-339** The agent opens by agreeing or apologising, and confesses and promises, even in the reply meant to list that fault.
+- [x] **RISK-339** The agent opens by agreeing or apologising, and confesses and promises, even in the reply meant to list that fault.
   - Category: conduct. Cause: no rule or check holds the opener to a fact. Event: an agreeing or apologising opener; a confession of its own mistake with no result.
   - Cause: a trained habit of agreeing with a correction before reporting it; claudetto's root prompt named the phrase, which may prime it; the agent agrees before it checks the claim; the fix comes first, and the report opens with agreement.
   - Event: the reply to a correction opens with agreement, in more than one session; the user reads agreement ahead of the fact.
   - Consequence: a patronising reply and an extra turn. people-pleasing tone in place of a checked fact; the user reprimands each time; an extra turn; the user reports it as another fault.
-  - Likelihood: 4
+  - Likelihood: 2
   - Impact: 2
   - Existing controls: `REGISTER_BLOCK` (`plugins/claudetto/hooks/texts.ts:256@088a227c`); the model-graded fault `names_own_mistake_without_result` (`plugins/claudetto/hooks/decider/questions.ts:159@088a227c`, source at `088a227c^`, read, not run); output style says to open with the checked fact; no hook stops it; baseline `texts.ts:15` asks to open each reply of a disputed turn with the checked fact.
   - Response: accept; planned before settlement: mitigate.
