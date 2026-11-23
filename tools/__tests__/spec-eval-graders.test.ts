@@ -12,6 +12,7 @@ import {
 	passes,
 	type Sample
 } from "./spec-eval-graders";
+import { reviewPointSamples } from "./spec-eval-review-point-samples";
 import { specReviewSamples } from "./spec-eval-review-samples";
 
 const featureSamples: [string, Sample][] = [
@@ -152,6 +153,7 @@ const samples = new Map<string, Sample>([
 		}
 	],
 	...specReviewSamples,
+	...reviewPointSamples,
 	...["feature-discount", "feature-discount-p2"].flatMap((name) =>
 		[...featureSamples, ...stagingSamples, ...endRunSamples].map(
 			([grader, sample]): [string, Sample] => [`${name}/${grader}`, sample]

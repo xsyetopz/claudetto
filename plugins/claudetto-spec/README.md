@@ -10,7 +10,7 @@ claude plugin install claudetto-spec --marketplace xsyetopz/bedrock
 
 ## The Loop
 
-The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions.
+The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions. The model decides when to load it, and under pressure a smaller model may skip it; type `/claudetto-spec:spec <request>` to run the loop every time. The Stop gate below checks the result either way.
 
 1. Clarify: an interactive session asks each expensive unknown through AskUserQuestion; a `-p` run writes it as an `Open:` line, takes the cheap default and lists each assumption in the reply.
 2. Spec: edit `specs/<capability>.md`.
