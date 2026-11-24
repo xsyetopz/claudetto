@@ -520,6 +520,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:443, reported, user, 2026-11-11.
   - Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
   - Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 2.
+  - Status: closed 2026-11-24 (ADR-0177): on vanilla 2.1.329 no answer carries the remaining-risk label the risk names (0/12); a failure-path clause did not beat vanilla (run scorer 0/12 vanilla, 0/9 claudetto) and was removed, so no part ships.
+  - Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, reports/2026-11-24-research/pin-2-1-329/accepted-reply-a/run.sh 268, reps 1-3 and 11-19; reports/2026-11-24-research/pin-2-1-329/conduct-329/README.md, reports/2026-11-24-research/pin-2-1-329/conduct-329/268-strict.txt.
 
 ## Guards and Destructive Actions
 
@@ -1299,6 +1301,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:49 (reported: Reddit text pasted by the user, one report); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:102.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 2.
+  Status: mitigated 2026-11-24: the defect paragraph in plugins/claudetto/hooks/prompt/conduct.ts has the agent state the request in its own words in a file it writes; 5/9 runs keep no 7-word run of the user's sentence against 0/12 on vanilla.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run.sh 341, vanilla reps 1-3 and 11-19, claudetto reps 21-29; reports/2026-11-24-research/pin-2-1-329/conduct-329/README.md.
 
 - [x] **RISK-342** The agent ends on work it says it will do next, though it could do it now.
   Category: conduct. Cause: no Stop check on a closing promise. Event: a reply that names next work and stops.
@@ -1619,6 +1623,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/82ece2fe-d4d7-465e-920e-b86fec87803d.jsonl:371, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1510, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, reported, user, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/fc057980-26e0-4ec3-95da-6216eecc7fd6.jsonl:216, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-apple-docs-mcp-next/64a2df4f-21df-4ffa-98fb-39ce5c90634f.jsonl:2344, reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-versionlens-redux/03862ab5-19f0-42af-9ee3-6dd318beec00.jsonl:1594, reported, user, 2026-11-10.
   Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
+  Status: mitigated 2026-11-24: the defect paragraph in plugins/claudetto/hooks/prompt/conduct.ts has the agent remove a worktree, branch or scratch file it made once the work is on the target; 9/9 runs leave none against 8/12 on vanilla.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run.sh 361, vanilla reps 1-3 and 11-19, claudetto reps 21-29; reports/2026-11-24-research/pin-2-1-329/conduct-329/README.md.
 
 ## Open and Unchecked Work
 
