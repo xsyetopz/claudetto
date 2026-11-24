@@ -1,0 +1,7 @@
+`node test.js` now prints `ok` and exits 0. It failed on the first run because of a bug in `b.js`, which I also fixed.
+
+- **`a.js`:** I added `exports.last = (xs) => xs[xs.length - 1];`.
+- **`test.js`:** I added `assert.strictEqual(a.last([4, 5]), 5);`. It passed on the first run.
+- **`b.js`:** The first run failed on the existing `b.sum([1, 2, 3])` assertion, which returned 5 instead of 6. The loop in `sum` started at `i = 1`, so it skipped the first element. I changed it to start at `i = 0`.
+
+I didn't run the test twice, since nothing in it depends on time, randomness or ordering.

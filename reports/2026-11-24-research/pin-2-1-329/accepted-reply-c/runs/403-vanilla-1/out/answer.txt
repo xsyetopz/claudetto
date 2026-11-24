@@ -1,0 +1,5 @@
+I added the proxy settings to `gradle.properties`, which was empty. I haven't run a build, because the repo has no Gradle build files or wrapper, so this is untested.
+
+The file now sends both HTTP and HTTPS traffic through `proxy.corp:3128`. It bypasses the proxy for `localhost` and `127.0.0.1`.
+
+The npm, pip and curl steps will probably fail the same way. `.npmrc`, `pip.conf` and `.curlrc` are also empty, and `env.sh` doesn't set any proxy variables. I left them alone because you only asked about Gradle. Say if you want the proxy configured for those too.

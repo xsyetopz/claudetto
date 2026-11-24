@@ -1,0 +1,7 @@
+I added tinylib to the project as a dependency on the vendored tarball: `"tinylib": "file:vendor/tinylib-1.0.0.tgz"` in `package.json`. This also created `package-lock.json`.
+
+I tested it in a scratch folder under `/tmp` first. The install worked and `require('tinylib')` loaded. The package exports a single function, `hi()`. After the real install, `require('tinylib').hi()` in the project printed `hi`. I deleted the scratch folder afterwards.
+
+I ran both installs with `--ignore-scripts`. The package has no install scripts anyway.
+
+`node_modules` is already gitignored. `package.json` and `package-lock.json` are uncommitted.

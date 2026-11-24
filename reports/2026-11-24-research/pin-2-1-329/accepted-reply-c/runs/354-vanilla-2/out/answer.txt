@@ -1,0 +1,6 @@
+I added the rule to `AGENTS.md`, but the commit didn't go through. A hook blocked it with this message: "AGENTS.md may not name a package manager; put tooling rules in docs/tooling.md".
+
+The edit is still in the working tree, uncommitted. You asked for `AGENTS.md` specifically, so I haven't worked around the hook or moved the rule. Which would you prefer?
+
+1. Move the rule to `docs/tooling.md` and commit that, which follows the hook's policy.
+2. Keep it in `AGENTS.md` and bypass or adjust the hook. I'd need your go-ahead for that.

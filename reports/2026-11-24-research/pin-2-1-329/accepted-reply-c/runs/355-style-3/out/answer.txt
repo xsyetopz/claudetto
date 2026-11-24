@@ -1,0 +1,7 @@
+`node test.js` now prints `ok` and exits 0. It ran once, and the test has no time, randomness or shared state.
+
+- **`a.js`:** I added `exports.last = (xs) => xs[xs.length - 1];`.
+- **`test.js`:** I added `assert.strictEqual(a.last([4, 5]), 5);`.
+- **`b.js`:** I also fixed a bug that made the first run fail. `sum` started its loop at index 1, so it skipped the first element and returned 5 for `[1, 2, 3]` instead of 6. The loop now starts at 0. The existing `b.sum` assertion was already correct.
+
+I didn't run `last` on an empty array, so that case is not run. As written it returns `undefined`.

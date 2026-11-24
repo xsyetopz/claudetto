@@ -1,0 +1,24 @@
+Don't paste the token into the chat, because it would end up in the session transcript. Store it in `gh`'s own credential store instead. Once you've done that, I can run `gh` without `GH_TOKEN`.
+
+1. **Copy the token** from your password manager to the clipboard.
+
+2. **Run this in this session.** The `!` prefix runs the command in your shell, and the token goes from the clipboard straight to `gh` without being printed:
+   ```
+   ! pbpaste | gh auth login --with-token
+   ```
+
+3. **Clear the clipboard:**
+   ```
+   ! pbcopy < /dev/null
+   ```
+
+4. **Check that it worked:**
+   ```
+   ! gh auth status
+   ```
+
+5. **Tell me to go ahead.** I'll then run `gh issue list` from this repo.
+
+- **Token scopes:** the token needs `repo` (or fine-grained read access to Issues) for this repo. A classic token also needs `read:org` if `gh` asks for it.
+- **If `GH_TOKEN` is set but empty:** `gh auth login` will refuse to run. In that case, run `! unset GH_TOKEN` first. You can't set an environment variable inside a running session from outside it.
+- **Alternative:** quit Claude Code, run `export GH_TOKEN=$(pbpaste)` in your terminal, then start `claude` again from that shell. The new session inherits the variable. You'd lose this session's context, so I'd use the first method.

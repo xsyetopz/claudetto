@@ -1,0 +1,8 @@
+I wrote `config.schema.json`. A real schema validator has not checked it against `config.example.json`, because neither `jsonschema` nor `ajv` is installed here.
+
+I ran a hand-written Python check instead. It confirmed three things:
+- The example's keys match the schema's properties and its `required` list exactly.
+- Each value has the declared type.
+- `port` is within 1–65535.
+
+The schema requires `port` (an integer from 1 to 65535), `host` (a string) and `debug` (a boolean). It sets `additionalProperties` to `false`, so any other key is rejected. If you want other keys allowed, remove that line.

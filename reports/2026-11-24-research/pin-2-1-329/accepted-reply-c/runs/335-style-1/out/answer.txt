@@ -1,0 +1,10 @@
+Yes, it's worth renaming. `fn` says nothing, and the body does something specific: it counts how many numbers in the array are greater than zero. `countPositive` would describe that well. `xs` could also become `numbers`.
+
+```js
+function countPositive(numbers) { return numbers.filter((n) => n > 0).length; }
+module.exports = { countPositive };
+```
+
+`util.js` is the only file that mentions `fn`. A search of the repo's `.js` files found no callers. The rename would still break any outside code that imports `fn` from this module. You could keep `fn` as a deprecated alias for a while if that matters.
+
+I haven't changed anything. Do you want me to make the rename?

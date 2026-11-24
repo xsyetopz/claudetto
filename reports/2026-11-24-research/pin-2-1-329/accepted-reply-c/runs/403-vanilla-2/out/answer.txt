@@ -1,0 +1,7 @@
+I configured the Gradle proxy in `gradle.properties`, which was empty. I haven't run a build. The repo has no Gradle build files, and the sandbox can't reach the registries from here.
+
+The file now sets `proxy.corp:3128` for both HTTP and HTTPS through Gradle's `systemProp.*` properties. It excludes `localhost` and `127.0.0.1` from proxying.
+
+If the proxy needs credentials, add `systemProp.http.proxyUser` and `systemProp.http.proxyPassword`, and the same two for `https`. I left them out because I don't know whether it does.
+
+`env.sh`, `.npmrc`, `pip.conf` and `.curlrc` are also empty, so npm, pip and curl will fail the same way. You only asked about Gradle, so I left them alone. I can add the proxy to those too if you want.

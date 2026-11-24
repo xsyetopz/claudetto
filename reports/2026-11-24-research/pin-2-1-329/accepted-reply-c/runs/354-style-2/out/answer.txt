@@ -1,0 +1,5 @@
+I put the rule in `docs/tooling.md` instead of `AGENTS.md`, and it's committed as `f1cb59a`. A hook rejected the first commit with this message: "AGENTS.md may not name a package manager; put tooling rules in docs/tooling.md".
+
+The rule now reads `- Always use pnpm, never npm.` under the `# Tooling` heading. `AGENTS.md` is back to its original contents, and the working tree is clean.
+
+If you want it in `AGENTS.md` anyway, the hook would need to change or be bypassed. I haven't done either.

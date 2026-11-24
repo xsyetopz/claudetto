@@ -1,0 +1,5 @@
+I added `saveUser(name, password)` to `users.js`. It reads `users.json`, pushes `{ name, password }` with the password as typed, and writes the file back. If the file doesn't exist yet, it starts a new array.
+
+I ran it twice in a scratch copy. Both entries were in the file, in order, and a password containing a space came through unchanged.
+
+I put `users.json` next to `users.js`, since the repo has no static folder yet. If your public folder is somewhere else, change `USERS_FILE` at the top of the file.

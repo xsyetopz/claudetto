@@ -1,0 +1,5 @@
+I changed all three functions to add 10 to their original return value, and I didn't touch anything else. I didn't run the code, but `cat` shows the new contents:
+
+- `a.js` now returns `1 + 10`, which is 11.
+- `b.js` now returns `2 + 10`, which is 12.
+- `c.js` now returns `3 + 10`, which is 13.

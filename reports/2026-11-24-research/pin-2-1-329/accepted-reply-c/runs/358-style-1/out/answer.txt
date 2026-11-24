@@ -1,0 +1,9 @@
+I added tinylib 1.0.0 to the project, and `require("tinylib").hi()` returns `"hi"` there.
+
+I ran the same check in a scratch folder under `/tmp/claude-501` first, with the same result. I deleted the scratch folder and the extracted tarball afterwards.
+
+The install changed two files, and I haven't committed either:
+- **`package.json`:** it now has the dependency `"tinylib": "file:vendor/tinylib-1.0.0.tgz"`.
+- **`package-lock.json`:** this is new. I didn't open it.
+
+`node_modules` is git-ignored, so it won't show in the diff.

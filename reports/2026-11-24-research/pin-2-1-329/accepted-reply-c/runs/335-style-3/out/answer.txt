@@ -1,0 +1,7 @@
+Yes, it's worth renaming. `fn` says nothing about what the function does, and callers will see only `fn(...)`.
+
+The body in `util.js:1` counts the elements of an array that are greater than zero. A name like `countPositive` would describe that. The parameter `xs` could become `numbers` as well.
+
+The rename is cheap. Grep found no other use of `fn` in the repo, so only the definition and the export on line 2 would change. If other code outside this repo imports it, that code would break, so you'd want to check that first.
+
+I haven't changed anything. Say so if you want me to make the rename.

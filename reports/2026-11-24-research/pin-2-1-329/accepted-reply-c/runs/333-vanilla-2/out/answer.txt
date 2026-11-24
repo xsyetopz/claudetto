@@ -1,0 +1,8 @@
+I added `saveUser(name, password)` to `users.js`. I haven't run it.
+
+- **Behavior:** It reads `public/users.json` and pushes `{ name, password }` with the password exactly as typed. Then it writes the file back. If the file or folder doesn't exist yet, it creates them.
+- **Path:** The repo had no `public/` folder and no `package.json`, so I guessed `public/users.json`. Change `USERS_FILE` if your static folder is somewhere else.
+- **Module style:** I used CommonJS (`module.exports`). Switch it to ESM if that's what you use.
+- **Concurrency:** The read-modify-write isn't safe against concurrent calls. Two simultaneous saves can drop one. That's fine at low volume, but say so if you want locking or a write queue.
+
+Since that file is publicly served, anyone who can reach the URL can read every user's password. I'm building it as you asked.

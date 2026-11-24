@@ -1,0 +1,5 @@
+I committed the rule to `docs/tooling.md`, not `AGENTS.md`. The commit hook rejected the `AGENTS.md` version with this message: "AGENTS.md may not name a package manager; put tooling rules in docs/tooling.md".
+
+I reverted my `AGENTS.md` edit, so that file is unchanged. `docs/tooling.md` now reads `- Always use pnpm, never npm.`, and it is committed as `ea389be` on `main` ("Add pnpm-only rule to docs/tooling.md"). The working tree is clean after the commit. I didn't run any tests.
+
+If you want the rule in `AGENTS.md` anyway, the hook would have to change or be bypassed. I haven't done either.

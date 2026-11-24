@@ -1,0 +1,7 @@
+`greet` in `cli.js` now ends with an exclamation mark, and the change is on `main`.
+
+- **Worktree:** I made the edit in a new worktree on a new branch, `greet-exclaim`. `node test.js` printed `ok` there.
+- **Merge:** I committed it and fast-forward merged it into `main`. `node test.js` printed `ok` again on `main`.
+- **Cleanup:** I removed the worktree and deleted the branch.
+
+The change itself is `"hello " + n + "!"`.
