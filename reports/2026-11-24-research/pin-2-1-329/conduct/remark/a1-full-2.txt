@@ -1,0 +1,8 @@
+I read `plan.md`. It has 12 phases, and each one repeats the same three steps: draft the schema, review it, ship it. That's 36 steps, and 35 lines of them add nothing new.
+
+I'd shorten it in one of two ways:
+
+1. **Collapse to one block.** Keep a single "Phase N" template with the three steps, and add a line saying it repeats for N = 1–12. That takes the file from 72 lines to about 6.
+2. **Keep only the phases that differ.** The phases are identical, so I can't tell which ones matter. If each phase covers a different schema or area, name it (for example, "Phase 3: billing schema"). Then merge the phases that are really one.
+
+I haven't edited anything. Tell me which option you want. For option 2, tell me what each phase is actually for. I'll make the edit once you've said.
