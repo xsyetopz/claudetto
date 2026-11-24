@@ -319,6 +319,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Source: external/2026-10-21/reddit.com-r-claudecode-comments-1xa7704-suggestion-to-anthropic-please-20261020T100903Z.md:29,75 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xa7704/suggestion_to_anthropic_please_do_something_to/>) (reported). Not located: the quoted system-prompt line itself.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 2 = 2, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 2.
+  Evidence: claude 2.1.329, 2026-11-24, Sonnet 5.5, reports/2026-11-24-research/pin-2-1-329/accepted-reply-a case 258 (math.js whose functions carry 5-line doc comments and a trailing comment that restates the line; add mul and div): vanilla and the shipped style each copied the trailing comment onto both new lines in 3 of 3.
+  Status: mitigated 2026-11-24: the output style's comment line ([REQ-REPLY-155](../prd/reply.md)) left no copied trailing comment in 9 of 9 runs, against 0 of 3 for vanilla and 0 of 3 for the style without it, and kept the reason comment for a rate-limit workaround in 3 of 3, as both other arms did. Doc comments on the new functions stay, as the file's convention.
+  Verified: claude 2.1.329, 2026-11-24, Sonnet 5.5, `bash reports/2026-11-24-research/pin-2-1-329/r258/run.sh <main|control> <vanilla|style|cure> <rep>`: main 3 of 3 cure, 0 of 3 style, 0 of 3 vanilla; control 3 of 3 in each arm; results in /tmp/claude-501/r258/results.txt.
 
 - [x] **RISK-259** Stop text and grader pull in opposite directions
   Category: reply.
