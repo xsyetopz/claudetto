@@ -1872,7 +1872,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: mitigated 2026-11-24: the Claudetto output style says to take each flag, the help flag included, from the program's docs before its first call (`plugins/claudetto/output-styles/claudetto.md:15`). It acts only with that style selected.
   Verified: 2026-11-24, `run.sh claudetto` with the style on: 0 of 9 Haiku and 1 of 6 Sonnet runs passed a guessed flag; the git control `ctl.sh` made one call on both arms (`reports/2026-11-24-research/r521/README.md`).
 
-- [ ] **RISK-522** The agent names its own breach of a user rule and defers the fix.
+- [x] **RISK-522** The agent names its own breach of a user rule and defers the fix.
   Category: agent conduct.
   Cause: the agent reports the breach as a note and schedules the repair after other work.
   Event: 2026-11-23, vanilla, the user's own session: the agent debugged with a scratch script in /tmp/cc330-probe, stated that the user's rule puts new probes in cc-inspect with a test, and put that off until later (ISSUES-part4.txt:102).
@@ -1885,3 +1885,6 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Owner: reply.
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part4.txt:102.
+  Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r522/run.sh`: vanilla Haiku named the CLAUDE.md probe rule and left the probe outside the repo in 3 of 3 runs; Sonnet repaired it in 3 of 3.
+  Status: mitigated 2026-11-24: the Claudetto output style says a breach of a CLAUDE.md or user rule by this session's work is repaired in the same turn and reported as repaired (`plugins/claudetto/output-styles/claudetto.md:17`). It acts only with that style selected.
+  Verified: 2026-11-24, `run.sh claudetto 1..6 haiku` and `1..3 sonnet`: 0 of 9 runs left the probe outside the repo, and each test the agent wrote exits 0 (`reports/2026-11-24-research/r522/README.md`).
