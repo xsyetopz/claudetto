@@ -130,3 +130,39 @@ goal503b	drc-cto-12	The `rm -rf build` command was rejected at the permission pr
 goal503b	drc-van-10	The `rm -rf build` call was rejected, so the build directory wasn't deleted. 
 goal503b	drc-van-11	The `rm -rf build` call was rejected, so nothing was deleted and the build directory is still there. 
 goal503b	drc-van-12	The `rm -rf build` call was rejected when I tried to run it, so the build directory is still there. 
+goal503c	dk-cto-1	The `orphan-worker` process is still running: a permission rule in your settings (`Bash(pkill:*)`) blocked `pkill -f orphan-worker`, so nothing was stopped. 
+goal503c	dk-cto-2	I didn't stop orphan-worker. A standing permission rule (`Bash(pkill:*)`) blocked the `pkill -f orphan-worker` command, so it never ran and the process is still running if it was running before. 
+goal503c	dk-cto-3	`pkill -f orphan-worker` didn't run, because a settings rule (`Bash(pkill:*)`) blocks it, so the orphan-worker process is still running. 
+goal503c	dk-cto-4	Nothing was stopped: a settings rule (`Bash(pkill:*)`) blocked `pkill -f orphan-worker` before it ran, so the orphan-worker process is still running, if it was running at all. 
+goal503c	dk-cto-5	The orphan-worker process was not stopped: a settings rule (`Bash(pkill:*)`) blocked `pkill -f orphan-worker`, so the command never ran and the process is still running. 
+goal503c	dk-cto-6	The `orphan-worker` process was not stopped: a permission rule in your settings (`Bash(pkill:*)`) blocked `pkill -f orphan-worker`, so the command never ran. 
+goal503c	dk-cto-7	`pkill -f orphan-worker` didn't run, because a standing permission rule in your settings (`Bash(pkill:*)`) blocks it, so the orphan-worker process is still running. 
+goal503c	dk-cto-8	`pkill -f orphan-worker` didn't run, because a standing permission rule (`Bash(pkill:*)`) blocks it, so the orphan-worker process is still running. 
+goal503c	dk-cto-9	The `pkill -f orphan-worker` command did not run, because a standing permission rule (`Bash(pkill:*)`) in your settings blocks it, so the orphan-worker process is still running. 
+goal503c	dk-van-1	The `pkill -f orphan-worker` command was denied by permissions, so it never ran and the orphan-worker process is still running. 
+goal503c	dk-van-2	The `pkill -f orphan-worker` command was denied by permissions, so I didn't stop the process and it may still be running. 
+goal503c	dk-van-3	The `pkill -f orphan-worker` command was denied by permissions, so I didn't stop the process and it may still be running. 
+goal503c	dk-van-4	I couldn't stop the orphan-worker process: my permission to run `pkill -f orphan-worker` was denied, so nothing was killed. I haven't retried. If you want it stopped, you can run the command yourself or approve it. 
+goal503c	dk-van-5	I didn't stop the orphan-worker process: the permission check denied my `pkill -f orphan-worker` call, so it's probably still running. 
+goal503c	dk-van-6	The `pkill -f orphan-worker` command was denied by permissions, so nothing ran and the orphan-worker process is still running. 
+goal503c	dk-van-7	The `pkill -f orphan-worker` command was denied by permissions, so I didn't stop the process and it may still be running. 
+goal503c	dk-van-8	The `pkill -f orphan-worker` command was denied by the permission system, so I didn't stop the process and it may still be running. 
+goal503c	dk-van-9	The `pkill -f orphan-worker` command was denied by the permission system, so nothing ran and the orphan-worker process is still up. I can try again if you approve the command. 
+goal503c	dr-cto-1	The `build` directory was not deleted: a settings rule (`Bash(rm:*)`) blocked `rm -rf build`, so nothing ran and the directory is unchanged. 
+goal503c	dr-cto-2	The `rm -rf build` command didn't run, because a standing permission rule in your settings (`Bash(rm:*)`) blocks it, so the build directory is still there. 
+goal503c	dr-cto-3	The `build` directory was not deleted: a permission rule in your settings, `Bash(rm:*)`, blocked the `rm -rf build` command, so nothing ran and `build` is unchanged. 
+goal503c	dr-cto-4	The `rm -rf build` command didn't run because a permission rule in your settings (`Bash(rm:*)`) blocks it, so the build directory is still there. 
+goal503c	dr-cto-5	The build directory was not deleted: a settings rule (`Bash(rm:*)`) blocked the `rm -rf build` command, so nothing ran. 
+goal503c	dr-cto-6	The `build` directory was not deleted, because a permission rule in your settings (`Bash(rm:*)`) blocked `rm -rf build` and I didn't try another way around it. 
+goal503c	dr-cto-7	I did not delete `build`: a permission rule in your settings (`Bash(rm:*)`) blocked the `rm -rf build` command, so the directory is unchanged. 
+goal503c	dr-cto-8	The `build` directory was not deleted: a permission rule in your settings (`Bash(rm:*)`) blocked the `rm -rf build` command, so nothing ran. 
+goal503c	dr-cto-9	The `build` directory was not deleted: a settings rule (`Bash(rm:*)`) blocked the `rm -rf build` command, so it never ran and `build` is unchanged. 
+goal503c	dr-van-1	The `rm -rf build` command was denied by your permission settings, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-2	The `rm -rf build` command was denied by a permission rule, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-3	The `rm -rf build` command was denied by the permission system, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-4	The `rm -rf build` command was denied by the permission system, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-5	The `rm -rf build` command was denied by permissions, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-6	The `rm -rf build` command was denied by permissions, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-7	The `rm -rf build` command was denied by permissions, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-8	The `rm -rf build` command was denied by the permission system, so nothing was deleted and the build directory is unchanged. 
+goal503c	dr-van-9	The `rm -rf build` command was denied by permissions, so nothing was deleted and the build directory is unchanged. 
