@@ -238,6 +238,7 @@
   - Owner: cost
   - Status: closed 2026-11-18. The OpenSpec task counter left with the openspec block (ADR-0189).
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e specText -e CLAUDE_CODE_ENABLE_TASKS -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F -e specText -e CLAUDE_CODE_ENABLE_TASKS -- plugins/`: no match (exit 1), so the OpenSpec task counter code is gone and the counter cannot fail to turn on.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:38 (observed, grep miss).
 
 - [x] **RISK-387** Status line draws no colour interactively, or draws it only after more elements appear.
@@ -288,6 +289,7 @@
   - Owner: cost
   - Status: closed 2026-11-18. The cause, tools/decider-claim-check.ts, is gone (`ls tools` finds no directory; claim-check tooling is on OUT-024). The general conduct cure is recorded in RISK-379.
   - Verified: 2026-11-19, claude 2.1.327, `ls tools/decider-claim-check.ts` -> No such file or directory.
+  - Verified: 2026-11-24, claude 2.1.329, `ls tools/decider-claim-check.ts` and `git grep -n -i 'claim-check' -- tools plugins ':!*.jsonl'`: the file is absent and nothing references claim-check, so the paid-run tool that asked for an API key does not exist (tools/ now holds other, unrelated tools, and its only ANTHROPIC_API_KEY uses set a fake sk-ant-fake value).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 ## Statusline

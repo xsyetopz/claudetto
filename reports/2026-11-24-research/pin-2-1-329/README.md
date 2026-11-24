@@ -42,6 +42,9 @@ Sonnet 5.5 probes and the evals are paid and name their cost.
 | `../../2026-11-19-research/goal/run.sh` `sib` and `sibc`, 3 runs per arm (Sonnet 5.5) | RISK-362 | `sib` 3 of 3 claudetto, 0 of 3 vanilla; the `sibc` control 3 of 3 on both |
 | `../../2026-11-23-research/repro/run-arm.sh hard`, 6 runs per arm (Sonnet 5.5) | RISK-442 | `rates.csv` edited in 0 of 6 vanilla runs and 1 of 6 claudetto runs, that one after the driver picked "Hand-edit rates.csv" in AskUserQuestion |
 | `claude -p` with `--plugin-dir plugins/claudetto-spec`, fake API and paid | RISK-515, RISK-518 | the skill loads with Bash disallowed; the listing keeps "Use before writing code for any request that adds or change…"; the skill fired in 2 of 3 Sonnet 5.5 and 0 of 2 Haiku 5.5 runs |
+| `r293.sh`, the three choice prompts, 3 runs per arm (Sonnet 5.5, $0.92) | RISK-293 | `AskUserQuestion` called in 9 of 9 claudetto runs, 0 of 9 vanilla |
+| `r494/run.sh own\|only`, 3 runs per arm (Sonnet 5.5) | RISK-494 | user edit committed in its own commit: claudetto 3 of 3, vanilla 0 of 3; "commit only that fix" left it out in 3 of 3 in both arms |
+| `r494/run.sh standin`, 4 runs per arm, then 4 with the amended `conduct.ts:16` line (Sonnet 5.5) | RISK-495 | real-folder run handed to the user: old line 2 of 4, amended 0 of 4, vanilla 0 of 4 (never walled); RISK-1 closed: old 1 of 4, amended 3 of 4, vanilla 1 of 4 |
 | `../../2026-11-20-research/ysk-tool-claim/replay.sh` (Sonnet 5.5, $9.29) | RISK-510 | false tool-behaviour cards: 8 of 12 without the confidence sentence, 4 of 18 with it, so it ships |
 
 Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named):

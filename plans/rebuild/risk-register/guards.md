@@ -402,6 +402,7 @@
   - Owner: guards
   - Status: closed 2026-11-19. General cure: a wall-time limit on every Bash call, foreground or background (`hooks/guards/limit.ts`, option `bashTimeLimitMinutes`, default 30). A perl watchdog stops the call's process group, which is that call's tree, because Claude Code starts each Bash call as its own group leader (checked: shell pid equals its pgrp). Probe on 2.1.327 with the limit at 0.1 min: `sh -c 'sleep 40 & sleep 40'` ended after 6 s with the reason line in the result; `echo quick` returned in the same second.
   - Verified: 2026-11-19, claude 2.1.327, `/Users/krystian/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto` -> 130 pass, 0 fail (includes limit.test.ts "runs the command inside the watchdog and keeps its own status"; `bun test` cannot load `claude-code/testing`, so the plugin runner was used).
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/guards/shell/__tests__/limit.test.ts` ("runs the command inside the watchdog and keeps its own status").
   - Source: external/2026-10-14/export-PSA- Claude Code wrote me an uncapped test loop, ran it in the background, told me it was “idle,” th.jsonl:1 (url: <https://www.reddit.com/r/ClaudeAI/comments/1x540si/psa_claude_code_wrote_me_an_uncapped_test_loop/>); external/please-use-me-often/agent-failure-dossier/judged/cost.jsonl:85; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:82; external/2026-10-07/export-I benchmarked my own guardrail pack. It made no difference. Posting it anyway.jsonl:8 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wzrhae/i_benchmarked_my_own_guardrail_pack_it_made_no/>; the 0-crossings counter-evidence); external/export--clear vs -compact.jsonl:59; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:113 (reported, one report); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [x] **RISK-492** A claudetto command rewrite turns every allowed Bash call into an approval request.
@@ -418,6 +419,7 @@
   - Owner: guards
   - Status: closed 2026-11-19. Probe on 2.1.327 under `acceptEdits` with allow `Bash(git *)`, `Bash(perl -0pi -e *)` and deny `Bash(git push --force*)`: `git init` ran, the perl edit ran, the force push was denied with the vanilla text, and an unlisted `curl` got the vanilla "This command requires approval". `false | tail -1 && git commit` made 0 commits, so the guards still wrap allowed calls.
   - Verified: 2026-11-19, claude 2.1.327, `/Users/krystian/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto` -> 130 pass, 0 fail (includes shell.test.ts "a command that needs approval reaches the tool as the model wrote it").
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/guards/shell/__tests__/shell.test.ts` ("a command that needs approval reaches the tool as the model wrote it").
   - Source: probe, claude 2.1.327, 2026-11-19 (cc-inspect cli); `extend/mod-api/calls/tool-command-config` (clawdipedia, read 2026-11-19): `tool.check` fires after `tool.call`.
 
 - [x] **RISK-499** A claudetto command rewrite makes every git command fail in a worktree-isolated agent.
@@ -434,6 +436,7 @@
   - Owner: guards
   - Status: closed 2026-11-19. shell.test.ts "a command that names git gets no stdin group and no watchdog" failed before the fix and passes after (claude plugin test: 105 pass, 1 fail before; 106 pass after). Re-probe on 2.1.327 with the fix: `git status` and `git commit -m x` in the isolated subagent ran, with no refusal. Issue #45.
   - Verified: 2026-11-19, claude 2.1.327, `/Users/krystian/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto` -> 130 pass, 0 fail (includes shell.test.ts "a command that names git gets no stdin group and no watchdog"); `grep -a -o judgeBgWorktreeCommand /Users/krystian/.local/share/claude/versions/2.1.327 | wc -l` -> 3.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/guards/shell/__tests__/shell.test.ts` ("a command that names git gets no stdin line and no watchdog, so the worktree guard can verify it").
   - Source: probe, claude 2.1.327, 2026-11-19 (cc-inspect cli).
 
 ## Reply Style and Sycophancy
@@ -522,6 +525,7 @@
   - Source: reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/f562bb33-b072-47ed-a737-f1b3d070b642.jsonl:762`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:4489`); observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4706`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, Done list); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:5489 (handoff of 2026-11-14, Rules and Decisions); observed in transcript, 2026-11-14.
   - Status: mitigated 2026-11-20 (issue #52): the sandbox claudetto enables (hooks/guards/wall/fill.ts) leaves `allowAppleEvents` unset, so a sandboxed command cannot script another app or open a window; an unsandboxed retry goes through the user's approval.
   - Verified: probe in a sandbox with claudetto's settings (enabled, allowMachLookup "*", no allowAppleEvents), claude 2.1.327, 2026-11-20: `osascript -e 'tell application "System Events" to count processes'` failed with -54 (File permission error) and `open -g -a TextEdit` failed with -54; claude 2.1.327 chunk-1yrzf3wn.js:773291 emits `(allow appleevent-send)` only when allowAppleEvents is set.
+  - Verified: 2026-11-24, claude 2.1.329: `plugins/claudetto/hooks/guards/wall/fill.ts` sets no `allowAppleEvents`; the 2.1.329 binary emits `(allow appleevent-send)` only behind the Apple Events opt-in; in a sandboxed Bash call without that opt-in, `osascript -e 'tell application "System Events" to count processes'` and `open -g -a TextEdit` both failed with -54.
 
 - [x] **RISK-062** Silent bound change.
   Category: Agent behaviour.
@@ -665,6 +669,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the temp-cleanup hook is not shipped; `git grep -F features/temp-cleanup -- plugins` finds no hit, and the ADR-0185 collector acts on the user's standing instruction, not on an agent command.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F features/temp-cleanup -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F features/temp-cleanup -- plugins/`: no match (exit 1), so the temp-cleanup hook is still not shipped.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:13444, reported, user, 2026-11-10.
 
 - [x] **RISK-071** Retries after hook denials and denial log spam
@@ -734,6 +739,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: re-read denial is out (OUT-178) and the cost-side requirement is REQ-COST-042 in prd/cost.md; no repeat hook ships (`git grep -F features/repeat -- plugins` finds no hit).
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F features/repeat -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F features/repeat -- plugins/`: no match (exit 1), so no repeat hook ships.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
 
 - [x] **RISK-075** The agent asks for ANTHROPIC_API_KEY where the OAuth token is the way in.
@@ -1205,6 +1211,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the gate that read command text as paths is dropped (OUT-035); `git grep -F 'was not resolved' -- plugins` finds no hit.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F 'was not resolved' -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F 'was not resolved' -- plugins/`: no match (exit 1), so the gate that read command text as paths is still dropped.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:587; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (measured).
 
 - [x] **RISK-106** A gate that fails or times out asks the user to approve the call.
@@ -1221,6 +1228,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the gate and its Decider fallback are dropped (OUT-021, OUT-035); `git grep -F 'person must approve' -- plugins` finds no hit.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F 'person must approve' -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F 'person must approve' -- plugins/`: no match (exit 1), so the gate and its approval fallback are still dropped.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451 (observed in transcript, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:7451; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (observed in transcript, 2026-11-13).
 
 - [x] **RISK-107** The cleanup guard refuses removal of worktrees, branches, and scratch files that the user ordered removed or earlier sessions left.
@@ -1237,6 +1245,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the cleanup guard and ownership check are dropped (OUT-021); the ADR-0185 collector removes only worktrees that pass its in-use test; `git grep -F -e ownsOf -e createdOf -- plugins` finds no hit.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e ownsOf -e createdOf -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F -e ownsOf -e createdOf -- plugins/`: no match (exit 1), so the cleanup guard and ownership check are still dropped.
   - Source: observed in transcript, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3219`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3268`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134, observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824, observed in transcript, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (handoff: the user must remove the 7 old agent worktrees because the plugin blocks the agent); observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
 - [x] **RISK-108** Moved Out as OUT-2344: the item describes a part that plugins/ does not ship.
@@ -1255,6 +1264,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the `.created-by-claudetto` marker is dropped (OUT-024); `git grep -F created-by-claudetto -- plugins` finds no hit.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F created-by-claudetto -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F created-by-claudetto -- plugins/`: no match (exit 1), so the temp marker rule is still dropped.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
 
 - [x] **RISK-110** Repeat guard withholds a Read that an Edit needs, after a file changes outside the file tools.
@@ -1271,6 +1281,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: the repeat guard is not shipped (OUT-178, ADR-0154); `git grep -F features/repeat -- plugins` finds no hit.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F features/repeat -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F features/repeat -- plugins/`: no match (exit 1), so the repeat guard is still not shipped.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10693 (observed in transcript, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10779 (reported, user, 2026-11-16); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10682; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10693); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10779); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10682); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281); observed in transcript, 2026-11-14: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790 (Next 6) (reported, user, 2026-11-16).
 
 - [x] **RISK-111** A check piped to `tail` hides a failed exit code.
@@ -1319,6 +1330,7 @@
   - Owner: guards
   - Status: closed 2026-11-18: ADR-0153 removed the lint unsafe-fix rule by decision and claudetto ships no fixer. Weak evidence: a decision record, not a check.
   - Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e fix-suggestions -e 'oxlint --fix' -- plugins/` -> no match (exit 1).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -F -e fix-suggestions -e 'oxlint --fix' -- plugins/`: no match (exit 1), so claudetto still ships no fixer.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Verification
@@ -1429,6 +1441,7 @@
   - Status: mitigated 2026-11-20 (issue #63): the 2026-11-20 transfer (issue #59) missed the `tool.call` result surface, which 2.1.327 already has.
   - Verified: 2026-11-20, cc-inspect code search of claude 2.1.327 for `toolUseResult:`: the row is built at chunk-m14bt1pz.js@4545258 from the tool's own output, apart from the content the append hook rewrites; the 2026-11-19 batch-11 env2 runs (fixtures in reports/2026-11-19-research/goal/fixtures227.sh, observation in issue #59) show the raw value in the structured record.
   - Verified: 2026-11-20, reports/2026-11-20-research/redact-record/run.sh on claude 2.1.327, Haiku, a printed token, an errored command and an env-style file Read: raw values in `toolUseResult` vanilla 3 of 3, claudetto 0 of 3 in 2 of 2 runs ($0.0108); `claude plugin test plugins/claudetto` 149 pass, 0 fail, twice.
+  - Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, `CLAUDE_BIN=~/.local/share/claude/versions/2.1.329 bash reports/2026-11-20-research/redact-record/run.sh <arm> <rep> <out>`: raw values in `toolUseResult` vanilla 3 of 3 in 2 of 2 runs, claudetto 0 of 3 in 2 of 2 runs ($0.0187).
   - Source: issue #59; plugins/claudetto/hooks/guards/redact/redact.ts (registerRedact); issue #63.
 
 - [x] **RISK-524** Installing a differently signed build of an app resets its macOS privacy grants, and the agent reports the earlier state.

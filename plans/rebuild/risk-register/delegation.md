@@ -271,6 +271,7 @@
   - Owner: delegation
   - Status: closed. The Stop background-tasks notice is removed (ADR-0092); grep for `"Stop"` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -E 'Background tasks still running' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -E 'Background tasks still running' -- plugins/: no match, so the Stop background-tasks notice is gone and TaskStop cannot fail on its listed IDs.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:515; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:521 (measured).
 
 - [x] **RISK-174** Memory watch leaks on a cancelled call.
@@ -287,6 +288,7 @@
   - Owner: delegation
   - Status: closed 2026-11-20 (issue #52): the cause is absent from the shipped code; the memory hold (hooks/guards/memory.ts, REQ-GUARDS-020) reads `memory_pressure -Q` once per held call and starts no poll, so a cancelled call leaves nothing running.
   - Verified: 2026-11-20, read of plugins/claudetto/hooks/guards/memory.ts: `registerMemory` makes a single awaited `$.process.run(["memory_pressure", "-Q"])` before `next(e)` and holds no timer, interval or abort controller; `git grep -n 'memoryWatch\|setInterval' -- plugins/claudetto/hooks ':!*__tests__*'` finds no match; `claude plugin test plugins/claudetto` on 2.1.327 passes hooks/guards/**tests**/memory.test.ts (132 pass).
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -E 'memoryWatch|setInterval|setTimeout|AbortController' -- plugins/claudetto/hooks/guards/memory.ts: no match; memory.ts makes one memory_pressure -Q call per held call, so a cancelled call leaves no poll running.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:627 (measured, probe on the mock clock).
 
 - [x] **RISK-175** Background agent keeps acting after the user banned the action.
@@ -303,6 +305,7 @@
   - Owner: delegation
   - Status: closed. Accepted, recorded only; no part to build. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -E 'ledger' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -E 'ledger' -- plugins/claudetto plugins/claudetto-you-should-know: no match, so the ban ledger is still absent.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:624 (measured, one case).
 
 - [x] **RISK-176** Side-agent notes reach the lead late or wrong.
@@ -319,6 +322,7 @@
   - Owner: delegation
   - Status: closed. Accepted; the side-note path is an engine feature and claudetto adds no code for it. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'SendMessage' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n SendMessage -- plugins/claudetto`: matches only the tool offer (`hooks/pool/offer.ts:27` keeps SendMessage and ListAgents to the main loop, `hooks/pool/messaging.ts` rewrites their descriptions) and README.md:75; no claudetto code delivers, delays or rewrites a side-agent note, which stays the engine's path.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:662 (measured).
 
 - [x] **RISK-177** Fable burns quota and skips checks.
@@ -335,6 +339,7 @@
   - Owner: delegation
   - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/delegation/__tests__/spawn.test.ts` ("agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet").
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:20; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-1.md:50 (reported); external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 - [x] **RISK-178** Fable research task reads without limit.
@@ -351,6 +356,7 @@
   - Owner: delegation
   - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/delegation/__tests__/spawn.test.ts` ("agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet").
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:81; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:88 (reported); external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:61 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>); external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>).
 
 - [x] **RISK-179** Subagent runs hit refusals, tool-name misses, and edit conflicts.
@@ -367,6 +373,7 @@
   - Owner: delegation
   - Status: closed. Accepted, recorded only; the engine causes the refusals and tool-name misses, and claudetto adds no code. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'modified since read' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'modified since read' -- plugins/: no match, so claudetto adds no code for the edit-conflict text.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:638; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:639; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:640; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:646; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:617 (measured).
 
 - [x] **RISK-180** Cyber safeguards refuse a subagent reply.
@@ -383,6 +390,7 @@
   - Owner: delegation
   - Status: closed. Accepted, recorded only. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -i 'cyber' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -i 'cyber' -- plugins/: no match, so claudetto adds no code for the cyber safeguard refusals.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:654 (measured).
 
 - [x] **RISK-181** Review prompt that limits to high severity hides findings.
@@ -434,6 +442,7 @@
   - Owner: delegation
   - Status: closed. Swarms are out (OUT-061); the roster has four agents and no swarm launcher. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'swarm' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'swarm' -- plugins/: no match, so no swarm launcher exists and the decision (OUT-061) holds.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:133 (reported, one case); external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
 - [x] **RISK-184** An agent is spawned for no stated reason and reports nothing.
@@ -685,6 +694,7 @@
   - Owner: delegation
   - Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'python' -- plugins/ -> no match. The plugin allows perl in-place edits (hooks/settings/defaults.ts:57) and edit/perl.ts shows each diff; its perl.test.ts passes in the 130-test run.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'python' -- plugins/claudetto/hooks ':!*__tests__*'`: one match, a test-runner regex in guards/shell/notes.ts:27, and no text that tells a subagent to edit with Python; hooks/edit/perl.ts still shows each perl in-place diff.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/76585f31-efbf-45ca-ba61-7687f97970ee.jsonl:13444, reported, user, 2026-11-10.
 
 ## Delegation and Worker Reports
@@ -820,6 +830,7 @@
   - Owner: delegation
   - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/delegation/__tests__/spawn.test.ts` ("agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet").
   - Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:29; external/2026-11-10/reddit.com-r-claudecode-comments-1xsika6-fable-52-is-overly-excessive-a-20261110T095310Z.md:33 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xsika6/fable_52_is_overly_excessive_at_research_before/>).
 
 - [x] **RISK-206** A coordinator on Opus xhigh loses what it relays.
@@ -911,6 +922,7 @@
   - Owner: delegation
   - Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/delegation/__tests__/spawn.test.ts` ("agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet").
   - Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:38; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:39; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:48; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:330; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:349 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>); external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:52; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:100; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:104; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:163; external/2026-11-13/reddit.com-r-claudeai-comments-1xsv2s0-unconvinced-by-claude-fable-52-20261112T231528Z.md:31 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsv2s0/unconvinced_by_claude_fable_52/>).
 
 - [x] **RISK-211** Fable 5.2 ignores rules and workflows "to drive innovation", does not know when to stop innovating, and keeps changing goals behind the user's back.
@@ -1037,6 +1049,7 @@
   - Owner: delegation
   - Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'idle' -- plugins/ -> only claudetto-you-should-know autosend.test.ts comments about an offer timer; nothing about idle subagents.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'idle' -- plugins/: matches only the you-should-know offer idle timer, the goal prompt line 'Do not idle' and a stop-notice comment, nothing about subagents re-reading context while idle.
   - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xunrxf-subagents-not-correctly-closed-20261116T052612Z.md:45,49 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xunrxf/subagents_not_correctly_closed_after_end_of_their/>); external/2026-10-28/reddit.com-r-claudecode-comments-1xgxv58-claude-max-20x-weekly-depleted-20261028T060713Z.md:621 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xgxv58/claude_max_20x_weekly_depleted_in_less_than_25/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:52 (observed).
 
 ## Effort Level Quality
@@ -1170,6 +1183,7 @@
   - Owner: delegation
   - Status: closed. The run log (`runs.jsonl`) is removed (OUT-020); grep finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'runs.jsonl' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'runs.jsonl' -- plugins/: no match, so the run log is gone and its lost-line fault cannot occur.
   - Source: observed in transcript, 2026-11-09 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/638670c4-640d-44ab-83a2-436d1d918089.jsonl:11).
 
 - [x] **RISK-225** The reply judge SHIPPED_REGISTER is unwired.
@@ -1186,6 +1200,7 @@
   - Owner: delegation
   - Status: closed. The reply judge register is removed; grep for `SHIPPED_REGISTER` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   - Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'SHIPPED_REGISTER' -- plugins/ -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'SHIPPED_REGISTER' -- plugins/: no match, so the unwired reply-judge register is gone.
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
 
 - [x] **RISK-487** A worker runs for hours over many slices, compacting again and again.

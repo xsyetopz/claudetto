@@ -49,6 +49,7 @@
   - Owner: handover
   - Status: closed; renewal runs only at a task boundary, never mid-task, and every handover ends with git state read at that moment (test: plugins/claudetto/hooks/handover/renewal.test.ts "an open task is no boundary"; plugins/claudetto/hooks/handover/compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; claudetto plugin test 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > an open task is no boundary" and "session.compact > auto compaction gets the handover and no core call".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts`, `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("an open task is no boundary").
   - Source: reported, user, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:8192).
 
 - [x] **RISK-125** A handover written mid-step reports finished work as not done.
@@ -107,6 +108,7 @@
   - Owner: handover
   - Status: closed; the session renews from a handover above 70k tokens at a task boundary, so the context never grows to the length where it decays (test: plugins/claudetto/hooks/handover/renewal.test.ts "a finished last task above 70k renews"; 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > a finished last task above 70k renews".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts` ("a finished last task above 70k renews").
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:134; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c. The auto-compaction 350k-500k setting conflicts with the settled rule that handover replaces core auto compaction by default (user decision, 2026-11-16 05:57 UTC, hand over when the window is reached, then /clear through the Mod API and resume (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408)); the cure keeps handover and `/clear`; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:140-146.
 
 - [x] **RISK-132** Rejected option amnesia: the agent re-proposes an approach the project already rejected.
@@ -139,6 +141,7 @@
   - Owner: handover
   - Status: closed; a refusal is a user row, and both the fork's Constraints section and the free extract carry every user row, with prior handovers carried whole (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/` -> no match; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("three compactions in a row carry a stated requirement and inject no growing text").
   - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:67-80@088a227c; probe session-cycle, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031) (read of the 088a227c code, as the old plan records it; cache refresh on use: verified against the API docs read 2026-11-18, "The cache is refreshed for no additional cost each time the cached content is used", <https://platform.claude.com/docs/en/build-with-claude/prompt-caching>, section "How prompt caching works"; the docs state the API behavior, not a Claude Code build offset).
 
 - [x] **RISK-134** Auto compaction lands mid-task and compacts late
@@ -170,6 +173,7 @@
   - Owner: handover
   - Status: closed; probe, claude 2.1.327, 2026-11-18, `bun -e 'compose("body","","")'`: prints "git HEAD: unknown" and "(clean)", not an empty line.
   - Verified: 2026-11-20, claude 2.1.327, `cd plugins/claudetto/hooks/handover && bun -e 'import {compose} from "./text.ts"; console.log(JSON.stringify(compose("body","","")))'` -> `"# Handover from Previous Session\n\nbody\n\ngit HEAD: unknown\ngit status --short:\n(clean)"`.
+  - Verified: 2026-11-24, claude 2.1.329, `cd plugins/claudetto/hooks/handover && bun -e 'import {compose} from "./text.ts"; console.log(JSON.stringify(compose("body","","")))'`: prints `git HEAD: unknown` and `(clean)` for a repo with no commits, so the Git line is never empty.
   - Source: plugins/claudetto/hooks/features/compaction/handoff.ts:57-58@088a227c; plugins/claudetto/hooks/features/compaction/texts.ts:24@088a227c; probe F transcript, claude 2.1.325, 2026-11-16; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
 ## Agent Conduct
@@ -188,6 +192,7 @@
   - Owner: handover
   - Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto: the only Stop handler (renewal.ts:41) returns next(e); no Stop check blocks a stop that hands the user a step.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -n 'classic.Stop"' -- plugins/ ':!*__tests__*'` -> one match, renewal.ts:46, whose body returns next(e) and blocks nothing (the status cites line 41; the handler now sits at line 46).
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -n 'classic.Stop"' -- plugins/claudetto ':!*__tests__*'`: one match, renewal.ts:66, whose body returns next(e) and blocks nothing, so claudetto has no Stop check that holds the agent after it hands the user a step (the status cites line 41; the handler now sits at line 66).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:40; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401; reported, user, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401); observed in transcript, 2026-11-10 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/aea6b517-d507-41e2-9f42-d229baaf5384.jsonl:1401) (reported, user, 2026-11-10; observed in transcript, 2026-11-10).
 
 - [x] **RISK-138** A handoff cuts a task in the middle and the next session lacks what happened.
@@ -204,6 +209,7 @@
   - Owner: handover
   - Status: closed; the cause (a fixed-point trigger) left with the 59-minute rule; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "an open task is no boundary" and "background work holds the boundary" pass.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > an open task is no boundary" and "renewal > background work holds the boundary".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts` ("an open task is no boundary").
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:10 (handoff of 2026-11-12, In Progress: None given); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:8710 (handoff of 2026-11-15, user corrections); reported, user, 2026-11-14 02:46 UTC, a cheap handover through /clear instead of auto-compaction (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:31369); observed in transcript, 2026-11-12: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:6530.
 
 ## Hooks, Gates, and Notices
@@ -222,6 +228,7 @@
   - Owner: handover
   - Status: closed; claude 2.1.327, 2026-11-18, `grep -rniE "pin" plugins/claudetto/hooks` (non-test): no hit, so no pin hook exists.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -niE '\bpin(ned|s)?\b|pinCheck' -- plugins/claudetto/hooks ':!*__tests__*'` and `git grep -nE 'classic\.(PreToolUse|UserPromptSubmit)"' -- plugins/claudetto/hooks ':!*__tests__*'`: no match in either, so no pin hook exists to re-inject constraints (the earlier broader pattern now also hits unrelated `decision:` lines in goal/tools.ts and patch/tool.ts).
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
 ## Handover, Memory, and Notes
@@ -240,6 +247,7 @@
   - Owner: handover
   - Status: closed; `compose` appends git HEAD and status read when the handover is written, and `unwrap` drops the git tail of a carried handover so stale state is never repeated (plugins/claudetto/hooks/handover/text.ts; test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row" holds size equal across compactions; 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `sed -n 72,75p plugins/claudetto/hooks/handover/text.ts` and `sed -n 74,76p plugins/claudetto/hooks/handover/writer.ts` -> compose builds `git HEAD` and `git status --short` from rev-parse and status read at write time; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts`, `plugins/claudetto/hooks/handover/__tests__/text.test.ts` ("three compactions in a row carry a stated requirement and inject no growing text | compose appends the git state").
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:977; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1003.
 
 - [x] **RISK-141** A handoff note drops a constraint and the next session trusts it.
@@ -278,6 +286,7 @@
   - Owner: handover
   - Status: mitigated; claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto` ("compose appends the git state" passes) and writer.ts runs `git rev-parse --short HEAD` and `git status --short` at write time. No test stubs the git calls.
   - Verified: 2026-11-20, claude 2.1.327, `sed -n 74,76p plugins/claudetto/hooks/handover/writer.ts` -> runs `git rev-parse --short HEAD` and `git status --short` and passes both to compose; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "handover text > compose appends the git state".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/text.test.ts` ("compose appends the git state").
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; observed in transcript, 2026-11-16; external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:102 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:65 (reported, one user).
 
 ## Skipped Notes Index
@@ -300,6 +309,7 @@
   - Owner: handover
   - Status: closed; the extract carries every prior handover whole and first, so decisions from earlier compactions remain (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("three compactions in a row carry a stated requirement and inject no growing text").
   - Source: external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:50; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:300; external/2026-10-22/reddit.com-r-claudecode-comments-1xbfly6-60-compactions-into-one-claude-20261022T003216Z.md:64 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xbfly6/60_compactions_into_one_claude_code_session_the/>); external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:143; external/please-use-me-often/agent-failure-dossier/judged/context.jsonl:57.
 
 - [x] **RISK-151** Post-compaction continuation text steamrolls plan-then-wait.
@@ -336,6 +346,7 @@
   - Owner: handover
   - Status: closed; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "manual clear > a typed /clear runs and its handover goes out once" passes; clear.ts deletes the pending text when it sends it.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "manual clear > a typed /clear runs and its handover goes out once"; clear.ts:28 holds `await $.store.delete(PENDING)` before the text is sent.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/clear.test.ts` ("a typed /clear runs and its handover goes out once").
   - Source: measured, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
 - [x] **RISK-156** A handover is lost on a failed fork or a reload.
@@ -352,6 +363,7 @@
   - Owner: handover
   - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "a failed fork falls back to the transcript extract" passes; clear.ts keeps the pending text in `$.store`.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > a failed fork falls back to the transcript extract"; clear.ts:17 holds `await $.store.set(PENDING, text)`.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("a failed fork falls back to the transcript extract").
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
 
 ## Conduct Faults From the Rearchitecture Sessions
@@ -387,6 +399,7 @@
   - Owner: handover
   - Status: closed; under `-p` automatic compaction still gets the handover (RISK-489 probe), and the driver lowers core's threshold with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` (threshold = min(floor(window x pct/100), window - 13000), read in `L7`, chunk-m14bt1pz.js@1992285, 2.1.327) or sends `/clear` between tasks; probe (cc-inspect `code cli`, fake API, 2.1.327, 2026-11-19): prompts `fix the parser`, `/clear`, `what was the task?` with `--plugin-dir plugins/claudetto`, and request 3 holds "Handover from Previous Session"; documented in plugins/claudetto/README.md Headless Runs.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > auto compaction gets the handover and no core call" (the committed test for the automatic-compaction outcome); plugins/claudetto/README.md:35 documents the `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` driver; the threshold formula and the `-p` probe were not re-run here.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("auto compaction gets the handover and no core call").
   - Source: reports/2026-11-18-research/handover-probes/probe-f/probe.log (cc-inspect `code cli`, claude 2.1.327, 2026-11-18); reports/2026-11-18-research/handover.md Q2.
 
 - [x] **RISK-489** A `session.compact` hook that returns its message in the wrong shape is skipped with one log line, and core runs its default summary, so the handover silently never lands.
@@ -403,6 +416,7 @@
   - Owner: handover
   - Status: closed; probe, `claude` 2.1.327, 2026-11-18, fake API stub (reports/2026-11-18-research/handover-probes/probe-h/stub.ts), `claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`, auto trigger: the debug log reads "session.compact (auto): a hook's 2 messages stand (hooked by claudetto); core never ran".
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > auto compaction gets the handover and no core call" (the committed test that encodes the probe outcome); the stub probe was not re-run.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("auto compaction gets the handover and no core call").
   - Source: reports/2026-11-18-research/handover-probes/probe-h/run1/hook.log, run2/hook.log, probe.log.
 
 - [x] **RISK-490** A handover that answers an auto compaction at the start of a turn drops the prompt that opened the turn.
@@ -419,6 +433,7 @@
   - Owner: handover
   - Status: closed; the same probe after the change sent the handover followed by `second one`.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > the prompt that opened the turn stays after the handover" (the committed test that encodes the probe outcome); the stub probe was not re-run.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("the prompt that opened the turn stays after the handover").
   - Source: probe, `claude` 2.1.327, 2026-11-18, `$TMPDIR/hprobe3` (stub from reports/2026-11-18-research/handover-probes/probe-h/stub.ts with input tokens 195000), command `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`.
 
 - [x] **RISK-507** The handover fork misses the cache on the engine's system block when it is the parent's last message (issue #60, #64).
