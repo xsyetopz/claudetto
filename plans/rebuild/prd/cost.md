@@ -57,6 +57,7 @@
   Basis: cited (arXiv:2606.01326: dedent and identifier shortening cut resolved tasks from 46% to 36% and from 47% to 27%; the paper counts input tokens only, so its savings ignore cache reads). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P5 implications 1 and 3; <https://arxiv.org/pdf/2606.01326>.
   Verified: inspection 2026-11-19: the hook list printed by claude 2.1.327 plugin test plugins/claudetto registers no tool.result hook; classic.PostToolUse (handover/renewal.ts:38) only marks a commit as a task boundary and passes the event on unchanged, and grep of hooks/ for updatedToolOutput and tool.result finds no hit.
+  Verified: inspection, 2026-11-24 (types of claude 2.1.329): no hook of the three plugins registers on a tool result or on Read; the only `tool.run` hooks serve the plugins' own MCP tools (spec_check, goal tools, patch, web_fetch, web_search).
 
 - [x] **REQ-COST-048** claudetto shall return a hook or tool result that fits under Claude Code's inline limit in the reply itself, and shall not write it to a file the agent must read back.
   Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rn -E 'writeFile|appendFile|mkdir' hooks`: no hit; the one `$.fs.write` (builtins/builtins.ts:55) repairs user settings, and handover returns text through `prompt.context`, not a file.

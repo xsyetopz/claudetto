@@ -21,7 +21,7 @@ function toastRefusal(
 	$: EngineInterface,
 	refusal: "no_composer" | "dialog" | "unanswered" | undefined
 ): void {
-	// `unanswered` (2.1.330): an app was asked and none answered, so the text may have landed.
+	// `unanswered` (in the 2.1.329 types; the builtin has no text for it): an app was asked and none answered, so the text may have landed.
 	const text = {
 		dialog: RESPOND_BLOCKED,
 		unanswered: RESPOND_MAYBE_FILLED,
