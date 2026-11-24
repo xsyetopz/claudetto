@@ -41,6 +41,26 @@ describe("patch tool instructions", () => {
 		expect(second).toBe("M src/api/x.ts +1 -1");
 	});
 
+	test("with CLAUDE_CODE_DISABLE_CLAUDE_MDS set, a matching rule is not appended", async ($, on) => {
+		// Arrange
+		resetShown();
+		const d = disk({
+			[`${CWD}/.claude/rules/api.md`]: RULE,
+			[`${CWD}/src/api/x.ts`]: "a\n"
+		});
+		wireDisk(on, d, { env: { CLAUDE_CODE_DISABLE_CLAUDE_MDS: "1" } });
+		registerPatch(on);
+
+		// Act
+		const call = await $.tool.call({
+			tool: TOOL_FULL_NAME,
+			patch: wrap("*** Update File: src/api/x.ts", "@@", "-a", "+b")
+		});
+
+		// Assert
+		expect(call.result).toBe("M src/api/x.ts +1 -1");
+	});
+
 	test("a CLAUDE.md in a subdirectory is appended once", async ($, on) => {
 		// Arrange
 		resetShown();

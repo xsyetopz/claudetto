@@ -86,11 +86,15 @@ function wireFs(on: On, d: Disk): void {
 	}));
 }
 
-/** Wires the operations a patch call reaches to `d`; `home` is the user's home folder. */
+/** Wires the operations a patch call reaches to `d`; `home` is the user's home folder, `env` any other variable. */
 export function wireDisk(
 	on: On,
 	d: Disk,
-	{ home = "/home/u", isAllowing = true } = {}
+	{
+		home = "/home/u",
+		isAllowing = true,
+		env = {}
+	}: { home?: string; isAllowing?: boolean; env?: Record<string, string> } = {}
 ): void {
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	// Nothing beneath the plugins answers a permission check, so every tool is allowed unless a test says otherwise.
@@ -100,7 +104,9 @@ export function wireDisk(
 	on("session.cwd", () => ({ value: CWD }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 	on("ui.log", () => ({ value: undefined }));
-	on("env.get", () => ({ value: home }));
+	on("env.get", (_$, e) => ({
+		value: e.name === "HOME" ? home : env[e.name]
+	}));
 	wireFs(on, d);
 	on("process.run", (_$, e) => {
 		const target = e.argv.at(-1) ?? "";

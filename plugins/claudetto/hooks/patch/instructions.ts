@@ -65,6 +65,11 @@ export async function instructionsFor(
 	// ENGINE(v2.1.330): path-scoped rules and nested CLAUDE.md load only for Read/Write/Edit; a plugin tool cannot trigger it.
 	const out: string[] = [];
 	try {
+		// The engine loads no CLAUDE.md or rules file while this is set, so neither does a patch.
+		const noMemory = await $.env.get("CLAUDE_CODE_DISABLE_CLAUDE_MDS");
+		if (noMemory !== undefined && noMemory.trim() !== "") {
+			return out;
+		}
 		const home = await $.env.get("HOME");
 		const rules = await scopedRules($, [
 			`${cwd}/.claude/rules`,
