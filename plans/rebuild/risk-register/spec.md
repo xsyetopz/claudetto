@@ -50,6 +50,7 @@
   - Owner: spec
   - Status: mitigated 2026-11-21 (commit 315a57a57).
   - Verified: 2026-11-21: `bun test tools/__tests__/spec-eval-graders.test.ts` 64 pass, including four traces that write the implementation before staging and a skill-text decoy; the new grader run over the 13 kept suite-1 traces passes all 6 with-plugin runs and fails all 7 baselines, which never stage. Likelihood 3 × Impact 3 = 9.
+  - Verified: 2026-11-24, claude 2.1.329, `bun test ./tools/__tests__/eval-cases.test.ts -t 'feature-discount-p2/staged-before-impl'` and the pattern of plugins/claudetto-spec/evals/feature-discount-p2/graders/staged-before-impl.md run over four synthetic traces: the sample test passes (1 pass, 0 fail), and a Bash heredoc, a tee and a sed -i write of src/cart.ts before the staging `git add` are each flagged while a trace that stages first is not, so the ordering grader does not miss a write made through another tool (the earlier spec-eval-graders.test.ts is now eval-cases.test.ts, whose samples use Edit only).
   - Source: this session, 058ea2d3-793b-495e-912a-323a9453747d.
 
 - [x] **RISK-518** In a session with many skills the listing cuts the `spec` description before its trigger words, and the skill does not fire.

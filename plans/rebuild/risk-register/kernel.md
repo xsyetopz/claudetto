@@ -73,6 +73,7 @@
   - Owner: kernel
   - Status: closed; claude 2.1.327, 2026-11-18, `grep -rnE "PreToolUse|UserPromptSubmit|pin|decision:" plugins/claudetto/hooks` (non-test files): no hit, so the gate and its ledger read are gone.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:742; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:743; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:744; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:745; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:746 (measured).
 
 - [x] **RISK-006** A hook adds constraints the user never gave.
@@ -89,6 +90,7 @@
   - Owner: kernel
   - Status: closed; same grep (PreToolUse, UserPromptSubmit, pin): no hit, so no claudetto hook adds a constraint.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (observed in transcript, 2026-11-09).
 
 - [x] **RISK-007** The pin hook reads the first call after a compaction resume as a user remark and denies it.
@@ -105,6 +107,7 @@
   - Owner: kernel
   - Status: closed; same grep: no pin hook in plugins/claudetto/hooks.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:1912, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 ## Context Loss and Handover
@@ -123,6 +126,7 @@
   - Owner: kernel
   - Status: closed; same grep: no UserPromptSubmit or PreToolUse reminder is injected, which is the cure (no blanket reminder).
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:32-36; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:58; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:16; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:35; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:121; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:126.
   - Conflict: Instruction decay: user rules and CLAUDE.md protocols are ignored or broken later.
 
@@ -180,6 +184,7 @@
   - Owner: kernel
   - Status: closed; same grep: no Bash gate exists in plugins/claudetto/hooks; guards-block gates carry their own risks.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match; `git grep -niE "remark|network location|classify" -- plugins/ ':!*__tests__*'` -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; reported, one user, 2026-11-11 (claudetto on Claude Code 2.1.319); observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048.
 
 - [x] **RISK-014** Claude Code prints "No deferred tool marker found in the resumed session" though the command worked.
@@ -273,6 +278,7 @@
   - Owner: kernel
   - Status: closed; same grep: no hook classifies a user message as remark or work.
   - Verified: 2026-11-20, claude 2.1.327, `git grep -niE "remark|classify" -- plugins/ ':!*__tests__*'` -> no match, and the grep for PreToolUse|UserPromptSubmit in non-test plugin sources -> no match.
+  - Verified: 2026-11-24, claude 2.1.329, `git grep -nE 'on\("(classic\.)?(PreToolUse|UserPromptSubmit)' -- plugins/claudetto/hooks ':!*__tests__*'`: no match, so no hook registers on those events.
   - Source: observed in transcript, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-www-clawdipedia-cc/bf5cef86-f4aa-4363-b4ea-46dff19346d2.jsonl:51; reported, user, 2026-11-10; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048 (reported, user, 2026-11-13).
 
 ## Conduct and Product Risks From Chunk C05
@@ -433,6 +439,7 @@
   - Owner: kernel
   - Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: 25 pass, including "session.compact > a failed fork falls back to the transcript extract". The test does not log once per window.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > a failed fork falls back to the transcript extract" and "session.compact > a throwing fork leaves one debug line and still hands over".
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts` ("session.compact > a failed fork falls back to the transcript extract; session.compact > a throwing fork leaves one debug line and still hands over").
   - Source: reports/2026-11-18-research/surface.md:59 (release notes, claude 2.1.327, 2026-11-18).
 
 - [x] **RISK-488** A Bash call hangs for 120 seconds on stdin.
@@ -449,6 +456,7 @@
   - Owner: kernel
   - Status: closed 2026-11-19. `hooks/guards/stdin.ts` runs each Bash command as `{ cmd\n} </dev/null`; the model's command stays in history, so the cache prefix holds. Probe on 2.1.327 (cc-inspect cli, Bash `cat <<EOF >/dev/null … EOF; wc -l`): vanilla moved the call to the background and did not end in 60 s; with the plugin `wc -l` printed 0 in the same second. An emptied glob variable (CTX-838) now reads EOF the same way.
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> 130 pass, 0 fail, including "stdin guard > reads stdin from /dev/null and keeps a heredoc intact"; the guard is plugins/claudetto/hooks/guards/shell/stdin.ts:10 (the status cites hooks/guards/stdin.ts, which does not exist); `bash` on `{ cat <<EOF >/dev/null ... EOF; wc -l } </dev/null` -> prints 0 and exits 0.
+  - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/guards/shell/__tests__/stdin.test.ts` ("stdin guard > reads stdin from /dev/null and keeps a heredoc intact").
   - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.
 
 - [x] **RISK-508** zsh passes an unquoted `$VAR` that holds a command with its arguments, or a list of files, as one word (issue #61, cluster E).
@@ -482,6 +490,7 @@
   - Owner: kernel
   - Status: accepted 2026-11-20; Likelihood 1 × Impact 2 = 2, and no candidate beats vanilla.
   - Verified: 2026-11-20, zsh 5.9 probe: `a=ab; echo ${a^^}` gives `bad substitution` under zsh and under /bin/bash 3.2; `setopt ksh_arrays` turns `false | true; echo "exit ${pipestatus[1]}"` into `exit 0` (reports/2026-11-20-research/zsh/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, zsh 5.9: `a=ab; echo ${a^^}` prints bad substitution under zsh and /bin/bash, and `setopt ksh_arrays; false | true; echo "exit ${pipestatus[1]}"` prints exit 0, so no zsh option restores the bash-only syntax and the acceptance holds.
   - Source: issue #61.
 - [x] **RISK-511** The engine holds a Bash command for approval when it holds a zsh parameter flag (`${(f)...}`) or a nested expansion (`${${f:t}%.ts}`), because its rm check cannot parse it (issue #67).
   - Category: host behaviour.
@@ -531,4 +540,5 @@
   - Owner: kernel
   - Status: mitigated 2026-11-20; residual Likelihood 1 × Impact 1. The cost is about 0.1 ms per simple command (a 200,000-iteration loop took 16-28 s against 0.4-0.6 s) and three trace lines per command under `set -x`; 2 of 135,931 recorded Bash commands used `set -x`, and 320 of 136,774 used `while read` or a loop of 1,000 or more. A bare `$PIPESTATUS` gives every code instead of the first, and `${PIPESTATUS[@]}` lists them in hash order; together 8 of 389 recorded uses, both matching bash for a one-command pipeline.
   - Verified: 2026-11-20, zsh 5.9, `bash reports/2026-11-20-research/pipestatus/probe.sh <user's shell snapshot>`, run twice with the same output: 8 of 8 `PIPESTATUS` cases fixed (vanilla prints empty), 8 of 8 controls unchanged, including `${pipestatus[1]}`, `$?`, `set -e`, `set -u` and the command's own exit code. Transcript scan: 369 Bash commands in 198 of 2,101 sessions use `PIPESTATUS`; subscripts `[0]` 378, bare 7, `[1]` 1, `[2]` 1, `[@]` 1. Under bash and sh the env file parses, and bash's own `PIPESTATUS` is untouched.
+  - Verified: 2026-11-24, claude 2.1.329, bash reports/2026-11-20-research/pipestatus/probe.sh under zsh 5.9: 8 of 8 PIPESTATUS cases print the value with the shim (vanilla prints empty) and 8 of 8 controls, including ${pipestatus[1]}, $? and set -e, are unchanged, so the fault no longer occurs.
   - Source: issue #82; reports/2026-11-20-research/pipestatus/README.md.

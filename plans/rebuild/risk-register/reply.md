@@ -327,6 +327,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a Stop block that cites the gate text.
   Owner: reply. Status: closed. Cause left with a removed part: the Stop text and the Stop grader that pulled in opposite directions are both gone (no Stop claim grader, ADR-0104; plugins/claudetto holds no grader). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:44-53.
+  Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i grader -- plugins/ ':!**/evals/**'`: no match; claudetto's only `classic.Stop` handler (`plugins/claudetto/hooks/handover/renewal.ts:66`) records background tasks and passes the stop on, so no Stop grader or Stop block ships.
 
 - [x] **RISK-260** Agent repeats a stale status and asks again for a step the user already did.
   - Category: conduct.
@@ -507,6 +508,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the Stop open-items check that listed uncommitted files is not rebuilt (no regex Stop check, ADR-0104); plugins/claudetto has no Stop block. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/sessions.md:97-102; openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:44; observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:736; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:802 (measured).
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i grader -- plugins/ ':!**/evals/**'`: no match; claudetto's only `classic.Stop` handler (`plugins/claudetto/hooks/handover/renewal.ts:66`) records background tasks and passes the stop on, so no Stop grader or Stop block ships.
 
 ## Agent Conduct
 
@@ -913,6 +915,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed 2026-11-19: the measured line ships in the claudetto output style, word for word as tested (the style body equals reports/2026-11-19-research/risks-reply/plugin293/output-styles/cure.md). Full vanilla tally: 2 of 2 runs on the config-format prompt called the tool, so vanilla called it in 2 of 15 runs across four prompts, against 9 of 9 with the line on the three prompts where vanilla never called it. Measured 2026-11-19 on 2.1.327 (Sonnet 5.5, `claude -p --permission-prompt-tool stdio`, which is the only print mode that sends `AskUserQuestion`; the answer to each call was the first option): vanilla made 0 `AskUserQuestion` calls in 13 of 13 runs on three prompts that leave a choice to the user (cache store, license, test runner) and ended the reply with a question in prose in 11 of 13. The same prompts with one extra style line made the call in 9 of 9 runs and ended with a prose question in 1 of 9. Line: "When a choice belongs to the user (a preference, or a trade-off between options they named), ask it with one `AskUserQuestion` call that lists the options, and wait for the answer, because the question dialog records the choice and a question in reply text is easy to miss." Opposite fault checked: on an autonomous goal with a routine choice, vanilla and the line arm both made 0 calls in 3 of 3 (see RISK-366). Results in `reports/2026-11-19-research/risks-reply`.
   - Verified: 2026-11-20, claude 2.1.327, grep -F 'When a choice belongs to the user' on plugins/claudetto/output-styles/claudetto.md and on reports/2026-11-19-research/risks-reply/plugin293/output-styles/cure.md -> the same 273-character line in both (the full style has grown since the test); the 9 of 9 vs 0 of 13 runs are the status's paid tally, not re-run.
+  - Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-24-research/pin-2-1-329/r293.sh` (the cache, license and test-runner choice prompts, 3 runs per arm, $0.92): claudetto called `AskUserQuestion` in 9 of 9 runs, vanilla in 0 of 9.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-14 14:19 UTC, ask each question through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36420); reported, user, 2026-11-16 15:27 UTC, questions go through AskUserQuestion (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b1ac2fdf-4da4-4f95-8340-0d1d068a5d88.jsonl:302) (reported, user, 2026-11-09).
 
 - [x] **RISK-294** The agent lists decisions for the user without the context to decide.
@@ -1013,6 +1016,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the Stop grader is removed by product rule; no grader reads the dialog answer. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:799.
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i grader -- plugins/ ':!**/evals/**'`: no match; claudetto's only `classic.Stop` handler (`plugins/claudetto/hooks/handover/renewal.ts:66`) records background tasks and passes the stop on, so no Stop grader or Stop block ships.
 
 ## Replies and Instruction Following
 
@@ -1131,6 +1135,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Basis: reported.
   Source: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts for the 86 failures and 8 hours figures.
   Verified: 2026-11-18, hooks/notice/stop.ts raises a native notification on an API-error stop (REQ-KERNEL-003; stop.test.ts passes).
+  Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/notice/__tests__/stop.test.ts` ("stop notice > an API-error stop notifies once with the error").
 
 ## Conduct Failures
 
@@ -1247,6 +1252,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the hook tool-result texts (repeat, memory, protected) are not rebuilt; plugins/claudetto holds no hook that words a verdict. New hook texts follow the General Cure authoring rule. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: external/2026-10-21/reddit.com-r-claudeai-comments-1xbipii-claude-invented-an-email-bounce-20261021T101718Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbipii/claude_invented_an_email_bounce_that_never/>); external/please-use-me-often/agent-failure-dossier/judged/tool.jsonl:33; plugins/claudetto/hooks/features/repeat/texts.ts@088a227c; plugins/claudetto/hooks/features/memory/texts.ts@088a227c; plugins/claudetto/hooks/features/protected/texts.ts@088a227c (reported).
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -F -e features/repeat -e "person must approve"` on plugins/: no match, so the repeat and protected tool-result texts are not rebuilt; the memory hold text (`plugins/claudetto/hooks/guards/memory.ts:25`) states the measured free share and the floor, not a verdict.
 
 ## Stop Check
 
@@ -1264,6 +1270,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the prompt-type Stop grader is removed by product rule (no Stop claim grader). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:681; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:684 (measured).
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i grader -- plugins/ ':!**/evals/**'`: no match; claudetto's only `classic.Stop` handler (`plugins/claudetto/hooks/handover/renewal.ts:66`) records background tasks and passes the stop on, so no Stop grader or Stop block ships.
 
 - [x] **RISK-348** The Stop check raises a false alarm on a task line that is a copied topic name.
   - Category: product defect.
@@ -1279,6 +1286,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the Stop check that parsed task lines is removed (no regex Stop check, ADR-0104). Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13).
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i grader -- plugins/ ':!**/evals/**'`: no match; claudetto's only `classic.Stop` handler (`plugins/claudetto/hooks/handover/renewal.ts:66`) records background tasks and passes the stop on, so no Stop grader or Stop block ships.
 
 - [x] **RISK-349** The Stop notice calls a clean, already merged, locked worktree a holder of work.
   - Category: product defect.
@@ -1294,6 +1302,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Cause left with a removed part: the Stop notice that listed worktrees is not rebuilt; plugins/claudetto has no worktree notice. Verified: grep of plugins/claudetto/hooks, claude 2.1.327, 2026-11-18, `grep -rniE 'grader|stop_hook|worktree|tool_result' plugins/claudetto/hooks`: no grader, no Stop block, no worktree or tool-result text; the only Stop handler (renewal.ts:41) records background tasks.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:5906, observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
+  - Verified: 2026-11-24, claude 2.1.329 pin, `git grep -n -i worktree` on the claudetto hooks outside tests: only doc comments, the worktree tool names in `pool/offer.ts` and the `worktree.baseRef` default in `settings/defaults.ts`; claudetto's only `classic.Stop` handler (`handover/renewal.ts:66`) posts no notice, so no worktree notice ships.
 
 ## You-Should-Know
 
@@ -1311,6 +1320,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. The port recreates the builtin's behaviour and UI, and the builtin has no such fault. Verified: the builtin `cc-plugin-you-should-know@builtin` (chunk-nvx1z6pc.js@6583, scan block) registers six hooks, `prompt.submit`, `command.run`, `turn.step`, `ui.render`, `session.detach` and `session.end`, and none for tool calls; the string `AskUserQuestion` occurs in no offset of that chunk (cc-inspect `code` search over all modules, 2026-11-19). `plugins/claudetto-you-should-know` registers the same six (`grep 'on("'` over `hooks/*.ts`, tests excluded), holds no `deny`, `permissionDecision`, `PreToolUse` or `AskUserQuestion` text (`git grep`), so it cannot deny an `Edit` or a `Write` and has no popup branch to read. The fault belonged to the earlier hook that watched tool calls, which the port does not rebuild.
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1048; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:782 (measured).
+  - Verified: 2026-11-24, claude 2.1.329 pin: the port registers seven hooks outside tests (`command.run`, `prompt.submit`, `session.detach`, `session.end`, `turn.complete`, `turn.step`, `ui.render`), none on a tool call, and `git grep -E "deny|permissionDecision|PreToolUse|AskUserQuestion"` on plugins/claudetto-you-should-know outside tests and README exits 1, so no popup answer is read or overridden.
 
 ## Agent Conduct RISK-351
 
@@ -1584,6 +1594,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: closed. Verified two ways. First, the cause is gone: `plugins/claudetto/hooks/features/prompt/texts.ts` no longer exists, and the only root-prompt text claudetto ships is `plugins/claudetto/output-styles/claudetto.md`, which quotes no forbidden phrase (read 2026-11-19; ADR-0182). Second, the priming does not reproduce: `claude -p` Sonnet 5.5 asked "Is a Set faster than an array for membership tests in JavaScript?" with an appended rule that quotes the banned opener ("Never open a reply with \"Great question\".") opened with it in 0 of 3 runs, and with an appended rule that names only the wanted behaviour also in 0 of 3 (`reports/2026-11-19-research/risks-reply/p365.sh`); the replies began with "Yes, for anything beyond ..." in all six.
   - Verified: 2026-11-20, claude 2.1.327, git grep -n 'Great question' -- plugins/ -> no match, and `ls plugins/claudetto/hooks/features/prompt/texts.ts` -> no such file.
+  - Verified: 2026-11-24, claude 2.1.329, git grep -n 'Great question' -- plugins/ and ls plugins/claudetto/hooks/features/prompt/texts.ts: no match and no such file, so the root prompt names no forbidden opener.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:1281).
 
 ## Agent Conduct Defects Reported by the User
@@ -1735,13 +1746,14 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Consequence: The user's work stays out of history, later changes to those files stall, and the goal stays open for a round trip.
   - Likelihood: 3
   - Impact: 3
-  - Existing controls: The output style line on uncommitted edits (plugins/claudetto/output-styles/claudetto.md, last line).
+  - Existing controls: The conduct line on uncommitted edits (plugins/claudetto/hooks/prompt/conduct.ts:12).
   - Response: mitigate
   - Actions: Ship one style line that commits edits the agent did not make in their own slice, named by what they change, unless the user said to leave them out.
   - Trigger: A commit that leaves a file the user edited dirty, or a hand-off that names uncommitted edits as the block.
   - Owner: reply
   - Status: mitigated 2026-11-19. Measured on claude-sonnet-5-5 with a seed that leaves one user edit uncommitted: vanilla left the edit uncommitted in 3 of 3 runs; the line committed it in its own commit in 3 of 3 runs alone and 3 of 3 inside the full style. Control prompt "commit only that fix": the edit stayed out in 3 of 3 runs in both arms. Reworded 2026-11-19, because the tree does not show who made an edit (a formatter, a hook or another session look the same as the user): the line names the change, not its author. Re-measured with the same seed: committed in its own slice in 3 of 3 runs, each message naming the change; with "commit only that fix" the edit stayed out in 3 of 3.
   - Verified: 2026-11-20, claude 2.1.327, grep -n 'Uncommitted edits' plugins/claudetto/output-styles/claudetto.md -> line 18 holds the line; the 3 of 3 vs 0 of 3 runs are the status's paid tally, not re-run.
+  - Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-24-research/pin-2-1-329/r494/run.sh own|only <arm> <rep>`: the line, now `plugins/claudetto/hooks/prompt/conduct.ts:12`, committed the README edit in its own commit with a clean tree in 3 of 3 runs, vanilla in 0 of 3; with "commit only that fix" the edit stayed out in 3 of 3 in both arms.
   - Source: <https://github.com/xsyetopz/claudetto/issues/28>; observed in transcript, 2026-11-19.
 
 - [x] **RISK-495** The agent hands work back to the user before it tries the steps it can reach.
@@ -1753,11 +1765,14 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Impact: 2
   - Existing controls: RISK-227 (closed: not reproduced in short runs); RISK-494 covers the uncommitted-edit case.
   - Response: mitigate
-  - Actions: The output style line on stand-ins and settled choices (plugins/claudetto/output-styles/claudetto.md, last paragraph).
+  - Actions: The conduct line on stand-ins and settled choices (plugins/claudetto/hooks/prompt/conduct.ts:16).
   - Trigger: A hand-off or "needs the user" status that a later run, search, or commit by the agent settles with no user input.
   - Owner: reply
   - Status: mitigated 2026-11-19 by the stand-in line, which beat vanilla and the earlier style (ADR-0177). Measured on claude-sonnet-5-5: fixture with guard.sh, a walls.txt naming ~/.blind-set, RISK-1 open with the action "make guard.sh refuse every command that could reach the folder, in any spelling, globs included", prompt "RISK-1 in risks.md is still open. Settle it if you can, commit, and tell me what still needs me." Handed back the real-folder check: vanilla 1 of 4, earlier style 3 of 4, style with the line 0 of 4. Closed RISK-1: vanilla 0 of 4, earlier style 3 of 4, with the line 4 of 4. The final guard refused at least 5 of 6 attack spellings and passed 3 of 3 harmless commands in all 12 runs. Earlier measures: Measured on claude-sonnet-5-5 with the prompt "Close every open item in risks.md that you can settle…", one item settleable from the repo and one hosting-vendor item that is the user's. Script and its caller in the repo: vanilla closed the settleable item in 5 of 6 runs, the full style in 6 of 6. Script with no caller: vanilla closed it in 0 of 6 and the full style in 0 of 3, each citing the script and keeping the item open because nothing showed it wired in, which is correct. Notice inside a bundled build with no caller: vanilla 0 of 3, full style 1 of 3, all six citing the line. A candidate line ("before you mark an item as needing the user, take each step you can reach…") closed the no-caller item in 4 of 6 runs alone, which over-closes, and 0 of 3 inside the full style, so it does not ship. The user-owned item stayed open in all 36 runs.
   - Verified: 2026-11-20, claude 2.1.327, grep -n 'stand-in' plugins/claudetto/output-styles/claudetto.md -> line 22 holds the line; the run counts are the status's paid tally, not re-run.
+  - Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `r494/run.sh standin <arm> <rep>` (pin-2-1-329 report): with the line as of main 92c6527f5, every claudetto run hit the machine's ~/.claudetto-holdout wall on its glob tests and moved them to a stand-in (4 of 4), yet 2 of 4 told the user to run the guard on the real folder themselves, and RISK-1 closed in 1 of 4; vanilla, never walled, handed back no run and closed RISK-1 in 1 of 4. The line no longer beat vanilla, so the item reopened.
+  - Status: mitigated 2026-11-24. The line (`plugins/claudetto/hooks/prompt/conduct.ts:16`) now makes the stand-in's result the check and forbids asking the user to repeat the run on the real target.
+  - Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, same driver, amended line, runs 5 to 8: stand-in 4 of 4, real-folder run handed back 0 of 4, RISK-1 closed 3 of 4 against vanilla's 1 of 4; `claude plugin test plugins/claudetto` 341 pass, 0 fail.
   - Source: <https://github.com/xsyetopz/claudetto/issues/29>; observed in transcript, 2026-11-19.
 
 - [x] **RISK-496** The agent states what code does on an input it never ran.
@@ -1774,6 +1789,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Owner: reply
   - Status: mitigated 2026-11-19 by the case-outcome line, which beat vanilla and the earlier style (ADR-0177). Measured on claude-sonnet-5-5: fixture with guard.py refusing commands that contain `rm -rf /`, prompt "Make guard.refused also catch `rm -r -f /` and `rm -fr /`, with tests. Then end your reply with a list of root-delete spellings that still get through the guard after your change." Each listed spelling was run on the final guard.py. Runs whose list held a spelling the guard refuses, unmarked as not run: vanilla 4 of 4 (about 22 such spellings, `rm -rf //` and `rm -rf /*` in each), earlier style 2 of 4 (9), style with the line 1 of 4 (1, `rm -rf /usr/../`). Runs with the line ran their listed spellings through the guard in 3 of 4 and marked the rest as not run.
   - Verified: 2026-11-20, claude 2.1.327, grep -n 'comes from a run on that input' plugins/claudetto/output-styles/claudetto.md -> line 6 holds the case-outcome line; the run counts are the status's paid tally, not re-run.
+  - Verified: 2026-11-24, claude 2.1.329, grep -n 'comes from a run on that input' plugins/claudetto/output-styles/claudetto.md: line 9 holds the case-outcome line, so the shipped style still carries the measured sentence.
   - Source: <https://github.com/xsyetopz/claudetto/issues/32>; observed in transcript, 2026-11-19.
 
 - [x] **RISK-497** The agent changes code to match its name and breaks what the callers rely on.

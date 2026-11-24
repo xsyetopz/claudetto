@@ -1,7 +1,7 @@
 #!/bin/bash
 # One session per run; counts the raw secret values left in the session file's toolUseResult records (issue #63, RISK-506).
 # usage: bash run.sh <vanilla|claudetto> <rep> <out-dir>
-# PLUGINS names the directory holding the claudetto plugin; it defaults to this checkout's.
+# CLAUDE_BIN picks the claude binary (default 2.1.327). PLUGINS names the directory holding the claudetto plugin; it defaults to this checkout's.
 arm=$1 rep=$2 out=$3
 C=/private/tmp/claude-501/df/cfg W=$out/$arm-$rep D=${PLUGINS:-$(cd "$(dirname "$0")/../../.." && pwd)/plugins}
 rm -rf "$W"; mkdir -p "$W/config" "$out"; git -C "$W" init -q
@@ -11,7 +11,7 @@ case $arm in
   vanilla) extra=(--setting-sources project,local) ;;
   claudetto) extra=(--plugin-dir "$D/claudetto") ;;
 esac
-cd "$W" && DISABLE_AUTOUPDATER=1 CLAUDE_CONFIG_DIR=$C "$HOME/.local/share/claude/versions/2.1.327" -p "$P" --model claude-haiku-5-5 \
+cd "$W" && DISABLE_AUTOUPDATER=1 CLAUDE_CONFIG_DIR=$C "${CLAUDE_BIN:-$HOME/.local/share/claude/versions/2.1.327}" -p "$P" --model claude-haiku-5-5 \
   --allowedTools Bash Read --output-format json "${extra[@]}" < /dev/null > "$out/$arm-$rep.json" 2>"$out/$arm-$rep.err"
 python3 -I - "$out/$arm-$rep.json" "$C" "$arm-$rep" <<'PY'
 import json, sys, glob
