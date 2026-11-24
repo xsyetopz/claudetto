@@ -74,8 +74,7 @@ export const ASK: readonly string[] = [
 	"Bash(git push * refs/tags/*)",
 	"Bash(pkill *)",
 	"Bash(killall *)",
-	"Edit(~/.claude/settings.json)",
-	"Write(~/.claude/settings.json)"
+	"Edit(~/.claude/settings.json)"
 ];
 
 /** A command named with the reason it belongs on its list. */

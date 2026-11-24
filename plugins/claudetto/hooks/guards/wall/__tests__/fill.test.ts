@@ -197,6 +197,32 @@ describe("guard rules", () => {
 		expect(next.permissions.allow).toContain("Bash(ls *)");
 	});
 
+	test("removes a Write ask or deny rule whose Edit twin is in the same list and keeps a lone Write rule", () => {
+		// Arrange
+		const text = JSON.stringify({
+			permissions: {
+				ask: ["Write(~/.claude/settings.json)", "Write(~/notes.md)"],
+				deny: ["Edit(/etc/hosts)", "Write(/etc/hosts)"]
+			}
+		});
+
+		// Act
+		const fill = fillSettings(text);
+		const next = fillOf(text);
+
+		// Assert
+		expect(next.permissions.ask).toContain("Edit(~/.claude/settings.json)");
+		expect(next.permissions.ask).not.toContain(
+			"Write(~/.claude/settings.json)"
+		);
+		expect(next.permissions.ask).toContain("Write(~/notes.md)");
+		expect(next.permissions.deny).toContain("Edit(/etc/hosts)");
+		expect(next.permissions.deny).not.toContain("Write(/etc/hosts)");
+		expect(fill?.added).toContain(
+			"removed permissions.ask Write(~/.claude/settings.json)"
+		);
+	});
+
 	test("sets one commit trailer that git hosts link to the claude account, and no Signed-off-by line", () => {
 		// Act
 		const next = fillOf();

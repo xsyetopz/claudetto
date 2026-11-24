@@ -19,7 +19,7 @@ not carry the context a `tool.call` hook adds, so a probe of such a note asks th
 | wall (cc-inspect) | REQ-GUARDS-076 | sandbox on: 4 bypass writes refused; sandbox off: all 4 reach the walled file |
 | sandbox (cc-inspect) | REQ-SETUP-058 | with the sandbox block a file-creating Bash call runs with no prompt; without it, refused |
 | zsh (cc-inspect) | REQ-KERNEL-014 | vanilla: word split fails (rc 127), `PIPESTATUS` empty; claudetto: both work |
-| `steady.ts` | REQ-SETUP-011, REQ-SETUP-033 | launch 2 on the claudetto-written settings: no builtin skill, 9 tools, none of the seven denied |
+| `steady.ts` | REQ-SETUP-011, REQ-SETUP-033, RISK-536 | launch 2 on the claudetto-written settings: no builtin skill, 9 tools, none of the seven denied; no "not matched" rule warning |
 | `reply.sh` | REQ-REPLY-108, REQ-REPLY-109 | `AskUserQuestion` vanilla 0/6; description placement 3/6 on the test-runner prompt; style placement 9/9 |
 
 `steady.ts` runs two `claude -p hi` launches in one fresh `CLAUDE_CONFIG_DIR` against the fake API, so

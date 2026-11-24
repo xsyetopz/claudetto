@@ -1416,3 +1416,19 @@
   Status: mitigated 2026-11-24: REQ-GUARDS-083, a `prompt.submit` guard (`plugins/claudetto/hooks/guards/redact/prompt.ts`) holds back a typed prompt or slash command line that holds a secret, and sends it when submitted again; the engine puts the dropped text back in the box.
   Verified: the same probe with the guard: 0 copies in the session file, the run ended with the reason; control prompt ran; `claude plugin test plugins/claudetto` 331 pass, 0 fail; 0 of 757 local history prompts held. Interactive probe 2026-11-24, claude 2.1.331, Haiku 5.5, tmux: held once, box text once, Enter sent it (a first build that refilled the box doubled the text and held it forever; the refill was removed). Slash command arguments: vanilla `-p "/count ... password <value>"` 6 copies; guard 0, held; control `/count db.internal user app` ran.
   Source: external/2026-11-21/reddit.com-r-claudecode-comments-1y071r3-a-junior-pasted-the-prod-datab-20261120T101942Z.md:31-37; probe 2026-11-23, claude 2.1.330, Haiku 5.5, session 48a095da.
+
+- [x] **RISK-536** A permission rule claudetto writes matches nothing on the current Claude Code and prints a warning on every launch.
+  Category: settings.
+  Cause: the ASK list in `plugins/claudetto/hooks/guards/wall/rules.ts` held `Write(~/.claude/settings.json)` beside its `Edit` twin; Claude Code 2.1.331 matches file permission checks against `Edit(path)` rules only.
+  Event: 2026-11-24, claude 2.1.331, `bun tools/measure-tools.ts --plugin-dir plugins/claudetto`: each steady launch printed "Write(~/.claude/settings.json) is not matched by file permission checks — only Edit(path) rules are" on stderr.
+  Consequence: a warning on every headless launch, and a rule that reads as a guard but guards nothing.
+  Likelihood: 5. Impact: 1.
+  Existing controls: the `Edit(~/.claude/settings.json)` twin, which covers every file-editing tool.
+  Response: mitigate.
+  Actions: drop the `Write` entry from ASK; the fill removes an ask or deny `Write(path)` rule whose `Edit(path)` twin is in the same list, so a copy an earlier release wrote goes too.
+  Trigger: a "not matched by file permission checks" line on stderr at launch.
+  Owner: guards.
+  Evidence: probe 2026-11-24, claude 2.1.331, vanilla, fake API, `claude -p hi --settings` with ask `Write(~/a.json)` and deny `Write(~/c.json)`: stderr warned for both lists (`$TMPDIR/wprobe.ts`).
+  Status: mitigated 2026-11-24: `conflicts.ts` `deadWrite`; ASK holds the `Edit` rule only.
+  Verified: 2026-11-24, claude 2.1.331, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with fill.test.ts "removes a Write ask or deny rule whose Edit twin is in the same list"; `bun reports/2026-11-24-research/reverify/steady.ts` printed no "not matched" line on either launch.
+  Source: Claude Code 2.1.331 stderr text quoted in Event; `reports/2026-11-24-research/reverify/steady.ts`.

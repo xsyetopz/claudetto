@@ -1,7 +1,8 @@
 // Two `claude -p hi` launches in one fresh config dir against the fake API, the plugins loaded both
 // times. The first launch lets claudetto's session.start fill write user settings; the second shows
 // the steady state those settings bind. Prints, for the second launch's first request, the tool names
-// and whether a builtin plugin's skill (plugin-authoring) is listed, plus the fill notice of launch 1.
+// and whether a builtin plugin's skill (plugin-authoring) is listed, plus the fill notice of launch 1
+// and any "not matched" permission-rule warning on stderr (RISK-536).
 // Usage: bun reports/2026-11-24-research/reverify/steady.ts
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -41,6 +42,10 @@ async function launch(config: string, url: string): Promise<string> {
 		}
 	);
 	const out = await new Response(proc.stdout).text();
+	const err = await new Response(proc.stderr).text();
+	if (err.includes("not matched")) {
+		console.log(`stderr warns: ${err.slice(0, 200)}`);
+	}
 	await proc.exited;
 	return out;
 }
