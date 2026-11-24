@@ -145,8 +145,8 @@ export function registerWeb(on: On): void {
 			max_chars: e.max_chars,
 			offset: e.offset
 		})
-	})).catch(($) => {
-		$.ui.log("claudetto: web_fetch failed", { to: "debug" });
+	})).catch(($, _e, next) => {
+		fault($, "web_fetch", next.error);
 		return { deny: "web_fetch failed; see the debug log" };
 	});
 	on("tool.run", { tool: SEARCH_FULL_NAME }, async ($, e) => {
@@ -157,14 +157,14 @@ export function registerWeb(on: On): void {
 				{ query: e.query, max_results: e.max_results }
 			)
 		};
-	}).catch(($) => {
-		$.ui.log("claudetto: web_search failed", { to: "debug" });
+	}).catch(($, _e, next) => {
+		fault($, "web_search", next.error);
 		return { deny: "web_search failed; see the debug log" };
 	});
 	on("tool.offer", (_$, e, next) =>
 		REPLACED.has(e.tool) ? { isOffered: false } : next(e)
 	).catch(($, e, next) => {
-		$.ui.log("claudetto: web tool offer failed", { to: "debug" });
+		fault($, "web tool offer", next.error);
 		return next(e);
 	});
 	on("tool.offer", { tool: WEB_TOOLS }, (_$, e, next) =>
@@ -172,7 +172,7 @@ export function registerWeb(on: On): void {
 			? { isOffered: false }
 			: next(e)
 	).catch(($, e, next) => {
-		$.ui.log("claudetto: web tool offer failed", { to: "debug" });
+		fault($, "web tool offer", next.error);
 		return next(e);
 	});
 }
