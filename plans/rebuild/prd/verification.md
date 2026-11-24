@@ -16,6 +16,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Git Hooks Check
 
 - [x] **REQ-VERIFICATION-032** Moved Out as OUT-3052: the pre-push hook and the hooks-path guard were removed in commit 9fdce2231 (user decision, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no .githooks folder and no hooksPath guard, so the removal holds.
 
 ## Red Baseline and Validator Test
 
@@ -30,14 +31,17 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Paid Runs
 
 - [x] **REQ-VERIFICATION-067** Moved Out as OUT-2400: the part is not in plugins/.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no apiKeySource check anywhere in the repo, so the Out holds.
 
 ## Probe Launcher Cap
 
 - [x] **REQ-VERIFICATION-068** Moved Out as OUT-2401: the part is not in plugins/.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no 300,000 launcher cap in tools/ or plugins/, so the Out holds.
 
 ## Test Practice
 
 - [x] **REQ-VERIFICATION-072** Moved Out as OUT-2402: the part is not in plugins/.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no probe harness that asserts arm, plugins, sandbox and model, so the Out holds.
 
 - [x] **REQ-VERIFICATION-073** claudetto shall measure always-on tokens added by skills, agents, and CLAUDE.md with `plugin details` per Claude Code release, compare real invocations to eval cases to find tested-but-never-used skills, and treat a tool the agent never calls as dead weight.
   Verified: `claude plugin details --help`, claude 2.1.327, 2026-11-18: "Show a plugin's component inventory and projected token cost" exists in vanilla, so no claudetto code is needed (it resolves installed plugins only; a path gave "not found"). plugins/claudetto ships three agents and one output style (ADR-0099), so its always-on text is their descriptions.
@@ -83,6 +87,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Dogfood
 
 - [x] **REQ-VERIFICATION-088** Moved Out as OUT-2801: ADR-0177: on a name defined only in source and missing from the config list, vanilla 2.1.327 answered correctly in 3 of 3 Sonnet 5.5 runs, so no line can beat it (reports/2026-11-19-research/risks-verification, scenario F); the `code` search is a tool of the separate cc-inspect plugin, not of this one.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, vanilla rerun of the 2026-11-19 seeds (`reports/2026-11-24-research/pin-2-1-329/vanilla/results.txt`, about $1.9 with the controls): scenario F passed its check in 3 of 3, but only run 3 read tool.sh; runs 1 and 2 answered about Claude Code's HTTPS_PROXY, so F does not measure the rule. The Out holds on its other ground: the whole-build `code` search belongs to the cc-inspect plugin.
 
 ## Release
 
@@ -129,6 +134,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 - [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
 
 - [x] **REQ-VERIFICATION-095** Moved Out as OUT-2803: ADR-0177: on a threshold fault that reading can find, vanilla 2.1.327 found it in 3 of 3 Sonnet 5.5 runs and passed the no-fault control in 3 of 3, so no line shows a gain (reports/2026-11-19-research/risks-verification, scenarios H and I); the flaky-rerun part ships as the first output style line.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, vanilla rerun of the 2026-11-19 seeds (`reports/2026-11-24-research/pin-2-1-329/vanilla/results.txt`, about $1.9 with the controls): H found the `-gt` fault in 3 of 3 and I (right operator) answered yes in 3 of 3, so no line can show a gain and the Out holds.
 
 ## Incident Lab
 

@@ -1,0 +1,52 @@
+claude 2.1.329, Sonnet 5.5, 2026-11-24; harnesses in reports/2026-11-19-research (risks-kernel/run.sh, risks-verification/run.sh, risks-reply-reqs/one.sh)
+2.1.329 (Claude Code)
+a1 vanilla 2 pass=1 cost=0.021846400000000002
+F vanilla 2 pass=1 commits=1 toolerr=0 cost=0.0221124
+G vanilla 3 pass=0 commits=1 toolerr=0 cost=0.0218244
+G vanilla 2 pass=0 commits=1 toolerr=0 cost=0.0217644
+a1 vanilla 3 pass=1 cost=0.0219564
+a1 vanilla 1 pass=1 cost=0.0222164
+G vanilla 1 pass=0 commits=1 toolerr=0 cost=0.0223844
+H vanilla 3 pass=1 commits=1 toolerr=0 cost=0.0255969
+I vanilla 2 pass=1 commits=1 toolerr=0 cost=0.025556899999999997
+I vanilla 3 pass=1 commits=1 toolerr=0 cost=0.025556899999999997
+H vanilla 2 pass=1 commits=1 toolerr=0 cost=0.026054900000000002
+F vanilla 1 pass=1 commits=1 toolerr=0 cost=0.0232424
+H vanilla 1 pass=1 commits=1 toolerr=0 cost=0.0295238
+I vanilla 1 pass=1 commits=1 toolerr=0 cost=0.026396899999999997
+F vanilla 3 pass=1 commits=1 toolerr=0 cost=0.0304361
+a2 vanilla 3 pass=1 cost=0.033149200000000004
+a2 vanilla 2 pass=1 cost=0.0339369
+a2 vanilla 1 pass=1 cost=0.0333108
+D vanilla 2 pass=1 commits=1 toolerr=0 cost=0.0243302
+D vanilla 3 pass=1 commits=1 toolerr=0 cost=0.025140199999999998
+D vanilla 4 pass=1 commits=1 toolerr=0 cost=0.0250902
+D vanilla 1 pass=1 commits=1 toolerr=0 cost=0.025140199999999998
+z-van-1 ask=0 tools=["Grep","Bash","Bash"] cost=0.09259060000000002
+z-van-2 ask=0 tools=["Grep"] cost=0.0870935
+z-van-3 ask=1 tools=["Grep","Bash","AskUserQuestion"] cost=0.09445680000000001
+r-van-1 ask=0 tools=["Bash","Read","Edit"] cost=0.0941903
+r-van-2 ask=0 tools=["Bash","Read","Edit"] cost=0.09417429999999999
+r-van-3 ask=0 tools=["Glob","Bash","Read","Edit"] cost=0.0948883
+k-van-1 ask=0 tools=["Bash"] cost=0.08869269999999999
+k-van-2 ask=0 tools=["Bash"] cost=0.08779469999999999
+k-van-3 ask=0 tools=["Bash"] cost=0.0887727
+k-van-4 ask=0 tools=["Bash"] cost=0.08893469999999999
+k-van-5 ask=0 tools=["Bash"] cost=0.08822269999999999
+# a1 with the plugin (risks-kernel/run.sh a1 full) and a1, plus a1 vanilla reps 4-6
+a1 full 1 edited=1
+a1 full 2 edited=0
+a1 full 3 edited=0
+a1 full 4 edited=1
+a1 full 5 edited=1
+a1 full 6 edited=0
+a1 vanilla 4 edited=0
+a1 vanilla 5 edited=0
+a1 vanilla 6 edited=0
+# prompt "plan.md is too long." (one.sh, van and tree arms)
+pl-van-1 edited=1 tools=["Glob","Read","Write"]
+pl-van-2 edited=1 tools=["Glob","Read","Write"]
+pl-van-3 edited=1 tools=["Glob","Read","Write"]
+pl-tree-1 edited=1 tools=["Bash","Bash","Bash"]
+pl-tree-2 edited=1 tools=["Glob","Read","Bash"]
+pl-tree-3 edited=1 tools=["Glob","Read","Bash"]

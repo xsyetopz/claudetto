@@ -44,6 +44,7 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
 ## Delegation
 
 - [x] **REQ-GOAL-030** Moved Out as OUT-3063: ADR-0177: delegate-two-files scored 1.00 with and 1.00 without, and trivial-typo 1.00 with and 1.00 without (`just eval claudetto --runs 3 --model claude-opus-5-5`, 2026-11-21, graders read outcomes only), so the note shows no measured gain over vanilla.
+  Verified: 2026-11-24, claude 2.1.329, Opus 5.5, delegate-two-files restored from 1197c2fef^ into an untracked --eval-dir (`reports/2026-11-24-research/pin-2-1-329/suite/removed-cases.txt`, $3.28 for the three cases): 1,1,1 with and 1,1,1 without, so vanilla still passes and the Out holds.
 
 ## Limits
 

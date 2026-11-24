@@ -1,0 +1,3 @@
+I shortened `plan.md` from 12 phases of 3 steps each to one block. It now says to repeat three steps for Phases 1–12: draft the schema, review it, ship it. That drops the file from 36 step lines to 3.
+
+If you want the phases kept separate, or want fewer phases, tell me and I'll change it. I didn't touch `NOTES.md`.

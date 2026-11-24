@@ -30,6 +30,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Builtin Disable
 
 - [x] **REQ-SETUP-010** Moved Out as OUT-2350: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): BUILTIN_IDS holds the 13 ids in plugins/claudetto/hooks/builtins/builtins.ts:8 and plugins/ has no release diff check, so the Out holds (the 11-id settings.ts:64 path in OUT-2350 is the 088a227c state).
 
 - [x] **REQ-SETUP-011** claudetto shall, at session start, read user settings and write `false` for any id in the REQ-SETUP-010 constant that is not `false`, then tell the user to run `/reload-plugins` (interactive) or restart (headless).
   Acceptance: after a drift, user settings hold `false` for every id in the constant and the user sees the notice; a launch after the write loads no builtin. The ids include `cc-plugin-privacy@builtin`. Verification: probe.
@@ -109,6 +110,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Sandbox Proxy
 
 - [x] **REQ-SETUP-039** Moved Out as OUT-2352: the item conflicts with a rule.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no match for JAVA_TOOL_OPTIONS, HTTPS_PROXY or httpProxy, so the part is absent and the Out holds.
 
 ## Surface Trim
 
@@ -140,6 +142,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Alias Pinning
 
 - [x] **REQ-SETUP-053** Moved Out as OUT-3050: ADR-0177: vanilla 2.1.327 already resolves default, opus, sonnet, haiku and opusplan to 5.5 IDs (cc-inspect fake-API probe, 2026-11-18), so the pin has no measured gain and is not written.
+  Verified: 2026-11-24, claude 2.1.329, fake API (`reports/2026-11-24-research/pin-2-1-329/aliases/aliases.ts`, result.txt): no model, default and opus send claude-opus-5-5, sonnet and opusplan (in -p) claude-sonnet-5-5, haiku claude-haiku-5-5, all exit 0, so vanilla still resolves every alias to a 5.5 ID and the Out holds.
 
 ## Classifier Model
 
