@@ -118,4 +118,9 @@ describe("tool.describe", () => {
 		expect(text("TaskStop")).toContain("task_id");
 		expect(text("Agent")).toContain("subagent_type");
 	});
+
+	test("names no hidden agent type as the Agent default", () => {
+		// Assert
+		expect(text("Agent")).not.toContain("general-purpose");
+	});
 });

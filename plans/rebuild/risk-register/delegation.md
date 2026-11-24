@@ -1161,5 +1161,24 @@
   Actions: build CONDUCT: count running subagents before a fan-out and queue the rest; size each subagent task so it ends well inside the cache window (RISK-383).
   Trigger: an Agent tool result with the concurrency-limit error.
   Owner: delegation.
-  Status: open 2026-11-23, build CONDUCT.
-  Source: ISSUES-part4.txt:22-23.
+  Evidence: 2026-11-24, claude 2.1.331, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=4`, six background subagents asked for at once (reports/2026-11-24-research/r525/): every run of vanilla and claudetto got 2 refusals. The engine refuses before any plugin hook: a logging `tool.call` hook on `Agent` heard the four admitted calls (0 to 3 live agents) and neither refused one, so the `agent.spawn` refusal of a48e41c24 never fired and was removed.
+  Evidence: a `tool.call` queue (built and unit-tested) heard no refused call, and an Agent text naming the live limit ("At most 4 run at once", quoted back verbatim by Haiku) left the refusals at 2 per run on Haiku (6 runs) and Sonnet (2 runs). Neither shipped (ADR-0177). `turn.step` pins the request's messages, and changing the streamed tool calls is the input rewrite ADR-0099 rules out, so the plugin API has no seam before the engine's check.
+  Evidence: the work still completes: the reply answered all six files in 16 of 17 claudetto runs and 6 of 8 vanilla runs; the two short vanilla runs asked the user to raise the limit or gave no table.
+  Status: open 2026-11-24, engine-held: the refusal comes before every plugin hook in 2.1.331.
+  Trigger: user-held: a Claude Code release with a hook before the concurrent-subagent check, or the user filing that request upstream; then queue at that hook and rerun `reports/2026-11-24-research/r525/run.sh`.
+  Source: ISSUES-part4.txt:22-23; reports/2026-11-24-research/r525/README.md.
+
+- [x] **RISK-532** An Agent call with no `subagent_type` fails under claudetto.
+  Category: delegation.
+  Cause: claudetto's Agent text said "Set subagent_type (default general-purpose)", and `agent.offer` hides general-purpose (ADR-0099), so the default the text names does not exist.
+  Event: 2026-11-24, claude 2.1.331, Haiku 5.5, the RISK-525 probe: 6 untyped Agent calls failed with "Agent type 'general-purpose' not found" in 3 of 7 claudetto runs with the old text, and in 0 of 8 vanilla runs (reports/2026-11-24-research/r525/README.md).
+  Consequence: six failed calls and a turn spent before the model typed its calls.
+  Likelihood: 3. Impact: 2.
+  Existing controls: the engine's answer names the offered agents.
+  Response: mitigate.
+  Actions: the Agent text says to set subagent_type to a listed agent and that an untyped call fails (`plugins/claudetto/hooks/pool/describe.ts`); a test asserts it names no hidden type.
+  Trigger: an Agent result reading "Agent type 'general-purpose' not found".
+  Owner: delegation.
+  Status: mitigated 2026-11-24: the Agent text names no hidden default.
+  Verified: 2026-11-24, claude 2.1.331, Haiku 5.5, `reports/2026-11-24-research/r525/run.sh claudetto <n>`: 0 type errors in 3 runs with the shipped text, 0 in 8 more runs with the same sentence; `claude plugin test plugins/claudetto`: 331 pass, 0 fail.
+  Source: reports/2026-11-24-research/r525/README.md.
