@@ -45,3 +45,4 @@
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:615 (measured).
 
 - [x] **RISK-480** Moved Out as OUT-2348: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -E 'tool\.register' -- plugins/claudetto/hooks/edit` -> no match (exit 1): no perl edit tool ships; edit/perl.ts only adds the diff stat.

@@ -73,6 +73,7 @@
 ## Verification and Honesty
 
 - [x] **RISK-377** Moved Out as OUT-2354: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -i -E 'price|cost_usd|costUsd' -- plugins/claudetto/hooks ':!*__tests__*'` -> no match (exit 1): no price-step or budget hook ships.
 
 ## Cost and Resources
 
@@ -224,6 +225,7 @@
 ## Compaction and Memory
 
 - [x] **RISK-385** Moved Out as OUT-2358: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -i -E '\bttl\b|stale session|cache expir|cold return' -- plugins/claudetto/hooks ':!*__tests__*'` -> no match (exit 1): no stale-session or cold-return hook ships.
 
 ## Cost and Statusline
 

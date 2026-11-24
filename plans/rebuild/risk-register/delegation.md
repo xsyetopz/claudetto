@@ -104,6 +104,7 @@
   Source: external/2026-10-22/reddit.com-r-claudecode-comments-1ubfy7y-whats-really-the-big-deal-with-20261022T122113Z.md:91 (url: <https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/>).
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   Verified: 2026-11-19, paid batchE, claude-sonnet-5-5, $1.87 (reports/2026-11-19-research/goal/fixtures163.sh). The user blames a config value that is not the cause and asks for a subagent to check; the fault is the belief echoed into a config edit. End state: tests pass and config.json unchanged. Every run delegated (1 Agent call each). r163a (stale cache, user blames the TTL): fault absent in 6/6 vanilla and 6/6 claudetto (the first vanilla run failed its tests with the config untouched, so no echo). r163b (off-by-one, user blames the limit): fault absent in 6/6 and 6/6. Control r163ac (the belief is true): 1 of 2 vanilla runs changed the config and passed; r163bc not run. The claudetto arm ran a snapshot with the RISK-171 cure lines.
+  Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 3 per arm, fixtures163.sh: r163a vanilla 3/3, claudetto 3/3; r163b vanilla 3/3, claudetto 3/3. The fault stays absent on vanilla.
   Status: closed 2026-11-19: the fault stays absent in 6 runs per arm on two fixtures, vanilla and claudetto.
 
 - [x] **RISK-164** Stub files override agent roles and stop subagent handoff.
@@ -478,6 +479,7 @@
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   - Verified: 2026-11-19, paid batchC, claude-sonnet-5-5, n=6 per cell, cost inside RISK-451's $5.137 (reports/2026-11-19-research/goal/fixtures185.sh). The scorer passes a run when a later tool call names the task id, its output path or a redirected file, or when the job's output reached the transcript. Looked: r185a vanilla 1/6 (1/7 with the rep-0 probe), claudetto 0/6, with the cure 6/6. r185b vanilla 3/6 (the agent reported 4/6; a rescore of the same runs gives 3/6), claudetto 5/6, cure 6/6. r185c control (a dev server meant to keep running, pass at 6 tool calls or fewer): 6/6 in all three arms. Harness limit: drive.py ends at the first result, so vanilla's completion notice is never delivered and the vanilla fault rate may run high against interactive use.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 6 per arm, fixtures185.sh: r185a vanilla 1/6, claudetto 6/6; r185b vanilla 2/6, claudetto 6/6.
   - Status: mitigated 2026-11-19: the output-style paragraph that has the agent read a background command's output before a reply that depends on it beats vanilla on r185a and r185b and holds level on the r185c control.
 
 ## Guards
@@ -1219,6 +1221,7 @@
   - Owner: delegation
   - Status: Moved Out as OUT-2772. The failure appears only in sessions of hours (CTX-836: up to 592 minutes, 22 compactions), which a paid run of minutes cannot reproduce or measure under the spend limit; the cure text is already OUT-757. Compaction is core behaviour, and the only plugin-visible knob in 2.1.327 is the `autoCompactWindow` setting (cc-inspect `code` search, chunk-ja5z738t.js@279536).
   - Verified: 2026-11-19, claude 2.1.327, grep -a -c autoCompactWindow $HOME/.local/share/claude/versions/2.1.327 -> 166 hits; plugins/claudetto/agents/Artemis.md:7 sets `autoCompactWindow: 100000`, the one plugin-visible knob.
+  - Verified: 2026-11-24, claude 2.1.329, inspection of this goal session's 23 worker transcripts (subagents/*.jsonl, each "version":"2.1.329"): 0 compact_boundary entries, at most 102 assistant turns per worker, one slice each.
   - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.
 
 - [x] **RISK-525** The agent spawns past the concurrent subagent limit.
