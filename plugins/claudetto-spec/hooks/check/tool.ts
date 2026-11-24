@@ -13,7 +13,7 @@ import { gather, LIST_ARGV } from "./gather";
 import { isSpecFile, listPaths } from "./paths";
 import { checkSpecs } from "./spec";
 
-/** The `spec_check` registration: deferred, one optional `path`. */
+/** The `spec_check` registration: inline, one optional `path`. */
 export const SPEC_TOOL = {
 	name: TOOL_NAME,
 	description: TOOL_DESCRIPTION,
@@ -21,7 +21,7 @@ export const SPEC_TOOL = {
 		type: "object",
 		properties: { path: { type: "string", description: PATH_DESCRIPTION } }
 	},
-	isDeferred: true
+	isDeferred: false
 };
 
 /**
