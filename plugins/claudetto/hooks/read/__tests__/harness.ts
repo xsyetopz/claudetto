@@ -27,6 +27,10 @@ export function wire(
 		}
 		return { value: e.as === "bytes" ? { base64: btoa(text) } : text };
 	});
+	// The path-scoped rule lookup: no rules directory, no nested CLAUDE.md, HOME unset.
+	on("fs.exists", (_$, e) => ({ value: e.path in files }));
+	on("fs.ancestors", () => ({ value: [] }));
+	on("env.get", () => ({ value: undefined }));
 	on("process.run", () => ({
 		value: { ...pdf, isStdoutTruncated: false, isStderrTruncated: false }
 	}));

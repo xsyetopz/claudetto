@@ -1,5 +1,6 @@
 import type { EngineInterface, On } from "claude-code";
 
+import { instructionsFor } from "../patch/instructions";
 import { absolute } from "../patch/paths";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
@@ -171,9 +172,22 @@ export async function runRead(
 	if (typeof given !== "string" || given === "") {
 		return { deny: "read needs file_path" };
 	}
-	const path = absolute(await $.session.cwd(), given);
+	const cwd = await $.session.cwd();
+	const path = absolute(cwd, given);
 	try {
-		return { result: await contentOf($, path, input) };
+		const content = await contentOf($, path, input);
+		// The built-in Read loads the file's path-scoped rules and nested CLAUDE.md; hiding it must not drop them.
+		const context = await instructionsFor($, cwd, [path]);
+		if (context.length === 0) {
+			return { result: content };
+		}
+		const extra = context.join("\n\n");
+		const blocks: unknown[] = Array.isArray(content) ? content : [];
+		return {
+			result: Array.isArray(content)
+				? [...blocks, { type: "text", text: extra }]
+				: `${String(content)}\n\n${extra}`
+		};
 	} catch (error) {
 		return {
 			deny: `read failed for ${path}: ${error instanceof Error ? error.message : String(error)}`
