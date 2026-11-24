@@ -9,8 +9,7 @@ const TYPED = new Set(["composer", "bridge", "sdk"]);
 /** What the person reads when a prompt is held back. */
 export const HELD =
 	"claudetto held this prompt back: it holds a credential-shaped value, and a sent prompt is stored " +
-	"in plain text in the session file and goes to the model. Put the value in an environment variable " +
-	"or a secret manager and name the variable instead. To send it as it is, submit the same text again.";
+	"in plain text in the session file and goes to the model. The same text submitted again is sent as it is.";
 
 /**
  * A secret named in prose, as people paste one: "password Hk7#qL9vZ2pW", "the

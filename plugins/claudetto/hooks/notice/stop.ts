@@ -25,7 +25,7 @@ async function notify(
 	details?: string
 ): Promise<void> {
 	await $.ui.notify(
-		`The turn stopped on an API error (${error})${details === undefined || details === "" ? "" : `: ${details}`}. Reply to retry.`,
+		`The turn stopped on an API error (${error})${details === undefined || details === "" ? "" : `: ${details}`}.`,
 		{ title: "claudetto" }
 	);
 }

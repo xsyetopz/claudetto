@@ -88,7 +88,7 @@ export const gitBlock = (attribution: unknown): string =>
 
 /** The session-start notice when both claudetto's and the builtin git instructions are on. */
 export const GIT_CONFLICT =
-	"claudetto: Claude Code's own git instructions are on (includeGitInstructions or CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS), so claudetto's shorter ones stay out to keep one set. Set includeGitInstructions to false in settings to use claudetto's, or turn off claudetto's includeGitInstructions option to keep the builtin ones.";
+	"claudetto: Claude Code's own git instructions are on (includeGitInstructions or CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS), so claudetto's shorter ones stay out to keep one set.";
 
 /**
  * Appends claudetto's git block to the Bash description when its option is on
