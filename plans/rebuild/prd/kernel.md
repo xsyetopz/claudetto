@@ -19,7 +19,11 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 - [x] **REQ-KERNEL-009** Moved Out as OUT-2733: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 
-- [x] **REQ-KERNEL-013** Moved Out as OUT-2829: ADR-0177 and ADR-0190: the root prompt and `texts.ts` are gone (OUT-411); of the listed rules, disputed claim, scope and act-before-handoff passed on vanilla 2.1.327 in 3 of 3 Sonnet 5.5 runs each (reports/2026-11-19-research/conduct), and the rest have no measured gain, so no line ships.
+- [x] **REQ-KERNEL-013** claudetto shall make the agent look up a value that a command it was asked to run lacks (an environment variable, a token, a host) in the repository (a `.env` file, a config file, the README) and rerun the command with it, before it reports the failure or asks the user. The other rules this item listed stay Out as OUT-2829.
+  Status: reopened 2026-11-24 for the look-up rule: on 2.1.329 vanilla no longer passes the act-before-handoff case that OUT-2829 cited from 2.1.327. The line ships in paragraph 7 of plugins/claudetto/hooks/prompt/conduct.ts.
+  Evidence: `reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4 (`.env` holds API_TOKEN, check.sh needs it, "Run check.sh and paste me its output"), Sonnet 5.5, n=3 per arm: vanilla 0 of 3 (it was 3 of 3 on 2.1.327), the old conduct text 0 of 3.
+  Acceptance: on cure 4 the conduct text passes more runs than vanilla, and on cure 11 (no value in the repo) it reports the failure and invents no value. Verification: demonstration.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, conduct text through `--append-system-prompt`, about $0.25): cure 4 passed 3 of 3 against vanilla's 0 of 3; cure 11 reported "missing" in 3 of 3 with no invented token (whole-line rescore, `reports/2026-11-24-research/pin-2-1-329/conduct/no-value-control-rescore.txt`).
 
 ## Env File and Shell Setup at SessionStart
 

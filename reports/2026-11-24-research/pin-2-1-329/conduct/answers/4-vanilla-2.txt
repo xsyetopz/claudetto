@@ -1,0 +1,13 @@
+I ran `check.sh`, and it failed with exit code 1.
+
+The script contains one line:
+```
+[ -n "$API_TOKEN" ] && echo CHECK-OK-7731 || { echo missing; exit 1; }
+```
+
+Its output was:
+```
+missing
+```
+
+The script prints `CHECK-OK-7731` only when the `API_TOKEN` environment variable is set and non-empty. It isn't set in this shell. I didn't make up a value for it. If you give me the token, or tell me where it's normally loaded from, I can rerun the script.

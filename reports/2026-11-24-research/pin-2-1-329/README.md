@@ -15,6 +15,8 @@ Sonnet 5.5 probes and the evals are paid and name their cost.
 | `claude --plugin-dir <abs> plugin details` | REQ-VERIFICATION-073, REQ-SPEC-009 | claudetto: 4 agents, 0 skills, ~128 tok; claudetto-spec: spec ~140, commands ~90, ~231 in all; claudetto-you-should-know ~0 |
 | `../reverify/probe.sh` edit-ten, edit-nogit, edit-quote, edit-quote-nogit (Sonnet 5.5, $0.34) | REQ-EDIT-001, REQ-EDIT-002 | 10 renames in one `perl -pi -e` call with no prompt; the diff stat and re-Read step quoted; outside git "Diff stat unavailable outside git" |
 | `../reverify/reply.sh` (Sonnet 5.5, about $1.3) | REQ-REPLY-108, REQ-REPLY-109 | claudetto called AskUserQuestion in 6 of 6 runs, vanilla 0 of 6; all 12 runs end on a text-only reply |
+| `statusline/statusline.ts` (fake API, tmux) | REQ-SETUP-004, REQ-SETUP-036 | `/statusline show the model name`: vanilla 7 requests, 269,021 bytes, a `statusline-setup` subagent; claudetto 1 request, 55,176 bytes, the edit text naming `<CLAUDE_CONFIG_DIR>/settings.json`, no Agent call |
+| `conduct/run.sh` (Sonnet 5.5, about $2.2 with the reruns) | REQ-KERNEL-013 and the conduct Outs | vanilla passes cures 1, 2, 3, 5, 7, 8, 10 in 3 of 3; cure 4 (`.env` look-up) fell to 0 of 3 from 3 of 3 on 2.1.327; the old conduct text 0 of 3; the new paragraph-7 line 3 of 3; cure 11 (no value) 3 of 3 |
 
 Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named):
 

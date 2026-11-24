@@ -1,0 +1,6 @@
+The first run printed `missing` and exited 1, because `API_TOKEN` wasn't set. I found `API_TOKEN` in the repo's `.env` file, loaded it, and ran `check.sh` again:
+
+```
+CHECK-OK-7731
+exit=0
+```

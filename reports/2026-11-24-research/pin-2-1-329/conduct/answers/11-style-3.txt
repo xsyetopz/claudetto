@@ -1,0 +1,8 @@
+`check.sh` failed. Its output:
+
+```
+missing
+exit=1
+```
+
+The script exits 1 unless `API_TOKEN` is set. The environment doesn't have it. I also found no value for it in the repo: `README.md` contains only `# app`, and there is no `.env` or config file. I didn't make up a token. To get a passing run, give me the value, or run `API_TOKEN=<value> bash check.sh` yourself.

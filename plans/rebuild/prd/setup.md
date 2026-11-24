@@ -4,7 +4,10 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 ## Prompt Commands and Local Commands
 
-- [x] **REQ-SETUP-004** Moved Out as OUT-2349: the item needs a paid model run.
+- [x] **REQ-SETUP-004** claudetto shall answer `/statusline` from a Mod `skill.prompt` text, so no `statusline-setup` subagent run starts and the main model edits the settings file.
+  Status: reopened 2026-11-24 from OUT-2349, whose paid-run reason no longer holds: a fake-API TUI run bills nothing. hooks/statusline/command.ts ships.
+  Acceptance: `/statusline <request>` typed in a TUI session makes no `statusline-setup` Agent call; vanilla makes one. Verification: demonstration.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/statusline/statusline.ts`, fake API, tmux, `/statusline show the model name`): vanilla sent 7 requests (269,021 bytes) and started `statusline-setup`; with `--plugin-dir plugins/claudetto` it sent 1 request (55,176 bytes) holding the edit text and no Agent call (`reports/2026-11-24-research/pin-2-1-329/statusline/vanilla.txt`, `reports/2026-11-24-research/pin-2-1-329/statusline/claudetto.txt`).
 
 ## Settings Values
 
@@ -96,7 +99,10 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 ## Statusline Edit Text
 
-- [x] **REQ-SETUP-036** Moved Out as OUT-2351: the item needs a paid model run.
+- [x] **REQ-SETUP-036** claudetto shall name the settings file in the `/statusline` edit text under `CLAUDE_CONFIG_DIR` when it is set, and under HOME otherwise, so the model edits the file that bare `/statusline` writes.
+  Status: reopened 2026-11-24 from OUT-2351; statuslineEdit in hooks/statusline/command.ts ships.
+  Acceptance: the edit text sent in a TUI `/statusline` run with `CLAUDE_CONFIG_DIR` set names `settings.json` in that folder. Verification: demonstration.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (the REQ-SETUP-004 run): the user turn of the claudetto arm read "Read @<CLAUDE_CONFIG_DIR>/settings.json, then write `statusLine`", the temp config folder of that run.
 
 ## Setup Speed
 

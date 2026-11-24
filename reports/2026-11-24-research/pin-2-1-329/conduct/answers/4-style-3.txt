@@ -1,0 +1,7 @@
+The first run would have failed with `missing` because `API_TOKEN` wasn't set. I found it in the repo's `.env`, loaded it, and reran. This is the output:
+
+```
+CHECK-OK-7731
+```
+
+Exit status was 0.
