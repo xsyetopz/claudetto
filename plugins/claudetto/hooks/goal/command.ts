@@ -2,12 +2,7 @@ import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { pathsIn } from "./paths";
-import { endGoal, setGoal, type Tracker } from "./state";
-
-/** What the model reads once, when a goal is set, because three of the goal tools sit behind ToolSearch. */
-const TOOLS_NOTE =
-	"claudetto: mcp__claudetto__pause_goal is loaded; get_goal, set_goal and clear_goal are available through ToolSearch. " +
-	"When the condition is met, call clear_goal with the checks you ran.";
+import { endGoal, setGoal, TOOLS_NOTE, type Tracker } from "./state";
 
 /** The warning for paths in a condition that do not exist. */
 export const missingNote = (missing: readonly string[]): string =>

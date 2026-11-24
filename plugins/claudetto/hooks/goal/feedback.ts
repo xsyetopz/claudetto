@@ -2,7 +2,15 @@ import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
-import { capNote, capOf, endGoal, isNearCap, type Tracker } from "./state";
+import {
+	capNote,
+	capOf,
+	endGoal,
+	type Goal,
+	isNearCap,
+	TOOLS_NOTE,
+	type Tracker
+} from "./state";
 
 /** The head of the row the engine appends each time the goal's Stop hook blocks (probed on 2.1.330). */
 const FEEDBACK = "Stop hook feedback:\n[";
@@ -55,6 +63,20 @@ function registerTurn(on: On, tracker: Tracker): void {
 }
 
 /**
+ * The notes a block row carries: the tools note on the goal's first block,
+ * because under `-p` the set-time copy never reaches the model (RISK-531),
+ * and the cap note near the cap.
+ */
+function blockNotes(goal: Goal, cap: number): string[] {
+	const notes = [
+		...(goal.announced === true ? [] : [TOOLS_NOTE]),
+		...(isNearCap(goal.blocks, cap) ? [capNote(goal.blocks, cap)] : [])
+	];
+	goal.announced = true;
+	return notes;
+}
+
+/**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
  * evidence or pause. It also notices when the evaluator judged the goal met,
@@ -89,7 +111,8 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 		tracker.stopping = false;
 		goal.blocks += 1;
 		const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
-		if (!isNearCap(goal.blocks, cap)) {
+		const notes = blockNotes(goal, cap);
+		if (notes.length === 0) {
 			return next(e);
 		}
 		return next({
@@ -98,7 +121,7 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 				...e.message,
 				content: [
 					...e.message.content,
-					{ type: "text", text: capNote(goal.blocks, cap) }
+					...notes.map((note) => ({ type: "text" as const, text: note }))
 				]
 			}
 		});
