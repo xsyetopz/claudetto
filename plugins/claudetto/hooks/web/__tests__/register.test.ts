@@ -73,12 +73,11 @@ describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
 
 		// Act
 		const offers = await Promise.all([
-			$.tool.offer({ tool: "WebFetch", provider, for: "list" }),
-			$.tool.offer({ tool: "WebSearch", provider, for: "list" }),
+			$.tool.offer({ tool: "WebFetch", provider }),
+			$.tool.offer({ tool: "WebSearch", provider }),
 			$.tool.offer({
 				tool: "WebFetch",
 				provider,
-				for: "list",
 				agentId: "a1",
 				subagentType: "Explore"
 			})
@@ -96,8 +95,8 @@ describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
 		const ask = (tool: string, agent?: string) =>
 			$.tool.offer(
 				agent === undefined
-					? { tool, provider, for: "list" }
-					: { tool, provider, for: "list", agentId: "a1", subagentType: agent }
+					? { tool, provider }
+					: { tool, provider, agentId: "a1", subagentType: agent }
 			);
 
 		// Act
