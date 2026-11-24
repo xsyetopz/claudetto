@@ -107,8 +107,14 @@ eval plugin *args: eval-preflight
     fi
     log="$(mktemp)"
     trap 'rm -f "$log"' EXIT
+    # The baseline is Haiku 5.5 at high effort with a 100,000-token window: an uncapped Haiku 5.5 runs
+    # on its 1M window, which bills at five times the rate. Each eval child gets a fresh config dir, so
+    # a user's modelSettings never reach it, and the cap travels as an env var. The env var for effort
+    # beats --effort and settings. A --model in the args, or a set env var, overrides each default.
+    export CLAUDE_CODE_EFFORT_LEVEL="${CLAUDE_CODE_EFFORT_LEVEL:-high}"
+    export CLAUDE_CODE_AUTO_COMPACT_WINDOW="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-100000}"
     # tee streams the output; PIPESTATUS[0] keeps the eval's own exit status, which the pipe would otherwise hide.
-    claude plugin eval plugins/{{ plugin }} "${allow[@]+"${allow[@]}"}" --scaffold --ablation with-without --no-publish --keep-temp {{ args }} 2>&1 | tee "$log"
+    claude plugin eval plugins/{{ plugin }} "${allow[@]+"${allow[@]}"}" --scaffold --ablation with-without --no-publish --keep-temp --model claude-haiku-5-5 {{ args }} 2>&1 | tee "$log"
     rc="${PIPESTATUS[0]}"
     if grep -q 'not granted' "$log"; then
         echo "FAILED: the run printed 'not granted', so a case ran without a tool it lists and its scores are invalid (#102); add the missing grant and rerun" >&2
@@ -118,9 +124,12 @@ eval plugin *args: eval-preflight
 
 # The cases stay out of the repo and out of any agent's context (ADR-0193).
 # Run the held-out cases from ~/.claudetto-holdout/<plugin> against a copy of the plugin, outside the sandbox.
-eval-holdout plugin model="claude-opus-5-5" *args: eval-preflight
+eval-holdout plugin model="claude-haiku-5-5" *args: eval-preflight
     #!/usr/bin/env bash
     set -euo pipefail
+    # The same Haiku 5.5 baseline as `eval`: high effort, a 100,000-token window (5x cost without it).
+    export CLAUDE_CODE_EFFORT_LEVEL="${CLAUDE_CODE_EFFORT_LEVEL:-high}"
+    export CLAUDE_CODE_AUTO_COMPACT_WINDOW="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-100000}"
     src="$HOME/.claudetto-holdout/{{ plugin }}"
     [[ -d "$src" ]] || { echo "$src is missing: held-out cases live there, one case folder each" >&2; exit 1; }
     work="$(mktemp -d)"
@@ -141,8 +150,8 @@ eval-holdout plugin model="claude-opus-5-5" *args: eval-preflight
     for f in "$work"/plugin/evals/results/*/aggregate-result.json; do
         [[ -f "$f" ]] || continue
         # The result JSON names no model (claude 2.1.330) and the traces go with the scaffolds, so the pin is recorded.
-        jq --arg model "{{ model }}" \
-            '{model: $model} + . | .cases |= map({name, aggregates, arms: (.arms | map_values(map({score, passed, costUsd, turns, error})))})' \
+        jq --arg model "{{ model }}" --arg effort "$CLAUDE_CODE_EFFORT_LEVEL" --arg window "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" \
+            '{model: $model, effort: $effort, window: $window} + . | .cases |= map({name, aggregates, arms: (.arms | map_values(map({score, passed, costUsd, turns, error})))})' \
             "$f" >"$keep/holdout-$(basename "$(dirname "$f")").json"
         echo "kept $keep/holdout-$(basename "$(dirname "$f")").json"
     done
