@@ -1891,3 +1891,19 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r522/run.sh`: vanilla Haiku named the CLAUDE.md probe rule and left the probe outside the repo in 3 of 3 runs; Sonnet repaired it in 3 of 3.
   Status: mitigated 2026-11-24: the Claudetto output style says a breach of a CLAUDE.md or user rule by this session's work is repaired in the same turn and reported as repaired (`plugins/claudetto/output-styles/claudetto.md:17`). It acts only with that style selected.
   Verified: 2026-11-24, `run.sh claudetto 1..6 haiku` and `1..3 sonnet`: 0 of 9 runs left the probe outside the repo, and each test the agent wrote exits 0 (`reports/2026-11-24-research/r522/README.md`).
+
+- [x] **RISK-535** A shipped line moves to another prompt surface without a measured case and loses its effect.
+  Category: prompt surface.
+  Cause: 33f725c3a moved the AskUserQuestion paragraph from the output style to the tool description; the move-2 eval had no case where the user owns a choice.
+  Event: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/reverify/reply.sh`: on the test-runner prompt claudetto called `AskUserQuestion` in 3 of 6 runs, and the misses ended on a prose question.
+  Consequence: the user answers a choice in reply text, which the question dialog would have recorded (RISK-293).
+  Likelihood: 3. Impact: 2.
+  Existing controls: REQ-REPLY-108; REQ-TOOLS-031 asks that the moved text score no lower.
+  Response: mitigate.
+  Actions: put the paragraph back in the style; keep a paragraph on the surface where it measured higher.
+  Trigger: a reply that ends on a question with options while the user owns the choice.
+  Owner: reply.
+  Evidence: same run, vanilla called `AskUserQuestion` in 0 of 6 runs on the two prompts.
+  Status: mitigated 2026-11-24: the line is in `plugins/claudetto/output-styles/claudetto.md:21`, and `hooks/pool/question.ts` is removed. It acts only with the Claudetto style selected.
+  Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, `reply.sh` test-runner prompt: 6 of 6 runs on a plugin copy with the line in the style and 3 of 3 on the committed plugin called `AskUserQuestion`.
+  Source: `reports/2026-11-24-research/reverify/README.md`; commit 33f725c3a.

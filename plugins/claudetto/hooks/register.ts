@@ -16,7 +16,6 @@ import { registerPatch } from "./patch/tool";
 import { registerToolDescribe } from "./pool/describe";
 import { registerMessagingDescribe } from "./pool/messaging";
 import { registerToolOffer } from "./pool/offer";
-import { registerQuestionRule } from "./pool/question";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
 import { registerStart } from "./settings/start";
@@ -29,7 +28,6 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerGuards(on, options);
 	registerGit(on, options);
 	registerBashRecipes(on);
-	registerQuestionRule(on);
 	registerTrailer(on, options);
 	registerPerl(on);
 	registerContext(on);
