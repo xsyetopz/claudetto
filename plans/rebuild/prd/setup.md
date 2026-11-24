@@ -1,5 +1,7 @@
 # Setup Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-SETUP-022, REQ-SETUP-024, REQ-SETUP-027, REQ-SETUP-056, REQ-SETUP-071; test files `plugins/claudetto/hooks/guards/wall/__tests__/fill.test.ts`, `plugins/claudetto/hooks/settings/__tests__/defaults.test.ts`, `plugins/claudetto/hooks/settings/__tests__/owned.test.ts`, `plugins/claudetto/hooks/settings/__tests__/start.test.ts`.
+
 ## Prompt Commands and Local Commands
 
 - [x] **REQ-SETUP-004** Moved Out as OUT-2349: the item needs a paid model run.
@@ -30,6 +32,7 @@
   Source: user decision, 2026-11-16; probe: cc-inspect `cli`, claude 2.1.325, a `tool.call` hook writes `<config-dir>/settings.json` before a `Skill plugin-authoring` call, 2026-11-16 (old plan); see [ADR-0057](../adr/0057-builtin-disable-in-user-settings.md); user answer through AskUserQuestion, 2026-11-16 18:04 UTC, all 14 builtins off, perl allowed with a diff hook, settings rewritten (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5034); probe, `claude` 2.1.325, 2026-11-16, cc-inspect `cli` `--settings` with all 14 ids `false` gave `[]` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352).; probe: claude 2.1.327, 2026-11-18, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: the first run logged "claudetto turned off 13 builtin plugin(s)" and wrote all 13 ids `false`; the second run loaded 0 `@builtin` hooks modules
   Verified: PASS: `$C plugin test plugins/claudetto` 105 pass (hooks/builtins/**tests**/builtins.test.ts included), binary 2.1.327, 2026-11-19. Probe: cc-inspect cli `-p go` request holds the plugin-authoring builtin skill; with --settings setting all 13 `@builtin` ids false, the request holds none, so a launch with those values loads no builtin.
   Verified: 2.1.331, 2026-11-24: reports/2026-11-24-research/reverify/steady.ts, two `claude -p hi` launches in one fresh CLAUDE_CONFIG_DIR on the fake API: launch 1 showed "claudetto turned off 13 builtin plugin(s)… They stay loaded until the next start."; launch 2's request does not list the plugin-authoring builtin skill; `claude plugin test plugins/claudetto` 333 pass -> PASS.
+  Verified: 2026-11-24, claude 2.1.329, fake API, `bun reports/2026-11-24-research/reverify/steady.ts` (two `claude -p hi` launches in one empty `CLAUDE_CONFIG_DIR`): launch 1 wrote the builtin ids as `false` and showed the notice; launch 2's request listed no builtin skill or tool (no plugin-authoring skill, Workflow, ScheduleWakeup, ReportFindings, CronCreate or EnterPlanMode). `cc-plugin-privacy` is in the constant (`hooks/builtins/builtins.ts:12`).
 
 ## Tool Text Keeps the Shorter Text
 
@@ -75,6 +78,7 @@
   Verified: probe, claude 2.1.327, 2026-11-18, fake API on :18431: after the fill the next `-p` request held 9 tools and 31,781 bytes, the seven denied tools absent (abed830ed). Revised: ExitPlanMode stays allowed, because a plan the user starts with shift-tab is presented through it, so seven tools are denied.
   Verified: PASS: cc-inspect cli with --settings carrying the 7-tool deny list: the first request lacked Workflow, ScheduleWakeup and ReportFindings (Cron* deferred); caveat: not the claudetto-written file. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
   Verified: 2.1.331, 2026-11-24: steady.ts launch 2, on the claudetto-written user settings (no --settings), sent 9 tools (Agent Bash ListAgents Read Skill ToolSearch mcp__claudetto__patch DeferredToolPlaceholder mcp__claudetto__pause_goal), 40,217 bytes; none of the seven denied tools is sent and the body names no CronCreate or EnterPlanMode -> PASS.
+  Verified: 2026-11-24, claude 2.1.329, fake API, `bun reports/2026-11-24-research/reverify/steady.ts`: launch 2's first request sent 9 tools (Agent, Bash, ListAgents, Read, Skill, ToolSearch, `mcp__claudetto__patch`, DeferredToolPlaceholder, `mcp__claudetto__pause_goal`), 40,569 request bytes, none of the seven, and stderr held no "not matched" rule warning.
 
 ## Temp Folder Rule
 
@@ -112,6 +116,7 @@
   Source: openspec/specs/version-floor/spec.md:8; openspec/specs/version-floor/spec.md:27; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1454; openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:768; plugins/claudetto/hooks/features/setup/settings.ts:19@088a227c; external/2026-11-16/reddit.com-r-claudecode-comments-1xvw576-claude-code-21323-experimental-20261114T144303Z.md:23 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xvw576/claude_code_21323_experimental_code_mode_claude/>); openspec/changes/archive/2026-11-16-2-1-323/design.md:30.
   Verified: PASS (acceptance rewritten, option 2): `$C plugin validate` passes for plugins/claudetto, plugins/claudetto-openspec (warnings) and plugins/claudetto-you-should-know; all three plugin.json hold engines claude-code >=2.1.327; grep of plugins/*/hooks for version reads and minimumVersion finds none; binary 2.1.327, 2026-11-19.
   Verified: 2.1.331, 2026-11-24: all three plugin.json files carry `engines["claude-code"]` `">=2.1.329"`, raised by commit 30edb0e9f (chore: raise the Claude Code floor to 2.1.329), so the requirement text now names that floor; `claude plugin validate --strict` exits 0 for all three plugins; the only `.version` read in plugins/*/hooks is `$.state` ifVersion in claudetto-you-should-know's store.ts:57, a state schema version, not the running version -> PASS.
+  Verified: claude 2.1.329, 2026-11-24: `claude plugin validate --strict plugins/<p>` exits 0 for all three plugins; each plugin.json holds `engines["claude-code"]` ">=2.1.329"; `grep -rnE "minimumVersion|\.version\b" plugins/*/hooks` outside tests finds only the `$.state` ifVersion at plugins/claudetto-you-should-know/hooks/shared/store.ts:57, no version check.
 
 ## Pinned Tool Versions
 

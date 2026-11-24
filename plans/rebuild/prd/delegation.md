@@ -1,5 +1,7 @@
 # Delegation Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-DELEGATION-026; test files `plugins/claudetto/hooks/delegation/__tests__/spawn.test.ts`.
+
 ## Questions to the User
 
 ## Checking Worker Output

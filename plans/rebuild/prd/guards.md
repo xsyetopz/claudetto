@@ -1,5 +1,7 @@
 # Guards Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-GUARDS-001, REQ-GUARDS-083, REQ-GUARDS-020, REQ-GUARDS-034, REQ-GUARDS-035, REQ-GUARDS-058, REQ-GUARDS-063, REQ-GUARDS-070, REQ-GUARDS-071, REQ-GUARDS-080, REQ-GUARDS-081; test files `plugins/claudetto/hooks/context/__tests__/context.test.ts`, `plugins/claudetto/hooks/guards/__tests__/memory.test.ts`, `plugins/claudetto/hooks/guards/redact/__tests__/prompt.test.ts`, `plugins/claudetto/hooks/guards/wall/__tests__/fill.test.ts`, `plugins/claudetto/hooks/guards/wall/__tests__/wall.test.ts`, `plugins/claudetto/hooks/patch/__tests__/memory.test.ts`, `plugins/claudetto/hooks/settings/__tests__/defaults.test.ts`.
+
 ## Secret Handling
 
 - [x] **REQ-GUARDS-001** claudetto shall never seek confidential information (no `cat .env`, key grep, or listing credential stores; deny Read and Bash patterns for `.env` and credential paths; deny `Read(<wall>/**)` plus a sandbox credential read-deny) and never reproduce it in output, logs, source, commits, memory, or a brief. A call that reads `.env` is denied with "This call reads `.env`, which can hold secrets", without a retry by the agent. Secret-shaped test files get fakes in a temp dir. claudetto may read env files but the model never sees values. Encoded forms slip past a grep hook; do not hold a datum the model need not (Opus put the user's email into an outbound User-Agent header).
