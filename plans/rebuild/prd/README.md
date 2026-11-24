@@ -2833,6 +2833,7 @@ ADR-0192 brings the block back In as `prd/spec.md` under the name claudetto-spec
 
 - [x] **OUT-863** Out (RISK-403, ADR-0190): an agent that narrows a general fix to one tool is a conduct fault; the reply and kernel blocks own it, and it stays open there until a dogfood session shows it absent. Setup has no part that carries it.
   Acceptance: none in setup. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
+  Evidence: 2026-11-24, claude 2.1.329: the fault reproduces on vanilla in 9/9 runs, and a conduct sentence in the defect paragraph cures it in 7/9 (9/9 at the shared env.sh); RISK-403 carries the part (`reports/2026-11-24-research/pin-2-1-329/r403/README.md`).
 
 - [x] **OUT-864** Out (RISK-413, ADR-0190): an agent that edits user settings or reverts work with no order is a conduct fault owned by the guards and kernel blocks, not by setup.
   Acceptance: none in setup. Basis: decision, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.

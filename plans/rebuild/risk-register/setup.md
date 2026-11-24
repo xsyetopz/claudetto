@@ -175,6 +175,9 @@
   - Owner: setup
   - Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
   - Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
+  - Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, accepted-reply-c/run.sh 403: vanilla sets the proxy in gradle.properties only in 9/9 runs and leaves the shared env.sh, npm, pip and curl untouched; the closed status above did not hold.
+  - Status: mitigated 2026-11-24: the defect paragraph in plugins/claudetto/hooks/prompt/conduct.ts has a fault with a shared cause fixed at that cause and in each tool that reads it; 7/9 runs set the proxy in 3 or more of the 5 files and 9/9 in env.sh, against 0/9 and 0/9 on vanilla.
+  - Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run.sh 403, vanilla reps 1-3 and 11-16, claudetto reps 21-29; reports/2026-11-24-research/pin-2-1-329/r403/README.md.
   - Source: observed in transcript, 2026-11-13; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14535.
 
 - [x] **RISK-404** A claudetto MCP tool disconnects in a session.
