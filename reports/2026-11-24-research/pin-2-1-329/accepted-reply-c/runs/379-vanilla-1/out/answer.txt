@@ -1,0 +1,9 @@
+`node summarize.js` failed with exit code 2 and printed this error:
+
+```
+ANTHROPIC_API_KEY is not set
+```
+
+The script needs an Anthropic API key in its environment, and there isn't one in this shell, so it printed no summary.
+
+You can export the key and have me rerun it, or run `ANTHROPIC_API_KEY=... node summarize.js` yourself. If the key is in a `.env` file or somewhere else, tell me where and I'll load it from there. I can also read through `summarize.js` first to see how it looks for the key.

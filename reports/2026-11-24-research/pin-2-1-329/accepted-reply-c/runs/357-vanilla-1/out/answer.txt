@@ -1,0 +1,7 @@
+I wrote `config.schema.json`, a draft-07 schema for `config.example.json`. I haven't run a validator against the example.
+
+- **`port`:** an integer from 1 to 65535.
+- **`host`:** a string.
+- **`debug`:** a boolean.
+
+All three fields are required, and extra properties are rejected (`additionalProperties: false`). If you want to allow extra keys or make some fields optional, say so and I'll loosen it.

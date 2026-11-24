@@ -1,0 +1,9 @@
+`node summarize.js` failed and printed no summary. It exited with code 2 and this message:
+
+```
+ANTHROPIC_API_KEY is not set
+```
+
+The script sends `notes.txt` to the Anthropic API, so it needs that key. I looked in the repo for one. There is no `.env`, config file or README, and the only commit is the seed. The key is yours to give, and I won't guess at one.
+
+You can either run `ANTHROPIC_API_KEY=<your key> node summarize.js` yourself, or tell me where the key is kept and I'll rerun it. `notes.txt` is a single line: "Meeting: ship v2 on Friday; Dana owns the changelog."

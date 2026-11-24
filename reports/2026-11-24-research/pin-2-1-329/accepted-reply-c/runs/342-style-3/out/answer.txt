@@ -1,0 +1,1 @@
+Each function now returns its old value plus 10. I ran them and got `a()` = 11, `b()` = 12 and `c()` = 13. I changed only `a.js`, `b.js` and `c.js`.

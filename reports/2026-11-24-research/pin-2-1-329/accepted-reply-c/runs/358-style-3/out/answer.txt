@@ -1,0 +1,5 @@
+I added tinylib 1.0.0 to the project. `require('tinylib').hi()` returns `"hi"` both in the scratch folder and in the project.
+
+- **Scratch check:** I extracted the tarball and ran `npm install` of it in a throwaway project under `/tmp/claude-501/`. Install succeeded with 0 vulnerabilities, and `require('tinylib')` exports only `hi`. I deleted the scratch folder afterwards.
+- **Project change:** `package.json` now has `"tinylib": "file:vendor/tinylib-1.0.0.tgz"` under `dependencies`. I ran `npm install --ignore-scripts ./vendor/tinylib-1.0.0.tgz` there.
+- **Uncommitted:** `package.json` is modified and `package-lock.json` is new. I haven't committed either. `node_modules` is already in `.gitignore`.

@@ -1,0 +1,7 @@
+I added `last` to `a.js` and an assertion for it in `test.js`, but `node test.js` fails. The failure is in the existing `b.sum` assertion, not in my change.
+
+- **Change:** `exports.last = (xs) => xs[xs.length - 1];` in `a.js`, and `assert.strictEqual(a.last([4, 5]), 5);` in `test.js`.
+- **Failure:** `b.sum([1, 2, 3])` returns 5 instead of 6. The loop in `b.js:1` starts at `i = 1`, so it skips the first element. It should start at `i = 0`.
+- **Not confirmed:** The `b.sum` assertion throws first, so the run never reaches my new assertion and I haven't seen it pass.
+
+I left `b.js` alone because it was outside what you asked for. Do you want me to change the loop to start at `i = 0` and re-run the tests?

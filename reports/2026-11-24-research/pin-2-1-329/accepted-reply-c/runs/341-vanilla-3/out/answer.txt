@@ -1,0 +1,8 @@
+I wrote `PLAN.md` at the repo root. The repo only has a one-line README ("importer for rows"), so there's no importer code, language or input format to build the plan on. I kept it format-agnostic and listed what needs deciding before implementation.
+
+The plan has these parts:
+- **Behavior:** skip rows where the id is missing, null, empty or whitespace-only. Keep id `0`. Log one line per skipped row with its line number, and keep importing after a skip.
+- **Key design point:** test for blank explicitly, not by truthiness, because truthy checks would drop `0`. The plan spells out the check to use.
+- **Line numbers:** these are 1-based source-file lines, so with a header the first data row is line 2. It leaves open which line to log when a quoted CSV field makes one record span several lines.
+- **Implementation steps and tests:** the tests cover blank, whitespace-only and missing ids, id `0` as a number and as a string, a mixed file, header offset, an all-blank file, and a check that log lines equal skipped rows.
+- **Open questions:** input format and language, which logger and level (the plan assumes WARN), whether to add a skipped-row summary (not requested, so no), and whether ids like `"00"` or `"0.0"` should count as zero.

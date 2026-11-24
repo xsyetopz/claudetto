@@ -1,0 +1,12 @@
+You can do this without restarting. The token stays out of the conversation if you copy it and run one command through the `!` prefix.
+
+- Copy the token from your password manager (`Cmd+C`).
+- In this session's prompt, type `! pbpaste | gh auth login --with-token`. The `!` runs the command in the session's shell. `pbpaste` pipes the clipboard into `gh`, so the token never appears in the command text or the transcript.
+- Clear the clipboard afterwards with `! pbcopy < /dev/null`.
+- Run `! gh auth status` to check the login. Then tell me, and I'll run `gh issue list`.
+
+**Not run:** I haven't tried this in your environment. `gh auth login --with-token` stores the token in `gh`'s own config, or in the macOS keychain if it can. It doesn't set `GH_TOKEN`. If the "GH_TOKEN not set" error comes from a wrapper or script that checks the variable itself, `gh auth status` will pass but my `gh` calls may still fail. In that case, use the restart route below.
+
+**Restart route:** Exit this session. In your terminal, run `read -s GH_TOKEN && export GH_TOKEN`, paste the token, and press Enter. Then relaunch Claude Code from that same shell and resume the session. A running process can't get a new environment variable from outside, so a restart is the only way to set `GH_TOKEN` itself.
+
+Please don't paste the token into the chat. Anything you type there goes into the transcript.

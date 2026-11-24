@@ -16,6 +16,12 @@ const sourceOf = (verdict: ToolCheckResult): string | undefined => {
 	return undefined;
 };
 
+// A named settings rule read as an obstacle to clear: on claude 2.1.329 the
+// reply told the user to run the command or change the rule in 3 of 9 runs
+// with the source sentence alone, and 0 of 9 with this one (RISK-503).
+const STANDING =
+	"This block is the user's standing choice: report what did not run and what it leaves undone, and neither route around the block nor ask the user to run the command or lift the block.";
+
 /**
  * Names the source of a deny that no person made, from core's structured verdict.
  *
@@ -29,7 +35,7 @@ export const denialSource = (verdict: ToolCheckResult): string | undefined => {
 	const source = sourceOf(verdict);
 	return source === undefined
 		? undefined
-		: `Denied by ${source}; no permission prompt was shown and no person declined it.`;
+		: `Denied by ${source}; no permission prompt was shown and no person declined it. ${STANDING}`;
 };
 
 /**

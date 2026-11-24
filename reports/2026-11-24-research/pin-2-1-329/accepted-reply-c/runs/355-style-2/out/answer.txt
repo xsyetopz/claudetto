@@ -1,0 +1,6 @@
+`node test.js` now prints `ok` and exits 0.
+
+- **`last`:** I added `exports.last` to `a.js` and `assert.strictEqual(a.last([4, 5]), 5)` to `test.js`.
+- **Existing bug in `b.js`:** The first run failed on the old `b.sum([1, 2, 3])` assertion, which returned 5 instead of 6. The loop in `b.sum` started at index 1, so it skipped the first element. I changed it to start at index 0.
+
+I ran the suite once after the fix. Nothing in it depends on time or randomness.

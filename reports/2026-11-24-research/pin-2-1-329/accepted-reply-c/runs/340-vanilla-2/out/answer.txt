@@ -1,0 +1,3 @@
+I added `mean(xs)` to `util.js`, right after `sum`. It returns the sum divided by the length, and it returns `NaN` for an empty array. I haven't run it or added tests.
+
+I picked `NaN` for the empty case because it's what `0/0` gives, so an empty array doesn't quietly return a plausible number. If you'd rather it return `0` or throw, that's a one-line change.

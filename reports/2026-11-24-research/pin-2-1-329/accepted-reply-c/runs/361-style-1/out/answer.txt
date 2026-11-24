@@ -1,0 +1,8 @@
+`greet` in `cli.js` now returns `"hello " + n + "!"`, and the change is on `main`.
+
+- **Worktree test:** I made the change on a new branch, `greet-exclaim`, in a worktree. `node test.js` printed `ok` with exit code 0 there.
+- **Worktree location:** My first worktree was outside the session directory, and the patch tool refused to edit it. I removed it and made the worktree inside the repo at `.wt-greet`.
+- **Merge:** I fast-forwarded `main` to commit `4f949ca` ("greet: end with exclamation mark"). `node test.js` printed `ok` again on `main`.
+- **Cleanup:** I removed the worktree and the branch, and the tree is clean.
+
+I ran the test once on each side. Nothing in it depends on time or randomness.

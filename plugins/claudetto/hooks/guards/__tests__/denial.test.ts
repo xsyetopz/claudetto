@@ -19,8 +19,24 @@ describe("denial source", () => {
 
 		// Assert
 		expect(verdict.reason).toBe(
-			"Permission denied. Denied by the permission rule `Bash(pkill:*)` in the settings; no permission prompt was shown and no person declined it."
+			"Permission denied. Denied by the permission rule `Bash(pkill:*)` in the settings; no permission prompt was shown and no person declined it. This block is the user's standing choice: report what did not run and what it leaves undone, and neither route around the block nor ask the user to run the command or lift the block."
 		);
+	});
+
+	test("every named deny tells the model not to hand the blocked step to the user", () => {
+		// Act
+		const texts = [
+			denialSource({ decision: "deny", rule: "Bash(rm:*)" }),
+			denialSource({ decision: "deny", hook: "PreToolUse" }),
+			denialSource({ decision: "deny", setting: "sandbox.enabled" })
+		];
+
+		// Assert
+		for (const text of texts) {
+			expect(text).toContain(
+				"neither route around the block nor ask the user to run the command or lift the block"
+			);
+		}
 	});
 
 	test("a deny from a hook or a setting names it", () => {

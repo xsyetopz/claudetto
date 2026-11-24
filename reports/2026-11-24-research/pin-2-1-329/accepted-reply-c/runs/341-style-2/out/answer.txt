@@ -1,0 +1,10 @@
+I wrote `PLAN.md` at the repo root. I haven't run anything.
+
+The repo contains only `README.md` ("importer for rows"), with no importer code, language or logger. So the plan sets out behaviour and tests without naming files to change.
+
+- **Skip:** a row is skipped when its id is missing, empty or whitespace-only.
+- **Keep:** a row with id `0` is kept. The blank check must be explicit, not a truthiness test, because `0` is falsy in many languages.
+- **Log:** one line per skipped row, with the 1-based physical source line number. The header counts as line 1, and kept rows don't change the count.
+- **Tests:** blank ids, id `0`, a mixed file, consecutive blanks, and an all-blank file.
+
+The plan lists four open questions for you. I assumed whitespace-only ids count as blank, that `"0"` is treated like numeric `0`, and that line numbers include the header. I couldn't pick a log destination or level without an existing logger.

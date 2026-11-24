@@ -1,0 +1,10 @@
+I wrote `PLAN.md` in the repo root. I haven't run or tested anything, because the repo has no importer code yet.
+
+- **Behaviour:** a blank id (empty, whitespace-only or missing) is skipped. The id `0` is kept, so blankness is tested explicitly rather than by truthiness. Each skipped row gets exactly one log line with its line number.
+- **Tests:** blank, whitespace-only and missing ids; id `0`; a mixed input; line numbers with a header and earlier skips; and an input with no blank ids.
+- **Assumptions to confirm:** your request doesn't settle these, so I picked defaults and listed them in the plan's "Decisions" and "Open questions" sections.
+  - Whitespace-only ids count as blank.
+  - Line numbers are 1-based and count the header line.
+  - The log format is `skipped line <N>: blank id`, written at warning level through the importer's logger, or to stderr if there isn't one.
+
+Tell me if any of those should change.

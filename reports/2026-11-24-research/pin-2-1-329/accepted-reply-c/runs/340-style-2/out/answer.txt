@@ -1,0 +1,5 @@
+I added `mean(xs)` to `util.js` right after `sum`. It returns `sum(xs) / xs.length`.
+
+I ran it on three inputs. `[1,2,3,4]` gave `2.5`, `[5]` gave `5`, and `[]` gave `NaN`.
+
+I chose to let an empty array return `NaN` instead of throwing or returning 0. The mean of no values is undefined, and `0` would look like a real average. If you'd rather it throw or return 0, say so and I'll change it.

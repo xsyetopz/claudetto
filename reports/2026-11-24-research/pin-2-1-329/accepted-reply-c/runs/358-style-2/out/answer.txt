@@ -1,0 +1,6 @@
+`tinylib` 1.0.0 is now a dependency of the project, installed from the tarball in `vendor/`.
+
+- **Scratch test:** I extracted the tarball and installed it into a throwaway project in `/tmp/tinylib-scratch.dE5OjZ`. The install worked and `require("tinylib").hi()` returned `"hi"`. The package is a single `index.js` that exports `hi`.
+- **Project install:** In the project, `npm install ./vendor/tinylib-1.0.0.tgz` added `"tinylib": "file:vendor/tinylib-1.0.0.tgz"` to `package.json` and created `package-lock.json`. `require("tinylib").hi()` also returned `"hi"` there.
+- **Not committed:** `package.json` and `package-lock.json` are modified or new but uncommitted. `node_modules` is not showing in `git status`, so I assume `.gitignore` covers it.
+- **Cleanup:** I left the scratch folder in place. You can delete `/tmp/tinylib-scratch.dE5OjZ` whenever you like.

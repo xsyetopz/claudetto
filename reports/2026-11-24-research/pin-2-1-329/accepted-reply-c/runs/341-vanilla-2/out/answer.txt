@@ -1,0 +1,8 @@
+I wrote `PLAN.md` at the repo root.
+
+The repo has only a one-line `README.md` and no importer code, so the plan doesn't assume a language or file format. Its first step is to find the importer, or agree a language and structure with you if there isn't one.
+
+- **Blank rule:** an id is blank if it's missing, null, empty, or whitespace-only. Those rows are skipped. The number `0`, `"0"` and `0.0` are kept. The check must be explicit, not a truthiness test, or `0` would be dropped by mistake.
+- **Logging:** one WARN line per skipped row, with its 1-based source line number, and nothing logged for kept rows. For CSV the header counts as line 1. The parser's own line counter is used so multi-line fields don't shift the numbers.
+- **Tests:** they cover blank vs. zero ids, row order, one log line per skipped row with correct line numbers, and the no-skips case.
+- **Open questions:** the plan asks for the language and input format, and it assumes `"0"` is kept and whitespace-only ids are blank. It leaves out a skipped-count summary because your request didn't mention one.

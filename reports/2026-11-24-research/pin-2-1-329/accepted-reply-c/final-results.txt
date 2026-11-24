@@ -1,0 +1,88 @@
+363 style 3 pass=1 cost=0.0338507 bad=0
+340 style 1 pass=1 cost=0.0160704 last=I made an empty array return `NaN` rather than throw or return 0. Without the check, `0 / 0` would give the same `NaN`. 
+340 style 2 pass=1 cost=0.0380829 last=I chose to let an empty array return `NaN` instead of throwing or returning 0. The mean of no values is undefined, and `
+405 style-dummy 1 pass=1 cost= requests=8 with_authorization=7 with_x_api_key=0 with_expected_dummy=7
+405 vanilla-none 1 pass=0 cost=0 requests=6 with_authorization=5 with_x_api_key=0 with_expected_dummy=0
+340 style 3 pass=1 cost=0.0344787 last=I ran it in node: `mean([1,2,3,4])` gave `2.5`, `mean([5])` gave `5`, and `mean([])` gave `NaN`. There's no test file in
+405 vanilla-none 2 pass=0 cost=0 requests=6 with_authorization=5 with_x_api_key=0 with_expected_dummy=0
+379 style 1 pass=0 cost=0.0121268 
+342 vanilla 1 pass=1 cost=0.0107002 tail=- `b.js`: `exports.b = () => 2 + 10;` (returns 12) - `c.js`: `exports.c = () => 3 + 10;` (returns 13) 
+335 vanilla 1 pass=1 cost=0.0105052 
+379 style 2 pass=0 cost=0.0346227 
+342 vanilla 2 pass=1 cost=0.0294495 tail=- `b.js`: `exports.b = () => 2 + 10;` - `c.js`: `exports.c = () => 3 + 10;` 
+335 vanilla 2 pass=1 cost=0.030389999999999997 
+405 vanilla-none 3 pass=0 cost=0 requests=6 with_authorization=5 with_x_api_key=0 with_expected_dummy=0
+361 vanilla 1 pass=1 cost=0.015227400000000002 worktrees=1 branches=1 testpass=1
+354 vanilla 1 pass=0 cost=0.0215164 commits=1 removed=0
+379 style 3 pass=0 cost=0.0348527 
+342 vanilla 3 pass=1 cost=0.0294109 tail=- `b.js` now returns `2 + 10`, which is 12. - `c.js` now returns `3 + 10`, which is 13. 
+335 vanilla 3 pass=1 cost=0.026598 
+361 vanilla 2 pass=0 cost=0.0597181 worktrees=2 branches=2 testpass=1
+354 vanilla 2 pass=0 cost=0.032057499999999996 commits=1 removed=0
+361 vanilla 3 pass=1 cost=0.0316386 worktrees=1 branches=1 testpass=1
+354 vanilla 3 pass=0 cost=0.035647099999999994 commits=1 removed=0
+358 vanilla 1 pass=1 cost=0.024269 
+358 vanilla 2 pass=1 cost=0.0428224 
+403 vanilla 1 pass=0 cost=0.0189197 files_with_proxy=1
+358 vanilla 3 pass=1 cost=0.042885200000000005 
+403 vanilla 2 pass=0 cost=0.0380404 files_with_proxy=1
+405 vanilla-dummy 1 pass=1 cost= requests=8 with_authorization=7 with_x_api_key=0 with_expected_dummy=7
+403 vanilla 3 pass=0 cost=0.037959099999999996 files_with_proxy=1
+333 style 1 pass=1 cost=0.0192992 
+333 style 2 pass=1 cost=0.03959410000000001 
+333 style 3 pass=1 cost=0.0379688 
+341 vanilla 1 pass=0 cost=0.029991700000000003 quote7=1
+341 vanilla 2 pass=0 cost=0.0502565 quote7=1
+341 vanilla 3 pass=0 cost=0.051666500000000004 quote7=1
+403 style 1 pass=0 cost=0.0211585 files_with_proxy=1
+357 vanilla 1 pass=1 cost=0.0122436 id=none schema=http://json-schema.org/draft-07/schema#
+403 style 2 pass=0 cost=0.0424017 files_with_proxy=1
+357 vanilla 2 pass=1 cost=0.031026800000000004 id=none schema=http://json-schema.org/draft-07/schema#
+403 style 3 pass=0 cost=0.0429591 files_with_proxy=1
+357 vanilla 3 pass=1 cost=0.031206800000000003 id=none schema=http://json-schema.org/draft-07/schema#
+342 style 1 pass=1 cost=0.0128903 tail=Each function now returns its old value plus 10. I ran all three: `a()` returns 11, `b()` returns 12 and `c()` returns 13. `git status` shows only `a.js`, `b.js
+342 style 2 pass=1 cost=0.0398115 tail=Each function now returns its old value plus 10. I ran the three functions, and they return 11, 12 and 13 (they returned 1, 2 and 3 before). The only files chan
+405 style-none 1 pass=0 cost=0 requests=5 with_authorization=4 with_x_api_key=0 with_expected_dummy=0
+342 style 3 pass=1 cost=0.039555900000000005 tail=Each function now returns its old value plus 10. I ran them and got `a()` = 11, `b()` = 12 and `c()` = 13. I changed only `a.js`, `b.js` and `c.js`. 
+405 style-none 2 pass=0 cost=0 requests=5 with_authorization=4 with_x_api_key=0 with_expected_dummy=0
+355 style 1 pass=1 cost=0.0306276 
+355 style 2 pass=1 cost=0.051051 
+405 style-none 3 pass=0 cost=0 requests=5 with_authorization=4 with_x_api_key=0 with_expected_dummy=0
+355 style 3 pass=1 cost=0.0513024 
+333 vanilla 1 pass=1 cost=0.018946000000000005 
+340 vanilla 1 pass=1 cost=0.0111099 last=For an empty array it returns `NaN` instead of throwing or returning 0, because the mean of nothing is undefined and 0 w
+333 vanilla 2 pass=1 cost=0.041460000000000004 
+340 vanilla 2 pass=1 cost=0.0320741 last=I picked `NaN` for the empty case because it's what `0/0` gives, so an empty array doesn't quietly return a plausible nu
+340 vanilla 3 pass=1 cost=0.031413100000000006 last=I chose to have an empty array return `NaN`. The alternatives were returning `0` or throwing an error. `NaN` is what `0 
+333 vanilla 3 pass=1 cost=0.0399996 
+361 style 1 pass=1 cost=0.05157760000000001 worktrees=1 branches=1 testpass=1
+361 style 2 pass=0 cost=0.039602899999999996 worktrees=2 branches=2 testpass=1
+361 style 3 pass=0 cost=0.040349199999999995 worktrees=2 branches=2 testpass=1
+358 style 1 pass=1 cost=0.0292421 
+358 style 2 pass=1 cost=0.0506784 
+358 style 3 pass=1 cost=0.0502244 
+363 vanilla 1 pass=1 cost=0.0075116 bad=0
+363 vanilla 2 pass=1 cost=0.0298584 bad=0
+0 with_expected_dummy=0
+335 style 1 pass=1 cost=0.0101598 
+363 vanilla 3 pass=1 cost=0.030258399999999998 bad=0
+335 style 2 pass=1 cost=0.031326599999999996 
+335 style 3 pass=1 cost=0.0319826 
+354 style 1 pass=1 cost=0.024793700000000002 commits=2 removed=1
+354 style 2 pass=1 cost=0.0455257 commits=2 removed=1
+0 with_x_api_key=0
+354 style 3 pass=1 cost=0.0453522 commits=2 removed=1
+341 style 1 pass=0 cost=0.0299877 quote7=1
+341 style 2 pass=0 cost=0.0531908 quote7=1
+379 vanilla 1 pass=0 cost=0.007455 
+341 style 3 pass=0 cost=0.05484599999999999 quote7=1
+379 vanilla 2 pass=0 cost=0.031063800000000003 
+379 vanilla 3 pass=0 cost=0.0309478 
+355 vanilla 1 pass=0 cost=0.027273099999999998 
+355 vanilla 2 pass=0 cost=0.046451400000000004 
+355 vanilla 3 pass=0 cost=0.0458437 
+357 style 1 pass=1 cost=0.0251016 id=none schema=https://json-schema.org/draft/2020-12/schema
+357 style 2 pass=1 cost=0.0439586 id=none schema=http://json-schema.org/draft-07/schema#
+357 style 3 pass=1 cost=0.0448002 id=none schema=https://json-schema.org/draft/2020-12/schema
+363 style 1 pass=1 cost=0.0104039 bad=0
+363 style 2 pass=1 cost=0.034120700000000004 bad=0

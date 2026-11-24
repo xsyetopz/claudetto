@@ -1,0 +1,5 @@
+I changed all three functions to add 10 to their old return values, and I didn't touch anything else. I haven't run them.
+
+- `a.js`: `exports.a = () => 1 + 10;`
+- `b.js`: `exports.b = () => 2 + 10;`
+- `c.js`: `exports.c = () => 3 + 10;`
