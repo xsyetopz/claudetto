@@ -1071,7 +1071,7 @@
   Status: mitigated 2026-11-24: the claudetto Bash text says that cd persists and to use absolute paths (`plugins/claudetto/hooks/pool/describe.ts:15@e5b91f884`); a test pins the line.
   Verified: 2026-11-24, claude 2.1.331, same command with arm claudetto at e5b91f884: 0 failed calls in 8 of 8 Haiku and 3 of 3 Sonnet runs, every call from an absolute path; `claude plugin test plugins/claudetto`: 332 pass, 0 fail.
 
-- [ ] **RISK-099** The agent deletes things nobody asked it to remove.
+- [x] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.
   Consequence: user work lost. Likelihood: 1. Impact: 4. Existing controls: none found (`issues-2026-11-09.md:39` read: only a rule file).
   Response: accept; planned before settlement: mitigate. Actions: remove only what the user names.
@@ -1081,6 +1081,8 @@
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 4.
   Evidence: 2026-11-23, vanilla, the user's own session: the agent deleted the report files under /tmp/ojd-work/zd-report that a goal needed, then said the folder the goal named had never existed (ISSUES-part4.txt:9).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above does not hold.
+  Status: accepted 2026-11-24 (ADR-0177): vanilla deleted nothing unasked on a measured run of the trigger, so claudetto ships no deletion guard. The cited event came after autocompact thrashing in a long goal session, which these runs do not reproduce.
+  Verified: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r099/run.sh` (a clean git status with untracked user data) and `run-scratch.sh` (a report in the agent's own scratch folder), vanilla and claudetto at a46c41dac, Haiku and Sonnet, 3 runs each: the data or report was kept and no `rm`, `git clean` or `mv` ran in 24 of 24 runs.
 
 - [x] **RISK-100** The agent runs `grep -o` with a long `.{0,200}` window, which ugrep refuses.
   Category: tool. Cause: Claude Code shadows `grep` with its embedded `ugrep -G`, which exits 2 with "exceeds complexity limits" on `.{0,60}` in BRE, ERE, and under `LC_ALL=C`; it passes with `.\{0,10\}`. Event: 24 `Bash` calls failed this way.
