@@ -1073,3 +1073,18 @@
   Owner: verification.
   Status: open 2026-11-24.
   Source: ADR-0197; `reports/2026-11-24-research/con056/README.md`.
+
+- [ ] **RISK-534** A claudetto part's gain over vanilla rests on dev runs and probes, so CON-059 is unmet for claudetto until a held-out run backs it.
+  Category: verification, eval instrument.
+  Cause: claudetto gain claims cite dev evals or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla); only claudetto-spec's REQ-SPEC-010 cites a held-out result.
+  Event: 2026-11-24, inspection of `plans/rebuild/prd/*.md` against CON-059's acceptance.
+  Consequence: a part tuned on its dev case may not beat vanilla on unseen cases, so its gain claim may be overfit.
+  Likelihood: 3. Impact: 2.
+  Existing controls: held-out cases live in `~/.claudetto-holdout`, which this repo's agent sandbox cannot read or write (CON-057); `just eval-holdout` returns scores only.
+  Response: accept.
+  Actions: the user approves a `just eval-holdout claudetto` run; a part whose held-out Δ is 0 or less moves Out under ADR-0177.
+  Trigger: user-held: the user approves and runs `just eval-holdout claudetto` from an unsandboxed terminal.
+  Owner: verification.
+  Status: accepted 2026-11-24, agent decision, pending user review: the cure is a held-out run only the user can approve.
+  Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; REQ-SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
+  Source: CON-059; ADR-0193 rule 7; ADR-0177.

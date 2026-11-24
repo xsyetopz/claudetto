@@ -14,22 +14,25 @@ ADR-0193 reinstates these constraints on 2026-11-21, because `claude plugin eval
   Source: OUT-2502 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
   Verified: 2026-11-24, probe: an untracked file under `plugins/claudetto/evals/` let `just --no-deps eval claudetto` reach `claude` (exit 0) before the gate; with it, `bun test tools/__tests__/eval-recipe.test.ts` shows exit 1, "CON-056" on stderr and no `claude` call.
 
-- [ ] **CON-057** The agent under test shall be unable to read case definitions or write graders, the held-out set or results.
+- [x] **CON-057** The agent under test shall be unable to read case definitions or write graders, the held-out set or results.
   Acceptance: `claude plugin eval` hides case files from the agent (docs, read 2026-11-21); `~/.claudetto-holdout` read and write are denied (REQ-GUARDS-058); `just eval-holdout` runs outside the agent's sandbox. Verification: inspection and probe.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: done 2026-11-24: the engine hides the eval directory and confines writes to the run workspace; this repo's sandbox denies `~/.claudetto-holdout`; `eval-preflight` stops `just eval-holdout` in a sandboxed shell.
   Source: OUT-2503 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Verified: 2026-11-24, claude 2.1.331. Docs (code.claude.com plugin-evals, read 2026-11-24), "How runs are isolated": "The case definitions are hidden from the agent. A run can't read the eval directory"; "Grant tools": with Bash granted, "Writes are confined to the run's workspace". Probe in this session's sandbox: `ls ~/.claudetto-holdout` and `touch ~/.claudetto-holdout/probe` both gave "Operation not permitted". Inspection: `project.just` `eval-holdout` depends on `eval-preflight`, which exits 1 when `sandbox-exec` cannot nest, so the recipe runs only outside the agent's sandbox; it keeps only scores from the temp copy.
 
-- [ ] **CON-058** A grader shall be trusted only after it rejects known-bad samples.
+- [x] **CON-058** A grader shall be trusted only after it rejects known-bad samples.
   Acceptance: each `regex` grader has a good and a bad sample in `tools/__tests__/`, and `bun test` fails if the pattern accepts the bad one. Verification: test.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: done 2026-11-24: `tools/__tests__/eval-cases.test.ts` checks a good and a bad sample for every `regex` grader.
   Source: OUT-2504 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Verified: 2026-11-24, `bun test tools/__tests__/eval-cases.test.ts`: 213 pass, 0 fail.
 
 - [ ] **CON-059** Tuning shall use the dev cases, and the claim that a part beats vanilla shall come from one run on the held-out set.
   Acceptance: a REQ that claims a gain over vanilla cites a held-out `aggregate-result.json`, never a dev run. Verification: inspection.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: partial 2026-11-24: claudetto-spec's gain claim (REQ-SPEC-010) cites the held-out `holdout-2026-11-21T00-28-05-304Z.json`; claudetto gain claims still cite dev runs or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla). A held-out run needs the user's approval (RISK-534).
   Source: OUT-2505 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
 
-- [ ] **CON-060** A doc the agent wrote shall be a claim, never evidence; graders read files, tool calls, git state and test exits.
+- [x] **CON-060** A doc the agent wrote shall be a claim, never evidence; graders read files, tool calls, git state and test exits.
   Acceptance: no case is graded by an `llm` grader alone, and no grader targets a file the agent wrote about its own work (a summary or report). Verification: inspection.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: done 2026-11-24: `eval-cases.test.ts` fails a case graded by `llm` graders alone; no grader reads an agent-written summary or report.
   Source: OUT-2506 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Verified: 2026-11-24, `bun test tools/__tests__/eval-cases.test.ts` 213 pass; inspection of `plugins/*/evals/*/graders/*.md`: 49 target `last_message` (the reply is graded as behaviour, not used as proof of work), 26 `trace`, 5 `files` (each matches a path the task forbids or must leave unwritten), and the rest read workspace files the scaffold or the task's own deliverables hold.
