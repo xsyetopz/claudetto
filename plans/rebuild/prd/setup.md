@@ -7,7 +7,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 - [x] **REQ-SETUP-004** claudetto shall answer `/statusline` from a Mod `skill.prompt` text, so no `statusline-setup` subagent run starts and the main model edits the settings file.
   Status: reopened 2026-11-24 from OUT-2349, whose paid-run reason no longer holds: a fake-API TUI run bills nothing. hooks/statusline/command.ts ships.
   Acceptance: `/statusline <request>` typed in a TUI session makes no `statusline-setup` Agent call; vanilla makes one. Verification: demonstration.
-  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/statusline/statusline.ts`, fake API, tmux, `/statusline show the model name`): vanilla sent 7 requests (269,021 bytes) and started `statusline-setup`; with `--plugin-dir plugins/claudetto` it sent 1 request (55,176 bytes) holding the edit text and no Agent call (`reports/2026-11-24-research/pin-2-1-329/statusline/vanilla.log`, `reports/2026-11-24-research/pin-2-1-329/statusline/claudetto.log`).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/statusline/statusline.ts`, fake API, tmux, `/statusline show the model name`): vanilla sent 7 requests (269,021 bytes) and started `statusline-setup`; with `--plugin-dir plugins/claudetto` it sent 1 request (55,176 bytes) holding the edit text and no Agent call (`reports/2026-11-24-research/pin-2-1-329/statusline/vanilla.txt`, `reports/2026-11-24-research/pin-2-1-329/statusline/claudetto.txt`).
 
 ## Settings Values
 
