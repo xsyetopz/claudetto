@@ -1141,3 +1141,6 @@
   Trigger: user-held: approval to change `tools/__tests__/eval-recipe.test.ts`.
   Owner: verification.
   Status: open 2026-11-24, user-held: the cure edits a test, which the goal reserves to the user.
+  Evidence: 2026-11-24, the user approved the skip-when-not-writable change. A probe in this session's sandbox showed `access(dir, W_OK)` and a write both fail with EPERM on a write-denied folder, so the check sees the same deny the write meets. The CON-056 test now skips with that reason when `plugins/claudetto/evals/trivial-typo` is not writable; its assertions are unchanged.
+  Status: closed 2026-11-24: the test skips where the sandbox denies the folder and still runs elsewhere.
+  Verified: 2026-11-24, claude 2.1.329: outside a session `bun test tools/__tests__/eval-recipe.test.ts` gave 5 pass, 0 fail, CON-056 included. In the fake-API session replay that loads claudetto from the clone, 4 pass, 1 skip, 0 fail in 2 of 2 runs, and `just typescript::test` gave 275 pass, 1 skip, 0 fail.
