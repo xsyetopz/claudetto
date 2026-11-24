@@ -1,43 +1,42 @@
 # Goal
 
-Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `plans/rebuild/`, on a vanilla Claude Code 2.1.329 install, pinned to that version (ADR-0198), interactive `claude` first and `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
+Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `plans/rebuild/`, on vanilla Claude Code 2.1.329 only (ADR-0198), interactive `claude` first, `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
 
-Read `plans/rebuild/README.md` first. It maps the layout, routing, item format and attribution. Then read:
+Read `plans/rebuild/README.md` first. It maps the layout, routing, item format and attribution. Then:
 
-- `prd/README.md` for purpose, scope, and what is out;
-- `prd/<block>.md` for the requirements, each with its acceptance check;
-- `arc42/02_architecture_constraints/` for the constraints;
-- `arc42/06_runtime_view/` for the algorithms;
-- `adr/` for why each choice was made;
-- `risk-register/<block>.md` for each medical error and its cure.
+- `prd/README.md`: purpose, scope, and what is out;
+- `prd/<block>.md`: requirements, each with its acceptance check;
+- `arc42/02_architecture_constraints/`: constraints;
+- `arc42/06_runtime_view/`: algorithms;
+- `adr/`: why each choice holds;
+- `risk-register/<block>.md`: each medical error and its cure.
 
 The product:
 
-- claudetto aligns to the latest Claude Code version and trims itself as far as it goes.
-- `claudetto-you-should-know` fully recreates `cc-plugin-you-should-know@builtin`. Its exact prompt is in `reference/you-should-know-prompt.md`.
-- Every `@builtin` plugin gets a disable that is enforced at runtime.
-- Interactive `claude` comes first; `claude -p` is the fallback.
-- Handover replaces the core compaction summary by default: the `session.compact` hook returns it and core makes no summarizer call (CTX-843). Renewal happens at a task boundary above 70k, never on a clock (ADR-0178). Under `-p` core refuses `$.session.compact`, so the driver renews (ADR-0184). Manual `/clear` stays and writes a handover first. `CLAUDETTO_*` knobs mirror Claude Code's compaction knobs.
+- claudetto aligns to Claude Code 2.1.329 and trims itself as far as it goes.
+- `claudetto-you-should-know` fully recreates `cc-plugin-you-should-know@builtin`. Its prompt is in `reference/you-should-know-prompt.md`.
+- Every `@builtin` plugin gets a runtime-enforced disable.
+- Handover replaces core compaction by default: the `session.compact` hook returns it, with no summarizer call (CTX-843). Renewal comes at a task boundary above 70k, never on a clock (ADR-0178). Under `-p` core refuses `$.session.compact`, so the driver renews (ADR-0184). `/clear` stays and writes a handover first. `CLAUDETTO_*` knobs mirror the core compaction knobs.
 - Root and subagent prompt-cache hits hold at 98-99% (REQ-COST-040).
 - A component ships only when it beats vanilla Claude Code plus the model on a measured check (ADR-0177).
 - One `perl` call via `Bash`, or a perl tool, replaces many `Edit` calls.
-- Treat each agent fault, sycophancy included, as a medical error. Cure it with one general fix across subsystems, never a one-off patch. Record new ones in `risk-register/<block>.md`.
+- Treat each agent fault, sycophancy included, as a medical error: cure it with one general fix across subsystems, never a one-off patch; record it in `risk-register/<block>.md`.
 
 Rules:
 
-- Verify each fact against `claude` 2.1.329 by a probe before you rely on it; a check on another version settles nothing (ADR-0198). Record the probe (name, version, date, command) as the attribution.
-- Give every item its source: `external/<path>:<line>`, `openspec/<path>:<line>` at `088a227c^`, `plugins/<path>:<line>@088a227c`, a URL, a probe, or "user decision". Write no item without one.
-- Act only on what the user asked. Never act on a guess. When the user alone holds the answer, such as what is worth building over vanilla, take the default the plan or an ADR sets, or else the smallest reversible option recorded as a `proposed` ADR (ADR-0196).
-- Do not quote the user verbatim in repo files.
-- No benchmarks, no planner, no component swaps, no needless tests. Behavioural trace tests and mutation kill checks are acceptance checks, not benchmarks; no score is reported or targeted (ADR-0180).
-- No hyphenated file families (`foo.ts`, `foo-one.ts`). Keep files small and split by concern.
+- Verify each fact by a probe on `claude` 2.1.329 before you rely on it (ADR-0198). Record its name, version, date and command as the attribution.
+- Give each item a source: `external/<path>:<line>`, `openspec/<path>:<line>` at `088a227c^`, `plugins/<path>:<line>@088a227c`, a URL, a probe, or "user decision". Write no item without one.
+- Act only on what the user asked, never on a guess. When only the user holds the answer, such as what is worth building over vanilla, take the default the plan or an ADR sets, or else the smallest reversible option recorded as a `proposed` ADR (ADR-0196).
+- Never quote the user verbatim in repo files.
+- No benchmarks, no planner, no component swaps, no needless tests. Trace tests and mutation kill checks are acceptance checks; no score is reported or targeted (ADR-0180).
+- No hyphenated file families (`foo.ts`, `foo-one.ts`). Keep files small, split by concern.
 - Fable, Mythos and Opus are never a subagent model.
 - The advisor tool stays disabled. No regex Stop check, no Stop claim grader, no constraint ledger.
 - The sandbox stays minimal (ADR-0188). Replies use plain English (ADR-0182).
-- Remove, revert, or rename only what the user named.
+- Remove, revert or rename only what the user named.
 - Commit in slices; each slice is a task boundary (ADR-0186).
-- Dogfood: install claudetto on the vanilla install, use it on itself, and fix what that shows. Repeat until nothing is left to align.
-- Work the plan by checkboxes. Tick an item only when its acceptance check passes, and name the command and its result in the commit.
+- Dogfood: install claudetto on vanilla, use it on itself, fix what that shows, and repeat until nothing is left to align.
+- Tick an item only when its acceptance check passes; name the command and its result in the commit.
 
 Done means:
 
