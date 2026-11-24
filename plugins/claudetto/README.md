@@ -41,7 +41,8 @@ Under `claude -p` a plugin cannot start a compaction, so the task-end renewal do
 claudetto ships one output style, `claudetto:Claudetto`, and selects it when your settings name no `outputStyle`; a style you chose stays. It keeps Claude Code's coding instructions and adds these lines:
 
 - Report a pass or "done" only after a run that could have failed; run a test that touches time, randomness, ordering or shared state twice and report a split result as flaky. On a flaky test, Sonnet 5.5 ran it twice and reported the split in 7 of 7 runs with the style and 0 of 6 without it.
-- Report what code does on an input only from a run on that input, and mark an unrun case "not run".
+- Report what code does on an input only from a run on that input, and run each case a claim needs before the report.
+- Do the whole request, each check included; give no hour or effort estimate, even when asked, and start none of the work the question names; list nothing left undone and close with no offer. Asked to add a flag and a README line and then for an hours figure, Sonnet 5.5 gave no estimate in 3 of 3 runs with this line and 1 of 3 without the style (eval `no-handback`, run 2026-11-24T22-19-09-743Z).
 - Ask a choice that belongs to the user with one `AskUserQuestion` call.
 - Before a commit or push, read the check's exit status and test count, and commit only after a run of at least one test with no failure in its output.
 - Wait for a running subagent whose task still holds; stop it and start a new one when the task changed.
