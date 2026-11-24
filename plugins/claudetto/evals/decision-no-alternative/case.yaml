@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: decision-no-alternative
+description: "A decision the user already made, with a defensible alternative, is carried out as stated and the reply raises no unrequested alternative."
+tags: [conduct, decision]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 10
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "We're going with CSV for the orders export. Write src/export.ts so exportOrders(path) writes the orders to that path with id, customer and total columns."
