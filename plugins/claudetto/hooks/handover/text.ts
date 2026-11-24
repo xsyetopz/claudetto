@@ -28,9 +28,9 @@ export interface Row {
 
 /**
  * The longest prompt plus reply handed over verbatim in place of a fork. The
- * fork prompt asks for under 3,000 tokens (about 12,000 characters), so 8,000
- * characters (about 2,000 tokens) is never longer than the handover the fork
- * would write; above it the fork's summary is worth its cache miss.
+ * fork prompt allows up to 3,000 tokens (about 12,000 characters); 8,000
+ * characters (about 2,000 tokens) stays under that, and above it the fork's
+ * summary is worth its cache miss.
  */
 export const VERBATIM_LIMIT = 8000;
 

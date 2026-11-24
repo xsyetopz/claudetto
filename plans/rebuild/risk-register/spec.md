@@ -16,6 +16,7 @@
   - Owner: spec
   - Status: mitigated 2026-11-21: the injection is gone; the skill tells Claude to Glob `specs/*.md` first.
   - Verified: 2026-11-21, claude 2.1.330: the `--disallowedTools Bash` probe now loads the skill (3 turns, no shell error), and eval suite 3 scores 1.0 with the plugin on all six current cases; Likelihood 2 × Impact 3 = 6.
+  - Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, `claude -p "/claudetto-spec:spec add a totalWithTax(cart, rate) function to src/cart.ts" --disallowedTools Bash --plugin-dir plugins/claudetto-spec`: 12 turns, no shell error, ending in `spec_check`; `just eval claudetto-spec` run `2026-11-24T03-08-24-158Z` (Opus 5.5) scored 0.92 to 1.00 with the plugin on all 13 cases.
   - Source: issue #85.
 
 - [x] **RISK-516** An eval run from a sandboxed agent shell scores 0 for a reason outside the plugin (issue #86).
@@ -32,6 +33,7 @@
   - Owner: spec
   - Status: transferred 2026-11-21 (issue #86): the cause is the OS sandbox nesting, and the recipe documents the run outside it.
   - Verified: 2026-11-21, claude 2.1.330, suite 1 (`plugins/claudetto-spec/evals/results/suite-1.json`) run outside the sandbox: with-plugin scores 0.78 to 1.0, no `sandbox_apply` line in its traces; Likelihood 3 × Impact 3 = 9 before the control.
+  - Verified: 2026-11-24, claude 2.1.329, `just eval claudetto-spec` run `2026-11-24T03-08-24-158Z` outside the sandbox: with-plugin scores 0.92 to 1.00 on all 13 cases, mean delta +0.13.
   - Source: issue #86.
 
 - [x] **RISK-517** An ordering grader that names one tool misses the same write made through another tool.
@@ -64,6 +66,8 @@
   - Owner: spec
   - Status: mitigated 2026-11-21.
   - Verified: 2026-11-21, claude 2.1.330, the same probe after the edit: the skill fired first and asked about the tax rate form and rounding through AskUserQuestion (one run each way, so a small sample); Likelihood 3 × Impact 4 = 12 before the fix.
+  - Evidence: 2026-11-24, claude 2.1.329, fake API stub (`reports/2026-11-19-research/tick-rerun/ctx/stub.ts`), `claude -p hello --plugin-dir plugins/claudetto-spec` in the user's own setup: the listing sends "claudetto-spec:spec: Use before writing code for any request that adds or change…", so the cut keeps the trigger.
+  - Verified: 2026-11-24, claude 2.1.329, `claude -p` with the cart-tax prompt in the user's own setup and `--plugin-dir plugins/claudetto-spec`: the skill fired in 2 of 3 Sonnet 5.5 runs (first call in 1, after one Read in 1) and 0 of 2 Haiku 5.5 runs; the Sonnet miss added the function and named the rate form and rounding in its reply.
   - Source: this session, 058ea2d3-793b-495e-912a-323a9453747d.
 
 - [x] **RISK-519** The Stop-time `spec_check` treats the user's own uncommitted work as the agent's drift and orders it reverted or edited.
@@ -80,6 +84,7 @@
   - Owner: spec
   - Status: mitigated 2026-11-23. `hooks/check/baseline.ts` records each spec text, each test that already differed from the index, and the malformed and orphan findings at `session.start`; the Stop gate and `spec_check` both compare against that record, so the user's pre-session edits are the spec, not drift. The Stop text lists findings with the next action and no "blocking" verdict. SKILL.md states that the spec as the session found it is the spec to implement. The harder regression cases stay on the unmerged branch `test/harder-eval-cases` (RISK-529).
   - Verified: 2026-11-23, claude 2.1.330. `claude plugin test plugins/claudetto-spec`: 54 pass, 0 fail, six of them RISK-519 cases (Stop and `spec_check`, the user's edit versus the session's own). Forcing `readBaseline` to return undefined makes 3 of the 4 Stop cases fail. Eval with Haiku 5.5, `claude plugin eval --ablation with-without --case <c> -j 3 --threshold 0`, the harder cases of 77ebbd7f0: `spec-edit-skill` with-plugin 3/3 (score 1.0), without 2/3 (0.94); `spec-review-hollow-test` with-plugin 3/3 and 2/3 over two rounds, without 3/3 and 3/3. The one with-plugin miss is a grader false fail (RISK-528); `no-edit-tools` and `spec-kept` passed in every run, and no trace held a Stop block. The held-out run (`just eval-holdout`) is user-held under ADR-0193 rule 7.
+  - Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto-spec`: 54 pass, 0 fail, the six RISK-519 cases among them.
   - Source: /private/tmp/claude-501/haiku-evals/claudetto-spec.json and r2/claudetto-spec.json (runs of 2026-11-23); traces /private/tmp/e-ZV8v2o/out/trace.jsonl:55,62 and /private/tmp/e-XaiUzy/out/trace.jsonl:30,56; after the fix /tmp/claude-501/r519h/{edit2,hollow,hollow2}.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
 
 - [x] **RISK-530** On Haiku the `spec` skill does not fire for a headless feature request with unstated choices, so no `Open:` line is written and the plugin scores no better than vanilla.
@@ -96,5 +101,6 @@
   - Owner: spec
   - Status: mitigated 2026-11-24. The description now opens on any request that adds or changes behaviour (a new function, feature or rule), also in a repo with no `specs/` yet, and still skips typos, renames, bumps and questions (`plugins/claudetto-spec/skills/spec/SKILL.md:3`). The always-on cost stays about 140 tokens (`claude plugin details`), inside REQ-SPEC-009.
   - Verified: 2026-11-24, claude 2.1.331, Haiku 5.5. Probe: the case prompt under `claude -p` with the plugin, 4 runs per wording: the old description fired the skill in 2 of 4, the new one in 4 of 4; `trivial-rename` and `trivial-typo` fired it in 0 of 3 each. Suite: `just eval claudetto-spec --model haiku -j 3 --threshold 0` (results `2026-11-23T22-04-36-418Z`, $0.49): `ambiguous-headless` with 0.75 0.92 0.67 against without 0.25 0.67 0.5; the skill fired in 2 of 3 with-plugin runs and `spec-has-open-line` passed in 2 of 3 with against 0 of 3 without. No case fell: contradiction .86 ×3 against .36 ×3, implement-conflict 1 .92 1 against .5 ×3, specify-discount 1 ×3 against .59 .35 .35, trivial-rename and trivial-typo 1 ×3 in both arms. `spec-review-hollow-test` gave 1 .73 1 against .8 1 1, with no Skill call in any with run, so the description did not reach it; both arms missed `covered-not-listed` once.
+  - Verified: 2026-11-24, claude 2.1.329, Opus 5.5, `just eval claudetto-spec` run `2026-11-24T03-08-24-158Z`: with the plugin `ambiguous-headless` 1.00, `specify-discount` 1.00, `feature-discount` 0.96; `trivial-rename` and `trivial-typo` 1.00 in both arms.
   - Residual: Haiku still skips the skill in about 1 run in 7 on this prompt (6 of 7 fired across probe and suite), and `reply-flags-readme` fails in both arms (with 2 of 3, without 3 of 3). Likelihood falls from 3 to 2.
   - Source: /tmp/claude-501/r529/h.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
