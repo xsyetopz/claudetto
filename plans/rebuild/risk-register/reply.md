@@ -2044,9 +2044,12 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part3.txt:137-143.
   Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r521/run.sh`: vanilla passed `--help` to a single-dash stub CLI whose docs sit in the repo in 5 of 6 Haiku and 6 of 6 Sonnet runs.
-  Status: mitigated 2026-11-24: the Claudetto output style says to take each flag, the help flag included, from the program's docs before its first call (`plugins/claudetto/output-styles/claudetto.md:15`). It acts only with that style selected.
+  Status: mitigated 2026-11-24: the Claudetto output style says to take each flag, the help flag included, from the program's docs before its first call (`plugins/claudetto/output-styles/claudetto.md:21`). It acts only with that style selected.
   Verified: 2026-11-24, `run.sh claudetto` with the style on: 0 of 9 Haiku and 1 of 6 Sonnet runs passed a guessed flag; the git control `ctl.sh` made one call on both arms (`reports/2026-11-24-research/r521/README.md`).
   Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, `R521_OUT=<dir> zsh reports/2026-11-24-research/r521/run.sh <arm> 1..3 haiku` with the style on: claudetto passed a `--` option to vemu in 0 of 3 runs, vanilla in 2 of 3 (`--help`).
+  Status: narrowed 2026-11-25: the rule acts before a flag is passed, so a call with no flag runs without a docs read first (`plugins/claudetto/output-styles/claudetto.md:21`).
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5, `R521_OUT=<dir> zsh reports/2026-11-24-research/r521/run.sh claudetto 1..3 haiku`: 0 of 3 runs passed a guessed `--` flag (each used `-help` or `-batch`).
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto --case <c>` for run-once, watch-run, stash-cleanup x3: claudetto turns 16.6 -> 12.6 (vanilla 10.3), scores 1.00.
 
 - [x] **RISK-522** The agent names its own breach of a user rule and defers the fix.
   Category: agent conduct.
