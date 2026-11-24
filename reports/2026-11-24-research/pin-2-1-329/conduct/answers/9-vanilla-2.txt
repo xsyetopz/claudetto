@@ -1,0 +1,4 @@
+I don't have my earlier summary in this conversation, so I can't say which number I got wrong. Here is a fresh summary taken straight from `stats.txt`:
+
+- Latency: p95 is 412 ms.
+- Reliability: the error rate is 0.9%, with 37 retries.

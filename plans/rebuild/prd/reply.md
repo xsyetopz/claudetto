@@ -13,8 +13,12 @@
 ## Disputes and Openers
 
 - [x] **REQ-REPLY-018** Moved Out as OUT-2738: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Evidence: 2026-11-24: the reason's "no line ships" is out of date; paragraph 6 of hooks/prompt/conduct.ts (REQ-REPLY-154) opens a reply to a dispute with a result checked that turn. The third-party framing has no line of its own.
 
 - [x] **REQ-REPLY-020** Moved Out as OUT-2820: ADR-0177 and ADR-0190: the reply prompt it names is gone (no root prompt ships; conduct text is one output style), and the conduct cures that were measured passed on vanilla 2.1.327: pushback on a disputed claim 3 of 3 and grounded claims 3 of 3 on Sonnet 5.5, opener tied with both arms 0 of 3, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Reply Register on Stop
 
@@ -28,16 +32,21 @@
 ## Message Handling
 
 - [x] **REQ-REPLY-024** Moved Out as OUT-2739: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-REPLY-025** Moved Out as OUT-2821: ADR-0177 and ADR-0190: on its fault prompts (disputed claim, grounded claims) vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs each and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Reply Shape
 
 - [x] **REQ-REPLY-026** Moved Out as OUT-2740: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 - [x] **REQ-REPLY-027** Moved Out as OUT-2741: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 - [x] **REQ-REPLY-028** Moved Out as OUT-2742: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Answer-First and Question Gates
 
@@ -46,6 +55,7 @@
 ## Hand-Off, If Unavoidable
 
 - [x] **REQ-REPLY-030** Moved Out as OUT-2743: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4, Sonnet 5.5, n=3): the act-before-handoff fault prompt failed on vanilla in 0 of 3 runs (3 of 3 on 2.1.327), so the reason no longer holds for the hand-back clause. The line that cures it ships as REQ-KERNEL-013 (3 of 3, no-value control 3 of 3); the item's other clauses have no fault prompt of their own and stay Out.
 
 ## Per-Model Root Prompt
 
@@ -64,6 +74,8 @@
 ## Failing Checks Are Fixed
 
 - [x] **REQ-REPLY-040** Moved Out as OUT-2744: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Evidence: 2026-11-24: plugins/claudetto/agents/Heracles.md:13 ships "Make a failing check pass by fixing what it reports" in the implementer's body; no root prompt ships it.
 
 ## Open-Issues Line
 
@@ -80,24 +92,31 @@
 ## Agent-Conduct Text Settled by the User
 
 - [x] **REQ-REPLY-045** Moved Out as OUT-2823: ADR-0177 and ADR-0190: `texts.ts` and the root prompt are gone (OUT-411), and no listed rule has a measured gain: scope, disputed claim, act before handoff, grounded claim and worker-report check passed on vanilla 2.1.327 in 3 of 3 Sonnet 5.5 runs each, and the report shape tied (reports/2026-11-19-research/conduct); the unmeasured rules have no gain to ship.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4, Sonnet 5.5, n=3): the act-before-handoff fault prompt failed on vanilla in 0 of 3 runs (3 of 3 on 2.1.327), so the reason no longer holds for the hand-back clause. The line that cures it ships as REQ-KERNEL-013 (3 of 3, no-value control 3 of 3); the item's other clauses have no fault prompt of their own and stay Out.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Fix Each Found Defect
 
 - [x] **REQ-REPLY-049** Moved Out as OUT-2745: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Evidence: 2026-11-24: the reason's "no line ships" is out of date; paragraph 4 of hooks/prompt/conduct.ts ships the rule that a found defect is fixed at its cause in the same turn (RISK-262 mitigated).
 
 ## Prevent Found Risks
 
 - [x] **REQ-REPLY-050** Moved Out as OUT-2746: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Search Nudge per Model
 
 ## Scope of a Change
 
 - [x] **REQ-REPLY-053** Moved Out as OUT-2747: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Cannot with Evidence
 
 - [x] **REQ-REPLY-061** Moved Out as OUT-2748: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## One Decision at a Time
 
@@ -106,16 +125,20 @@
 ## Brevity Rules
 
 - [x] **REQ-REPLY-069** Moved Out as OUT-2749: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 - [x] **REQ-REPLY-070** Moved Out as OUT-2750: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Truly Stuck
 
 - [x] **REQ-REPLY-087** Moved Out as OUT-2751: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4, Sonnet 5.5, n=3): the act-before-handoff fault prompt failed on vanilla in 0 of 3 runs (3 of 3 on 2.1.327), so the reason no longer holds for the hand-back clause. The line that cures it ships as REQ-KERNEL-013 (3 of 3, no-value control 3 of 3); the item's other clauses have no fault prompt of their own and stay Out.
 
 ## Text Between Tool Calls
 
 - [x] **REQ-REPLY-088** Moved Out as OUT-2752: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Second Reading Settled by Evidence
 
@@ -124,34 +147,43 @@
 ## FAFO and Security Work
 
 - [x] **REQ-REPLY-090** Moved Out as OUT-2753: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Evidence Before Claims
 
 - [x] **REQ-REPLY-091** Moved Out as OUT-2754: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Scope and User-Owned Things
 
 - [x] **REQ-REPLY-092** Moved Out as OUT-2755: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Definition of Done
 
 - [x] **REQ-REPLY-093** Moved Out as OUT-2826: ADR-0177 and ADR-0190: the one clause with a gain already ships (the style line that reruns a time, random or ordering test and reports a split as flaky: 7 of 7 against vanilla 0 of 6), and vanilla 2.1.327 passed the other clauses in 3 of 3 Sonnet 5.5 runs each (scope, grounded claims, narrowest check, no gaming); the report shape tied (reports/2026-11-19-research/conduct), so no further line ships.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Concise Output
 
 - [x] **REQ-REPLY-097** Moved Out as OUT-2756: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Rule Edit
 
 - [x] **REQ-REPLY-101** Moved Out as OUT-2757: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Report Template
 
 - [x] **REQ-REPLY-105** Moved Out as OUT-2758: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Finish the Work
 
 - [x] **REQ-REPLY-106** Moved Out as OUT-2759: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Prompt and Output Limits
 
@@ -194,6 +226,7 @@
 ## No Padding
 
 - [x] **REQ-REPLY-112** Moved Out as OUT-2760: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 ## Prompt Text From Model Guidance
 
@@ -204,18 +237,25 @@
 ## Conduct Rules
 
 - [x] **REQ-REPLY-126** Moved Out as OUT-2761: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4, Sonnet 5.5, n=3): the act-before-handoff fault prompt failed on vanilla in 0 of 3 runs (3 of 3 on 2.1.327), so the reason no longer holds for the hand-back clause. The line that cures it ships as REQ-KERNEL-013 (3 of 3, no-value control 3 of 3); the item's other clauses have no fault prompt of their own and stay Out.
 
 ## Conduct Targets
 
 - [x] **REQ-REPLY-127** Moved Out as OUT-2762: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-REPLY-128** Moved Out as OUT-2763: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-REPLY-129** Moved Out as OUT-2764: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
+  Evidence: 2026-11-24: the reason's "no line ships" is out of date; plugins/claudetto/output-styles/claudetto.md:17 repairs a breach of a user rule in the same turn and reports it as repaired (RISK-522, PR #200).
 
 ## Conduct Text
 
 - [x] **REQ-REPLY-132** Moved Out as OUT-2765: ADR-0177 and ADR-0190: on its fault prompt both arms failed the opening-number check in 0 of 3 runs because the prompt referred to a summary neither session held, neither apologised, and the line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
+  Evidence: 2026-11-24: the reason's "no line ships" is out of date; plugins/claudetto/output-styles/claudetto.md:19 ends the turn with the single word "Stopped." (RISK-274, 5 of 5 against vanilla 1 of 6, reports/2026-11-20-research/register-probes), one word rather than no text.
 
 - [x] **REQ-REPLY-133** claudetto shall wrap each mention of `AskUserQuestion` in the prompts in backticks.
   Acceptance: no bare mention in prompt texts. Verification: inspection.
@@ -231,10 +271,13 @@
 - [x] **REQ-REPLY-134** Moved Out as OUT-2102: part not shipped.
 
 - [x] **REQ-REPLY-135** Moved Out as OUT-2766: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 ## Keep Working without Reports
 
 - [x] **REQ-REPLY-136** Moved Out as OUT-2767: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Evidence: 2026-11-24: the reason's "no line ships" is out of date; plugins/claudetto/agents/Heracles.md:11 ("Keep working until everything the task asks for is done") and paragraph 4 of hooks/prompt/conduct.ts ship its parts.
 
 - [x] **REQ-REPLY-138** Moved Out as OUT-2103: needs a paid model run or a benchmark.
 
@@ -251,6 +294,7 @@
 - [x] **REQ-REPLY-140** Moved Out as OUT-3073: the part is not in plugins/ after ADR-0177 dropped it: on claude 2.1.329 vanilla passed the missing-input fixtures 12 of 12 and the conduct paragraph tied at 12 of 12 (Sonnet 5.5, reports/2026-11-19-research/goal), so no line ships.
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
 
