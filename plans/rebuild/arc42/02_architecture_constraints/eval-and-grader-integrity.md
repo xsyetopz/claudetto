@@ -26,11 +26,14 @@ ADR-0193 reinstates these constraints on 2026-11-21, because `claude plugin eval
   Source: OUT-2504 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
   Verified: 2026-11-24, `bun test tools/__tests__/eval-cases.test.ts`: 213 pass, 0 fail.
 
-- [ ] **CON-059** Tuning shall use the dev cases, and the claim that a part beats vanilla shall come from one run on the held-out set.
+- [x] **CON-059** Tuning shall use the dev cases, and the claim that a part beats vanilla shall come from one run on the held-out set.
   Acceptance: a REQ that claims a gain over vanilla cites a held-out `aggregate-result.json`, never a dev run. Verification: inspection.
   Basis: user decision. Status: partial 2026-11-24: claudetto-spec's gain claim (REQ-SPEC-010) cites the held-out `holdout-2026-11-21T00-28-05-304Z.json`; claudetto gain claims still cite dev runs or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla). A held-out run needs the user's approval (RISK-534).
   Source: OUT-2505 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
   Evidence: 2026-11-24, claude 2.1.329: the claudetto held-out run `plugins/claudetto/evals/results/holdout-2026-11-24T03-08-25-111Z.json` (gitignored, on this machine) gave mean Δ −0.003 at an overall score of 0.98, so no claudetto gain claim is backed by a held-out run yet (RISK-534).
+  Evidence: 2026-11-24, claude 2.1.329: a fresh Sonnet subagent added 6 harder held-out cases blind (ADR-0193 rule 7), and the claudetto held-out run `plugins/claudetto/evals/results/holdout-2026-11-24T06-48-49-510Z.json` gave mean Δ +0.036 over 11 cases, not partial, $10.05. `claude plugin eval` exited 1 because 3 cases scored under its default `--threshold` of 1.0 (`claude plugin eval --help`), not from an abort.
+  Status: done 2026-11-24: claudetto-spec cites `holdout-2026-11-24T04-29-25-777Z.json` (REQ-SPEC-010) and claudetto cites `holdout-2026-11-24T06-48-49-510Z.json` (REQ-TOOLS-031, REQ-GOAL-003). The held-out figure covers each plugin as a whole: ADR-0193 keeps per-case scores from the tuning agent, so a single part's held-out Δ is not read.
+  Verified: 2026-11-24, inspection: `grep -n 'holdout-2026-11-24' plans/rebuild/prd/*.md` lists REQ-SPEC-010, REQ-TOOLS-031 and REQ-GOAL-003; `jq .aggregates` on the claudetto file reads meanDelta 0.036, claudeVersion 2.1.329.
 
 - [x] **CON-060** A doc the agent wrote shall be a claim, never evidence; graders read files, tool calls, git state and test exits.
   Acceptance: no case is graded by an `llm` grader alone, and no grader targets a file the agent wrote about its own work (a summary or report). Verification: inspection.

@@ -28,6 +28,7 @@ Each result is from Claude Code 2.1.330 on a fake API (reports/2026-11-21-goal, 
 - [x] **REQ-GOAL-003** `get_goal`, `pause_goal` and `clear_goal` shall run without the engine's ask for an MCP tool, unless a settings rule decides; `pause_goal` shall sit in the prompt; and a Stop-hook block of a goal the model paused or cleared shall end the main turn.
   Acceptance: on a goal whose last step only the user holds, claudetto ends the turn in fewer blocks than vanilla, and on a goal the agent can finish it calls no `pause_goal`. Verification: test and probe. Status: shipped 2026-11-24 (`tools.ts`, `feedback.ts`). Verified: `goal.test.ts` (the check verdicts, an abort after a pause and none before); the RISK-520 probe on claude 2.1.331, Sonnet 5.5: 3 blocks in 3 of 3 runs against vanilla's 9 in 4 of 4, and no pause on two finishable goals in 3 of 3.
   ENGINE(v2.1.331): a queued `/goal clear` lands only after the turn, so without the abort the evaluator keeps judging the paused condition until the cap.
+  Evidence: held-out, claude 2.1.329, 2026-11-24, `just eval-holdout claudetto claude-opus-5-5 -j 4 --max-cost-usd 40`, result `plugins/claudetto/evals/results/holdout-2026-11-24T06-48-49-510Z.json` (local, gitignored): model `claude-opus-5-5`, not partial, 11 cases (5 before, 6 added blind by a fresh Sonnet subagent), mean Δ +0.036, $10.05; only the aggregate was read (ADR-0193), so the figure backs claudetto as a whole, not this part alone (CON-059).
 
 ## Set Time
 
