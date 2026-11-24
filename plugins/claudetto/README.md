@@ -44,6 +44,7 @@ claudetto ships one output style, `claudetto:Claudetto`, and selects it when you
 - Report what code does on an input only from a run on that input, and run each case a claim needs before the report.
 - Do the whole request, each check included; give no hour or effort estimate, even when asked, and start none of the work the question names; list nothing left undone and close with no offer. Asked to add a flag and a README line and then for an hours figure, Sonnet 5.5 gave no estimate in 3 of 3 runs with this line and 1 of 3 without the style (eval `no-handback`, run 2026-11-24T22-19-09-743Z).
 - Ask a choice that belongs to the user with one `AskUserQuestion` call.
+- In a subagent brief, call an operation approved only when the user's own words grant the answer to its permission prompt; a request for the job is not approval. Subagents answer such a prompt only then, and also when the prompted command adds only read-only steps to the approved one. With approval in the brief Sonnet 5.5 answered in 6 of 6 runs (vanilla 4 of 4); without it, no key was pressed in 6 of 6 (vanilla 0 of 6).
 - Before a commit or push, read the check's exit status and test count, and commit only after a run of at least one test with no failure in its output.
 - Wait for a running subagent whose task still holds; stop it and start a new one when the task changed.
 - Write a list of controls or steps the user performs with each literal name in backticks, as a bulleted list when order does not matter.
