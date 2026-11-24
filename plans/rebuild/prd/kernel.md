@@ -18,6 +18,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Agent Conduct Rules
 
 - [x] **REQ-KERNEL-009** Moved Out as OUT-2733: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 4, Sonnet 5.5, n=3): the act-before-handoff fault prompt failed on vanilla in 0 of 3 runs (3 of 3 on 2.1.327), so the reason no longer holds for the hand-back clause. The line that cures it ships as REQ-KERNEL-013 (3 of 3, no-value control 3 of 3); the item's other clauses have no fault prompt of their own and stay Out.
 
 - [x] **REQ-KERNEL-013** claudetto shall make the agent look up a value that a command it was asked to run lacks (an environment variable, a token, a host) in the repository (a `.env` file, a config file, the README) and rerun the command with it, before it reports the failure or asks the user. The other rules this item listed stay Out as OUT-2829.
   Status: reopened 2026-11-24 for the look-up rule: on 2.1.329 vanilla no longer passes the act-before-handoff case that OUT-2829 cited from 2.1.327. The line ships in paragraph 7 of plugins/claudetto/hooks/prompt/conduct.ts.
@@ -46,16 +47,20 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Order of Authority
 
 - [x] **REQ-KERNEL-023** Moved Out as OUT-2734: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-KERNEL-024** Moved Out as OUT-2771: ADR-0177 and ADR-0190: on its fault prompts vanilla 2.1.327 passed in 6 of 6 Sonnet 5.5 runs, so no line ships (reports/2026-11-19-research/risks-kernel).
 
 ## Doing the Work
 
 - [x] **REQ-KERNEL-025** Moved Out as OUT-2735: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-KERNEL-026** Moved Out as OUT-2736: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-KERNEL-027** Moved Out as OUT-2737: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-KERNEL-028** Moved Out as OUT-2830: ADR-0177 and ADR-0190: vanilla 2.1.327 made 0 wrong-case tool calls in 4 of 4 Sonnet 5.5 runs and returns a named `No such tool available` error that the model corrects on the next turn (OUT-2777, reports/2026-11-19-research/risks-verification), so no line ships.
 

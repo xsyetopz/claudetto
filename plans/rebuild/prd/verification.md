@@ -52,6 +52,8 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Narrow Runs
 
 - [x] **REQ-VERIFICATION-075** Moved Out as OUT-2769: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
+  Evidence: 2026-11-24: plugins/claudetto/agents/Heracles.md:17 ships "Check your change with the narrowest check the repo provides" for the implementer; no full-suite rule and no docs-edit skip ship.
 
 ## Isolated Tests
 
@@ -119,8 +121,10 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Real Runs
 
 - [x] **REQ-VERIFICATION-092** Moved Out as OUT-2802: ADR-0177: the report-shape line of the conduct probe scored 0 of 3 for the style arm and 0 of 3 for vanilla, so no line moved the report shape (reports/2026-11-19-research/conduct, cure 9), and rules/useEdgeCaseReport.md is gone from plugins/claudetto.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh` cure 9, Sonnet 5.5, n=3 per arm): vanilla opened with a number in 0 of 3 runs and the shipped conduct text in 2 of 3 (`reports/2026-11-24-research/pin-2-1-329/conduct/cure9-shipped.txt`); no run in either arm apologised or praised. The opener gain comes from paragraph 6 of hooks/prompt/conduct.ts, which ships as REQ-REPLY-154; the prompt still refers to a summary neither session holds, and this item's own clause has no line of its own.
 
 - [x] **REQ-VERIFICATION-093** Moved Out as OUT-2770: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
+  Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
 

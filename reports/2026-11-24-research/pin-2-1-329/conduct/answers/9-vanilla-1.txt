@@ -1,0 +1,4 @@
+I don't have my earlier summary in this session, so I can't say which number I got wrong. This one comes straight from the file.
+
+Latency and errors: p95 latency is 412ms, and the error rate is 0.9%.
+Retries: there were 37 retries.

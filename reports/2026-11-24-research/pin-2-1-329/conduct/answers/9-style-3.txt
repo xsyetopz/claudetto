@@ -1,0 +1,2 @@
+I just read `stats.txt` again, and it has a single line: `p95 412ms, error rate 0.9%, 37 retries`.
+I can't see my earlier summary in this conversation, so I can't tell which number I got wrong. The figures above come straight from the file.
