@@ -68,7 +68,7 @@ describe("shell guard", () => {
 		expect(seen).toEqual(["curl -s example.com"]);
 	});
 
-	test("a command that names git gets no stdin group and no watchdog, so the worktree guard can verify it", () => {
+	test("a command that names git gets no stdin line and no watchdog, so the worktree guard can verify it", () => {
 		// Arrange: Claude Code refuses a git command in a worktree-isolated agent unless it parses as a plain list with no interpreter ahead of git.
 
 		// Act and Assert
