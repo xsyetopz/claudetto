@@ -3,8 +3,9 @@
 ## Setup
 
 - Install [Bun](https://bun.sh), [just](https://just.systems) and Claude Code.
-- Start one session with `claude --plugin-dir plugins/<plugin>` per plugin; Claude Code writes the
-  `.claude-plugin/types` folder that typechecking needs.
+- Run `just setup`. Its `project-types` step writes each plugin's `.claude-plugin/types` folder, which
+  typechecking and lint need, with a print session that bills nothing; `just project-typecheck` reruns
+  it when the folder is missing or from another Claude Code version.
 - To work on this repo with claudetto loaded, load an installed copy or a copy outside the tree
   (`cp -R plugins/claudetto "$TMPDIR/claudetto"`, then `--plugin-dir "$TMPDIR/claudetto"`). Claude Code
   2.1.329 denies Bash writes inside a loaded plugin's folder under the sandbox claudetto turns on, so

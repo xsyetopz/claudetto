@@ -167,3 +167,11 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 - [x] **REQ-VERIFICATION-103** Moved Out as OUT-2804: ADR-0177: the rule text failed its acceptance, ending the mutant suite in 2 of 5 Opus runs and 0 of 5 Sonnet runs, and caused harm in one interactive run (a perl alarm orphaned the hung test child); the cure needs a project-level limit that no short run reproduces (reports/2026-11-18-research/incident-lab/score7.txt).
   Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: no time-limit rule ships: `git grep -niE 'time limit|timeout'` over plugins/claudetto/hooks/prompt, output-styles and agents matches only Heracles.md:13, which treats a timeout as no result.
+
+## Generated Types
+
+- [x] **REQ-VERIFICATION-106** The repository shall write each shipped plugin's `.claude-plugin/types` with `just project-types`, which `just setup` and `just project-typecheck` run, when the folder is missing or was written by another Claude Code version, because a check that waits on an interactive session gets handed to the user (RISK-543).
+  Acceptance: in a fresh clone, `just project-typecheck` writes the types for the three plugins and exits 0, a second `just project-types` writes nothing, and the recipe runs inside the agent sandbox. Verification: demonstration.
+  Basis: measured, `reports/2026-11-24-research/pin-2-1-329/handoff/results.txt`.
+  Verified: claude 2.1.329, 2026-11-24: a fresh clone with the recipe: `just project-typecheck` wrote all three type folders and passed (135, 75, 23 files, no type errors), then `just typescript::lint plugins/claudetto/hooks/guards/memory.ts` exit 0; the rerun of `just project-types` took 0.16 s and wrote nothing; a sandboxed `just project-types` in a second fresh clone exit 0 with all three `index.d.ts` written.
+  Source: OUT-544 (the watch variable); `project.just` `project-types`.

@@ -1160,3 +1160,18 @@
   Verified: 2026-11-24, claude 2.1.329, the copy arm above: 3 of 3 runs committed the rename with 0 EPERM lines.
   Owner: verification.
   Source: RISK-541; the session transcript `s1.jsonl` of the 2026-11-24 dogfood (scratch, not kept).
+
+- [x] **RISK-543** A claudetto session on a fresh clone of this repo hands the user a step it could run: start a session so the plugin types exist, then rerun lint.
+  Category: verification, dogfood.
+  Cause: `project.just` and `CONTRIBUTING.md` said only an interactive session writes `.claude-plugin/types`, and no recipe wrote them; Claude Code 2.1.329 writes them from a print run with `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` (OUT-544).
+  Event: dogfood 2026-11-24, claude 2.1.329, Sonnet 5.5, a rename on main `177eb8b4e`: lint stopped on the missing types and the reply ended by telling the user to start a session.
+  Consequence: the change ships unlinted and the user gets a turn's work back.
+  Likelihood: 4. Impact: 2.
+  Existing controls: none; `just verify` failed on the same missing folder.
+  Response: mitigate.
+  Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-24-research/pin-2-1-329/handoff/run.sh`: with CLAUDE.md files off, vanilla handed off 0 of 3 and claudetto 4 of 6; two style lines left 1 of 6 each and a conduct clause 3 of 6, none wrote the types (`handoff/results.txt`).
+  Evidence: the replies quoted the repo text as the reason ("only an interactive Claude Code session writes that folder"), and a fake-API print run with the watch variable wrote all three plugins' types (`// Written by Claude Code 2.1.329.`).
+  Status: closed 2026-11-24: `project-types` in `project.just` writes the types; `project-setup` and `project-typecheck` run it; `CONTRIBUTING.md` points at `just setup` (REQ-VERIFICATION-106). The style lines and the clause do not ship (ADR-0177).
+  Verified: 2026-11-24, claude 2.1.329, the same probe on branch fix/types-recipe with CLAUDE.md on: claudetto ran `just project-types` and got lint exit 0 in 3 of 3, with 0 handoffs; on main the same arm handed off 2 of 3 and linted 0 of 3.
+  Owner: verification.
+  Source: `reports/2026-11-24-research/pin-2-1-329/handoff/results.txt`.

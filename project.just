@@ -3,23 +3,35 @@
 
 shipped := "plugins/claudetto plugins/claudetto-you-should-know plugins/claudetto-spec"
 
-# Type-check each shipped plugin with its own tsconfig.
-project-typecheck:
+# Write each shipped plugin's .claude-plugin/types when it is missing or from another Claude Code.
+# ENGINE(v2.1.329): a print session writes the types when CLAUDE_CODE_PLUGIN_DIR_WATCH=1 is set; the
+# closed API port and a dummy key make it bill nothing and touch no login (#84, OUT-544).
+project-types:
     #!/usr/bin/env bash
     set -euo pipefail
     installed="$(claude --version | awk '{print $1}')"
     for p in {{ shipped }}; do
-        if [[ ! -d "$p/.claude-plugin/types" ]]; then
-            echo "$p/.claude-plugin/types is missing: Claude Code writes it when a session loads the plugin, so start one session with --plugin-dir $p first" >&2
-            exit 1
-        fi
-        # ENGINE(v2.1.330): only an interactive session rewrites the types; `claude plugin test`, `-p`
-        # and `plugin validate` do not, so they lag a Claude Code update (#84).
-        written="$(head -1 "$p/.claude-plugin/types/claude-code/index.d.ts" | awk '{print $NF}')"
+        d="$p/.claude-plugin/types/claude-code/index.d.ts"
+        written="$(head -1 "$d" 2>/dev/null | awk '{print $NF}' || true)"
+        [[ "${written%.}" == "$installed" ]] && continue
+        CLAUDE_CODE_PLUGIN_DIR_WATCH=1 ANTHROPIC_BASE_URL=http://127.0.0.1:9 ANTHROPIC_API_KEY=unused \
+            CLAUDE_CODE_MAX_RETRIES=0 claude -p types --plugin-dir "$p" --setting-sources project \
+            --strict-mcp-config --no-session-persistence < /dev/null > /dev/null 2>&1 || true
+        written="$(head -1 "$d" 2>/dev/null | awk '{print $NF}' || true)"
         if [[ "${written%.}" != "$installed" ]]; then
-            echo "$p/.claude-plugin/types were written by Claude Code ${written%.}, not the installed $installed: start one session with --plugin-dir $PWD/$p to rewrite them" >&2
+            echo "Claude Code $installed wrote no types into $p/.claude-plugin/types" >&2
             exit 1
         fi
+    done
+
+# A fresh clone gets the types with the rest of the setup.
+project-setup: project-types
+
+# Type-check each shipped plugin with its own tsconfig, writing its types first when needed.
+project-typecheck: project-types
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for p in {{ shipped }}; do
         bun check -p "$p"
     done
 
