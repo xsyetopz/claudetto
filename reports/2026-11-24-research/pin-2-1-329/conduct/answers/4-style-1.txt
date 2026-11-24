@@ -1,0 +1,6 @@
+The first run, without `API_TOKEN`, would have printed `missing` and exited 1. `check.sh` needs that variable, so I loaded it from the repo's `.env` and reran it.
+
+```
+CHECK-OK-7731
+exit=0
+```
