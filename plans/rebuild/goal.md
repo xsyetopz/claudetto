@@ -1,6 +1,6 @@
 # Goal
 
-Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `plans/rebuild/`, on a vanilla Claude Code 2.1.329 install (ADR-0176), interactive `claude` first and `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
+Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `plans/rebuild/`, on a vanilla Claude Code 2.1.329 install, pinned to that version (ADR-0198), interactive `claude` first and `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
 
 Read `plans/rebuild/README.md` first. It maps the layout, routing, item format and attribution. Then read:
 
@@ -25,7 +25,7 @@ The product:
 
 Rules:
 
-- Verify each fact against `claude` 2.1.329 or later by a probe before you rely on it. Record the probe (name, version, date, command) as the attribution.
+- Verify each fact against `claude` 2.1.329 by a probe before you rely on it; a check on another version settles nothing (ADR-0198). Record the probe (name, version, date, command) as the attribution.
 - Give every item its source: `external/<path>:<line>`, `openspec/<path>:<line>` at `088a227c^`, `plugins/<path>:<line>@088a227c`, a URL, a probe, or "user decision". Write no item without one.
 - Act only on what the user asked. Never act on a guess. When the user alone holds the answer, such as what is worth building over vanilla, take the default the plan or an ADR sets, or else the smallest reversible option recorded as a `proposed` ADR (ADR-0196).
 - Do not quote the user verbatim in repo files.

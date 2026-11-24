@@ -18,7 +18,7 @@ describe("tool.offer", () => {
 
 		// Act
 		const offers = await Promise.all(
-			HIDDEN_TOOLS.map((tool) => $.tool.offer({ tool, provider, for: "list" }))
+			HIDDEN_TOOLS.map((tool) => $.tool.offer({ tool, provider }))
 		);
 
 		// Assert
@@ -36,7 +36,6 @@ describe("tool.offer", () => {
 				$.tool.offer({
 					tool,
 					provider,
-					for: "list",
 					agentId: "a1",
 					subagentType: "Heracles"
 				})
@@ -54,9 +53,7 @@ describe("tool.offer", () => {
 
 		// Act
 		const offers = await Promise.all(
-			MAIN_ONLY_TOOLS.map((tool) =>
-				$.tool.offer({ tool, provider, for: "list" })
-			)
+			MAIN_ONLY_TOOLS.map((tool) => $.tool.offer({ tool, provider }))
 		);
 
 		// Assert
@@ -74,7 +71,6 @@ describe("tool.offer", () => {
 				$.tool.offer({
 					tool,
 					provider,
-					for: "list",
 					agentId: "a1",
 					subagentType: "Heracles"
 				})
@@ -92,9 +88,7 @@ describe("tool.offer", () => {
 
 		// Act
 		const offers = await Promise.all(
-			SUBAGENT_HIDDEN_TOOLS.map((tool) =>
-				$.tool.offer({ tool, provider, for: "list" })
-			)
+			SUBAGENT_HIDDEN_TOOLS.map((tool) => $.tool.offer({ tool, provider }))
 		);
 
 		// Assert
@@ -112,7 +106,6 @@ describe("tool.offer", () => {
 				$.tool.offer({
 					tool,
 					provider,
-					for: "list",
 					agentId: "a1",
 					subagentType: "claudetto:Heracles"
 				})
@@ -132,7 +125,7 @@ describe("tool.offer", () => {
 		// Act
 		const kept = await Promise.all(
 			["Bash", "Read", "Agent", TOOL_FULL_NAME].map((tool) =>
-				$.tool.offer({ tool, provider, for: "list" })
+				$.tool.offer({ tool, provider })
 			)
 		);
 

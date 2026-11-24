@@ -1,5 +1,7 @@
 # Goal Requirements
 
+Target: Claude Code 2.1.329 only (ADR-0198). A Verified line on another version is history; each item below is settled by a 2.1.329 check.
+
 claudetto gives the model its own goal tools and keeps the user in control of `/goal`. Claude Code 2.1.330 evaluates a goal with a haiku prompt hook after each stop; the model cannot mark a goal met, the evaluator sees only the transcript, and the ninth consecutive block pauses the goal (reports/2026-11-21-goal). The 2026-11-21 lead ruling: claudetto gives the model goal tools; the built-ins are probed first and, being missing or gated, are turned off through `tool.offer` and replaced by snake_case `get_goal`, `set_goal`, `pause_goal`; the tool that ends a met goal is `clear_goal`, mirroring `/goal clear`; each description is at most 200 characters.
 
 ## Probes

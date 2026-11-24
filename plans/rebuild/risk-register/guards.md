@@ -1431,7 +1431,9 @@
   Evidence: probe 2026-11-24, claude 2.1.331, vanilla, fake API, `claude -p hi --settings` with ask `Write(~/a.json)` and deny `Write(~/c.json)`: stderr warned for both lists (`$TMPDIR/wprobe.ts`).
   Status: mitigated 2026-11-24: `conflicts.ts` `deadWrite`; ASK holds the `Edit` rule only.
   Verified: 2026-11-24, claude 2.1.331, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with fill.test.ts "removes a Write ask or deny rule whose Edit twin is in the same list"; `bun reports/2026-11-24-research/reverify/steady.ts` printed no "not matched" line on either launch.
-  Source: Claude Code 2.1.331 stderr text quoted in Event; `reports/2026-11-24-research/reverify/steady.ts`.
+  Evidence: probe 2026-11-24, claude 2.1.329, vanilla, fake API, `bun reports/2026-11-24-research/pin-2-1-329/wmatch.ts` (a scripted Write under `acceptEdits`): with an ask `Edit(//<path>)` rule the Write was refused ("you haven't granted it yet") and the file was not written; with an ask `Write(//<path>)` rule the file was written and stderr printed "... is not matched by file permission checks — only Edit(path) rules are". 2.1.329 behaves as 2.1.331 does, so the cure stands.
+  Verified: 2026-11-24, claude 2.1.329: the probe above, and `claude plugin test plugins/claudetto` 332 pass, 0 fail, including `hooks/guards/wall/__tests__/fill.test.ts`.
+  Source: Claude Code 2.1.331 stderr text quoted in Event; `reports/2026-11-24-research/reverify/steady.ts`; `reports/2026-11-24-research/pin-2-1-329/wmatch.ts`.
 
 - [x] **RISK-538** claudetto lets `gh release create` publish a release with no prompt, where vanilla asks.
   Category: permissions.
