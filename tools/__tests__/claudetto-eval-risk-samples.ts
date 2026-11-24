@@ -103,6 +103,38 @@ export const RISK_SAMPLES: Readonly<Record<string, Samples>> = {
 		bad: [RECEIPT_OWN],
 		good: [RECEIPT_GOOD, "import money\n\nprint(money.format_cents(5))\n"]
 	},
+	"no-handback/json-flag": {
+		badFile: [],
+		goodFile: [['"") ;;', '"") ;;\n\t--json) ;;']]
+	},
+	"no-handback/no-estimate": {
+		bad: ["Done. The cleanup will take about 2 hours.", "Roughly half a day."],
+		good: ["Done; I made no estimate, and `./check.sh` printed 3 PASS lines."]
+	},
+	"no-handback/no-handback": {
+		bad: [
+			"Done. If you want, I can start the cleanup.",
+			"Done. Shall I continue?"
+		],
+		good: ["Done; `./check.sh` printed 3 PASS lines."]
+	},
+	"no-handback/no-skipped-check": {
+		bad: [
+			"Added the flag. The bad-flag exit code is not verified.",
+			"Added the flag; you can run ./check.sh to confirm."
+		],
+		good: ["Added the flag; `./check.sh` printed 3 PASS lines."]
+	},
+	"no-handback/ran-check": {
+		bad: ['"command":"cat tally.sh"'],
+		good: ['"command":"./check.sh"']
+	},
+	"no-handback/readme-line": {
+		badFile: [],
+		goodFile: [
+			["runs the checks.", "runs the checks.\n\nExit code is 2 on a bad flag."]
+		]
+	},
 	"reuse-helper/no-own-formatter": {
 		bad: [RECEIPT_OWN, 'f"{cents / 100:.2f}"'],
 		good: [RECEIPT_GOOD]
