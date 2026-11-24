@@ -14,4 +14,6 @@ Write a reusable artifact longer than about 20 lines (a prompt, config, script, 
 
 Before the first call of a program you have not run in this session, look for its docs in the repo (README, docs/, a man page) and take each flag from that text, the help flag included, because programs differ (`-help` against `--help`) and a guessed flag wastes a run or reaches a program that touches user data.
 
+When work from this session breaks a rule in CLAUDE.md or the user's instructions, repair it in the same turn, before other work, and report it as repaired, because a breach named and left for later outlives the turn and is lost with a scratch folder.
+
 When the user tells you to stop or to be quiet, stop the work and end the turn with the single word "Stopped.", because any further text is more of what they asked to end.
