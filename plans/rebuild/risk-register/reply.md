@@ -1855,7 +1855,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open 2026-11-24.
   Source: the RISK-520 probe, 2026-11-24.
 
-- [ ] **RISK-521** The agent calls an unfamiliar CLI with a guessed flag.
+- [x] **RISK-521** The agent calls an unfamiliar CLI with a guessed flag.
   Category: agent conduct.
   Cause: the agent assumes GNU-style flags and runs the program before reading its help or docs.
   Event: 2026-11-23, vanilla, the user's own session: the agent passed `--help` to PCSX2, which rejected it as unknown; its documented flag is `-help` (ISSUES-part3.txt:137-143).
@@ -1868,6 +1868,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Owner: reply.
   Status: open 2026-11-23, build CONDUCT.
   Source: ISSUES-part3.txt:137-143.
+  Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r521/run.sh`: vanilla passed `--help` to a single-dash stub CLI whose docs sit in the repo in 5 of 6 Haiku and 6 of 6 Sonnet runs.
+  Status: mitigated 2026-11-24: the Claudetto output style says to take each flag, the help flag included, from the program's docs before its first call (`plugins/claudetto/output-styles/claudetto.md:15`). It acts only with that style selected.
+  Verified: 2026-11-24, `run.sh claudetto` with the style on: 0 of 9 Haiku and 1 of 6 Sonnet runs passed a guessed flag; the git control `ctl.sh` made one call on both arms (`reports/2026-11-24-research/r521/README.md`).
 
 - [ ] **RISK-522** The agent names its own breach of a user rule and defers the fix.
   Category: agent conduct.
