@@ -185,6 +185,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Code Mode Compatibility
 
 - [x] **REQ-GUARDS-078** Moved Out as OUT-2314: the item needs a paid model run.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (interactive Code Mode, Sonnet 5.5, about $0.6; `reports/2026-11-24-research/pin-2-1-329/codemode/results.txt`): one script ran 300 `true` calls and then `sed -i`; with the plugin the inplace guard refused the script's sed and f.txt stayed unchanged, while vanilla ran it; the plugin took 98.5 ms per call against vanilla's 56.5 ms. No PreToolUse command hook ships, so no hook timeout can refuse a script call; prompt.ts checks only typed origins, and inplace.test.ts refuses `cd src && sed -i`.
 
 ## Post-Tool Context
 

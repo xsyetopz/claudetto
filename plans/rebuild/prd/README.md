@@ -4146,6 +4146,7 @@ ADR-0192 brings the block back In as `prd/spec.md` under the name claudetto-spec
   Acceptance: the handover rewrites message 0, a cache read follows it, and its cost is at most half the cost of one core compaction on the same session; a measured run of the same task costs fewer tokens with handover than with built-in compaction. Verification: probe.
   Basis: reported. Status: partial at 088a227c (plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; no measured comparison).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:79; plugins/claudetto/hooks/features/compaction/handoff.ts@088a227c; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:198 (user decision, 2026-11-09).
+  Evidence: 2026-11-24, claude 2.1.329: a handover compaction costs about what a core compaction costs, not half (`reports/2026-11-24-research/pin-2-1-329/handover/results.txt`, ADR-0200).
 
 #### Context Facts N-Z
 
@@ -9630,6 +9631,7 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Acceptance: a hook test feeds 1,000 `PreToolUse` inputs in a row and finds every reply under a tenth of the hook's `timeout`. A Bash guard test finds `cd 'app' && git push` blocked where `git push` is blocked. A `UserPromptSubmit` test with `source: "poll_event"` returns no block. A build-time demonstration repeats these checks in an interactive Code Mode session (REQ-KERNEL-002). Verification: test; demonstration.
   Basis: read (official Code Mode page; 2.1.327 chunk-t31w6vd4.js `$5ac119` and the session refusal text, gated by `tengu_patient_lamport`; chunk-yz486sx2.js `made` flag); reported (benchmark call counts, CTX-854). Status: missing at 088a227c.
   Source: <https://code.claude.com/docs/en/code-mode> sections "Permission checks", "Tool call refused by a hook" and "Code output withheld by a hook" (read 2026-11-18); chunk-t31w6vd4.js@102931 (claude 2.1.327, cleaned module, 2026-11-18); ~/.claude.json `cachedGrowthBookFeatures` (2026-11-18); arc42/03_context_and_scope/tools.md CTX-854.
+  Evidence: the "only per-call hook is the memory hold" note is stale: on 2.1.329 eight `tool.call` guards run per Bash call. `codemode/percall.ts` (fake API, 2026-11-24) puts the per-call cost in the sandbox the settings fill turns on (about 180 ms, core's) and the redact scan (about 130 ms); each other module alone is within noise of an empty plugin (`reports/2026-11-24-research/pin-2-1-329/codemode/results.txt`).
 
 - [x] **OUT-2315** Out (the item describes a part that plugins/ does not ship; moved from RISK-030 in risk-register/guards.md): A delete built from an unchecked variable destroys data (F7, P10).
   Category: agent behaviour.

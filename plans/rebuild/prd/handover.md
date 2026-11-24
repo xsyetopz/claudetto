@@ -185,6 +185,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Handover Cost
 
 - [x] **REQ-HANDOVER-060** Moved Out as OUT-2006: the cost comparison needs two paid runs of the same task; the cache-read part is the engine contract of `$.model.fork`.
+  Verified: claude 2.1.329, 2026-11-24, probe (`reports/2026-11-24-research/pin-2-1-329/handover/run.sh`, Sonnet 5.5, n=6 per arm, about $6.3 with a setup run): the claim does not hold. Sessions that auto-compacted 2 or 3 times cost $0.494 on average with the handover against $0.467 with core's summarizer; each fork read 14.3k tokens cached and 21.3k uncached, core's summarizer 29.2k and 20.9k; core's thrashing stop ended 2 of 6 handover sessions and 0 of 6 core ones (`handover/results.txt`). ADR-0200 (proposed) records the choice for the user.
 
 ## Handover in Place of Compaction
 
