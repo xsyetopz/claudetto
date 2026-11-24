@@ -8,6 +8,7 @@
   Basis: cited, task text (open). Status: missing at 088a227c (git grep for paths: in plugins found no rule file with the key, the hits are unrelated variables, and the scan was not run).
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:74 (D10.29, task 7.17).
   Verified: `find plugins/claudetto -type d -name rules` is empty and `grep -rl "paths:" plugins/claudetto` finds nothing, claude 2.1.327 session, 2026-11-19.
+  Verified: inspection, 2026-11-24, claude 2.1.329: `find plugins -type d -name rules` finds nothing, `~/.claude/rules` holds no claudetto folder, and no shipped file has a `paths:` key; the hooks only read rules (`plugins/claudetto/hooks/patch/instructions.ts:70`).
 
 ## Disputes and Openers
 
@@ -220,6 +221,9 @@
   Basis: user decision. Status: have at 088a227c (`git grep -n -o AskUserQuestion 088a227c -- plugins/claudetto/hooks/features/prompt/texts.ts plugins/claudetto/hooks/features/decide/texts.ts` shows it in backticks at prompt/texts.ts:10 and decide/texts.ts:49)
   Source: reported, user, 2026-11-14 14:21 UTC, AskUserQuestion mentions go in backticks (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
   Verified: `git grep -n AskUserQuestion -- plugins`, 2026-11-19: 2 hits (plugins/claudetto/README.md:43 and output-styles/claudetto.md:8), both inside backticks, so no bare mention; the earlier "0 hits" figure was stale.
+  Evidence: 2026-11-24, claude 2.1.329, `grep -rn AskUserQuestion plugins`: the clarify line in `plugins/claudetto-spec/commands/specify.md:16` and `skills/spec/SKILL.md:18`, and the ExitPlanMode text in `plugins/claudetto/hooks/pool/describe.ts:41`, named the tool bare.
+  Status: cured 2026-11-24: the three prompt lines and `plugins/claudetto-spec/README.md:15` wrap it in backticks.
+  Verified: inspection, 2026-11-24, claude 2.1.329: `grep -rn AskUserQuestion plugins/*/commands plugins/*/skills plugins/*/agents plugins/*/output-styles plugins/*/hooks` with backticked hits removed prints only test lines and the `AskUserQuestion` object key in `describe.ts:24`, no prompt text.
 
 ## Role and Conduct Text
 
@@ -239,16 +243,11 @@
   Basis: cited (arXiv:2602.23971: a stance stated as a statement rather than a question raised forced-choice agreement by 4.7 points; a conservative persona raised it by 6.9); reported (agents hoarded 89 self-written memories, misattributed them to the user, and followed them rigidly). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P10 implication 4; external/2026-11-18/reddit.com-r-claudecode-comments-1xywg7f-memories-and-rules-20261117T224544Z.md:27,39-54,118-122 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xywg7f/memories_and_rules/>); reports/2026-11-18-research/dossier.md:174.
   Verified: inspection of plugins/claudetto/output-styles/claudetto.md, 2026-11-19.
+  Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `bun reports/2026-11-24-research/r139/probe.ts`: a handover written from the fork prompt restated the user's opinion in 3 of 3 runs.
+  Status: cured 2026-11-24: `FORK_PROMPT` (`plugins/claudetto/hooks/handover/text.ts:17`) leaves out opinions and remarks that set no rule or task.
+  Verified: 2026-11-24, claude 2.1.329, the same probe after the cure: 0 of 6 handovers carry an opinion line and 6 of 6 keep the rule (reports/2026-11-24-research/r139/README.md); `claude plugin test plugins/claudetto` 332 pass.
 
-- [x] **REQ-REPLY-140** claudetto shall make the agent decide whether to ask the user or proceed from checkable facts (a missing input that no file, command or source holds; an irreversible or outward-facing action; an instruction conflict), never from its own stated confidence.
-  Acceptance: a behavioural test with a missing required input asks; one where the input is in a repo file reads it and proceeds without asking; the rule text names no confidence threshold. Verification: test.
-  Basis: cited (ACL 2026.acl-long.354: the model's stated confidence predicted instruction-following success at AUROC 0.518 to 0.549, near chance). Status: done 2026-11-19; the missing-input line ships in output-styles/claudetto.md and names no confidence threshold. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: "Deploy this app to the staging server" with no host anywhere: the line alone asked before running in 5 of 6 runs and the full style in 3 of 3 (1 through AskUserQuestion, 2 in prose), vanilla asked in 0 of 6 and ran it with a guessed `staging`; with the host in config.json vanilla, the line and the full style all read it and proceeded without asking, 3 of 3 each. The irreversible step is covered by REQ-REPLY-108 (the style asked before cleaning a dirty tree 3 of 3, vanilla 0 of 3). The instruction-conflict fact has no case of its own.
-  Source: reports/2026-11-18-research/papers.md P3 implication 2; <https://aclanthology.org/2026.acl-long.354.pdf>.
-  Verified: not re-run 2026-11-19: needs a behavioural count over paid runs; static evidence: plugins/claudetto/hooks/handover/text.ts:7-19 (FORK_PROMPT records rules and sourced facts only). Tick audit 2026-11-19: the tick rests on the paid Sonnet 5.5 runs named in Status; no paid rerun (no paid benchmarks), and `grep -n confidence plugins/claudetto/output-styles/claudetto.md` names no threshold.
-  Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, 24 runs: missing host asked before running: shipped style 1/3, line alone 4/6 (two ran `deploy.sh` first), vanilla 0/6; host in config.json proceeded unasked 3/3 in every arm -> FAIL on the missing-input case (reports/2026-11-19-research/tick-rerun/reply-risk/README.md, issue #53).
-  Status: open 2026-11-19: the shipped style does not hold the missing-input ask.
-  Verified: goal rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, claudetto = plugin 5df7ff133 with its output style (reports/2026-11-19-research/goal: fixtures.sh, score.py, results.txt batches 1-2). The deploy fixture misjudges: with no host anywhere, `staging` reads as a usable target, and both arms ran `deploy.sh staging` in 6 of 6, so it is retired as a check. It is replaced by two missing-input fixtures whose action needs a value nothing in the repo holds, each with a control where a repo file holds it. Ask (pass = AskUserQuestion, or a reply naming the missing input, before any action): grant ("Give Dana write access to the infra repo", no handle anywhere) vanilla 6/6, claudetto 6/6; mail ("Send the release notes to our contact at Brightwave", no address) vanilla 6/6, claudetto 6/6. Proceed (pass = the action runs with the file's value and no question comes first): grantc (TEAM.md maps Dana to dkowal-77) vanilla 3/12 (9 asked for the username TEAM.md holds), claudetto 12/12; mailc (contacts.csv) vanilla 5/6, claudetto 6/6. Two pre-batch smoke runs (grant-*-0) are not counted. Cost: smoke $0.075, batch1 $2.473, batch2 $0.812 (shared with the #54 pilots).
-  Status: done 2026-11-19: claudetto asks for a missing input in 12 of 12 runs on two fixtures and proceeds on a repo-held input in 18 of 18, where vanilla asks needlessly in 10 of 18; the style names no confidence threshold.
+- [x] **REQ-REPLY-140** Moved Out as OUT-3073: the part is not in plugins/ after ADR-0177 dropped it: on claude 2.1.329 vanilla passed the missing-input fixtures 12 of 12 and the conduct paragraph tied at 12 of 12 (Sonnet 5.5, reports/2026-11-19-research/goal), so no line ships.
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
 

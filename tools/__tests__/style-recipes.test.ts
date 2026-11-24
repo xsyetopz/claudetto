@@ -53,7 +53,7 @@ describe("output style holds no task conduct (REQ-TOOLS-031 and 032, issue #122;
 		const style = await Bun.file(styleFile).text();
 
 		// Assert
-		expect(CONDUCT_PARAGRAPHS).toHaveLength(12);
+		expect(CONDUCT_PARAGRAPHS).toHaveLength(11);
 		for (const paragraph of CONDUCT_PARAGRAPHS) {
 			expect(style).not.toContain(paragraph);
 			expect(style).not.toContain(paragraph.slice(0, 40));

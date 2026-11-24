@@ -40,6 +40,7 @@
   Basis: measured (top-level `model` only), reported. Status: missing at 088a227c.
   Source: external/2026-11-10/reddit.com-r-claudecode-comments-1xrutks-how-to-keep-costs-down-20261110T100242Z.md:57 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrutks/how_to_keep_costs_down/>); external/please-use-me-often/agent-failure-dossier/judged/setting.jsonl:20.
   Verified: PASS: no model switch in plugins; only model.fork in handover/writer.ts; agents pin models. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: inspection, 2026-11-24, claude 2.1.329: no hook or setting in plugins/claudetto switches the model.
 
 - [x] **REQ-COST-040** Moved Out as OUT-2353: the item needs a paid model run.
 
@@ -64,3 +65,4 @@
   Basis: cited (arXiv:2605.15184: moving small results to files cut one harness and model pair from 93.1 to 55.2; one run). Status: missing at 088a227c.
   Source: reports/2026-11-18-research/papers.md P7 implication 2; <https://arxiv.org/pdf/2605.15184>.
   Verified: inspection 2026-11-19: grep of plugins/claudetto/hooks for fs.write, writeFile and appendFile finds only the settings fill; no hook writes a result file.
+  Verified: inspection, 2026-11-24, claude 2.1.329: `web_fetch` returns its text inline and saves only a copy for paging.

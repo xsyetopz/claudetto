@@ -65,6 +65,11 @@ describe("defaults fill", () => {
 		expect(next.bashOutputMaxChars).toBe(8000);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER).toBe("0");
+		// REQ-SETUP-063: the reminder is silenced by the flag alone; no `_TEXT` key is written.
+		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBeUndefined();
+		expect(
+			Object.keys(next.env).filter((key) => key.endsWith("_TEXT"))
+		).toEqual([]);
 		expect(next.env).toMatchObject({
 			CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
 			CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "3",

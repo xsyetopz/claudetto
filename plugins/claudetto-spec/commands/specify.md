@@ -13,7 +13,7 @@ Formats: the `spec` skill's `references/FORMAT.md`. Glob `specs/*.md` first and 
 ## Clarify
 
 - Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root, if present. Never create a constitution file.
-- Interactive session: ask each expensive unknown through AskUserQuestion.
+- Interactive session: ask each expensive unknown through `AskUserQuestion`.
 - No one to answer (non-interactive `-p` run): write each unknown as an `Open:` line in the spec, also when you take a cheap default.
 
 ## Spec

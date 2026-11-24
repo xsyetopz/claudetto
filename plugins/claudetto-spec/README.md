@@ -12,7 +12,7 @@ claude plugin install claudetto-spec --marketplace xsyetopz/bedrock
 
 The `spec` skill applies to new or changed behaviour, not typos, renames, dependency bumps or questions. The model decides when to load it, and under pressure a smaller model may skip it; the commands below run it every time. The Stop gate below checks the result either way.
 
-1. Clarify: an interactive session asks each expensive unknown through AskUserQuestion; a `-p` run writes it as an `Open:` line, takes the cheap default and lists each assumption in the reply.
+1. Clarify: an interactive session asks each expensive unknown through `AskUserQuestion`; a `-p` run writes it as an `Open:` line, takes the cheap default and lists each assumption in the reply.
 2. Spec: edit `specs/<capability>.md`.
 3. Red: write tests in the project's framework that cite the requirement ID, see them fail, then `git add` them.
 4. Green: implement without editing the staged tests. A contradiction with a requirement, or a test that cannot pass honestly, stops the work and is reported with the requirement ID.
