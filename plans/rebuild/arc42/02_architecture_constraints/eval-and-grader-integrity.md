@@ -30,6 +30,7 @@ ADR-0193 reinstates these constraints on 2026-11-21, because `claude plugin eval
   Acceptance: a REQ that claims a gain over vanilla cites a held-out `aggregate-result.json`, never a dev run. Verification: inspection.
   Basis: user decision. Status: partial 2026-11-24: claudetto-spec's gain claim (REQ-SPEC-010) cites the held-out `holdout-2026-11-21T00-28-05-304Z.json`; claudetto gain claims still cite dev runs or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla). A held-out run needs the user's approval (RISK-534).
   Source: OUT-2505 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Evidence: 2026-11-24, claude 2.1.329: the claudetto held-out run `plugins/claudetto/evals/results/holdout-2026-11-24T03-08-25-111Z.json` (gitignored, on this machine) gave mean Δ −0.003 at an overall score of 0.98, so no claudetto gain claim is backed by a held-out run yet (RISK-534).
 
 - [x] **CON-060** A doc the agent wrote shall be a claim, never evidence; graders read files, tool calls, git state and test exits.
   Acceptance: no case is graded by an `llm` grader alone, and no grader targets a file the agent wrote about its own work (a summary or report). Verification: inspection.
