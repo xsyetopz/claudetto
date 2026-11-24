@@ -102,7 +102,7 @@ Permissions and the sandbox:
 
 ## Subagents
 
-claudetto ships four agents: `Artemis` (Haiku, read-only search), `Hermes` (Haiku, read-only web research; the only subagent offered `web_fetch` and `web_search`), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. A spawn past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is refused with a reason that tells the model to wait for a running subagent to finish.
+claudetto ships four agents: `Artemis` (Haiku, read-only search), `Hermes` (Haiku, read-only web research; the only subagent offered `web_fetch` and `web_search`), `Athena` (Sonnet, read-only review) and `Heracles` (Sonnet, reads, runs commands and edits). It hides Claude Code's other built-in agent types from the model, except `fork`. A subagent spawn that names Fable, Mythos or Opus is refused with a reason that tells the model to use Sonnet or Haiku, or to leave the model unset. Since general-purpose is hidden, the Agent tool's text tells the model to name one of the listed agents, because a call with no `subagent_type` fails. A call past `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` gets Claude Code's own refusal: Claude Code 2.1.331 refuses it before any plugin hook runs.
 
 ## Goal
 
