@@ -14,6 +14,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: cited. `totalTokensReminder` takes off, infinite, fixed, countdown, padded-countdown (default padded-countdown with the capability, else off); `totalTokensReminderBudget` is an integer, unset; `totalTokensReminderAfterUserTurn` false is valid; `breakReminder` is opt-in, unset or `{"enabled": false}`. Status: missing at 088a227c (no match for these keys under plugins).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:793.
   Verified: PASS: grep of plugins/ for the five removed keys finds 0 hits (re-run from B-setup report, HEAD b5f6510b4). Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: inspection, 2026-11-24, claude 2.1.329: the fill writes showClearContextOnPlanAccept true and no other plan-accept key.
 
 - [x] **REQ-SETUP-008** claudetto shall set `showClearContextOnPlanAccept` true and leave `plansDirectory`, `bashEditDiffEnabled`, `respondToBashCommands`, `askUserQuestionTimeout`, and `dialogExpiry` unset.
   Acceptance: the written settings hold `showClearContextOnPlanAccept: true` and none of the five other keys. Verification: inspection.
@@ -21,6 +22,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:732; plugins/claudetto/hooks/features/setup/settings.ts:172@088a227c.
   Verified: probe, claude 2.1.327, 2026-11-18, `claude -p hi --plugin-dir plugins/claudetto` with a temp CLAUDE_CONFIG_DIR: settings.json gained `showClearContextOnPlanAccept: true`; the five keys appear nowhere in hooks/settings/defaults.ts@abed830ed.
   Verified: PASS: hooks/settings/defaults.ts sets showClearContextOnPlanAccept true; the other five keys have 0 hits; plugin test 105 pass, binary 2.1.327. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: inspection, 2026-11-24, claude 2.1.329: the fill writes showClearContextOnPlanAccept true and no other plan-accept key.
 
 ## Builtin Disable
 
@@ -88,6 +90,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: measured. Status: missing at 088a227c.
   Source: plugins/claudetto/hooks/features/setup/settings.ts:211@088a227c (no `var/folders` in plugins/); openspec/specs/sandbox/spec.md:164.
   Verified: PASS: guards/rules.ts:93 ALLOW_WRITE includes /private/var/folders and :81 holds the xcrun_db* deny pattern. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: inspection, 2026-11-24, claude 2.1.329: the fill denies writes to `/private/var/folders/**/xcrun_db*`, allows `/private/var/folders` (`hooks/settings/rules.ts`, `hooks/settings/fill.ts:36-37`), and `defaults.test.ts` asserts both.
 
 ## Setup Rules to Keep
 
@@ -126,6 +129,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: cited. Status: have at 088a227c (git grep SCANNER_VERSION finds no hit).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/tasks.md:382@088a227c9^ (task 18.39, the cleanup tool `mo` pinned at 1.68.0 in the tool list).
   Verified: PASS: git grep SCANNER_VERSION under plugins/ finds 0 hits. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: inspection, 2026-11-24, claude 2.1.329: `grep -rn SCANNER_VERSION plugins` finds nothing.
 
 ## Alias Pinning
 
@@ -172,6 +176,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Acceptance: the construction names no `_TEXT` key. Verification: test.
   Basis: user decision. Status: have at 088a227c (groups.test.ts:126 expects `CLAUDE_CODE_SILENT_TURN_REMINDER: "0"`, :128 expects no `_TEXT` key)
   Source: user decision, 2026-11-14 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Verified: test, 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto` 332 pass: `hooks/settings/__tests__/defaults.test.ts` asserts SILENT_TURN_REMINDER "0" and no env key ending in `_TEXT`; with a `_TEXT` key added to `defaults.ts` the run gave 331 pass, 1 fail.
 
 ## Sandbox
 
@@ -180,6 +185,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Acceptance: see the guards item. Verification: inspection.
   Basis: user decision. Status: have at 088a227c (groups.test.ts:158 sandbox group writes `sandbox: { enabled: true }`; `git grep -n withCacheDirs 088a227c -- plugins` finds none)
   Source: user decision, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); user decision, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547).
+  Verified: inspection, 2026-11-24, claude 2.1.329: the fill denies writes to `/private/var/folders/**/xcrun_db*`, allows `/private/var/folders` (`hooks/settings/rules.ts`, `hooks/settings/fill.ts:36-37`), and `defaults.test.ts` asserts both.
 
 ## Approval
 
@@ -187,6 +193,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Acceptance: the manifest has no `autonomy` option and no hook writes a permission key; no source names `denyInsteadOfPrompting` or an `autonomy` store mark. Verification: inspection.
   Basis: issue #111 (the `autonomy` option, PR #94, was an invented name and a plugin rewriting user settings). Source: code.claude.com settings-reference `permissions.denyInsteadOfPrompting` (scope user or managed, and `--settings`; its example `{"permissions": {"defaultMode": "auto", "denyInsteadOfPrompting": true}}` in `~/.claude/settings.json`; `--permission-prompts none` for one `-p` run, claude 2.1.330) and the permission modes under `permissions.defaultMode`; Codex CLI `approval_policy` (`on-request` or `never`, in config.toml or `--ask-for-approval`) and `sandbox_mode`; Gemini CLI `general.defaultApprovalMode` (`default`, `auto_edit`, `plan`; `--approval-mode yolo` from the command line only). None of these hosts lets an extension rewrite the user's approval setting; each owns it.
   Verified: inspection: `git grep -n 'denyInsteadOfPrompting\|autonomy.wrote' -- plugins/claudetto/hooks` finds no source; `plugin.json` has no `autonomy` option. The earlier removal path and its tests were deleted when the fill began building from the construction (REQ-SETUP-071). Eval against vanilla: not run, as the plugin writes nothing.
+  Verified: inspection, 2026-11-24, claude 2.1.329: no hook writes defaultMode or denyInsteadOfPrompting; only the README names them.
 
 ## Fill Construction
 

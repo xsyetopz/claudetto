@@ -1907,3 +1907,18 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: mitigated 2026-11-24: the line is in `plugins/claudetto/output-styles/claudetto.md:21`, and `hooks/pool/question.ts` is removed. It acts only with the Claudetto style selected.
   Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, `reply.sh` test-runner prompt: 6 of 6 runs on a plugin copy with the line in the style and 3 of 3 on the committed plugin called `AskUserQuestion`.
   Source: `reports/2026-11-24-research/reverify/README.md`; commit 33f725c3a.
+
+- [x] **RISK-539** The missing-input paragraph of the conduct section ships though it ties vanilla, against ADR-0177.
+  Category: reply, component without a measured gain.
+  Cause: on 2.1.329 vanilla already asks for an input no file holds and reads one a file holds, so `CONDUCT_PARAGRAPHS[2]` in `plugins/claudetto/hooks/prompt/conduct.ts` adds nothing; dropping it changes the paragraph count that `hooks/prompt/__tests__/compose.test.ts:63` pins at 12.
+  Event: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-19-research/goal/run.sh` on grant, grantc, mail and mailc, 3 runs each: vanilla 12 of 12, claudetto 12 of 12 (REQ-REPLY-140).
+  Consequence: every request carries 48 words of system prompt that buy no behavior.
+  Likelihood: 5. Impact: 1.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: drop the paragraph, set the pinned count to 11 as part of that removal, and move REQ-REPLY-140 Out under ADR-0177.
+  Trigger: a conduct paragraph that ties vanilla on its fixture.
+  Owner: reply.
+  Status: mitigated 2026-11-24: the paragraph and its README line are gone; the pinned count is 11; REQ-REPLY-140 is OUT-3073.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with 11 conduct paragraphs.
+  Source: ADR-0177; REQ-REPLY-140; OUT-3073.

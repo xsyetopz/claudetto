@@ -38,7 +38,7 @@ export const TOOL_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	TaskUpdate:
 		"Update a task: status (pending, in_progress, completed, deleted), subject, description, owner, addBlocks, addBlockedBy. Mark completed only when fully done. TaskGet first.",
 	ExitPlanMode:
-		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Only for plans that implement code. Resolve open questions with AskUserQuestion first."
+		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Only for plans that implement code. Resolve open questions with `AskUserQuestion` first."
 };
 
 /**

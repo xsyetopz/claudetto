@@ -61,6 +61,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: reported (of 97 testable harnesses 60% have neither hook tests nor evals, 21% test themselves, 27% version evals, 7 do both). Status: partial at 088a227c.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:93; openspec/changes/2-1-325-rearchitecture/design.md:176.
   Verified: probe 2026-11-19, claude 2.1.327: a git stub first on PATH with GIT_CONFIG_GLOBAL=/dev/null; its log was never created across a full `claude plugin test plugins/claudetto`.
+  Verified: 2026-11-24, claude 2.1.329, a git stub first on PATH plus GIT_CONFIG_GLOBAL=/dev/null, `claude plugin test` on the three plugins: 332, 54 and 172 pass; the stub log was never created and no test process was left running.
 
 ## Mod Rebuild Tests
 
@@ -71,6 +72,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:186; openspec/specs/builtin-rebuild/spec.md:136; openspec/specs/builtin-rebuild/spec.md:143.
   Decision: REQ-HANDOVER-053 and ADR-0087: `$.model.fork` takes only a prompt and an effort, so `maxTokens` and `cache:true` are not fields of any request claudetto sends; the four-field list described a `$.model.complete` call that claudetto does not make.
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: 101 pass, 0 fail; compact.test.ts "the handover fork asks for low effort and names no model" asserts effort low, no model key and the Constraints prompt; changing effort to "high" in writer.ts made it fail; a missing model.fork mock throws naming the event.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: with effort "low" changed to "high" in `hooks/handover/writer.ts`, "the handover fork asks for low effort and names no model" fails; with the model.fork mock removed from `clear.test.ts`, the ui log reads "claudetto handover fork failed: no implementation for model.fork", naming the event, and no provider is reached.
 
 ## Behaviour Tests
 
@@ -132,6 +134,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: measured (2.1.327, 20 headless runs, 2026-11-18). Status: done 2026-11-19 on Sonnet 5.5: the claudetto output style line reran the flaky test and reported the split in 7 of 7 runs, vanilla in 0 of 6 (reports/2026-11-19-research/conduct). The Opus arm of the acceptance is held for the user: the auto mode classifier refused the paid Opus runs.
   Source: reports/2026-11-18-research/incident-lab/score6.txt, runs6/flaky-*.jsonl, hangwatch/rerun.py; reports/2026-11-18-research/incident-lab/README.md.
   Verified: not re-run 2026-11-19: the trap-flaky arm needs paid runs; static evidence: none beyond the item.
+  Verified: 2026-11-24, claude 2.1.329, `reports/2026-11-24-research/r101/run.sh` (cure 6, stream-json traces), 5 runs per arm and model: claudetto ran `test.sh` at least twice and called it flaky in 5 of 5 Sonnet 5.5 and 5 of 5 Opus 5.5 runs; vanilla did in 0 of 10 (reports/2026-11-24-research/r101/README.md).
 
 ## Eval Validity
 
@@ -143,6 +146,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Acceptance: each paid eval named in a REQ's Verified line names the free route it could not replace and its cost, and a session's paid total stays at or under $10. Verification: inspection.
   Basis: reported, user, 2026-11-23: "prefer limiting cost. you're spending too much on evals that causes massive tank in user's weekly usage!" (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/81a52f28-aef4-4526-97a1-67d539912ef0.jsonl:351); "$10 per session (Recommended)" (same file :362); "try free if possible, paid otherwise when free/fake is impossible" (same file :379).
   Verified: inspection 2026-11-23. The session's only paid eval (REQ-REPLY-152, `count-after-change`) ran the claudetto arm alone (`--ablation none`, vanilla had a saved result on 2.1.330) with `--max-cost-usd 8`, cost $7.20, and its Verified line names the free route it could not replace. The session total is $7.20, under $10.
+  Evidence: 2026-11-24, claude 2.1.329: this session ran the three eval suites the goal named, at $56.81 and $12.16 for two of them, plus the probes, so its paid total is over $10 (RISK-540).
 
 ## Bounded Waits
 

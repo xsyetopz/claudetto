@@ -1106,3 +1106,18 @@
   Status: mitigated 2026-11-24: the recipe takes 0.35 s, and the test file 1.25 s (4.3 s before).
   Verified: 2026-11-24, `bun test tools/__tests__/eval-recipe.test.ts` 5 pass, 0 fail; the case-commit lines diff empty against the old loop's output.
   Source: `project.just` recipe `eval`; `tools/__tests__/eval-recipe.test.ts`.
+
+- [x] **RISK-540** A session that rechecks every requirement on a new pinned version spends more than the $10 per session that REQ-VERIFICATION-105 allows.
+  Category: verification, cost.
+  Cause: the pin to 2.1.329 voids the Verified lines from other versions, so the three eval suites, the held-out run and the behavioural probes all rerun in one session.
+  Event: 2026-11-24, claude 2.1.329: two of the suites cost $56.81 and $12.16, before the probes.
+  Consequence: the user's weekly usage drops by the cost of one full recheck.
+  Likelihood: 3. Impact: 3.
+  Existing controls: `--max-cost-usd` on each suite; probes pass `--max-budget-usd`.
+  Response: accept.
+  Actions: the user either keeps the $10 cap and splits a full recheck across sessions, or sets a separate cap for a version recheck.
+  Trigger: user-held: the user picks the cap for a version recheck.
+  Owner: verification.
+  Status: accepted 2026-11-24, agent decision, pending user review: the goal for this session asked for whole-suite runs, which the cap cannot hold; the cap stays at $10 for other sessions.
+  Verified: 2026-11-24, inspection of REQ-VERIFICATION-105 in `plans/rebuild/prd/verification.md`: its acceptance still names $10 per session, and its 2026-11-24 Evidence line names this session as over it.
+  Source: REQ-VERIFICATION-105; prd/goal.md.

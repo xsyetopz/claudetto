@@ -15,7 +15,7 @@ First Glob `specs/*.md` and read the specs the request touches.
 ## Clarify
 
 - Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root, if present, for constraints before writing the spec. Never create a constitution file.
-- Interactive session: ask each expensive unknown through AskUserQuestion.
+- Interactive session: ask each expensive unknown through `AskUserQuestion`.
 - No one to answer (non-interactive `-p` run): write each unknown as an `Open:` line in the spec, also when you take a cheap default for it (`Open: rate form; assumed a fraction`), and list each assumption in the final reply.
 
 ## Spec

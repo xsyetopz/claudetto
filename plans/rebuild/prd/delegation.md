@@ -17,6 +17,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): git rules are body lines in agents/Heracles.md (commit --only, explicit staging, no tree-moving git); the SubagentStart injection was replaced by body lines per the triage list; read of the file.
   Decision: ADR-0125 and ADR-0188: Claude Code's permission rules and sandbox enforce git risks and no claudetto hook judges a command; a denied call means the user declined it is a body line in Heracles.md, not a hook.
   Verified: inspection 2026-11-19, claude 2.1.327: plugins/claudetto/agents/Heracles.md holds `git commit --only <paths>`, the re-read-after-a-failed-write line, no `git add -A`/`pkill -f`, and the denied-means-declined line; plugins/claudetto/hooks/guards/wall/rules.ts lists `git stash clear` (`pop` and `drop` removed on 2026-11-21, see Acceptance; saving and `list`, `show`, `--help` stay free; issue #145, and the 2026-11-21 handback-fix trace where `git stash --help` hit the former `git stash -*` ask), `reset --hard`, `clean`, `branch -D` as ASK rules. The same mechanism asked on `git push origin HEAD` from the lead in the REQ-VERIFICATION-090 probe; no subagent probe run this session.
+  Verified: inspection, 2026-11-24, claude 2.1.329: `plugins/claudetto/agents/Heracles.md:15` names `git commit --only`, the re-read, `pkill` and `git add -A`; the rules ask for `git reset --hard`, `git clean` and `git branch -D`; eval case stash-cleanup scored 1.00 in both arms in run 2026-11-24T03-08-24-156Z.
 
 ## Agent Message Form
 
@@ -47,6 +48,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Source: openspec/changes/archive/2026-11-16-2-1-323/design.md:89; openspec/changes/archive/2026-11-16-2-1-323/design.md:97; openspec/changes/archive/2026-11-16-2-1-323/research/model-effort.md:37; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5669; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6028; plugins/claudetto/agents/Artemis.md:4@088a227c; reported, user, 2026-11-13.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): Artemis subagent request carried model claude-haiku-5-5; plugins/claudetto/agents holds Artemis, Athena, Heracles (Metis is Out, ADR-0190); first request 47,323 -> 46,216 bytes with built-in agent types hidden by hooks/delegation/offer.ts; plugin test and validate --strict pass.
   Verified: inspection 2026-11-19: Artemis/Athena/Heracles frontmatter in plugins/claudetto/agents; hooks/delegation/offer.ts hides non-fork built-ins.
+  Verified: inspection, 2026-11-24, claude 2.1.329: the Artemis, Athena, Heracles and Hermes frontmatter matches the item; Metis is Out under ADR-0190.
 
 ## Watch Background Tasks
 
@@ -84,6 +86,7 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Source: external/2026-10-12/export-the one-liner I add to almost every Claude Code prompt.jsonl:14 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x2dpvt/the_oneliner_i_add_to_almost_every_claude_code/>); plugins/claudetto/hooks/features/setup/settings.ts:120@088a227c; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): with CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 (hooks/settings/defaults.ts, FILL_VERSION 2) a general-purpose subagent under an Opus main sent model claude-sonnet-5-5 instead of claude-opus-5-5; Opus and Fable named in a spawn are refused by hooks/delegation/spawn.ts.
   Verified: inspection 2026-11-19: hooks/settings/defaults.ts:36 sets CLAUDE_CODE_SUBAGENT_MODEL claude-sonnet-5-5; `git grep maxTurns -- plugins` is empty.
+  Verified: inspection, 2026-11-24, claude 2.1.329: SUBAGENT_MODEL is sonnet, and no shipped agent names Opus or Fable.
 
 ## Agent Texts
 
@@ -93,6 +96,7 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:31; openspec/changes/archive/2026-11-16-2-1-323/research/text-audit.md:210.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): agents/Athena.md carries the low-context-reader line; read of the file.
   Verified: inspection 2026-11-19: plugins/claudetto/agents files (Artemis.md, Athena.md, Heracles.md).
+  Verified: inspection, 2026-11-24, claude 2.1.329: `plugins/claudetto/agents/Athena.md:14`.
 
 ## Worker Resume
 
