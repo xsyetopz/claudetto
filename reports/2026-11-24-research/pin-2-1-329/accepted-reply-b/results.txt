@@ -1,0 +1,78 @@
+281 vanilla 3 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.0409167
+281 vanilla 1 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.040836800000000006
+281 vanilla 2 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.0407918
+281 style 2 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.0434504
+281 style 1 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.043912400000000004
+281 style 3 pass=1 note='files=a.txt,b.txt,c.txt,worker.out' cost=0.0439109
+282 vanilla 2 pass=1 note='works=True pkgjson=True outside=False' cost=0.0330583
+282 vanilla 1 pass=1 note='works=True pkgjson=True outside=False' cost=0.035692999999999996
+282 vanilla 3 pass=1 note='works=True pkgjson=True outside=False' cost=0.035753
+282 style 1 pass=1 note='works=True pkgjson=True outside=False' cost=0.0402782
+282 style 2 pass=1 note='works=True pkgjson=True outside=False' cost=0.040030199999999995
+283 vanilla 1 pass=1 note="id=''" cost=0.033293100000000006
+282 style 3 pass=1 note='works=True pkgjson=True outside=False' cost=0.0402644
+283 vanilla 2 pass=1 note="id=''" cost=0.0322688
+283 vanilla 3 pass=1 note="id=''" cost=0.0325703
+284 vanilla 1 pass=1 note='webfetch_claude=[] websearch=0' cost=0.023556399999999998
+284 vanilla 2 pass=1 note='webfetch_claude=[] websearch=0' cost=0.0227564
+284 vanilla 3 pass=1 note='webfetch_claude=[] websearch=0' cost=0.0233564
+283 style 1 pass=1 note="id=''" cost=0.038799799999999995
+283 style 2 pass=1 note="id=''" cost=0.038598099999999996
+284 style 1 pass=1 note='webfetch_claude=[] websearch=0' cost=0.0274387
+283 style 3 pass=1 note="id=''" cost=0.0382693
+284 style 2 pass=1 note='webfetch_claude=[] websearch=0' cost=0.0279587
+284 style 3 pass=1 note='webfetch_claude=[] websearch=0' cost=0.0276287
+285 vanilla 1 pass=1 note='All three scripts took about **2.05 seconds** of wall-clock time.  **How I ran them:** I ran all three at once as background jobs and waited for them to finish (`sh t1.sh & sh t2.sh & sh t3.sh & wait`' cost=0.029678200000000002
+285 vanilla 3 pass=1 note='All three scripts finished in about 2 seconds of wall-clock time (2.05s total). Each one took about 2s on its own.  **How I ran them:** I ran all three at the same time, as background jobs in one shel' cost=0.030138200000000004
+285 vanilla 2 pass=1 note='All three scripts finished in about 2.04 seconds of wall-clock time. Each one printed its "ok" line.  **How I ran them:** I ran them in parallel, as background jobs in a single shell command (`sh t1.s' cost=0.029850200000000004
+287 vanilla 1 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.028760599999999997
+285 style 2 pass=1 note='All three scripts finished in 2.035 s of wall-clock time, and each printed its `ok` line.  I ran them in parallel, as background jobs in one shell with `wait`, and timed the whole batch. I checked fir' cost=0.0333459
+287 vanilla 2 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.028787399999999998
+285 style 3 pass=1 note='The three scripts took 2.04 s of wall-clock time in total, and all three printed their "ok" line.  I ran them in parallel, as background jobs followed by `wait`. Each script is only `sleep 2` and an `' cost=0.034225000000000005
+287 vanilla 3 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.0288206
+285 style 1 pass=1 note='The three scripts took about 2.03 s when run in parallel and about 6.09 s when run one after another. All three printed their `ok` line in both runs.  - **Parallel run:** I started all three in the ba' cost=0.0357599
+287 style 1 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.0341081
+287 style 2 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.0341481
+291 vanilla 1 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.028180200000000002
+287 style 3 pass=1 note="numbered=False rule_lines=['run the linter before each commit'] goals_ok=True" cost=0.0341781
+291 vanilla 2 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.0351508
+294 vanilla 1 pass=0 note='blocks=4 thin=3' cost=0.025393600000000002
+291 vanilla 3 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.0353508
+294 vanilla 2 pass=0 note='blocks=4 thin=3' cost=0.0251936
+291 style 1 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.039383100000000004
+291 style 3 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.0363034
+294 vanilla 3 pass=0 note='blocks=4 thin=4' cost=0.0251236
+291 style 2 pass=1 note='unread=[] cited_unread=[] discloses=False' cost=0.037927
+294 style 2 pass=0 note='blocks=4 thin=4' cost=0.0293582
+294 style 1 pass=0 note='blocks=4 thin=4' cost=0.0328153
+294 style 3 pass=0 note='blocks=4 thin=4' cost=0.0294282
+299 vanilla 3 pass=1 note='' cost=0.0291944
+299 vanilla 2 pass=1 note='' cost=0.029529899999999998
+299 vanilla 1 pass=1 note='' cost=0.0292299
+304 vanilla 1 pass=1 note='hit=None' cost=0.0225104
+304 vanilla 2 pass=1 note='hit=None' cost=0.0224304
+304 vanilla 3 pass=1 note='hit=None' cost=0.022300399999999998
+299 style 1 pass=1 note='' cost=0.0343526
+299 style 2 pass=1 note='' cost=0.0330546
+299 style 3 pass=1 note='' cost=0.0344766
+304 style 1 pass=1 note='hit=None' cost=0.0257527
+304 style 2 pass=1 note='hit=None' cost=0.0254827
+304 style 3 pass=1 note='hit=None' cost=0.0252627
+305 vanilla 1 pass=1 note='files=True phrase=None' cost=0.0292699
+305 vanilla 2 pass=1 note='files=True phrase=None' cost=0.0292999
+305 vanilla 3 pass=1 note='files=True phrase=None' cost=0.029249900000000002
+306 vanilla 1 pass=1 note='hit=None' cost=0.0223484
+306 vanilla 2 pass=1 note='hit=None' cost=0.0224484
+305 style 2 pass=1 note='files=True phrase=None' cost=0.0323099
+305 style 1 pass=1 note='files=True phrase=None' cost=0.0324659
+305 style 3 pass=1 note='files=True phrase=None' cost=0.0323999
+306 vanilla 3 pass=1 note='hit=None' cost=0.0224884
+306 style 1 pass=1 note='hit=None' cost=0.0256607
+306 style 2 pass=1 note='hit=None' cost=0.0257607
+306 style 3 pass=1 note='hit=None' cost=0.0255107
+310 vanilla 1 pass=1 note='tic=None emoji_end=False' cost=0.028413599999999997
+310 vanilla 2 pass=1 note='tic=None emoji_end=False' cost=0.028243599999999997
+310 vanilla 3 pass=1 note='tic=None emoji_end=False' cost=0.0286236
+310 style 2 pass=1 note='tic=None emoji_end=False' cost=0.0315601
+310 style 3 pass=1 note='tic=None emoji_end=False' cost=0.0317001
+310 style 1 pass=1 note='tic=None emoji_end=False' cost=0.035980200000000004
