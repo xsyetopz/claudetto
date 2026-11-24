@@ -200,3 +200,4 @@ Index of [`adr/`](../adr/); each record is one MADR 4.0.0 decision.
 | [ADR-0194](../adr/0194-standards-basis.md) | Two Standards Bases: The Claude Code Harness and Open Industry Standards | accepted | 2026-11-21 |
 | [ADR-0195](../adr/0195-target-claude-code-2-1-329.md) | Target Claude Code 2.1.329 | accepted | 2026-11-21 |
 | [ADR-0196](../adr/0196-solo-run-merges-each-slice-to-main.md) | A Solo Run Merges Each Slice to Main | accepted | 2026-11-23 |
+| [ADR-0201](../adr/0201-status-line-is-a-command-with-rows.md) | The Status Line Is a Command That Draws Rows | accepted | 2026-11-25 |

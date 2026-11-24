@@ -21,7 +21,7 @@ import { registerCompose } from "./prompt/compose";
 import { registerBaseUrl } from "./settings/base-url";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
-import { registerStatusline } from "./statusline/statusline";
+import { registerLive } from "./statusline/live";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -46,7 +46,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerSpawn(on);
 	registerOffer(on);
 	registerGoal(on);
-	registerStatusline(on);
+	registerLive(on);
 	registerStatuslineCommand(on);
 	registerWeb(on);
 	registerCompose(on);

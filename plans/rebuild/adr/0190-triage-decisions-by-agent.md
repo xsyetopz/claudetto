@@ -40,7 +40,7 @@ Guards:
 
 Cost and setup:
 
-- No usage guard (REQ-COST-001 Out); the status line stays minimal (REQ-COST-004 option a).
+- No usage guard (REQ-COST-001 Out); the status line stays minimal (REQ-COST-004 option a; superseded by [ADR-0201](0201-status-line-is-a-command-with-rows.md)).
 - No transcript cost report (REQ-COST-014, 031, 032, 044, 045, 046, 049 Out); REQ-COST-040 keeps the cache-hit check.
 - RISK-381 and 382 are accepted with no code (Likelihood 1, server-side causes).
 - Settings reach the user by a silent fill-write of unset keys at SessionStart with one notice; no wizard.

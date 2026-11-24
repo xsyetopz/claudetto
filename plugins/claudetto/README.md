@@ -149,7 +149,19 @@ When a turn stops on an API error, claudetto raises a notification naming the er
 
 ## Status Line
 
-claudetto shows one line: model, `ctx` percent, `5h` and `7d` rate-limit percent and `cache` hit of the last main-loop turn, leaving out a figure the engine has not reported. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
+claudetto draws a status line of up to eight rows through a command, `bin/claudetto-statusline`. At session start it sets the `statusLine` in your user settings file to that command when you have none, or when the one there is claudetto's own for another plugin root; a status line you wrote is left alone.
+
+| Row | Figures | Source |
+| --- | --- | --- |
+| Head | phase (`working` or `idle`), model, effort, `think`, `ctx` bar and percent of the window | hooks; `model`, `effort`, `thinking`, `context_window` |
+| `Pace:` | `5h` and `7d` use over the share of the window elapsed, and when the use runs out | `rate_limits` with `resets_at` |
+| `Session:` | name, time, lines added and removed, the dollar estimate (only without a rate-limit window), prompt-cache hit and warmth | `session_name`, `cost`, `prompt_cache` |
+| `Project:` | folder or repository, branch, pull request and review state | `workspace`, `worktree`, `pr`, `.git/HEAD` |
+| `Account:` | `5h`, `7d` and spend bars with reset times | `rate_limits` |
+| `⚑ waiting on you` | a permission prompt, a question, or your next prompt | hooks (`tool.check`, `turn.complete`) |
+| `⏵` | each running subagent with its age, three at most | hooks (`agent.spawn`, `agent.report`) |
+
+A figure the source does not report is left out, and none is estimated; tokens saved against vanilla Claude Code are not shown because nothing measures them. Each row fits `COLUMNS` minus 4, with countdowns in place of clock times when it does not, and `NO_COLOR` turns the colour off. The hooks write the phase, the prompt and the agents to `claudetto/status/<session_id>.json` under the Claude Code config folder. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
 
 ## Shell Start-Up
 
