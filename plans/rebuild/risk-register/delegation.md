@@ -1150,21 +1150,22 @@
   - Verified: 2026-11-19, claude 2.1.327, grep -a -c autoCompactWindow $HOME/.local/share/claude/versions/2.1.327 -> 166 hits; plugins/claudetto/agents/Artemis.md:7 sets `autoCompactWindow: 100000`, the one plugin-visible knob.
   - Source: arc42/03_context_and_scope/subagents.md CTX-835, CTX-836.
 
-- [ ] **RISK-525** The agent spawns past the concurrent subagent limit.
+- [x] **RISK-525** The agent spawns past the concurrent subagent limit.
   Category: delegation.
   Cause: the agent fans out without counting the subagents still running.
   Event: 2026-11-23, vanilla, the user's own session: an Agent call failed with the 20-subagent concurrency error while long decomp-writer subagents were still running (ISSUES-part4.txt:22-23).
   Consequence: a failed call and a turn spent on it; the user had to say the agent should stay within the limit.
   Likelihood: 2. Impact: 2.
   Existing controls: the engine refuses the call and says not to retry.
-  Response: mitigate.
+  Response: accept (decided 2026-11-24 by the agent, on the user's hand-over of the decision).
   Actions: build CONDUCT: count running subagents before a fan-out and queue the rest; size each subagent task so it ends well inside the cache window (RISK-383).
   Trigger: an Agent tool result with the concurrency-limit error.
   Owner: delegation.
   Evidence: 2026-11-24, claude 2.1.331, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=4`, six background subagents asked for at once (reports/2026-11-24-research/r525/): every run of vanilla and claudetto got 2 refusals. The engine refuses before any plugin hook: a logging `tool.call` hook on `Agent` heard the four admitted calls (0 to 3 live agents) and neither refused one, so the `agent.spawn` refusal of a48e41c24 never fired and was removed.
   Evidence: a `tool.call` queue (built and unit-tested) heard no refused call, and an Agent text naming the live limit ("At most 4 run at once", quoted back verbatim by Haiku) left the refusals at 2 per run on Haiku (6 runs) and Sonnet (2 runs). Neither shipped (ADR-0177). `turn.step` pins the request's messages, and changing the streamed tool calls is the input rewrite ADR-0099 rules out, so the plugin API has no seam before the engine's check.
   Evidence: the work still completes: the reply answered all six files in 16 of 17 claudetto runs and 6 of 8 vanilla runs; the two short vanilla runs asked the user to raise the limit or gave no table.
-  Status: open 2026-11-24, engine-held: the refusal comes before every plugin hook in 2.1.331.
+  Status: accepted 2026-11-24, engine-held: the refusal comes before every plugin hook in 2.1.331, no built part beat vanilla (ADR-0177), and the task still completes in 16 of 17 claudetto runs.
+  Verified: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r525/run.sh`: 2 refusals per run in every arm, results in `reports/2026-11-24-research/r525/README.md`.
   Trigger: user-held: a Claude Code release with a hook before the concurrent-subagent check, or the user filing that request upstream; then queue at that hook and rerun `reports/2026-11-24-research/r525/run.sh`.
   Source: ISSUES-part4.txt:22-23; reports/2026-11-24-research/r525/README.md.
 
