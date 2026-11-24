@@ -2097,3 +2097,100 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: mitigated 2026-11-24: the paragraph and its README line are gone; the pinned count is 11; REQ-REPLY-140 is OUT-3073.
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with 11 conduct paragraphs.
   Source: ADR-0177; REQ-REPLY-140; OUT-3073.
+
+- [ ] **RISK-545** The agent states durations and hour estimates with no measured basis.
+  Category: conduct.
+  Cause: the agent answers a question about remaining work with hour figures it cannot back.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #250).
+  Consequence: a commitment that rests on nothing, and a correction turn.
+  Likelihood: 2. Impact: 2.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: give no duration estimate and do the work; a list of what is left is an escape hatch too (RISK-546).
+  Trigger: a reply with an hour or minute estimate for agent work.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #250.
+
+- [ ] **RISK-546** The agent's report lists checks it skipped instead of running them (an escape hatch).
+  Category: conduct.
+  Cause: the agent reports "not checked" or "not verified" for a check within its reach and stops.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #251).
+  Consequence: the check falls to the user, and a correction turn.
+  Likelihood: 4. Impact: 4.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: run each check a claim needs before the report; only a real sudo password prompt belongs to the user.
+  Trigger: a report that names a check, read or step it did not do, or lists open items or gaps in place of doing them.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #251.
+
+- [ ] **RISK-547** The agent does unrequested side work in place of the requested edit.
+  Category: conduct.
+  Cause: asked to edit a prompt for a new session, the agent starts that session's work in the current one.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #252).
+  Consequence: spent tokens, a delayed answer, and a correction turn.
+  Likelihood: 2. Impact: 3.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: do what was asked, where it was asked, and nothing else.
+  Trigger: a tool call that serves no part of the request.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #252.
+
+- [ ] **RISK-548** The agent invents a constraint and attributes it to the user through its session summary.
+  Category: conduct.
+  Cause: a rule the agent made for itself is carried through a summary as a user rule and written into the user's prompt.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #253).
+  Consequence: work held back for a rule nobody gave, here an uncommitted dependency bump left out of every commit.
+  Likelihood: 2. Impact: 4.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: a summary keeps the source of each rule; a rule is the user's only when a user message gives it.
+  Trigger: a rule stated as the user's with no user message behind it.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #253.
+
+- [ ] **RISK-549** The agent drops content the user asked for and hands the step back.
+  Category: conduct.
+  Cause: the agent leaves out a requested line on its own judgment and tells the user to add it.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #254).
+  Consequence: the user's request half done, and a correction turn.
+  Likelihood: 2. Impact: 3.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: write what the user asked; raise a concern through AskUserQuestion and finish the work either way.
+  Trigger: a reply that names requested content it left out.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #254.
+
+- [ ] **RISK-550** The agent asks the user questions in plain text instead of AskUserQuestion.
+  Category: conduct.
+  Cause: a closing question or hand-back is written as reply text.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #255).
+  Consequence: a question that is easy to miss and a turn left open.
+  Likelihood: 4. Impact: 2.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: every question to the user goes through AskUserQuestion.
+  Trigger: a reply that ends with a question or an "if you want" offer.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #255.
+- [ ] **RISK-551** Asked to update a goal prompt, the agent carries out the goal in the current session.
+  Category: conduct.
+  Cause: the agent treats the content of a prompt it is asked to write as instructions to itself.
+  Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #257); repeats RISK-547 after a correction.
+  Consequence: a one-file edit turns into commits, branches and PRs that nobody asked for; spent tokens; correction turns.
+  Likelihood: 3. Impact: 4.
+  Existing controls: none held in the session.
+  Response: mitigate.
+  Actions: a request to write or update a prompt edits that file only; the prompt's instructions belong to the session that runs it.
+  Trigger: while writing a prompt, a tool call that carries out what the prompt describes.
+  Owner: reply.
+  Status: open 2026-11-24.
+  Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #257.
