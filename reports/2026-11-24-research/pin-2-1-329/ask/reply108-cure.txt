@@ -1,0 +1,6 @@
+lic-cl-1 {"tools":["AskUserQuestion","Bash","Bash","mcp__claudetto__patch"],"ask":1,"cost":0.1046842}
+lic-cl-2 {"tools":["AskUserQuestion","AskUserQuestion","Bash"],"ask":1,"cost":0.1005893}
+lic-cl-3 {"tools":["AskUserQuestion","Bash"],"ask":1,"cost":0.0932377}
+run-cl-1 {"tools":["Bash","Bash","Bash","Bash","AskUserQuestion","mcp__claudetto__patch","Bash"],"ask":1,"cost":0.1282433}
+run-cl-2 {"tools":["Bash","Bash","AskUserQuestion","mcp__claudetto__patch","Bash"],"ask":1,"cost":0.1165178}
+run-cl-3 {"tools":["Bash","Bash","AskUserQuestion","Bash","Bash"],"ask":1,"cost":0.1135698}
