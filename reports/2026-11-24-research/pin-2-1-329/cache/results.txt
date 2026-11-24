@@ -1,0 +1,20 @@
+# per main-thread request: cache read / (read + write + input), %; claude 2.1.329, Sonnet 5.5, 2026-11-24
+# runs started together, so each first request is a cold write
+h329-cure-1 0.0 98.0 98.9
+h329-cure-2 0.0 98.0 98.9
+h329-cure-3 0.0 98.1 98.9
+h329-cure-4 0.0 99.0 98.9
+h329-cure-5 0.0 96.8
+h329-cure-6 0.0 98.0 98.9
+f329-cure-1 0.0 99.0 99.2 99.0
+f329-cure-2 0.0 99.1 99.2 99.2
+f329-cure-3 0.0 98.1 99.2 99.1
+c329-tree-1 0.0 98.9 99.0
+c329-tree-2 0.0 98.8 99.1
+c329-tree-3 0.0 98.8 98.6
+h329-van-1 72.6 99.2 99.1 98.5 98.9
+h329-van-2 72.6 98.3 99.1 98.5 98.5
+h329-van-3 72.6 98.2 99.1 98.5 98.4
+# two plugin sessions in sequence ("Reply with OK."), first request usage
+seq-1 {"input":2,"write":16396,"read":0}
+seq-2 {"input":2,"write":0,"read":16396}
