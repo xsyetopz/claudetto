@@ -1054,7 +1054,7 @@
   Status: closed 2026-11-18: the built-in Read pages with offset and limit (OUT-178 text, read this session); claudetto adds no read guard. Weak evidence: read from the OUT item, not probed.
   Verified: 2026-11-19, claude 2.1.327, `grep -a -o 'The line number to start reading from. Only provide if the file is too large to read at once' /Users/krystian/.local/share/claude/versions/2.1.327` -> 2 matches, so the engine Read tool still takes offset and limit; not a read-cap probe.
 
-- [ ] **RISK-098** The agent runs `cd` in place of using absolute paths.
+- [x] **RISK-098** The agent runs `cd` in place of using absolute paths.
   Category: conduct. Cause: relative habit. Event: a `cd` before a command.
   Consequence: a compound command refused whole; an extra turn. Likelihood: 2. Impact: 2 (raised 2026-11-23: a whole batch of runs voided; earlier 1). Existing controls: none found.
   Response: accept; planned before settlement: mitigate. Actions: use absolute paths.
@@ -1067,6 +1067,9 @@
   Verified: 2026-11-20, scan of the 87 top-level dogfood transcripts in the isolated config (`-private-tmp-claude-501-df-repo`, `-fin2-repo`; 665 Bash calls), counting results with `cd:1: no such file or directory` or `Module not found "tools/`: 2 sessions (2ac0f4b6, 42befa61), 3 failed calls, each after a relative `cd`; both sessions recovered in the next turn.
   Evidence: 2026-11-23, vanilla, the user's own session: the agent passed repo-relative paths after a `cd` into the test folder, and every run failed (ISSUES-part4.txt:40).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions and voided a whole batch of runs, so the acceptance above at Impact 1 does not hold.
+  Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r098/run.sh vanilla <n> [haiku|sonnet]` (a `cd pkg`, then root-relative calls): a call failed with "no such file or directory" in 5 of 8 Haiku runs and 2 of 3 Sonnet runs; one Haiku reply reported two wrong counts.
+  Status: mitigated 2026-11-24: the claudetto Bash text says that cd persists and to use absolute paths (`plugins/claudetto/hooks/pool/describe.ts:15@e5b91f884`); a test pins the line.
+  Verified: 2026-11-24, claude 2.1.331, same command with arm claudetto at e5b91f884: 0 failed calls in 8 of 8 Haiku and 3 of 3 Sonnet runs, every call from an absolute path; `claude plugin test plugins/claudetto`: 332 pass, 0 fail.
 
 - [ ] **RISK-099** The agent deletes things nobody asked it to remove.
   Category: conduct. Cause: no hook flags a removal the user did not name. Event: `fold.ts` and the task panel removed.

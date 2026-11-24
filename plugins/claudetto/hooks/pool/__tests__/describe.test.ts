@@ -123,4 +123,11 @@ describe("tool.describe", () => {
 		// Assert
 		expect(text("Agent")).not.toContain("general-purpose");
 	});
+
+	test("tells the model that cd persists and to use absolute paths", () => {
+		// Assert
+		// RISK-098: this line took failed calls after a cd from 7 of 11 vanilla runs to 0 of 11.
+		expect(text("Bash")).toContain("cd persists");
+		expect(text("Bash")).toContain("use absolute paths");
+	});
 });
