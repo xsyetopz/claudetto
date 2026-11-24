@@ -1075,7 +1075,7 @@
   Verified: 2026-11-24, `plans/rebuild/adr/0197-eval-integrity-holds-from-the-commit-gate.md` front matter reads `status: accepted`.
   Source: ADR-0197; `reports/2026-11-24-research/con056/README.md`.
 
-- [ ] **RISK-534** A claudetto part's gain over vanilla rests on dev runs and probes, so CON-059 is unmet for claudetto until a held-out run backs it.
+- [x] **RISK-534** A claudetto part's gain over vanilla rests on dev runs and probes, so CON-059 is unmet for claudetto until a held-out run backs it.
   Category: verification, eval instrument.
   Cause: claudetto gain claims cite dev evals or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla); only claudetto-spec's REQ-SPEC-010 cites a held-out result.
   Event: 2026-11-24, inspection of `plans/rebuild/prd/*.md` against CON-059's acceptance.
@@ -1092,6 +1092,10 @@
   Source: CON-059; ADR-0193 rule 7; ADR-0177.
   Evidence: 2026-11-24, claude 2.1.329: `just eval-holdout claudetto` ran (aggregate read only, ADR-0193): `plugins/claudetto/evals/results/holdout-2026-11-24T03-08-25-111Z.json` (gitignored, on this machine), model `claude-opus-5-5`, not partial, mean Δ −0.003, overall score 0.98 across both arms, $4.60. Both arms sit near the ceiling, so the set backs no gain claim and shows no loss; a harder held-out set is needed.
   Evidence: 2026-11-24, the agent's brief to a fresh Sonnet subagent to write harder held-out cases under `~/.claudetto-holdout/claudetto` was refused by Claude Code's auto-mode permission check, so new held-out cases stay with the user (ADR-0193 rule 7: the user writes them, or approves a fresh subagent that does).
+  Evidence: 2026-11-24, claude 2.1.329: a second brief, under the goal's leave to spawn Sonnet subagents, ran; a fresh Sonnet subagent wrote 6 harder cases under `~/.claudetto-holdout/claudetto` and reported only folder names and counts. `just eval-holdout claudetto claude-opus-5-5 -j 4 --max-cost-usd 40` then wrote `plugins/claudetto/evals/results/holdout-2026-11-24T06-48-49-510Z.json` (aggregate read only): model `claude-opus-5-5`, claudeVersion 2.1.329, not partial, 11 cases, 8 at score 1.0, mean Δ +0.036, $10.05. The recipe exited 1 from `--threshold` 1.0, not from an abort.
+  Counterargument: the tuning agent wrote the subagent's brief, which named claudetto's behaviours, so the new cases are blind to the plugin's text but not to its aims; the gain is small, and ADR-0193 keeps the per-case scores that would attribute it to a part from the tuning agent.
+  Status: closed 2026-11-24: claudetto's mean held-out Δ is above 0, so ADR-0177 moves no part Out on this run, and CON-059 is met at the plugin level.
+  Verified: 2026-11-24, `jq '.aggregates|{casesTotal,meanDelta}'` on the held-out file reads 11 and 0.0361; REQ-TOOLS-031 and REQ-GOAL-003 cite it.
 
 - [x] **RISK-537** `just verify` fails on a loaded machine because the `just eval` recipe tests time out.
   Category: verification.
@@ -1124,3 +1128,16 @@
   Verified: 2026-11-24, inspection of REQ-VERIFICATION-105 in `plans/rebuild/prd/verification.md`: its acceptance still names $10 per session, and its 2026-11-24 Evidence line names this session as over it.
   Source: REQ-VERIFICATION-105; prd/goal.md.
   Verified: 2026-11-24, inspection: `plans/rebuild/adr/0199-version-recheck-runs-under-per-suite-caps.md` reads `status: proposed`; REQ-VERIFICATION-105's acceptance names the exception, and its 2026-11-24 Verified line lists each paid run under its cap.
+
+- [ ] **RISK-541** The eval-recipe CON-056 test fails inside a sandboxed session that loads claudetto from this tree, so `just verify` fails there with no defect in the code.
+  Category: verification, test isolation.
+  Cause: `tools/__tests__/eval-recipe.test.ts:80` writes `uncommitted-<pid>.txt` into `plugins/claudetto/evals/trivial-typo`, and Claude Code 2.1.329 puts a loaded plugin's folder in the sandbox's `denyWithinAllow` list, so the write fails with EPERM.
+  Event: dogfood 2026-11-24, claude 2.1.329, Sonnet 5.5, `claude -p --plugin-dir <clone>/plugins/claudetto` in a scratch clone: `just typescript::test` printed 275 pass, 1 fail; a fake-API session replay of `bun test tools/__tests__/eval-recipe.test.ts` showed `EPERM: operation not permitted, open '.../plugins/claudetto/evals/trivial-typo/uncommitted-85024.txt'` in 4 of 4 runs; the same suite run outside a session passed 276 of 276 in 5 of 5.
+  Consequence: an agent dogfooding claudetto on this repo sees a red test run, and may chase a defect that is not there or skip the check.
+  Likelihood: 4. Impact: 2.
+  Existing controls: this repo's recipes run unsandboxed in CI and in a session that loads the plugin from elsewhere; the test passes there.
+  Response: mitigate.
+  Actions: make the CON-056 probe write where a loaded plugin's sandbox allows it, or skip it with a named reason when the case folder is not writable; the change is to a test, which the goal reserves to the user.
+  Trigger: user-held: approval to change `tools/__tests__/eval-recipe.test.ts`.
+  Owner: verification.
+  Status: open 2026-11-24, user-held: the cure edits a test, which the goal reserves to the user.
