@@ -236,6 +236,8 @@
   - Status: mitigated 2026-11-19: stop.test.ts pins the continuation, and a live interactive 2.1.327 session against a cutting stub resumed with no typed "continue" (Actions).
   - Verified: claude 2.1.327, 2026-11-19, `claude plugin test claudetto` from plugins/: exit 0, 115 pass, 0 fail, including "stop notice > a cut mid-response in a drawn session submits one continuation instead of a notice".
   - Verified: tick-audit rerun 2026-11-19: an interactive 2.1.327 session against a local stub that cut the first stream showed "API Error: Connection lost mid-response", then `classic.StopFailure` and one `$.prompt.submit` from claudetto, and the stub served the resumed answer ("RESUMED-AFTER-CUT") with no typed "continue" -> PASS.
+  - Evidence: 2026-11-24, claude 2.1.329, dogfood on main aaeb1e8fb and the engine source (`chunk-hg1yqkjk.js` offset 3282106): the engine ends a cut reply with "The response above may be incomplete." after a stall, a server error, a missing part, a malformed stream, a sleep, or a lost connection, while `RESUME_TEXT` told the model the cause was a dropped connection.
+  - Verified: 2026-11-24, claude 2.1.329: `RESUME_TEXT` (`plugins/claudetto/hooks/notice/stop.ts:14`) names no cause and points at the engine's note; `claude plugin test .` in plugins/claudetto 341 pass, 0 fail, including stop.test.ts.
 
 ## Safeguards and Guards
 
