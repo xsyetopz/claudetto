@@ -64,7 +64,7 @@ function frame(
 ): string {
 	const body = markdown.slice(range.offset, range.offset + range.max);
 	const end = range.offset + body.length;
-	const read = "path" in copy ? `, or Read ${copy.path}` : "";
+	const read = "path" in copy ? `, or mcp__claudetto__read ${copy.path}` : "";
 	const rest =
 		end < markdown.length ? ` More: call again with offset=${end}${read}.` : "";
 	const saved =

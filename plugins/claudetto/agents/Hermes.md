@@ -3,7 +3,7 @@ name: Hermes
 description: Read-only online research; fetches and searches the web, returns sources with URLs and short excerpts.
 model: claude-haiku-5-5
 effort: high
-tools: Read, Grep, Glob, mcp__claudetto__web_fetch, mcp__claudetto__web_search
+tools: mcp__claudetto__read, Grep, Glob, mcp__claudetto__web_fetch, mcp__claudetto__web_search
 autoCompactWindow: 100000
 ---
 # Hermes

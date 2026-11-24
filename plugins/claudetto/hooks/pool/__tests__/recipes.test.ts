@@ -27,7 +27,7 @@ describe("Bash recipes", () => {
 		expect(description).toBe(`${TOOL_DESCRIPTIONS["Bash"]}${BASH_RECIPES}`);
 		expect(description).toContain("`set -o pipefail`");
 		expect(description).toContain("exit $rc");
-		expect(description).toContain("`Read` its output path");
+		expect(description).toContain("`mcp__claudetto__read` its output path");
 		expect(description).toContain("`perl -pi -e`");
 	});
 

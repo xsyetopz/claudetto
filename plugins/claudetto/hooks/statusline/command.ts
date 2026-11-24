@@ -23,7 +23,7 @@ export const requestOf = (stock: string): string => {
  */
 export const statuslineEdit = (stock: string, file: string): string =>
 	`Set the user's status line to: ${requestOf(stock)}
-Read @${file}, then write \`statusLine\` as { "type": "command", "command": "<shell command>" }, where the command reads the session JSON on stdin and prints one line. Keep every other key as it is, so the user's settings stay intact. Run the command once on a sample JSON with Bash before you write it, so a broken command never reaches the file.`;
+Read @${file} with mcp__claudetto__read, then write \`statusLine\` as { "type": "command", "command": "<shell command>" }, where the command reads the session JSON on stdin and prints one line. Keep every other key as it is, so the user's settings stay intact. Run the command once on a sample JSON with Bash before you write it, so a broken command never reaches the file.`;
 
 /** Rewrites the built-in `/statusline` prompt; a skill of the same name from elsewhere passes through. */
 export function registerStatuslineCommand(on: On): void {

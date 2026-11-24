@@ -1,6 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { TOOL_FULL_NAME } from "../../patch/texts";
+import { TOOL_FULL_NAME as READ_FULL_NAME } from "../../read/texts";
 import {
 	HIDDEN_TOOLS,
 	MAIN_ONLY_TOOLS,
@@ -117,14 +118,14 @@ describe("tool.offer", () => {
 		expect(offers.every((o) => !o.isOffered)).toBe(true);
 	});
 
-	test("keeps Bash, Read, Agent and patch", async ($, on) => {
+	test("keeps Bash, Agent, patch and read", async ($, on) => {
 		// Arrange
 		on("tool.offer", () => ({ isOffered: true }));
 		registerToolOffer(on);
 
 		// Act
 		const kept = await Promise.all(
-			["Bash", "Read", "Agent", TOOL_FULL_NAME].map((tool) =>
+			["Bash", "Agent", TOOL_FULL_NAME, READ_FULL_NAME].map((tool) =>
 				$.tool.offer({ tool, provider })
 			)
 		);

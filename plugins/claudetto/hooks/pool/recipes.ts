@@ -13,7 +13,7 @@ export const BASH_RECIPES = [
 	"",
 	"With `run_in_background`, the completion notice reports only the last command's exit status, so a trailing `echo`, a pipe into `tail`, or `&` hides a failure. End a check with `set -o pipefail` before any pipe, `rc=$?` right after the check, the trailing step, then `exit $rc`; add no `&`. Skip `exit $rc` when the user said to ignore the failure.",
 	"",
-	"When the reply depends on a background command, `Read` its output path after the other work and before replying, and say what it showed or that it is still running. A server or watcher needs only its start-up line.",
+	"When the reply depends on a background command, `mcp__claudetto__read` its output path after the other work and before replying, and say what it showed or that it is still running. A server or watcher needs only its start-up line.",
 	"",
 	"One change repeated across places or files (a rename, a reworded phrase): run `perl -pi -e` or `perl -0pi -e` on the `git grep -l` files. It runs without a permission prompt, claudetto shows its diff stat, and `sed -i` flags differ between macOS and GNU. Use `mcp__claudetto__patch` when the change differs at each place."
 ].join("\n");
