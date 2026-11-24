@@ -378,3 +378,27 @@
   Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
   Verified: claude 2.1.327, 2026-11-19, cc-inspect cli (fake API) with `--plugin-dir plugins/claudetto` and its filled permissions and sandbox (excludedCommands holds `claude *`): a `claude -p` Bash call lands in `permission_denials`; with `Bash(claude -p *)` added to allow it runs (a nested request reaches the stub) and no denial is listed; a sandboxed `echo` lists none. Mutation: `RETIRED_ALLOWS` emptied in a copy -> 129 pass, 1 fail (issue #51).
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "defaults fill > removes the stash ask rules, and the claude -p allow in one fill" (the test named in the 2026-11-19 line was renamed; RETIRED_ALLOWS no longer exists). The fake-API probe was not rerun.
+
+## Session Start
+
+- [x] **RISK-552** The settings fill doubles the second request's cache write in a fresh-config session.
+  Category: cost.
+  Cause: Claude Code 2.1.329 loads the file the SessionStart fill wrote only after it built request 1, so request 2
+  carries the changed sandbox and output-style text as delta attachments (about 12.6k characters).
+  Event: 2026-11-24, eval run 2026-11-24T03-08-24-156Z, trivial-typo: claudetto's call 2 wrote 5439 cache tokens
+  against 322 on vanilla; each eval run, CI job and fresh container pays it.
+  Consequence: about 5k extra cache-write tokens per fresh session, and a cost above vanilla on short tasks.
+  Likelihood: 4. Impact: 2.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: after the write, the hook waits (at most 3 s) until the engine's merged settings hold the written
+  `outputStyle`, so request 1 is built with the filled settings (plugins/claudetto/hooks/settings/start.ts).
+  Trigger: a fresh-config session whose call 2 writes more than 2k cache tokens.
+  Owner: cost.
+  Status: mitigated 2026-11-24: the fill waits for the engine to load the written settings before the first request.
+  Verified: 2026-11-24, claude 2.1.329, `just eval claudetto --case trivial-typo -j 1`, run
+  2026-11-24T22-06-11-747Z: call-2 cache write 338-356 with the plugin against 321-322 without; score 1.00 both
+  arms; with $0.119-0.120 in 5 turns against without $0.120-0.126 in 7 turns.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 351 pass, 0 fail; `just verify` exit 0.
+  Source: reports/2026-11-24-research/turn2/raw.ts and capture.ts (request bodies per arm); the eval transcripts'
+  sandbox_instructions and output_style_instructions attachment records.
