@@ -8,6 +8,7 @@
   Basis: measured. Status: partial at 088a227c.
   Source: tools/fake-api/usage.ts@088a227c; claude 2.1.327: `--plugin-dir` present (chunk-nj3089xn.js@517). Not located: the old-plan lines that gave the harness pattern.
   Verified: probe 2026-11-19, claude 2.1.327, cc-inspect fake API with an absolute --plugin-dir: 3 requests, the claudetto agents listed, no paid call.
+  Verified: PASS: probe 2026-11-24, claude 2.1.331, `claude -p hi --plugin-dir <dir> --output-format stream-json --verbose` against the local fake API (tools/measure-tools/fake-api.ts), empty CLAUDE_CONFIG_DIR: with an absolute dir, init lists claudetto@inline, 1 request, no paid call; with a relative dir resolved from another cwd, init lists no claudetto and plugin_errors holds `path-not-found`, and the exit is now 0 (1 on 2.1.327), so a harness must read plugin_errors, not the exit code.
 
 ## Git Hooks Check
 
@@ -42,6 +43,7 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:697.
   Decision: ADR-0099: the built-in agents are replaced by the Greek agents Artemis, Athena and Heracles shipped in plugins/claudetto/agents; the earlier "no skills, agents or rules" and the 183-token figure described the plugin before that. `plugin details` resolves a loaded plugin with `--plugin-dir`.
   Verified: claude 2.1.327, 2026-11-19, `claude --plugin-dir $PWD/plugins/claudetto plugin details claudetto`: Skills (0), Agents (3) Artemis, Athena, Heracles, always-on ~92 tok (about 30 per agent).
+  Verified: claude 2.1.331, 2026-11-24, `claude --plugin-dir $PWD/plugins/claudetto plugin details claudetto`: Skills (0), Agents (4) Artemis, Athena, Hermes, Heracles, one SessionStart hook with no model-context cost, always-on ~128 tok (Hermes ~40, the others ~30 each). The rise from ~92 is the Hermes agent of REQ-TOOLS-005 (3c6a96e66).
 
 ## Narrow Runs
 
