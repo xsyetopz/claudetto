@@ -594,6 +594,7 @@
   - Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:27,53,89; external/please-use-me-often/swe-worst-practices.md:130; external/2026-11-16/reddit.com-r-claudecode-comments-1xu9z26-whats-the-one-rule-that-stoppe-20261116T052731Z.md:41 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xu9z26/whats_the_one_rule_that_stopped_claude_code_from/>) (reported, "never retry blind"). Not located: the 7 of 8 screenshot timeouts.
   - Status: accepted 2026-11-20 (issue #52): measured runs do not reproduce the fault.
   - Verified: reports/2026-11-20-research/register-probes/README.md probe 13 (after a timed-out send, sent.log holds one line), Sonnet 5.5 on claude 2.1.327, 2026-11-20: vanilla passed 3 of 3 runs, so the fault did not reproduce.
+  - Verified: 2026-11-24, claude 2.1.329, `ARM=<arm> CLAUDE_BIN=<2.1.329> bash reports/2026-11-20-research/register-probes/run.sh 13 <rep>` (Sonnet 5.5): style 3/3, vanilla 3/3 -> PASS.
 
 - [x] **RISK-066** Never-commit rule violated after a one-time authorization
   Category: guards.

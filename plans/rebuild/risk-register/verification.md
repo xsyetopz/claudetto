@@ -337,6 +337,7 @@
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
   - Status: accepted 2026-11-20 (issue #69): the fault recurred in a dogfood round at 160883495, where a final report gave RISK-262 as accepted after its own grep showed "mitigated". It occurs in vanilla at a similar low rate, and a candidate output-style paragraph that ties each reported status to the output it came from does not beat vanilla, so nothing ships (ADR-0177).
   - Verified: replay 2026-11-20, claude 2.1.327, Sonnet 5.5, `claude -p` register-summary fixture, 12 runs per arm, $4.97: replies that misstate an entry's last status: vanilla 1/12, shipped claudetto 0/12, candidate 0/12; each scorer flag checked by hand (reports/2026-11-20-research/report-status/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 5 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:46; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:281; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19; external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>). Not located: the 45 and 55 thread counts, the "49% to 56%" correction; openspec/changes/archive/2026-11-16-2-1-323/research/user-dossier.md:168; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/3308c572-8491-4247-abfe-16794c4d516c.jsonl:3349, reported, user, 2026-11-11.
   - Conflict: Sycophancy and capitulation under pushback.
@@ -399,6 +400,7 @@
   - Owner: verification
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 5 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: observed in transcript, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2796`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25664`).
 
@@ -755,6 +757,7 @@
   - Owner: verification
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 8 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 8 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 8 vanilla 2/3, style 3/3 -> PASS for the style arm, which beats vanilla.
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (observed in transcript, 2026-11-13).
 
@@ -1027,6 +1030,7 @@
   - Owner: verification
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 3 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: reports/2026-11-18-research/papers.md P6; <https://arxiv.org/pdf/2609.32616>.
 

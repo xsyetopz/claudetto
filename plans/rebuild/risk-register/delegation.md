@@ -713,6 +713,7 @@
   - Owner: delegation
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 10 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/d660bb03-7e7b-4a72-b6ff-89b9b26db0f3.jsonl:1899, observed in transcript, 2026-11-12; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
 
@@ -994,6 +995,7 @@
   - Owner: delegation
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 10 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9407; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9764.
 
