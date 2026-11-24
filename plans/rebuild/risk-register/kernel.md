@@ -350,6 +350,8 @@
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 1 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 1 vanilla 3/3, rerun vanilla 3/3 (fixed scoring) -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Evidence: 2026-11-24, claude 2.1.329, conduct `run.sh 1 <arm> 1..3` (Sonnet 5.5): vanilla 3/3, style 0/3. The patch tool appended a user rule (~/.claude/rules) under `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, so the agent added unasked JSDoc. Cause: patch/instructions.ts ignored the variable that the engine gates every memory load on (2.1.329 chunk-hg1yqkjk.js near offset 1911745).
+  - Verified: 2026-11-24, claude 2.1.329, after the patch rules gate: `claude plugin test plugins/claudetto` 342 pass (`patch/__tests__/instructions.test.ts` adds the gate case); conduct `run.sh 1 style 1..3` (CURES_ROOT=/tmp/claude-501/c329fix, Sonnet 5.5) -> style 3/3, vanilla 3/3; `just verify` exit 0.
 
   - Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749); observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738).
 
