@@ -1,0 +1,4 @@
+1 thrash=0 codes=10 cost=0.4765 (vanilla, prompt without "foreground")
+2 thrash=0 codes=10 cost=0.4023 (vanilla)
+1 thrash=0 codes=0 cost=0.0301 (claudetto, prompt without "foreground": reader started in the background, turn ended first)
+2 thrash=0 codes=10 cost=0.3484 (claudetto)

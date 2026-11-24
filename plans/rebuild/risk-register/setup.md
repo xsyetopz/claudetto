@@ -4,6 +4,8 @@
 
 - [x] **RISK-394** A name-keyed `skillOverrides` Mod takes a user's own skill out of the listing.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 0 hits; the `skillOverrides` hook went out with REQ-SETUP-002.
+  Evidence: 2026-11-24, claude 2.1.329, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 14 hits, not 0. 0 are `skillOverrides` or `OFF_SKILLS`; all 14 are `settings.read` in hooks/git/{instructions,trailer}.ts, hooks/handover/writer.ts and 9 tests, none a skill hook.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rnE "skillOverrides|OFF_SKILLS" plugins/claudetto --exclude-dir=types` -> 0 hits; no claudetto code filters the skill listing by name, so no user skill is taken out.
   Category: product.
   Cause: the Mod writes `skillOverrides` `off` for each of the 18 skill names, including `simplify`.
   Event: the user's own `simplify` leaves the listing and the Mod refuses "/simplify x".
@@ -19,6 +21,8 @@
 
 - [x] **RISK-395** A `settings.read` Mod hook that settles slowly lets a skill into the first request.
   Verified: grep, claude 2.1.327, 2026-11-18, same grep as RISK-394: 0 hits; the slow `settings.read` hook is gone (REQ-SETUP-002 out), so the race cannot occur.
+  Evidence: 2026-11-24, claude 2.1.329, same grep as RISK-394: 14 hits, not 0, all `settings.read` calls or test stubs in hooks/git, hooks/handover, hooks/guards/shell, hooks/pool and hooks/settings; no `skillOverrides` or `OFF_SKILLS` hit, so no skill is gated on a slow read.
+  Verified: 2026-11-24, claude 2.1.329, the RISK-394 grep -> 0 `skillOverrides` or `OFF_SKILLS` hits; the `settings.read` calls left read git, handover, shell and pool settings and gate no skill, so no slow hook races the first request.
   Category: product.
   Cause: `session.start` is raised before the hook settles in every run, and the Mod worker has no `process` global ("ReferenceError: process is not defined", `ovc9.debug:107-108`; `$.env.get` stands in). The cause of 66-90 ms for the sequential and parallel arms was not isolated; probe date9 refutes `Date.now()` as the cost (9 equal stamps in one synchronous stretch).
   Event: hooks that settled in 38.7 ms or less kept `simplify` out of the first request in 47 of 47 runs; 10 of 11 at 66.7-90.6 ms let it in.
@@ -45,6 +49,8 @@
   Trigger: A setup change adds `CLAUDE_CODE_SCRIPT_CAPS` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`.
   Owner: setup. Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
+  Evidence: 2026-11-24, claude 2.1.329, `grep -rnE "SCRIPT_CAPS" plugins/claudetto --exclude-dir=types`: 1 hit, not 0: `hooks/settings/__tests__/defaults.test.ts:129`, `expect(next.env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS")`; no non-test source names it.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rn "SCRIPT_CAPS\|SUBPROCESS_ENV_SCRUB" plugins/claudetto --exclude-dir=types` -> 2 hits, both in `hooks/settings/__tests__/defaults.test.ts:129-130`, which assert the fill writes neither; `claude plugin test .` 341 pass.
   Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-57bg7pbc.js@8656 (2.1.327); `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: verified on 2.1.327: when the variable is set, the mode becomes `default` and a notice reads `Permission mode forced to default`, chunk-rthqjjhy.js@3900. Dropped (2026-11-18) for the old plan's P223 source: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [x] **RISK-397** Setup leaves retired rules installed.
@@ -62,6 +68,7 @@
   - Owner: setup
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:689; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:692 (read, measured).
+  Verified: 2026-11-24, claude 2.1.329, `ls plugins/claudetto`: README.md agents evals hooks output-styles tsconfig.json, no rules folder.
 
 - [x] **RISK-398** Sandbox blocks `git worktree add`.
   Open: not probed under the ADR-0188 block; the sandbox keeps .git/worktrees read-only, so `git worktree add` needs an unsandboxed run, which `allowUnsandboxedCommands` true permits.
@@ -79,6 +86,8 @@
   - Status: closed 2026-11-19 (accepted): Likelihood 1, no cause found, no plugin lever.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:21 (unknown cause).
   Verified: cc-inspect code search shows no plugin lever; the cause was never found and the response is accept (2.1.327, 2026-11-19).
+  Evidence: 2026-11-24, claude 2.1.329, cause found: `git worktree add --detach /tmp/claude-501/wt-probe HEAD` in a sandboxed Bash call -> "fatal: could not create directory of '.git/worktrees/wt-probe': Operation not permitted"; the engine lists `<repo>/.git/worktrees` in sandbox denyWithinAllow, and its system prompt says so (cc-inspect search "is read-only in the sandbox", chunk-hg1yqkjk.js@5047438).
+  Verified: 2026-11-24, claude 2.1.329, chunk-hg1yqkjk.js@5047438: with unsandboxed commands allowed the engine tells the model to run worktree commands outside the sandbox, else to hand the user the command; claudetto's fill sets `allowUnsandboxedCommands: true` (hooks/guards/wall/fill.ts:29), so a claudetto session gets the run-it-yourself text. The cause is the engine's, with no plugin lever needed.
 
 - [x] **RISK-399** setup wrote ask rules that override auto mode.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn permissions plugins/claudetto --exclude-dir=types`: 0 hits; no code writes an ask list. Stale ask entries in a user's own file are the user's to remove.
@@ -95,6 +104,8 @@
   - Owner: setup
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:12 (observed in transcript, 2026-11-14); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1008 (observed in transcript, 2026-11-14).
+  Evidence: 2026-11-24, claude 2.1.329, `grep -rn permissions plugins/claudetto --exclude-dir=types`: 244 hits, not 0, in README.md, evals, hooks/settings/defaults.ts:56 (`permissions:` block), hooks/guards/wall/fill.ts:22 and hooks/guards/wall/rules.ts (ASK list); code now writes a permissions.ask list.
+  Verified: 2026-11-24, claude 2.1.329, hooks/guards/wall/rules.ts:61-82 `ASK` holds 17 rules, each for lost work, a published tag or release, or a process kill (no git checkout or plain push); owned.test.ts:22 and start.test.ts:64 show the fill takes back only keys it wrote; `claude plugin test .` 341 pass.
 
 - [x] **RISK-400** Sandbox denies writes under the repo loaded as a plugin with --plugin-dir.
   Verified: code read by an earlier session (chunk-kr4nf9qg.js@3888 default write-deny list); no live probe today, accepted at Likelihood 1.
@@ -116,6 +127,7 @@
 
 - [x] **RISK-401** Sandbox escape by convenience: the agent turns the sandbox off for each EPERM.
   Verified: probe, claude 2.1.327, 2026-11-18, cc-inspect cli with the ADR-0188 block: routine Bash writes (under /opt/homebrew and /private/var/folders) ran with 0 prompts and no EPERM, so the agent meets no failure that tempts it to set dangerouslyDisableSandbox; the fill writes the block (defaults.test.ts).
+  Verified: 2026-11-24, claude 2.1.329, cc-inspect cli `-p` with the fill's sandbox block (`guardSettings([])`, hooks/guards/wall/fill.ts) and one Bash call: `touch`+`rm` under /opt/homebrew -> "HB-OK", `mktemp -d` under /private/var/folders -> "VF-OK", 0 prompts; the cli sets HOME to a temp dir, so the `~/` write is covered by `jvm/run.sh` batch b, where Gradle wrote `~/.gradle` under the fill in 6 of 6 runs (RISK-544).
   Category: safety.
   Cause: an in-sandbox fix existed but was not recorded, so each session rediscovers the escape; `dangerouslyDisableSandbox` is available.
   Event: `dangerouslyDisableSandbox` used about 330 times in 10 sessions for EPERM (Bun auto-reading `.env`, pnpm store, mktemp, SSH signing, SwiftPM caches). The same EPERM was solved in-sandbox in one session and by turning the sandbox off in another.
@@ -133,6 +145,7 @@
 
 - [x] **RISK-402** An earlier plugin default of `cleanupPeriodDays: 14` deleted transcripts.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn cleanupPeriodDays plugins/claudetto --exclude-dir=types`: 0 hits; nothing writes a retention value, so the Claude Code default (30) stands.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rn cleanupPeriodDays plugins/claudetto --exclude-dir=types`: 0 hits.
   Category: handover.
   Cause: the plugin wrote a short retention default.
   Event: a session transcript is deleted after 14 days.
@@ -166,6 +179,8 @@
 
 - [x] **RISK-404** A claudetto MCP tool disconnects in a session.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rn "mcp__claudetto" plugins/claudetto --exclude-dir=types`: 0 hits and plugins/claudetto holds no MCP server, so the tool cannot disconnect.
+  Evidence: 2026-11-24, claude 2.1.329, `grep -rn "mcp__claudetto" plugins/claudetto --exclude-dir=types`: 708 hits, not 0 (most in evals/); outside evals: README.md:64,79, agents/Hermes.md, `hooks/web/__tests__/register.test.ts:65-66`, hooks/web/web-tool.d.ts, hooks/patch/texts.ts:1. claudetto now registers `mcp__claudetto__web_fetch`, `web_search` and `patch` through hooks; `find plugins/claudetto -name .mcp.json` finds none.
+  Verified: 2026-11-24, claude 2.1.329, claudetto registers its tools from hooks with `$.tool.register` (hooks/patch/tool.ts, hooks/web/register.ts, hooks/goal/tools.ts), not from an MCP server process; plugins/claudetto holds no `.mcp.json`, so no server connection exists to drop; `claude plugin test .` 341 pass.
   Category: product
   Cause: The claudetto ask-user-question tool is not connected in the session; the handoff also notes that the jscpd tools were not available.
   Event: The agent cannot use the tool its rules name and falls back to the AskUserQuestion popup, loaded with ToolSearch.
@@ -215,6 +230,7 @@
 
 - [x] **RISK-407** Silent Skill Abort.
   Verified: ls, claude 2.1.327, 2026-11-18, `ls plugins/claudetto` holds no skills or commands folder, so no injected `!` command exists to abort.
+  Verified: 2026-11-24, claude 2.1.329, `ls plugins/claudetto`: README.md agents evals hooks output-styles tsconfig.json, no skills or commands folder.
   Category: Claude Code.
   Cause: An injected `!` command is not pre-approved; injected commands never prompt.
   Event: Outside auto mode the whole skill invocation aborts, and `|| true` does not help.
@@ -246,6 +262,7 @@
   - Owner: setup
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin validate plugins/claudetto`: "Validation passed"; plugins/claudetto/.claude-plugin/plugin.json holds `engines` `"claude-code": ">=2.1.329"` (floor moved up from 2.1.327). The policySettings-only chunk citation was not rechecked.
 
 - [x] **RISK-409** A builtin plugin stays loaded after its disable.
   Verified: probe, claude 2.1.327, 2026-11-18, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: run 1 logged "turned off" once and wrote all 13 ids false; run 2 logged no "turned off". The notice names /reload-plugins. Likelihood stays 5 because a running session keeps the builtin until reload.
@@ -262,6 +279,7 @@
   - Owner: setup
   - Status: closed or mitigated, verified 2026-11-18 (see Verified).
   - Source: measured, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6352); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5290).
+  Verified: 2026-11-24, claude 2.1.329, `CLAUDE_CONFIG_DIR=<empty dir> claude -p hi --plugin-dir plugins/claudetto --debug-file d.log` twice: run 1 logged "claudetto turned off 13 builtin plugin(s) in user settings", run 2 logged no "turned off" (the session answered "Not logged in", so no model call was billed).
 
 - [x] **RISK-410** A running session holds a stale plugin until restart.
   Status: closed. Cause is outside setup or outside claudetto (OUT-866, ADR-0190).
@@ -273,13 +291,15 @@
   - Impact: 2
   - Existing controls: none.
   - Response: mitigate.
-  - Actions: Tell the user to restart or reload after an update.
+  - Actions: claudetto runs `/reload-plugins` itself when it turns builtins off (REQ-SETUP-011); a release of claudetto itself loads at the next start.
   - Trigger: A release lands during a session.
   - Owner: setup
   - Status: open (Existing controls: partial at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
   Status: closed: outside claudetto (OUT-866, ADR-0190), as the first Status line says.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -F /reload-plugins -- plugins/` -> 1 hit, hooks/settings/start.ts:36, which only tells the user to run /reload-plugins; no claudetto code reloads a plugin.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -F /reload-plugins -- plugins/`: 2 hits, not 1: plugins/claudetto/README.md:13 (a docs sentence) and hooks/settings/start.ts:37 (moved from 36; it only tells the user to run /reload-plugins).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -F /reload-plugins -- plugins/` -> README.md:13 and hooks/settings/start.ts (the JSDoc and the `$.command.run` call); no user instruction remains. The tmux probe (`reload/probe.ts`) showed claudetto reload the plugins itself. A claudetto release still loads at the next start, the engine load model (OUT-866).
 
 - [x] **RISK-411** The user's settings keep the retired _TEXT key.
   Verified: test, claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto`: 'removes a retired reminder text and keeps one the user wrote' passes; the fill removes CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT only when it equals one of the two retired texts.
@@ -291,11 +311,13 @@
   - Impact: 2
   - Existing controls: A setup rerun removes it.
   - Response: mitigate.
-  - Actions: Tell the user to rerun the setup command after the update.
+  - Actions: the session-start fill removes the retired key itself after an update (REQ-SETUP-063); no user step.
   - Trigger: A retired key is in the user settings.
   - Owner: setup
   - Status: open (Existing controls: have at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
+  Evidence: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, but no test named 'removes a retired reminder text and keeps one the user wrote' exists. `hooks/settings/__tests__/defaults.test.ts:68-72` now asserts `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` is undefined and no env key ends in `_TEXT` (REQ-SETUP-063); hooks/settings/defaults.ts holds no retired-text removal.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto 341 pass, including `hooks/settings/__tests__/defaults.test.ts:69`, which asserts the fill leaves `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` unset; the fill runs at each session start, so no user step is needed.
   Status: mitigated 2026-11-19: the session-start fill removes the retired text (Verified line); it runs in the hook, outside the Bash sandbox.
 
 ## Claude Code Faults
@@ -316,6 +338,7 @@
   Status: closed 2026-11-19 (accepted): a Claude Code limit with no plugin lever.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2677 (handoff, Bash classifier outages); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:4092 (round 2 dev arm).
   Verified: the classifier verdict is server-side; plugins/ holds no autoMode list (ADR-0190), so no lever exists (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -rln autoMode plugins --exclude-dir=types`: 0 files, so plugins/ holds no autoMode list.
 
 ## Conduct Faults From the Rearchitecture Sessions
 
@@ -334,6 +357,8 @@
   Owner: setup.
   Status: mitigated 2026-11-20 (issue #52): the fill makes Claude Code ask before an edit of the user settings file and before `git reset --hard`, `git stash`, `git clean` and `git branch -D`, so a settings change or a revert needs the user's approval.
   Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/guards/wall/**tests**/fill.test.ts pins the ask list; hooks/guards/wall/rules.ts:47-60 holds `Bash(git reset --hard*)`, `Edit(~/.claude/settings.json)` and `Write(~/.claude/settings.json)` as ask rules.
+  Evidence: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail; hooks/guards/wall/rules.ts ASK still holds `Bash(git reset --hard*)` (line 66) and `Edit(~/.claude/settings.json)` (line 81) but no `Write(~/.claude/settings.json)`; `hooks/guards/wall/__tests__/fill.test.ts:204-222` shows the fill removes that Write ask rule as a conflict.
+  Verified: 2026-11-24, claude 2.1.329, cc-inspect cli `-p --permission-mode acceptEdits` with only `permissions.ask ["Edit(./guarded.txt)"]`: a Write to guarded.txt -> "Claude requested permissions to write … but you haven't granted it yet", a Write to free.txt -> created; so the `Edit(~/.claude/settings.json)` ask (rules.ts:81) also stops a Write; `git reset --hard` asks (rules.ts:66); 341 pass.
   Source: reported, user, 2026-11-13 22:21 UTC, nobody asked for a revert (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:15664): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
 
 - [x] **RISK-414** Setup is slow and the sandbox and hooks cause friction and error noise.
@@ -352,9 +377,11 @@
   Status: closed 2026-11-19: setup is one silent fill-write with one notice, and the sandbox is minimal (ADR-0188, ADR-0190).
   Source: reported, user, 2026-11-13 22:08 UTC, sandbox trimmed to unrecoverable destructive commands (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:14708); reported, user, 2026-11-14 14:21 UTC, sandbox as minimal as possible (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36547): ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:37070.
   Verified: cc-inspect cli: one SessionStart fill-write with one ui_log notice and no hook error, no wizard; claude plugin test plugins/claudetto: 54 pass (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, the interactive tmux start (`reload/probe.ts` with claudetto): one settings write, two notices (builtins turned off and reloaded; values set) and no hook error on the screen, no wizard or prompt.
 
 - [x] **RISK-415** A plugin secret or settings placeholder leaks into the user settings.
   Verified: grep, claude 2.1.327, 2026-11-18, `grep -rln "CONTEXT7" plugins/claudetto`: 0 hits; no plugin code writes the key, so the placeholder cannot come from it.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rln "CONTEXT7" plugins/claudetto`: 0 hits.
   Category: Claude Code fault.
   Cause: a `[REDACTED]` placeholder for `CONTEXT7_API_KEY` sat in `~/.claude/settings.json`; its source is unproven.
   Event: Context7 failed until the line was removed and the user logged in again.
@@ -371,6 +398,7 @@
 
 - [x] **RISK-493** The first-run settings notice is cut off on the terminal.
   Verified: dogfood, claude 2.1.327, 2026-11-19: a fresh config dir drew core's warning `$.ui.log: a text (3163 characters) is drawn up to its first 2000 on the terminal`; after the fix, the test "counts list entries per key so a first fill fits the 2000 characters the terminal draws" passes (72 of 72 in `claude plugin test`). The notice names keys by full path (`permissions.deny`, `sandbox.filesystem.allowWrite`) since c286bcb81, because the dogfood showed bare `deny` and `sandbox` labels. The `⚠ claudetto:` prefix on the line is core’s: a minimal plugin `stp` whose hook logs "plain line" drew `⚠ stp: stp: plain line` on 2.1.327 (dogfood probe, 2026-11-19), so claudetto cannot drop it and keeps the notice text plain.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "fill notice > counts list entries per key so a first fill fits the 2000 characters the terminal draws". The fresh-config dogfood and the `stp` probe were not rerun.
   Category: Defect.
   Cause: `hooks/settings/start.ts` joined every added list entry into one `$.ui.log` line, and the terminal draws 2000 characters of it.
   Event: the person sees a truncated list of what claudetto changed in their settings.
@@ -386,6 +414,7 @@
 
 - [x] **RISK-498** A changed default or guard rule never reaches a user who already ran the fill.
   Verified: dogfood, claude 2.1.327, 2026-11-19: after 5c6c9e9b4 added the `git -C` rules, a fresh start left them out of the dogfood settings.json (grep count 0), because the store held the unchanged hand-bumped FILL_VERSION 6. After 5d697cca2 a restart wrote all four new rules (grep count 4); `claude plugin test plugins/claudetto`: 89 pass, 0 fail.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "fill version > changes when the filled text changes and is stable for one construction" and "settings fill at session start > does not fill again under the same fill version". The dogfood restart was not rerun.
   Category: Defect.
   Cause: the fill ran once per FILL_VERSION, a number a change had to bump by hand (#41).
   Event: a release ships a new deny or ask rule that existing installs never receive.
@@ -417,6 +446,7 @@
   Verified: dogfood, claude 2.1.327, 2026-11-20, fresh clone at fea3d5562, isolated config whose settings held the retired `Assisted-by: Claude Code` commit value: session start printed "replaced attribution.commit Assisted-by: Claude Code", and the agent's commit d6b4451b0 ended with `Co-Authored-By: Claude <noreply@anthropic.com>` (git log -1 --format=%B); the side-branch commit in the same session carried it too (issue #47).
   Status: mitigated 2026-11-20 (issue #70): a commit scripted inside a larger task dropped the line, with the builtin block too. `hooks/git/trailer.ts` now refuses a Bash call whose inline commit message lacks the `attribution.commit` lines, and names the line to add. It applies only while claudetto's git block is the one sent. A failed settings or env read is logged and the call passes, so the shell guards' rewrite stays.
   Verified: replay 2026-11-20, claude 2.1.327, Sonnet 5.5, `claude -p`, reports/2026-11-20-research/commit-trailer: on the two-commit dogfood task, vanilla 0/16 commits carried the line, claudetto at 3e7e491de 0/16, claudetto with the guard 16/16; on a single commit request vanilla 0/8, claudetto 8/8; $2.44 in all. `claude plugin test plugins/claudetto`: 141 pass, 0 fail, twice.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "commit trailer guard > refuses a commit without the line before it runs and names the line to add" and "guard rules > sets one commit trailer that git hosts link to the claude account". The replay was not rerun: reports/2026-11-20-research/commit-trailer/run.sh needs the 2.1.327 binary and /private/tmp/claude-501/fin2/repo, both gone.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19.
 
 - [x] **RISK-513** A sandboxed command that needs a network host fails until the host is allowed for that command, because the sandbox denies every unlisted host: `bunx tsc --noEmit` fetching typescript from `registry.npmjs.org` (issue #78), `gh` reaching `api.github.com` (issue #81).

@@ -15,6 +15,7 @@
   Owner: handover.
   Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto`: no code-built handoff remains; the fork writes the handover and the extract fallback passes "extract keeps user prompts and the last answer" (claude plugin test).
   Verified: 2026-11-20, claude 2.1.327, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/` -> no match; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "handover text > extract keeps user prompts and the last answer".
+  Verified: 2026-11-24, claude 2.1.329, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/`: no match; `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "handover text > extract keeps user prompts and the last answer".
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3201.
 
 - [x] **RISK-120** Auto-compaction fires mid multi-file edit and the summary drops file paths.
@@ -31,6 +32,7 @@
   Owner: handover
   Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: "auto compaction gets the handover and no core call" and "a finished last task above 70k renews" pass. Core auto compaction can still fire mid-step when no boundary came.
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > auto compaction gets the handover and no core call" and "renewal > a finished last task above 70k renews".
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "session.compact > auto compaction gets the handover and no core call" and "renewal > a finished last task above 70k renews".
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xubp1v-is-compacting-still-bad-practi-20261113T000651Z.md:223 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xubp1v/is_compacting_still_bad_practice/>); external/2026-11-16/reddit.com-r-claudecoding-comments-1xw8w8b-tldr-are-people-here-actuall-20261115T135227Z.md:95 (url: <https://www.reddit.com/r/ClaudeCoding/comments/1xw8w8b/tldr_are_people_here_actually_using_skills_via/>).
 
 - [x] **RISK-123** A stale or abrupt handoff misleads or interrupts ongoing work.
@@ -62,6 +64,7 @@
   Owner: handover.
   Status: closed; the renewal fires after the turn ends at a task boundary or commit, so the fork sees every finished call, and the git tail records the commit (test: plugins/claudetto/hooks/handover/renewal.test.ts "a git commit is a boundary"; 59 pass, 2026-11-19).
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > a git commit is a boundary".
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "renewal > a git commit is a boundary".
   Source: observed in transcript, 2026-11-15, ~/.claude/projects/-private-tmp-claude-501-ojd-compact-BZJK/7fa6685a-9c72-4275-8c9c-39e7865bd61e.jsonl:51, :103, :152, :201.
 
 - [x] **RISK-126** A handover carries a cut-off file read and loses the last line.
@@ -78,6 +81,7 @@
   Status: closed 2026-11-19: not reproduced with the claudetto handover on 2.1.327. A handover written from a conversation with a read cut off at line 10, then a fresh Sonnet 5.5 session resumed from it with Claude Code's continuation text, read and quoted the missing last line in 8 of 8 runs, with the current fork prompt and with one that adds a "Partial reads" section; the section did not ship (reports/2026-11-19-research/conduct, handover-run.sh).
   Source: observed in transcript, 2026-11-16, ~/.claude/projects/-private-tmp-claude-501-probe-compact/7612dad0-5b4d-4d11-9751-57fda5939b24.jsonl:62; ~/.claude/projects/-private-tmp-claude-501-probe-compact/c6cabb2f-656b-44a9-85e2-f280e7b53da2.jsonl:62; ~/.claude/projects/-private-tmp-claude-501-probe-compact/cbfe70f3-0670-44b6-abae-b709923f2f43.jsonl:65.
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed 8 of 8 runs read the missing last line, rerun 8 of 8 (old 4/4, new 4/4) lastline=1 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `HO_ROOT=<dir> bash reports/2026-11-19-research/conduct/handover-run.sh cur <1-4>` with `handover-convo.txt` and the shipped FORK_PROMPT (hooks/handover/text.ts) as `cur.txt`: waited=1 lastline=1 in 4 of 4 runs, so the resumed session read and quoted the missing last line.
 
 ## Delegation
 
@@ -119,6 +123,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:28; external/please-use-me-often/agent-failure-dossier/judged/test.jsonl:105.
   Status: mitigated 2026-11-19 for options the user refused: the handover keeps every user correction, refusal and consent word for word (hooks/handover/text.ts:14), and the dogfood handover of 2026-11-19 carried that Constraints section. Accepted for an option the agent ruled out alone: the next session rechecks it against the code.
   Verified: 2026-11-20, claude 2.1.327, `sed -n 14p plugins/claudetto/hooks/handover/text.ts` -> `- Constraints: every user correction, refusal, and consent, word for word.`; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text"; the 2026-11-19 dogfood handover was not re-read.
+  Verified: 2026-11-24, claude 2.1.329, `sed -n 15p plugins/claudetto/hooks/handover/text.ts` (line moved from 14): `"- Constraints: every user correction, refusal, and consent, word for word.",`; `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
 
 - [x] **RISK-133** Compaction on session age, not cache state.
   - Category: Product.
@@ -148,6 +153,7 @@
   Trigger: a compaction notice mid-task.
   Owner: handover. Status: mitigated; `claude plugin test plugins/claudetto`, claude 2.1.327, 2026-11-18: renewal tests pass (a boundary above 70k renews, an open task is no boundary) and the compact hook answers automatic compactions with the handover.
   Verified: 2026-11-20, claude 2.1.327, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/` -> no match; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "renewal > a finished last task above 70k renews", "renewal > an open task is no boundary" and "session.compact > auto compaction gets the handover and no core call".
+  Verified: 2026-11-24, claude 2.1.329, `git grep -nE "HANDOFF_MS|couldNotRead|TAIL_STEPS" -- plugins/`: no match; `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "renewal > a finished last task above 70k renews", "renewal > an open task is no boundary" and "session.compact > auto compaction gets the handover and no core call".
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:150; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:153.
 
 - [x] **RISK-135** Handoff prints empty Git line in a repo with no commits.
@@ -249,6 +255,7 @@
   Owner: handover.
   Status: closed; a stated requirement survives three successive handovers (test: plugins/claudetto/hooks/handover/compact.test.ts "three compactions in a row carry a stated requirement"; 59 pass, 2026-11-19).
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
   Source: external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:230; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:236; external/2026-10-27/reddit.com-r-claudecode-comments-1x776ms-auto-handoff-are-the-best-new-20261026T134539Z.md:240 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x776ms/auto_handoff_are_the_best_new_feature/>).
 
 ## Safety Classifier False Positives
@@ -363,6 +370,7 @@
   Owner: handover.
   Status: closed; the renewal forks after the turn ends, so no tool call follows the replayed request, and the handover's git tail records commits from git itself rather than the fork's memory (plugins/claudetto/hooks/handover/text.ts `compose`; test: compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; 59 pass, 2026-11-19).
   Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> exit 0, 130 pass, 0 fail, including "renewal > a finished last task above 70k renews" and "session.compact > auto compaction gets the handover and no core call"; `git grep -n lastCalls -- plugins/` -> no match.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "renewal > a finished last task above 70k renews" and "session.compact > auto compaction gets the handover and no core call"; `git grep -n lastCalls -- plugins/`: no match.
   Source: observed in transcript, 2026-11-16: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:9790.
 
 - [x] **RISK-482** A headless session never renews because the mod's clear is discarded.
