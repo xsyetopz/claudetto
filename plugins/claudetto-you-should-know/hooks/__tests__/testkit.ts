@@ -126,6 +126,8 @@ export interface Offer {
 	readonly kept?: Map<string, unknown>;
 	/** Held until the test releases it: the fork waits on it before it answers. */
 	readonly hold?: Promise<void>;
+	/** Held until the test releases it: every fork after the first (the check) waits on it. */
+	readonly holdLater?: Promise<void>;
 	/** The surfaces the session reports, read at each call so a test can change them. */
 	readonly surfaces?: RenderSurface[];
 	/** True when the prompt box refuses a fill. The harness strips a cause a hook writes, so none is given. */
@@ -211,13 +213,17 @@ const wireModel = (
 	box: Box,
 	replies: readonly string[],
 	hold: Promise<void> | undefined,
-	faults: boolean | undefined
+	faults: boolean | undefined,
+	holdLater?: Promise<void>
 ): void => {
 	let call = 0;
 	on("model.fork", async (_$, e) => {
 		box.forks++;
 		(box.args ??= []).push(e);
 		await hold;
+		if (call > 0) {
+			await holdLater;
+		}
 		if (faults === true && call > 0) {
 			throw new Error("fork failed");
 		}
@@ -245,6 +251,7 @@ export const offered = async (
 		replies = [REPLY],
 		kept,
 		hold,
+		holdLater,
 		faults,
 		surfaces,
 		refuse,
@@ -254,7 +261,7 @@ export const offered = async (
 	box.clock = mock.clock(on, { now: 1000 });
 	wireStore(on, kept);
 	wireSession(on, box, () => surfaces ?? [surface], refuse);
-	wireModel(on, box, replies, hold, faults);
+	wireModel(on, box, replies, hold, faults, holdLater);
 	const band = await $.ui.mount({
 		plugin: PLUGIN,
 		surface,
