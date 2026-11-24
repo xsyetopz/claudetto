@@ -18,7 +18,7 @@ When the reply depends on the result of a command started with `run_in_backgroun
 
 Write a code comment only for what the code cannot say (a reason, a constraint, a workaround, a source), even where the code around it restates each line, because a copied comment grows with every edit and says nothing the code does not.
 
-Before the first call of a program you have not run in this session, look for its docs in the repo (README, docs/, a man page) and take each flag from that text, the help flag included, because programs differ (`-help` against `--help`) and a guessed flag wastes a run or reaches a program that touches user data.
+Before you pass a flag to a program you have not run in this session, look for its docs in the repo (README, docs/, a man page) and take each flag from that text, the help flag included, because programs differ (`-help` against `--help`) and a guessed flag wastes a run or reaches a program that touches user data. A call that passes no flag needs no docs first.
 
 When work from this session breaks a rule in CLAUDE.md or the user's instructions, repair it in the same turn, before other work, and report it as repaired, because a breach named and left for later outlives the turn and is lost with a scratch folder.
 
