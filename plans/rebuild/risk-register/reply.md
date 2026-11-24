@@ -1386,7 +1386,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
 
-- [ ] **RISK-356** An agent stalls on environment friction or leaves doable tasks unticked.
+- [x] **RISK-356** An agent stalls on environment friction or leaves doable tasks unticked.
   Category: agent conduct.
   Cause: the agent will not stop or reinstall the user's running app, and sorts tasks as blocked when only part of each needs hardware.
   Event: a task waits because the installed app is open; a list shows tasks as blocked that the agent can do now.
@@ -1402,6 +1402,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
   Evidence: 2026-11-23, vanilla, the user's own session: the agent skipped the jscpd duplication check that CLAUDE.md requires, reporting it as not available instead of installing it through the repo's setup recipe (ISSUES-part3.txt:86).
   Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above does not hold.
+  Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r356/run-mcp.sh`: with the jscpd MCP server down and `npx` failing on a missing `node`, vanilla Haiku reported the check not run in 6 of 15 runs; claudetto with the old missing-tool note did so in 3 of 6, after its note sent it to a denied `brew install node`.
+  Status: mitigated 2026-11-24: the missing-tool note without a setup recipe now adds "If that is refused, run the check another way (bunx, an installed binary)" (`plugins/claudetto/hooks/guards/shell/missing.ts:97`). With a `just setup` recipe, vanilla and claudetto both ran it in 3 of 3 runs (`run.sh`). The first cause, a running app the agent will not stop, needs a GUI app and was not probed headless.
+  Verified: 2026-11-24, `run-mcp.sh claudetto 7..15 haiku`: 0 of 9 runs reported the check not run, against vanilla's 6 of 15 (`reports/2026-11-24-research/r356/README.md`).
 
 - [x] **RISK-357** An agent invents a project-specific format or identifier where an industry standard exists.
   Category: agent conduct.

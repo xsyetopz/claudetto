@@ -84,7 +84,9 @@ export const missingCommand = (
 /**
  * The note for a command that is not installed: install it, rerun, and keep
  * the check. `just setup` installs the repo's pinned tools, so it comes first
- * when the repo's justfile has that recipe.
+ * when the repo's justfile has that recipe. Without one, a refused install
+ * points at another runner: claudetto runs that stopped at a denied `brew`
+ * reported the check not run (RISK-356).
  *
  * @param name The missing command.
  * @param hasSetup The repo's justfile has a `setup` recipe.
@@ -92,7 +94,7 @@ export const missingCommand = (
 export const missingNote = (name: string, hasSetup: boolean): string =>
 	hasSetup
 		? `${name} is not installed. Run \`just setup\`, then rerun the command. Keep the check; do not skip it or rely on another one.`
-		: `${name} is not installed. Install it with the system package manager (brew, apt), then rerun the command. Keep the check; do not skip it.`;
+		: `${name} is not installed. Install it with the system package manager (brew, apt) and rerun. If that is refused, run the check another way (bunx, an installed binary). Keep the check.`;
 
 /**
  * Whether a Bash answer is `grep -c` reporting no match: the command counts
