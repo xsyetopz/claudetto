@@ -2840,7 +2840,7 @@ ADR-0192 brings the block back In as `prd/spec.md` under the name claudetto-spec
 - [x] **OUT-865** Out (RISK-405, ADR-0190): Claude Code sending the claude.ai login token to a custom base URL is an upstream behaviour; claudetto sets no base URL and has no hook that changes it. The user holds the dependency (use an API key with a custom base URL).
   Acceptance: none. Basis: cause outside claudetto, ADR-0190 (13 risks with an outside cause close). Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
 
-- [x] **OUT-866** Out (RISK-410, ADR-0190): a running session holding a stale plugin until restart is Claude Code's load model; the start notice already tells the user to run `/reload-plugins`.
+- [x] **OUT-866** Out (RISK-410, ADR-0190): a running session holding a stale plugin until restart is Claude Code's load model; claudetto runs `/reload-plugins` itself at start in an interactive session (REQ-SETUP-011, 2.1.329).
   Acceptance: none. Basis: cause outside claudetto, ADR-0190. Source: plans/rebuild/adr/0190-triage-decisions-by-agent.md.
 
 #### Verification

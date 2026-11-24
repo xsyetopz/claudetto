@@ -210,6 +210,23 @@ describe("REQ-TOOLS-021 Brave API", () => {
 		expect(reply).toContain("https://bun.com/docs");
 	});
 
+	test("a request that throws is named in the reply, not read as no results", async () => {
+		// Arrange
+		const { deps } = searchDeps({}, { noChrome: true }, "KEY");
+		const failing = {
+			...deps,
+			net: () => Promise.reject(new Error("connect ECONNREFUSED"))
+		};
+
+		// Act
+		const reply = await searchWeb(failing, { query: "bun runtime" });
+
+		// Assert
+		expect(reply).toContain(
+			"Failed requests: Brave: connect ECONNREFUSED; DuckDuckGo: connect ECONNREFUSED."
+		);
+	});
+
 	test("without a key no request reaches Brave", async () => {
 		// Arrange
 		const { deps, web } = searchDeps({ [DDG]: html(DDG_RESULTS) });

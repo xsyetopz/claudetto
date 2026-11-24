@@ -16,6 +16,7 @@
   Owner: you-should-know.
   Status: closed. Obsolete: the plugin has no tool.call hook (ADR-0174) and no digest (ADR-0114).
   Verified: grep -rnE "tool\.call|toolUseId|digest" plugins/claudetto-you-should-know/hooks finds no code match, claude 2.1.327, 2026-11-18.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rnE "tool\.call|toolUseId|digest" plugins/claudetto-you-should-know/hooks`: 0 matches.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:554-556 (measured).
 
 ## Ungrouped
@@ -34,6 +35,7 @@
   Owner: you-should-know
   Status: closed. Obsolete: the digest and its log are gone (ADR-0114), so a denied call cannot be logged as one that ran.
   Verified: grep -rnE "called \{|logOutcome|digest" plugins/claudetto-you-should-know/hooks finds no code match, claude 2.1.327, 2026-11-18.
+  Verified: 2026-11-24, claude 2.1.329, `grep -rnE "called \{|logOutcome|digest" plugins/claudetto-you-should-know/hooks`: 0 matches.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:2433; observed in transcript, 2026-11-16
 
 - [x] **RISK-500** A you-should-know card claims something is absent from a file after the session showed only part of it.
@@ -52,6 +54,7 @@
   Verified: dogfood, claude 2.1.327, 2026-11-19, clone at 26cc57577, session 1bd6ee38: the card "The README never mentions the includeGitInstructions option" followed a grep of the whole README for each userConfig key; grep -c includeGitInstructions plugins/claudetto/README.md in that clone -> 0. Sample of one; the count continues in later dogfood runs.
   Verified: dogfood, claude 2.1.327, 2026-11-19, clone at ba45d6dcf, same isolated config: during a register audit the card "Many risk entries have no Likelihood or Status line, and some have two Status lines" fired; a parse of plans/rebuild/risk-register/*.md in that tree -> 102 entries with neither line (each a one-line "Moved Out as OUT-N" entry) and 42 with two or more Status lines. Second sample; 0 false of 2.
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 160 pass, 0 fail.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto-you-should-know: 172 pass, 0 fail. The dogfood samples were not rerun.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19
 
 - [x] **RISK-510** A you-should-know card states how a tool behaves from the model's belief, and the belief is false (issue #65).
@@ -63,11 +66,14 @@
   Impact: 2
   Existing controls: The confidence bullet in `hooks/request/propose-text.ts` asks for confidence and says to reply learn: none when evidence is incomplete; the person can dismiss the card.
   Response: accept
-  Actions: none; recount false cards in later dogfood rounds.
+  Actions: the propose prompt ties each claim about how a tool behaves to output in this session (propose-text.ts); recount false cards in later dogfood rounds.
   Trigger: A second false tool-behaviour card in dogfood.
   Owner: you-should-know
   Status: accepted 2026-11-20; Likelihood 2 × Impact 2 = 4, and the only candidate did not beat the current prompt.
   Verified: 2026-11-20, claude 2.1.327, claude-sonnet-5-5, replay of the propose request on the dogfood session, 6 per arm, $0.913 (reports/2026-11-20-research/ysk-tool-claim): current prompt 1 false card of 6 replies, with a sentence tying tool-behaviour claims to session output 2 false of 6.
+  Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-20-research/ysk-tool-claim/replay.sh o <1-12>`: the propose prompt as shipped before gave a false tool-behaviour card in 8 of 12 replays (later edits to a force-added file "will not show in git status"), up from 1 of 6 on 2.1.327, so the acceptance at Likelihood 2 no longer holds.
+  Status: mitigated 2026-11-24 (ADR-0177): the confidence bullet in `plugins/claudetto-you-should-know/hooks/request/propose-text.ts` now says a claim about how a tool behaves rests on output in this session, and the measured run below shows it beats the prompt without it.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `replay.sh <b|a> <rep>` with the sentence: 4 false cards in 18 replays against 8 in 12 without it, $9.29 for 30 calls (ysk-tool-claim/README.md, replies-2.1.329.txt); `claude plugin test .` in plugins/claudetto-you-should-know: 172 pass, 0 fail.
   Source: issue #65.
 
 - [x] **RISK-527** A you-should-know offer stays up after later steps of the same turn make it untrue.
@@ -84,4 +90,5 @@
   Owner: you-should-know
   Status: closed 2026-11-21. `hooks/check/recheck.ts` withdraws the offer on DROP; every fault keeps it.
   Verified: claude 2.1.330, 2026-11-21, `claude plugin test plugins/claudetto-you-should-know`: 170 pass, 0 fail (hooks/**tests**/recheck.test.ts).
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto-you-should-know: 172 pass, 0 fail (`hooks/__tests__/recheck.test.ts` included).
   Source: bug report, 2026-11-21.

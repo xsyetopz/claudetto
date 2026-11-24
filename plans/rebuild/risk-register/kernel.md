@@ -11,12 +11,15 @@
   Impact: 4.
   Existing controls: none found for the 64 sites; plans/rebuild-curation.md:845 cites error-swallowing catch only as 36 and 38.
   Response: mitigate.
-  Actions: log through $.ui.log or rethrow at each site.
+  Actions: log through `$.ui.log` or rethrow at each site.
   Trigger: a catch clause with no bound error in plugins/*/hooks.
   Owner: kernel.
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/tasks.md:36 (measured count).
-  Status: mitigated 2026-11-20 (issue #52): every catch site in claudetto and claudetto-you-should-know binds its error and writes it to the debug log through fault(), except two that say why in a comment (settings.ts parseSettings, whose callers log the undefined result, and you-should-know fault.ts, the logger's own last-resort catch).
+  Status: mitigated 2026-11-20 (issue #52): every catch site in claudetto and claudetto-you-should-know binds its error and writes it to the debug log through fault(), except two that say why in a comment (settings.ts parseSettings, whose callers log the undefined result, and you-should-know fault.ts, the logger's own last-resort catch). 2026-11-24 (2.1.329): web/chrome.ts and web/register.ts now log through fault(), web/search.ts names each failed request in its reply, web/fetch.ts names a failed save, and the claudetto-spec catches in check/baseline.ts and check/tool.ts log their message; seven catches bind no error, each with a why-comment (Verified line).
   Verified: 2026-11-20, `git grep -nE "\.catch\(" -- plugins/ ':!*__tests__*' | grep -v "fault("` lists only catches whose handler calls fault() or swallow(), and the bare-catch grep lists only the two commented sites; `claude plugin test plugins/claudetto` on 2.1.327, 132 pass twice, including redact.test.ts "a scanner that throws leaves a debug line" and wall.test.ts "a failed HOME read leaves a debug line", which cover the last two sites (redact.ts:112, wall.ts:190).
+  Evidence: 2026-11-24, claude 2.1.329, read of each catch in plugins/*/hooks: five still dropped an error. web/chrome.ts (which, render) and web/register.ts (readFile) caught without a log; web/search.ts read a Brave or DuckDuckGo request that threw as "no results"; web/fetch.ts, when the Markdown copy failed to save, still told the model to Read the missing path.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -nE "\.catch\(" -- plugins/ ':!*__tests__*' | grep -v "fault("`: 80+ lines, all multi-line `.catch(($, e, next) => {` hooks or `swallow(...)`; the bare-catch grep (`catch {` and `.catch(() => ...)`) now lists 17 non-test sites, not two: claudetto-spec check/{baseline,gather,tool}.ts, you-should-know shared/fault.ts:37, claudetto hooks/settings/settings.ts:26, hooks/patch/paths.ts:41, hooks/web/{chrome,convert,fetch,search,register}.ts. `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including the redact and wall "leaves a debug line" tests.
+  Verified: 2026-11-24, claude 2.1.329, after the fix: `git grep -nE 'catch \{' -- 'plugins/*/hooks/**/*.ts' ':!**/__tests__/**'` -> 7 sites, each with a why-comment (spec gather.ts:49, ysk fault.ts:37, settings.ts:26, convert.ts:53, fetch.ts:163, search.ts:44,147); `bun test plugins/claudetto/hooks/web` passes "a request that throws is named in the reply, not read as no results" and "a failed save is named, and the reply points no Read at the missing copy"; claudetto 339 pass, 0 fail.
 
 ## Verification and Honesty
 
@@ -51,6 +54,7 @@
   Trigger: a reply is only "continue?".
   Owner: kernel. Status: closed; code search, claude 2.1.327, 2026-11-18, cc-inspect search "Should I continue?": no hit, so no stock text causes a "continue?"-only reply.
   Verified: 2026-11-20, claude 2.1.327, `grep -a -c "Should I continue?" ~/.local/share/claude/versions/2.1.327` -> 0 matches in the 2.1.327 binary, so no stock text causes a "continue?"-only reply.
+  Verified: 2026-11-24, claude 2.1.329, `grep -a -c "Should I continue?" ~/.local/share/claude/versions/2.1.329`: 0 (the 2.1.327 binary is no longer installed).
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xc9mw9-has-opus-55s-coding-quality-change-20261024T141240Z.md:170 (url: <https://www.reddit.com/r/claude/comments/1xc9mw9/has_opus_55s_coding_quality_changed_recently/>).
 
 - [x] **RISK-004** Gate times out on every tool while the ledger read runs.
@@ -134,6 +138,8 @@
   Trigger: n/a.
   Owner: kernel. Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto for `Stop` hooks that block: the only classic.Stop handler (renewal.ts:41) returns next(e) and blocks nothing, so no regex Stop check ships.
   Verified: 2026-11-20, claude 2.1.327, `git grep -n 'classic.Stop"' -- plugins/ ':!*__tests__*'` -> one match, renewal.ts:46, whose body returns next(e) and blocks nothing (the status cites line 41; the handler now sits at line 46).
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n 'classic.Stop"' -- plugins/ ':!*__tests__*'`: 2 matches, not 1: plugins/claudetto/hooks/handover/renewal.ts:66 (body returns next(e), blocks nothing) and plugins/claudetto-spec/hooks/check/stop.ts:84 (returns `{ ...(await next(e)), block }` when a stop reason exists).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n classic.Stop -- 'plugins/*/hooks/**/*.ts'`: renewal.ts:66 returns next(e); the one Stop hook that blocks, claudetto-spec check/stop.ts:84, blocks once on a spec_check finding in spec files the session changed, never on reply wording, so no regex Stop check ships (ADR-0180).
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-papers.md:17; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:11-13; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:19; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:33; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:34; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tmp/research-syc-community.md:95.
 
 ## Guards and Destructive Actions
@@ -150,6 +156,8 @@
   Trigger: An `Edit` fails on `old_string` after a text-rewriting hook.
   Owner: kernel. Status: closed; same grep: no sentence-splitting or reflowing hook remains in plugins/claudetto/hooks.
   Verified: 2026-11-20, claude 2.1.327, `git grep -niE "reflow|sentence-split|splitSentence" -- plugins/` -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -niE "reflow|sentence-split|splitSentence" -- plugins/`: 4 matches, not 0, all in `plugins/claudetto-spec/hooks/check/__tests__/drift.test.ts:51,54,60,61` (a drift test case named "a reflow"); no non-test source matches.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -niE 'reflow|sentence'` over plugins/*/hooks: matches are spec sentence counting, prompt text and doc comments; no hook rewrites Edit or Write text in PreToolUse.
   Source: external/please-use-me-often/agent-failure-dossier/judged/hook.jsonl:51; external/please-use-me-often/agent-failure-dossier/07-measurement-and-environment.md:141.
 
 ## Agent Conduct
@@ -203,6 +211,8 @@
   Owner: kernel.
   Status: closed; same grep: no UserPromptSubmit hook in plugins/claudetto/hooks.
   Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'`: 12 matches, not 0: hooks/goal/tools.ts:178,182 and hooks/patch/tool.ts:40,54,58,172,175 (tool-verdict `decision:` objects) and PreToolUse in comments of hooks/guards/{shell/limit,shell/shell,shell/stdin,wall/rules}.ts; none registers a PreToolUse or UserPromptSubmit hook.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n UserPromptSubmit -- plugins/` -> no match.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:236; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:260 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 ## Environment, Accounts, and Marketplace
@@ -294,6 +304,8 @@
   Owner: kernel
   Status: closed; same grep: no pin hook.
   Verified: 2026-11-20, claude 2.1.327, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'` -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -nE "PreToolUse|UserPromptSubmit|[^a-zA-Z]pin[^a-zA-Z]|pinCheck|decision:" -- plugins/claudetto/hooks ':!*__tests__*'`: 12 matches, not 0: hooks/goal/tools.ts:178,182 and hooks/patch/tool.ts:40,54,58,172,175 (tool-verdict `decision:` objects) and PreToolUse in comments of hooks/guards/{shell/limit,shell/shell,shell/stdin,wall/rules}.ts; none registers a PreToolUse or UserPromptSubmit hook.
+  Verified: 2026-11-24, claude 2.1.329, `git ls-files plugins | grep -iE '(^|/)pin'` -> no match: no pin hook ships.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:269, observed in transcript, 2026-11-09.
 
 ## Conduct
@@ -381,6 +393,8 @@
   Owner: kernel
   Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` restricted to source files: no hyphenated file family in plugins/claudetto/hooks (files: builtins/, handover/, settings/).
   Verified: 2026-11-20, claude 2.1.327, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` -> no output.
+  Evidence: 2026-11-24, claude 2.1.329, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'`: 113 lines, not none: 109 under evals/ (fixtures) and 4 under hooks/ (`guards/shell/__tests__/gh-checks.test.ts`, `patch/__tests__/add-existing.test.ts`, patch/patch-tool.d.ts, web/web-tool.d.ts).
+  Verified: 2026-11-24, claude 2.1.329, `git ls-files 'plugins/*/hooks/**' | grep -E '/[^/]*-[^/]*\.(ts|json)$' | grep -v __tests__` -> 5 hyphenated files (three *-tool.d.ts, each alone in its folder; ysk request/propose-text.ts and recheck-prompt.ts); no two share a hyphen prefix, so no file family.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4057 (state: 91 files; reported, user: unacceptable); measured, 2026-11-16
 
 ## Product and Tooling

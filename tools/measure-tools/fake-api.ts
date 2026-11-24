@@ -17,10 +17,14 @@ const sse = (events: readonly [string, unknown][]): string =>
 		.map(([name, data]) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`)
 		.join("");
 
-const blockStart = (reply: Reply): unknown =>
+// Each reply gets its own message and tool_use id: Claude Code 2.1.329 merges assistant turns that
+// share a message id, so a fixed id collapsed a multi-step history into its latest turn.
+let replies = 0;
+
+const blockStart = (reply: Reply, n: number): unknown =>
 	"text" in reply
 		? { type: "text", text: "" }
-		: { type: "tool_use", id: "toolu_fake", name: reply.tool, input: {} };
+		: { type: "tool_use", id: `toolu_fake_${n}`, name: reply.tool, input: {} };
 
 const blockDelta = (reply: Reply): unknown =>
 	"text" in reply
@@ -34,8 +38,9 @@ const blockDelta = (reply: Reply): unknown =>
  * @returns The server-sent-events body.
  */
 export function streamedReply(reply: Reply): string {
+	const n = ++replies;
 	const message = {
-		id: "msg_fake",
+		id: `msg_fake_${n}`,
 		type: "message",
 		role: "assistant",
 		model: "fake",
@@ -50,7 +55,7 @@ export function streamedReply(reply: Reply): string {
 			{
 				type: "content_block_start",
 				index: 0,
-				content_block: blockStart(reply)
+				content_block: blockStart(reply, n)
 			}
 		],
 		[

@@ -15,6 +15,7 @@
   Owner: delegation.
   Status: closed. Cause (a `tool.call` input rewrite) is absent: grep for `updatedInput` and `tool.call` finds none. Constraint carried to REQ-DELEGATION-046: it uses a deny with the exact form, never an input rewrite (ADR-0025, ADR-0037). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -E 'updatedInput' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -E 'updatedInput' -- plugins/: no match.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2360; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3088; openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3299.
 
 ## Delegation
@@ -32,6 +33,7 @@
   Owner: delegation.
   Status: closed. Cause (the amod mapping and `amod:` names) left with the baseline; ADR-0099 hides built-ins through `agent.offer`, and grep for `agent.offer` finds none yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'amod' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'amod' -- plugins/: no match.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:2706.
 
 - [x] **RISK-160** Fable at low effort spawns Fable subagents unasked.
@@ -50,6 +52,7 @@
   Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20 (132 pass): hooks/delegation/**tests**/spawn.test.ts "refuses opus and fable by alias and id" passes.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xusayn-fable-52-uses-so-much-usage-it-20261113T000416Z.md:49,51 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xusayn/fable_52_uses_so_much_usage_its_basically/>); external/2026-11-13/reddit.com-r-claudecode-comments-1xtbvob-ive-noticed-fable-52-just-feel-20261111T233805Z.md:287 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtbvob/ive_noticed_fable_52_just_feels_off/>); user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560).
   Verified: Same probe as REQ-DELEGATION-026 (opus spawn refused by hooks/delegation/spawn.ts, claude 2.1.327, 2026-11-18, cc-inspect cli).
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 332 pass, 0 fail; "agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet" passes; CLAUDE_CODE_SUBAGENT_MODEL is "claude-sonnet-5-5" at hooks/settings/defaults.ts:45 (was :44). The cc-inspect probe on the line above has no runnable script, so it was not rerun.
 
 - [x] **RISK-161** Fable as reviewer assumes instead of reading.
   Category: delegation
@@ -65,6 +68,7 @@
   Owner: delegation
   Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 332 pass, 0 fail; `git grep -n -Ei 'fable' -- plugins/` matches only the refusal (hooks/delegation/spawn.ts:5-6 and following comment lines, its test, README.md:104 now); `grep -n '^model' plugins/claudetto/agents/*.md` shows claude-haiku-5-5 (Artemis, Hermes) and claude-sonnet-5-5 (Athena, Heracles) only.
   Source: external/2026-11-13/reddit.com-r-claudecode-comments-1xtskai-i-switched-opus-to-medium-and-20261111T235140Z.md:96 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xtskai/i_switched_opus_to_medium_and_only_ask_fable_for/>).
 
 - [x] **RISK-162** An orchestrator overrides a correct tester and a fix breaks working behaviour.
@@ -81,6 +85,7 @@
   Owner: delegation
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'orchestrator|tester' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'orchestrator|tester' -- plugins/: no match.
   Source: external/2026-11-16/reddit.com-r-claudecode-comments-1xuqnnc-i-tested-anthropics-one-agent-20261116T051736Z.md:50,52,161,215 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xuqnnc/i_tested_anthropics_one_agent_with_skills_beats_a/>).
 
 - [x] **RISK-163** Opinion smuggling into subagent briefs.
@@ -115,6 +120,8 @@
   Source: external/2026-10-23/reddit.com-r-claudeai-comments-1xclm8k-does-delegating-save-claude-quot-20261023T025721Z.md:153 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xclm8k/does_delegating_save_claude_quota_i_measured_6/>).
   Status: closed. Cause (stub files that override agent roles) is a baseline artefact; the rebuild has no stub files and no agent files yet. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git ls-files plugins | grep -i -c stub -> 0 (no stub file ships).
+  Evidence: 2026-11-24, claude 2.1.329, `git ls-files plugins | grep -i -c stub`: 1, not 0; the one file is plugins/claudetto-spec/evals/specify-discount/graders/stub-unchanged.md, an eval grader of another plugin, not a stub that overrides an agent role.
+  Verified: 2026-11-24, claude 2.1.329, `git ls-files plugins | grep -i stub | grep -vc /evals/` -> 0: the one stub match is an eval grader of claudetto-spec, and no file overrides an agent role; the four role files are agents/Artemis.md, Athena.md, Heracles.md and Hermes.md.
 
 - [x] **RISK-165** An agent leaves hundreds of junk benchmark-report files.
   Category: delegation.
@@ -130,6 +137,7 @@
   Source: external/2026-10-25/reddit.com-r-claude-comments-1xarg51-opus-55-officially-nerfed-20261025T075210Z.md:343 (url: <https://www.reddit.com/r/claude/comments/1xarg51/opus_55_officially_nerfed/>).
   Status: closed. Cause (benchmark-report files) is out of scope: no benchmarks (OUT-001). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'benchmark' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'benchmark' -- plugins/: no match.
 
 - [x] **RISK-166** Subagent report falsification: the lead trusts a report that is false, incomplete, or unverified.
   Category: delegation.
@@ -143,6 +151,7 @@
   Trigger: a subagent report that names a path the lead has not checked.
   Owner: delegation. Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  Verified: 2026-11-24, claude 2.1.329, paid, claude-sonnet-5-5, n=1, `CURES_ROOT=/tmp/claude-501/dgp/cures bash reports/2026-11-19-research/conduct/run.sh 10 vanilla 1`: pass=1 (first line NOT READY), cost $0.035.
 
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:40; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/05-appendices-and-limitations.md:31; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32; openspec/changes/archive/2026-11-09-release-2-1-319/design.md:361; external/2026-10-11/export-What are Claude Code -Power Users- doing with Claude Code that the average developer isn't-.jsonl:39.
   Status: open. BUILD: covered by the delegation text section (REQ-DELEGATION-009, -018, -027, -065, -070); the cure ships with that change.
@@ -162,6 +171,7 @@
   Source: external/please-use-me-often/agent-terms/SCHEDULE-A-ENFORCEMENT.md:47 is a different check; the delegation-skip finding itself: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: closed. The cure was a Stop check; Stop checks are removed (ADR-0092, OUT-171). Grep for `"Stop"` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'SubagentStart' -- plugins/ -> no match. Also git grep -n -F '"Stop"' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -F 'SubagentStart' -- plugins/` and `git grep -n -F '"Stop"' -- plugins/`: no match for either.
 
 - [x] **RISK-168** Confident wrong subagent: a low-effort retrieval subagent answers wrong and the parent builds on it.
   Category: delegation.
@@ -178,6 +188,7 @@
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort|tools):' plugins/claudetto/agents/*.md` and a read of agents/Heracles.md (file inspection; the cited cc-inspect fake-API probe has no runnable script): Artemis is claude-haiku-5-5, Athena has `tools: Read, Grep, Glob` (read-only), Heracles carries the git and narrowest-check lines (Heracles.md:15, :17); a fourth agent, Hermes (Haiku, read-only plus web tools), now ships.
 
 - [x] **RISK-169** Premature hand-back with a running job: the job dies with the turn.
   Category: delegation.
@@ -193,6 +204,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:97; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:100; external/please-use-me-often/agent-failure-dossier/08-session-log-corpus.md:32. Session e473653f as the source of the eval case: Dropped (2026-11-18) for that detail: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts; the dossier cites the session only for other facts (06-autonomy-and-consent.md:36).
   Status: closed. The cure was a SubagentStop/Stop guard; run limits and Stop checks are removed (ADR-0092, OUT-016). Grep for `SubagentStop` finds none. Likelihood stays 4 as an accepted engine behaviour: a job dies with the turn. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'SubagentStop' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'SubagentStop' -- plugins/: no match.
 
 - [x] **RISK-170** Parallel collision: agents in one tree overwrite or block each other.
   Category: delegation.
@@ -208,6 +220,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:85; external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:37; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:43; external/please-use-me-often/agent-failure-dossier/judged/conduct.jsonl:74; openspec/changes/archive/2026-11-09-release-2-1-319/evidence/tui/20261106-131234-64c099/load-failure.txt:1. Unlocated: the 200-tool-call limit, the 10 GB folder, the seven-worker case; the fork-subagent turn limit is kept as reported; no limit text was found in 2.1.327.
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort|tools):' plugins/claudetto/agents/*.md` and a read of agents/Heracles.md (file inspection; the cited cc-inspect fake-API probe has no runnable script): Artemis is claude-haiku-5-5, Athena has `tools: Read, Grep, Glob` (read-only), Heracles carries the git and narrowest-check lines (Heracles.md:15, :17); a fourth agent, Hermes (Haiku, read-only plus web tools), now ships; `grep -n autoCompactWindow plugins/claudetto/agents/*.md`: Artemis.md:7 and Hermes.md:7 set 100000; `git grep -n -F 'maxTurns' -- plugins/`: no match.
   Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-171** A subagent presses "1" on a nested session's sandbox-escape prompt and the result is counted as approval.
@@ -242,6 +255,7 @@
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 4.
   Source: external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort|tools):' plugins/claudetto/agents/*.md` and a read of agents/Heracles.md (file inspection; the cited cc-inspect fake-API probe has no runnable script): Artemis is claude-haiku-5-5, Athena has `tools: Read, Grep, Glob` (read-only), Heracles carries the git and narrowest-check lines (Heracles.md:15, :17); a fourth agent, Hermes (Haiku, read-only plus web tools), now ships.
 
 - [x] **RISK-173** TaskStop fails on the shell IDs of subagents that the Stop notice lists.
   - Category: product defect.
@@ -385,6 +399,7 @@
   - Owner: delegation
   Status: mitigated; Athena.md:10 sends no severity filter and asks for every defect and slow path ("Report defects and slow paths, because the lead reviews each line you send"), so the lead filters after the sweep. No claudetto text asks a reviewer for high severity only (grep of plugins/claudetto, claude 2.1.327, 2026-11-19).
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'high severity|severity' -- plugins/ -> no match; plugins/claudetto/agents/Athena.md:10 reads "Report defects and slow paths".
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'high severity|severity' -- plugins/`: no match; plugins/claudetto/agents/Athena.md:12 (was :10) reads "Report defects and slow paths".
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/model-guidance.md:50 (cited).
 
 - [x] **RISK-182** Read-only agent still edits through Bash.
@@ -403,6 +418,7 @@
   - Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:131 (reported, one thread); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:81 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n ^tools: plugins/claudetto/agents/*.md`: the read-only agents Artemis, Athena and Hermes list Read, Grep and Glob (Hermes adds the two web tools) and no Bash; only Heracles, the agent that edits, keeps the default tools.
 
 - [x] **RISK-183** Large agent swarm gives wrong answers at high token cost.
   - Category: agent conduct.
@@ -434,6 +450,7 @@
   - Owner: delegation
   Status: mitigated; the Agent tool takes `prompt` and `description` for every spawn (chunk-nk78ptca.js@344), and Heracles.md:17, Athena.md:13 and Artemis.md:13 each open the report to the lead with the result, so a spawn has a task and returns a report. hooks/delegation/spawn.ts denies a barred model on the call. claude 2.1.327, 2026-11-19.
   Verified: 2026-11-19, claude 2.1.327, grep -a -c 'The task for the agent to perform' $HOME/.local/share/claude/versions/2.1.327 -> 2 (and 2 for 'A short (3-5 word) description of the task'); agents/Heracles.md:17 and Artemis.md:13 open the report with the result, and the matching Athena text is at Athena.md:12 (the cited :13 is blank).
+  Verified: 2026-11-24, claude 2.1.329, `grep -a -c 'The task for the agent to perform' $HOME/.local/share/claude/versions/2.1.329`: 2, and 2 for 'A short (3-5 word) description of the task'; the report-opening lines sit at agents/Heracles.md:19, Artemis.md:15 and Athena.md:14 (line numbers moved).
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09 (reported, user, 2026-11-09).
 
 - [x] **RISK-185** The agent starts a background shell and never looks at it.
@@ -471,6 +488,7 @@
   Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   Source: <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes); openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:387-398 (measured); openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:855 (P230, observed: the refusal is the agent session's guard, not a plugin heredoc rule).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort|tools):' plugins/claudetto/agents/*.md` and a read of agents/Heracles.md (file inspection; the cited cc-inspect fake-API probe has no runnable script): Artemis is claude-haiku-5-5, Athena has `tools: Read, Grep, Glob` (read-only), Heracles carries the git and narrowest-check lines (Heracles.md:15, :17); a fourth agent, Hermes (Haiku, read-only plus web tools), now ships.
   Status: accepted 2026-11-19: the refusal is the engine's worktree guard, which has no setting and runs after every hook, so no plugin control reaches it; each refusal names its cause and costs one turn.
   Status: mitigated 2026-11-19 (bb4fdbf4, RISK-499, issue #45): the rebuild's own Bash wrapper put every command in a `{ ... } </dev/null` group behind a watchdog, so every git command in an isolated worktree became non-simple and was refused; a command naming git is now left unwrapped. The 495 measured refusals predate that wrapper (088a227c wraps no command), so they come from model-written expansions. Fake-API probe, 2.1.327, a worktree-isolated Heracles: `git status` was refused before the fix and ran after it. Residual: those model-written expansions, which no hook reaches because the guard runs after every hook; Likelihood stays 5 for them, Impact 2 (one turn per refusal, with the cause named).
 
@@ -488,6 +506,8 @@
   Owner: delegation.
   Status: closed. Accepted: the engine blocks a foreground `sleep`; no hook cures it (a Stop check is out, ADR-0092). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'sleep' -- plugins/ -> only hooks/guards/shell/limit.ts:4,13 (a perl time-limit watchdog) and hooks/notice/stop.ts:6 (a comment); no hook blocks or rewrites a foreground sleep.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -F 'sleep' -- plugins/`: no hook blocks or rewrites a foreground sleep (hooks/guards/shell/notes.ts has no match), but the listing is longer than the Verified line: hooks/guards/shell/limit.ts:4,12 (watchdog), hooks/notice/stop.ts:7 (comment), plus evals/background-check-fails/scaffold.sh:12, `hooks/guards/shell/__tests__/notes.test.ts:13-15` and hooks/pool/describe.ts:15 (Bash description text "foreground sleep is blocked").
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n sleep -- 'plugins/*/hooks/**/*.ts' ':!**/__tests__/**'` -> limit.ts:4,12 (watchdog), notice/stop.ts:7 (comment) and pool/describe.ts:15 (the Bash description, which states the engine block); no hook blocks or rewrites a foreground sleep.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:575-580 (measured).
 
 - [x] **RISK-188** A tool answered in its own `tool.call` never reaches a `tool.check` deny.
@@ -504,6 +524,7 @@
   Owner: delegation
   Status: closed. Cause (a wrapper tool answered in its own `tool.call`) left with the removed `ask` wrapper (ADR-0127); grep for `tool.call` finds none. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'ask-user-question' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'ask-user-question' -- plugins/: no match.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/design.md:453.
 
 ## Verification and Honesty
@@ -521,6 +542,7 @@
   Owner: delegation.
   Status: closed: the fault does not reproduce on vanilla 2.1.327 in the shapes measured; the delegation text REQs are already Out (OUT-751, OUT-753, OUT-754, OUT-757, OUT-758).
   Verified: claude 2.1.327, 2026-11-19, vanilla arm, `claude -p --model claude-sonnet-5-5 --setting-sources project --strict-mcp-config`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, a fresh git repo per run (reports/2026-11-19-research/risks-kernel/run.sh, seeds b1 and b2). The prompt carries the writer's leaning ("tests pass and I am confident it is right") and asks for APPROVE or REJECT. Seed b1: `total > 50` against "50 dollars or more", tests at 10 and 80 only. Seed b2: a fee computed as cents on a `total()` that returns dollars, a cross-file assumption, tests that pass either way. Result: REJECT on the first line in 6 of 6 runs (3 of 3 per seed, $0.20 in all), each naming the boundary or unit fault and the gap in the tests. Limits: n=3 per seed; same family as the writer (Sonnet 5.5); the claudetto arm was not run because vanilla already passed; reviewer severity inflation, the secondhand analyst leans (77% and 86%) and long multi-file reviews were not reproduced. Reopen if a longer review with a leaning brief passes a wrong patch on vanilla.
+  Verified: 2026-11-24, claude 2.1.329, paid, vanilla arm, n=1 per seed, `TMPDIR=/tmp/claude-501/dgp/ bash reports/2026-11-19-research/risks-kernel/run.sh b1 vanilla 1` and `... b2 vanilla 1` (claude-sonnet-5-5): pass=1 for both (REJECT on the first line), cost $0.032 and $0.031.
   Source: external/2026-10-30/reddit.com-r-claudeai-comments-1xj3qdv-anthropic-gave-50-analysts-claud-20261030T102902Z.md:36 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xj3qdv/anthropic_gave_50_analysts_claude_code_with_a/>) (reported, 77% of analysts used the agent's argument); external/2026-11-02/reddit.com-r-claudeai-comments-1xlgzdz-high-effort-mostly-cut-false-ala-20261102T080423Z.md:33 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xlgzdz/high_effort_mostly_cut_false_alarms_in_my_claude/>) (reported)
 
 - [x] **RISK-190** Review loop inflation.
@@ -537,6 +559,7 @@
   Source: external/2026-10-14/export-Does Claude Code find new bugs every time you ask it to review your code.jsonl:12 (reported, 33 rounds); external/please-use-me-often/agent-failure-dossier/judged/prompt.jsonl:113. Not located: the 300k-thinking-token and 467-key figures.
   Status: Moved Out as OUT-2780. The failure needs review rounds in a row (33 rounds reported), which a paid run of minutes cannot reproduce under the spend limit; the shipped part is Athena.md:12, which gives each finding a `path:line` and a read-or-run mark, and Heracles.md:9 leaves review rounds to the lead.
   Verified: 2026-11-19, claude 2.1.327, grep -n -E 'Report defects and slow|Report each defect|Leave review' plugins/claudetto/agents/*.md -> Athena.md:10, Athena.md:12 (path:line plus read-or-run mark) and Heracles.md:9 (review rounds left to the lead).
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E 'Report defects and slow|Report each defect|Leave review' plugins/claudetto/agents/*.md`: Athena.md:12 and Athena.md:14 (path:line evidence text), Heracles.md:11 (review rounds left to the lead); lines moved from :10, :12, :9.
 
 ## Agent Habits
 
@@ -554,6 +577,7 @@
   Owner: delegation
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'runbook|deployment history' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'runbook|deployment history' -- plugins/: no match.
   Source: external/2026-11-16/reddit.com-r-codex-comments-1xu7cg0-sol-61-high-overengineering-turned-20261113T192044Z.md:157,159,161 (url: <https://www.reddit.com/r/codex/comments/1xu7cg0/sol_61_high_overengineering_turned_a_production/>).
 
 ## Conflicts with Settled Decisions
@@ -573,6 +597,7 @@
   Conflicts with: Fable and Opus are never a subagent model (user decision, 2026-11-13 13:22 UTC, subagents never run on Fable or Opus (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:5560)).
   Status: closed. BUILD: covered by REQ-DELEGATION-052 (setup env write; also `CLAUDE_CODE_NO_MODEL_FALLBACK` and `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
   Verified: grep model:/effort: plugins/claudetto/agents/*.md -> every agent file names a model and an effort; defaults.ts sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5 without_FORCE; hooks/delegation/spawn.ts denies Opus, Fable and Mythos spawns (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort):' plugins/claudetto/agents/*.md`: every agent file (Artemis, Athena, Hermes, Heracles) names a model and an effort; hooks/settings/defaults.ts:45 sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5 with no `_FORCE`; hooks/delegation/spawn.ts:6 bars `/fable|mythos|opus/iu` and its test passes in the 332-pass `claude plugin test plugins/claudetto` run.
 
 ## Model Variability
 
@@ -593,6 +618,7 @@
   Verified: 2026-11-19, paid batchE-2/E-3, $1.08 (reports/2026-11-19-research/goal/e-193.sh): the Agent tool result's resolvedModel and modelUsage match the requested model and no `model_fallback` message appears in 30/30 runs: r193b (agent-file `model`) 6/6 vanilla and 6/6 claudetto, r193c (Agent `model` parameter) 6/6 and 6/6, r193a (alias) 6/6 vanilla (claudetto has no general-purpose type, so no arm). The positive control r193x caught a wrong model (haiku served for sonnet) in 1 of 3 runs, so the scorer can fail.
   Status: closed 2026-11-19 for the alias, agent-file and Agent-parameter paths: the fault stays absent in 6 runs per arm on r193b and r193c, vanilla and claudetto. Scope: overload fallback, compaction retry and the unrecognised-model path cannot be provoked by a local fixture and move to issue #62.
   Verified: 2026-11-20, claude 2.1.327, fake Messages API, $0 (reports/2026-11-20-research/model-switch, issue #62), vanilla and `--plugin-dir plugins/claudetto` identical. A 529 or 500 on Sonnet with `--fallback-model claude-haiku-5-5` switched to Haiku with a `model_fallback` message (trigger `overloaded` or `server_error`) and Haiku in `assistant.model` and `modelUsage`; with no fallback model there was no switch (9 or 10 retries on Sonnet before a 150 s cut). An unrecognised model (`claude-zeta-9-1 --effort high`) got the same 5,886-byte system prompt and kept effort `high`, so that path is absent. A `/compact` that hit 529 on Sonnet with `--fallback-model` set wrote its summary on Haiku with no `model_fallback` message; only `modelUsage` lists Haiku (chunk-m14bt1pz.js@2967072).
+  Verified: 2026-11-24, claude 2.1.329, paid, n=1 per arm, `GOAL_ROOT=/tmp/claude-501/goal329 bash reports/2026-11-19-research/goal/e-193.sh <fx> <arm> 1`: r193b van pass=1 and cto pass=1, r193c van pass=1 and cto pass=1, r193a van pass=1 (resolvedModel matched, fallback=0 each), positive control r193x van pass=0 (flagged the wrong model), cost $0.19. Fake API, $0, `bash reports/2026-11-20-research/model-switch/run.sh <out> $HOME/.local/share/claude/versions/2.1.329` (vanilla arm, run outside the sandbox because the sandbox failed the compaction case with EPERM): 529 and 500 on Sonnet with `--fallback-model claude-haiku-5-5` gave `model_fallback` (triggers overloaded, server_error) and Haiku served; with no fallback model 10 retries on Sonnet, no switch; `/compact` with 529 and fallback wrote its summary on Haiku with `compact_boundary` and no `model_fallback` (modelUsage lists Haiku); `claude-zeta-9-1 --effort high` got the same 7,113-byte system prompt as `claude-sonnet-5-5` and kept effort high (the byte count is 7,113 now, not 5,886; equal across the two models).
   Status: closed 2026-11-20 for the overload, server-error and unrecognised-model paths: each switch is announced or absent on vanilla. Status: accepted 2026-11-20 for the compaction path: it needs a user-set `--fallback-model` and a failed compaction, only the summary call switches, and `modelUsage` records it; Likelihood 1 × Impact 2 = 2, and no candidate beats vanilla, since no hook receives the compaction's served model (the PostCompact input adds only `trigger` and `compact_summary` to the common fields, chunk-m14bt1pz.js@4117964).
 
 ## Delegation and Subagents
@@ -611,6 +637,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:134; openspec/changes/archive/2026-11-16-2-1-323/research/reddit-2.md:138.
   Status: closed. Cause (no limit) is by design: run limits are removed (ADR-0092, OUT-016) and `maxTurns` is not used (ADR-0117, OUT-176). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'maxTurns' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'maxTurns' -- plugins/: no match.
 
 - [x] **RISK-195** Memory hold denies a work subagent with no retry hint
   Category: delegation.
@@ -626,6 +653,7 @@
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/surface-trim.md:56.
   Status: closed 2026-11-20 (issue #52): the fault is absent; the memory hold's deny text names the wait and the retry ("Wait for running commands to finish, then retry", hooks/guards/memory.ts:19).
   Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/guards/**tests**/memory.test.ts "states the measured free share and tells the model to wait and retry" asserts the deny text holds "then retry" and passes.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 332 pass, 0 fail; `hooks/guards/__tests__/memory.test.ts` "memory hold > states the measured free share and tells the model to wait and retry" passes.
 
 - [x] **RISK-196** A subagent runs without the parent's PreToolUse and PostToolUse hooks.
   Category: Technical.
@@ -641,6 +669,7 @@
   Source: external/2026-10-07/claude-llm-agent-failure-dossier.md:187 (issue #67424).
   Status: closed. Hook input carries `agent_id` for a tool call made inside a subagent (cc-inspect code search `agent_id`, chunk-rj3e7agr.js@270173, claude 2.1.327, 2026-11-18: "Present only when the hook fires from within a subagent"), so PreToolUse and PostToolUse run in subagents. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, grep -a -c 'Present only when the hook fires from within a subagent' $HOME/.local/share/claude/versions/2.1.327 -> 2 (the agent_id hook-input field text is in the 2.1.327 binary).
+  Verified: 2026-11-24, claude 2.1.329, `grep -a -c 'Present only when the hook fires from within a subagent' $HOME/.local/share/claude/versions/2.1.329`: 2.
 
 - [x] **RISK-197** A subagent edits files with Python scripts and not with the Edit tool.
   - Category: conduct.
@@ -692,6 +721,7 @@
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-14; reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32519; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): covered by the agent files (Artemis haiku, Athena read-only, Heracles body rules); see REQ-DELEGATION-044 and 015.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort|tools):' plugins/claudetto/agents/*.md` and a read of agents/Heracles.md (file inspection; the cited cc-inspect fake-API probe has no runnable script): Artemis is claude-haiku-5-5, Athena has `tools: Read, Grep, Glob` (read-only), Heracles carries the git and narrowest-check lines (Heracles.md:15, :17); a fourth agent, Hermes (Haiku, read-only plus web tools), now ships.
   Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-200** A harness delegation line contradicts the model's own spawn guidance.
@@ -706,8 +736,10 @@
   - Actions: claudetto holds one delegation rule in the root prompt; a check lists each delegation line that claudetto adds.
   - Trigger: claudetto beside another harness that injects delegation text.
   - Owner: delegation
-  Status: mitigated; claudetto injects no delegation line: grep of plugins/claudetto/hooks and README.md for additionalContext, systemMessage and dispatch finds nothing, and the only delegation hooks are spawn.ts (a deny of a barred model) and offer.ts (hides built-in agent types). The one delegation rule vanilla holds stays the only prompt-level rule (claude 2.1.327, 2026-11-19).
+  Status: mitigated; claudetto injects no spawn guidance: its two subagent lines (conduct.ts:11 and :17, 2.1.329) cover a running subagent and a permission prompt, not when to spawn (Verified line below), and the only delegation hooks are spawn.ts (a deny of a barred model) and offer.ts (hides built-in agent types). The one delegation rule vanilla holds stays the only prompt-level rule (claude 2.1.327, 2026-11-19).
   Verified: 2026-11-19, claude 2.1.327, git grep -n -E 'additionalContext|systemMessage' -- plugins/ -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -E 'additionalContext|systemMessage' -- plugins/`: matches now, all in the context hook (hooks/context/context.ts:124-131 and `hooks/context/__tests__/context.test.ts`), which adds a HEAD/branch note, not a delegation line.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -iE 'subagent|delegat|spawn' -- plugins/claudetto/hooks/prompt`: conduct.ts:11 (a running subagent outlives /clear) and :17 (a subagent never answers a permission prompt unbriefed) are the only subagent lines; neither says when to spawn, so none can contradict the Agent tool's spawn guidance. The additionalContext in hooks/context/context.ts adds a HEAD note.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, one Discord user relayed by the user, 2026-11-13.
 
 - [x] **RISK-201** A delegation message with the word "reasoning" is blocked and the orchestrator re-sends the task.
@@ -723,6 +755,7 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Fi 'reasoning' -- plugins/ -> no match; `grep -a -c reasoning_extraction $HOME/.local/share/claude/versions/2.1.327` -> 5 (client only reads the stop category).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -Fi 'reasoning' -- plugins/`: no match; `grep -a -c reasoning_extraction $HOME/.local/share/claude/versions/2.1.329`: 5.
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:69; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:43; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:51; external/2026-10-26/reddit.com-r-anthropic-comments-1xfdown-claude-refuses-judges-and-evals-20261026T064136Z.md:130 (url: <https://www.reddit.com/r/Anthropic/comments/1xfdown/claude_refuses_judges_and_evals_if_they_include_a/>).
 
 - [x] **RISK-202** Delegated subagent runs are slow and burn many tokens.
@@ -738,6 +771,7 @@
   Owner: delegation.
   Status: closed. Accepted; paid-labs measured delegating a single lookup as slower and dearer than searching alone, which is the cure REQ-DELEGATION-049 puts to the user. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, sed -n '33p;105p' reports/2026-11-18-research/paid-labs/README.md -> line 33 "H costs 1.8x M and takes 2.1x as long" (Haiku finder vs lead alone), line 105 "median cost to 0.86x and doubled the time" (Opus lead).
+  Verified: 2026-11-24, claude 2.1.329, `sed -n '33p;105p' reports/2026-11-18-research/paid-labs/README.md`: line 33 "H costs 1.8x M and takes 2.1x as long", line 105 "median cost to 0.86x and doubled the time" (path is under the repo root `reports/`, not plans/rebuild/reports/).
   Source: external/2026-10-26/reddit.com-r-anthropic-comments-1xfes9c-new-recommendation-agent-orches-20261026T063809Z.md:127 (url: <https://www.reddit.com/r/Anthropic/comments/1xfes9c/new_recommendation_agent_orchestration/>).
 
 - [x] **RISK-203** The model believes its subagents will not survive /clear or /compact and restarts finished ones.
@@ -754,6 +788,7 @@
   Status: mitigated 2026-11-19. Probe reports/2026-11-19-research/risks-delegation/run.sh, Sonnet 5.5 on 2.1.327, `-p` (a belief probe: the prompt says a /clear is coming and asks WAIT or RESTART, so no real /clear runs). Seed s203 (the task still holds, WAIT is right): vanilla 8 of 16, the shipped line 8 of 8 alone and 4 of 4 in the full shipped style. Control s203c (the spec was replaced, RESTART is right): vanilla 3 of 4, mostly on the false belief that /clear wipes the subagent, and the shipped line 8 of 8 alone and 4 of 4 in the full style. A first one-sided wording ("start a new one only when its task changes") waited on the stale task in 2 of 4 control runs, so it was replaced.
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:44; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:47; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:65; external/2026-10-27/reddit.com-r-claudeai-comments-1xdqi79-claude-doesnt-know-subagents-sur-20261026T132553Z.md:71 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xdqi79/claude_doesnt_know_subagents_survive_compactclear/>).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, 44 runs: wait-is-right prompt: vanilla 15/16, line 8/8, style 4/4; restart-is-right prompt: vanilla 1/4, line 8/8, style 4/4; 0 Agent spawns -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
+  Verified: 2026-11-24, claude 2.1.329, paid, claude-sonnet-5-5, n=1 per cell, `TMPDIR=/tmp/claude-501/dgp/ bash reports/2026-11-19-research/tick-rerun/reply-risk/lib/run.sh <seed> <arm> 1`: s203 vanilla pass=1, s203 cure pass=1, s203c vanilla pass=0 (the vanilla baseline was 1/4 before), s203c cure pass=1; spawns=0 in all four; the full-style arm was not run (needs a /tmp plugin copy that does not exist), cost $0.19.
 
 - [x] **RISK-204** Each subagent receives the whole conversation history.
   Category: product behaviour.
@@ -768,6 +803,7 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'agent.spawn' -- plugins/claudetto/hooks ':!***tests***' -> hooks/delegation/spawn.ts:13 only, a model deny; no plugin code forwards a conversation to a subagent.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -F 'agent.spawn' -- plugins/claudetto/hooks ':!*__tests__*'`: hooks/delegation/spawn.ts:14 only (a model deny).
   Source: external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:29; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:33; external/2026-10-27/reddit.com-r-claudeai-comments-1xeozdj-usage-cap-advice-for-the-nontech-20261026T132736Z.md:92 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xeozdj/usage_cap_advice_for_the_nontechnical/>).
 
 - [x] **RISK-205** Fable 5.2 reads an indexed project past 500K tokens (the compaction limit) before finishing research, then re-reads the same code after compaction.
@@ -800,6 +836,8 @@
   Owner: delegation
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'task graph|manager' -- plugins/ -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'task graph|manager' -- plugins/`: matches now, none about a task graph or a manager agent: 'package manager' / 'secret manager' text in hooks/guards/redact/prompt.ts:13, hooks/guards/shell/missing.ts:97 and tests under `hooks/guards/shell/__tests__`, `hooks/web/__tests__`.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'task graph|manager' -- plugins/ | grep -viE 'package manager|secret manager|password manager'` -> no match: no task graph or manager agent ships.
   Source: external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:33; external/2026-11-11/reddit.com-r-claudeai-comments-1xsrfpg-opus-is-not-a-great-coordinator-20261110T172506Z.md:34 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsrfpg/opus_is_not_a_great_coordinator/>).
 
 - [x] **RISK-207** Research Over Measure.
@@ -819,6 +857,7 @@
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5: vanilla made 0 Agent calls in 3 of 3 runs at $0.033-0.036 each -> PASS (reports/2026-11-19-research/tick-rerun/reply-risk/README.md).
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   Verified: 2026-11-19, paid batchE-3, $1.2 with r193c (reports/2026-11-19-research/goal/fixtures207.sh): a question one grep or one read answers (r207a: 14 services, which retry more than config says; r207b: 24 usage files). Fault = any Agent call. r207a 0 agents in 6/6 vanilla and 6/6 claudetto; r207b 6/6 and 6/6; r207d 3/3 vanilla. Controls where the user asks for one agent: r207ac and r207bc 1/1 each (spawned).
+  Verified: 2026-11-24, claude 2.1.329, paid, claude-sonnet-5-5, n=1 per arm: `TMPDIR=/tmp/claude-501/dgp/ bash reports/2026-11-19-research/tick-rerun/reply-risk/lib/run.sh s207 vanilla 1`: pass=1 spawns=0 ($0.035); `GOAL_ROOT=/tmp/claude-501/goal329 bash reports/2026-11-19-research/goal/run.sh <fx> <arm> 1`: r207a van and cto pass=1 agents=0, r207b van and cto pass=1 agents=0 ($0.17).
   Status: closed 2026-11-19: the fault stays absent in 6 runs per arm on two fixtures, vanilla and claudetto.
 
 - [x] **RISK-208** Verifier Inherits Reasoning.
@@ -834,6 +873,7 @@
   Owner: delegation.
   Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 10 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 10 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  Verified: 2026-11-24, claude 2.1.329, paid, claude-sonnet-5-5, n=1, `CURES_ROOT=/tmp/claude-501/dgp/cures bash reports/2026-11-19-research/conduct/run.sh 10 vanilla 1`: pass=1 (first line NOT READY), cost $0.035 (same run as RISK-166).
 
   Basis: reported, confirmed by the poster.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:87,115 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
@@ -851,6 +891,7 @@
   Owner: delegation.
   Status: mitigated; Heracles.md:15 tells a worker to check with the narrowest check the repo provides (one test file or one package), Heracles.md:9 leaves review and hardening rounds to the lead, and defaults.ts:43 caps concurrent subagents at 3 (read, claude 2.1.327, 2026-11-19).
   Verified: 2026-11-19, claude 2.1.327, grep -n -E 'MAX_CONCURRENT|narrowest|Leave review' plugins/claudetto/hooks/settings/defaults.ts plugins/claudetto/agents/Heracles.md -> defaults.ts:50 CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS "3", Heracles.md:9 (review rounds left to the lead), Heracles.md:15 (narrowest check).
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E 'MAX_CONCURRENT|narrowest|Leave review' plugins/claudetto/hooks/settings/defaults.ts plugins/claudetto/agents/Heracles.md`: defaults.ts:51 CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS "3" (was :50), Heracles.md:11 (review rounds left to the lead), Heracles.md:17 (narrowest check).
   Basis: reported, one user.
   Source: external/2026-11-03/reddit.com-r-claudeai-comments-1xkc4ps-76-agents-47m-tokens-3-wrong-ans-20261102T143110Z.md:123-125 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkc4ps/76_agents_47m_tokens_3_wrong_answers_1_agent_77k/>).
 
@@ -886,6 +927,7 @@
   Owner: delegation
   Status: closed. Cause is Fable behaviour, and claudetto ships no Fable model; Fable is never a subagent model and REQ-DELEGATION-026 refuses it. No reproduction (ADR-0177). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, $HOME/.local/share/claude/versions/2.1.327 plugin test plugins/claudetto -> 130 pass, 0 fail, including spawn.test.ts (refuses opus and fable by alias and id) and offer.test.ts; git grep -n -Ei 'fable' -- plugins/ matches only the refusal (hooks/delegation/spawn.ts:4-5, its test, README.md:63), and `grep -n '^model' plugins/claudetto/agents/*.md` shows haiku-5-5 and sonnet-5-5 only.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'fable' -- plugins/` matches only the refusal (hooks/delegation/spawn.ts:5-6 and following comment lines, its test, README.md:104 now); `grep -n '^model' plugins/claudetto/agents/*.md` shows claude-haiku-5-5 (Artemis, Hermes) and claude-sonnet-5-5 (Athena, Heracles) only; `claude plugin test plugins/claudetto`: 332 pass, 0 fail including "refuses opus and fable by alias and id".
   Source: external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:395; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:397; external/2026-11-13/reddit.com-r-claudeai-comments-1xtdfma-is-fable-52-actually-worse-than-20261111T233520Z.md:453 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xtdfma/is_fable_52_actually_worse_than_opus_55_in_most/>).
 
 ## Replies and Instruction Following
@@ -903,6 +945,7 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'local model|ollama' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'local model|ollama' -- plugins/: no match.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:252; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:174 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 ## Lead Agent and Helper Scripts
@@ -921,6 +964,8 @@
   - Owner: delegation
   Status: Moved Out as OUT-2781. A lost append needs a lead edit that lands between a worker's read and write, a timing race that appears only with several live writers; no short paid run reproduces it at a measurable rate. Existing control: workers write only to their own stage folder (no plugin text names it; the lead owns the bulk edit).
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'one-shot|stage folder' -- plugins/ -> only a button test in claudetto-you-should-know/hooks/**tests**/flow.test.ts:29; no plugin text names a stage folder.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'one-shot|stage folder' -- plugins/`: the button test (`plugins/claudetto-you-should-know/hooks/__tests__/flow.test.ts:44`) and a new match, plugins/claudetto/README.md:100, which describes `$.process.run` as one-shot; no plugin text names a stage folder.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -i 'stage folder' -- plugins/ | wc -l` -> 0: no plugin text names a stage folder, so the lead still owns any bulk edit.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10317; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10632.
 
 - [x] **RISK-214** The lead deletes worker output without comparing it to its counterpart.
@@ -957,6 +1002,7 @@
   Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:31,41,43 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>)
   Status: closed. Swarms are out (OUT-061); a user-set cap is the user's instruction. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'swarm' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -Ei 'swarm' -- plugins/: no match.
 
 ## Subagent Token Burn
 
@@ -974,6 +1020,7 @@
   Owner: delegation.
   Status: closed. No agent-to-agent chat or swarm in the roster (OUT-061); grep finds no such code. Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -F 'inter-agent' -- plugins/ -> no match.
+  Verified: 2026-11-24, claude 2.1.329, git grep -n -F 'inter-agent' -- plugins/: no match.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh0zpx-token-maxxing-a-guide-to-running-20261028T060441Z.md:126 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh0zpx/token_maxxing_a_guide_to_running_unlimited_agents/>)
 
 - [x] **RISK-217** Idle subagents re-read their context while they wait.
@@ -1008,6 +1055,7 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, grep -n -E '^(model|effort):' plugins/claudetto/agents/*.md -> Athena.md and Heracles.md run effort medium (the status's report-only claim holds; the plugin sets no other effort control).
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^(model|effort):' plugins/claudetto/agents/*.md`: Athena.md and Heracles.md run effort medium; Artemis.md and Hermes.md run high.
   Source: external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:41; external/2026-10-28/reddit.com-r-claudeai-comments-1xh65oe-opus-55-high-vs-medium-20261028T060145Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xh65oe/opus_55_high_vs_medium/>)
 
 ## Lead Drops Tasks
@@ -1026,6 +1074,8 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, git grep -n -Ei 'task graph|manager' -- plugins/ -> no match.
+  Evidence: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'task graph|manager' -- plugins/`: matches now, none about a task graph or a manager agent: 'package manager' / 'secret manager' text in hooks/guards/redact/prompt.ts:13, hooks/guards/shell/missing.ts:97 and tests under `hooks/guards/shell/__tests__`, `hooks/web/__tests__`.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -Ei 'task graph|manager' -- plugins/ | grep -viE 'package manager|secret manager|password manager'` -> no match: no manager session ships.
   Source: external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:71; external/2026-11-03/reddit.com-r-claudecode-comments-1xlz2bs-how-do-you-manage-worktrees-wh-20261102T184347Z.md:73 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xlz2bs/how_do_you_manage_worktrees_when_your_agents_end/>)
 
 ## Agent Fault: Orchestration and Guardrail Packs
@@ -1044,6 +1094,7 @@
   Owner: delegation.
   Status: mitigated for what claudetto ships: it loads no guardrail pack or hook bundle beyond its own listed hooks (plugins/claudetto/hooks), pins subagents to Sonnet or Haiku (hooks/settings/defaults.ts:36, hooks/delegation/spawn.ts), caps concurrent subagents at 3 and spawn depth at 1 (defaults.ts:42-43), denies `Workflow` (defaults.ts:52), and leaves review rounds to the lead (Heracles.md:9). A user's own choice of model by benchmark or of a third-party pack lies outside the plugin (claude 2.1.327, 2026-11-19).
   Verified: 2026-11-19, claude 2.1.327, grep -n -E 'SUBAGENT_MODEL|MAX_CONCURRENT|SPAWN_DEPTH|"Workflow"' plugins/claudetto/hooks/settings/defaults.ts -> :44 Sonnet, :49 depth 1, :50 concurrent 3, :60 Workflow denied (the status cites :36, :42-43, :52, now moved).
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E 'SUBAGENT_MODEL|MAX_CONCURRENT|SPAWN_DEPTH|"Workflow"' plugins/claudetto/hooks/settings/defaults.ts`: :45 Sonnet, :50 depth 1, :51 concurrent 3, :61 Workflow denied (each one line later than the 2026-11-19 reading).
   Source: external/2026-09-29/export-Sonnet 5.5 beats Opus 5.5 at coding and it's half the price--.jsonl:43 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsmhaz/sonnet_55_beats_opus_55_at_coding_and_its_half/>); external/2026-09-29/export-Introducing Claude Sonnet 5.5, the second model in the Claude 5.5 family.jsonl:125 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wsly42/introducing_claude_sonnet_55_the_second_model_in/>).
 
 ## Workflow Harness Frame
@@ -1062,6 +1113,7 @@
   Owner: delegation.
   Status: closed. Reported or refuted, no reproduction on claude 2.1.327, and no claudetto part causes it (ADR-0177). RISK-204 was refuted by the recorded fake-API probe in its Existing controls (not rerun now). Verified: git grep -Ei over plugins/claudetto, claude 2.1.327, 2026-11-18, finds no match for the removed part (listed in this status); the rebuilt plugin holds only builtins, handover and settings hooks.
   Verified: 2026-11-19, claude 2.1.327, grep -n '"Workflow"' plugins/claudetto/hooks/settings/defaults.ts -> :60, Workflow is in the plugin's deny list, so a Workflow launch never runs under it.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n '"Workflow"' plugins/claudetto/hooks/settings/defaults.ts`: :61, inside the `permissions.deny` list (the file is under hooks/settings/, not hooks/ directly).
   Source: external/export-Claude Code Workflow Harness Change.jsonl:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1wr8cw1/claude_code_workflow_harness_change/>); chunk-6rveqv0x.js@1036 (claude 2.1.327 binary).
 
 ## Safeguards and Guards
@@ -1081,6 +1133,7 @@
   - Status: open. BUILD: covered by REQ-DELEGATION-052 (setup env write of `CLAUDE_CODE_SUBAGENT_MODEL`) and the agent files with `model:` and `effort:` (REQ-DELEGATION-044); the cure ships with that change.
   - Source: external/2026-11-10/reddit.com-r-claudeai-comments-1xsgmyv-found-this-in-fable-52s-default-20261110T093106Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xsgmyv/found_this_in_fable_52s_default_system_prompt_in/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:193; external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/2026-10-30/reddit.com-r-claudeai-comments-1xhkq8k-how-i-configure-subagents-so-the-20261029T123919Z.md:55 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xhkq8k/how_i_configure_subagents_so_the_cost_stays/>); external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:82; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:698; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:700 (measured).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5 moved a no-model subagent under an Opus main from claude-opus-5-5 to claude-sonnet-5-5.
+  Verified: 2026-11-24, claude 2.1.329, `bun reports/2026-11-24-research/pin-2-1-329/subagent-model/probe.ts` (fake API, Opus main, no-model general-purpose subagent): unset -> subagent claude-opus-5-5; CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5, the value hooks/settings/defaults.ts:45 writes -> subagent claude-sonnet-5-5 (results.txt).
   Status: mitigated 2026-11-18: CLAUDE_CODE_SUBAGENT_MODEL moves a no-model subagent off Opus (Verified line).
 
 ## Product and Tooling
@@ -1100,6 +1153,7 @@
   - Status: open. BUILD: covered by the agent files (REQ-DELEGATION-011, -015, -024, -044, -053, -063): Haiku with `autoCompactWindow` 100000, read-only tools for reviewers, Heracles git lines, no `maxTurns`; the cure ships with that change.
   - Source: observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8057).
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): Artemis frontmatter sets autoCompactWindow 100000 (agents/Artemis.md); no plugin read-withholding hook is shipped.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n autoCompactWindow plugins/claudetto/agents/*.md`: Artemis.md:7 and Hermes.md:7 set 100000; `git grep -n -i -E 'withhold|100000|100k' -- plugins/claudetto ':!*tests*'` finds only those two frontmatter lines and README.md:108 (goal tools, unrelated), so no read-withholding hook ships.
   Status: mitigated 2026-11-18 by the shipped agent files (Verified line).
 
 - [x] **RISK-224** A pending run-log line is lost when a session ends before 3 root turns.
@@ -1166,6 +1220,10 @@
   Evidence: the work still completes: the reply answered all six files in 16 of 17 claudetto runs and 6 of 8 vanilla runs; the two short vanilla runs asked the user to raise the limit or gave no table.
   Status: accepted 2026-11-24, engine-held: the refusal comes before every plugin hook in 2.1.331, no built part beat vanilla (ADR-0177), and the task still completes in 16 of 17 claudetto runs.
   Verified: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r525/run.sh`: 2 refusals per run in every arm, results in `reports/2026-11-24-research/r525/README.md`.
+  Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, `R525_OUT=<dir> zsh reports/2026-11-24-research/r525/run.sh <vanilla|claudetto> <1-3>`: 2 concurrency refusals in every run of both arms, as on 2.1.331, and the final table answered 6 of 6 files in all 6 runs; claudetto $0.14-0.15 a run, vanilla $0.16-0.35.
+  Evidence: 2026-11-24, claude 2.1.329, Haiku 5.5, 12 batch runs per arm of `reports/2026-11-24-research/r525/run.sh`: the final reply handed the user a step (raise `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, approve a command, or tell the agent what to do) in 9 of 12 claudetto runs without a conduct line on refusals and 5 of 12 vanilla runs, where the refused agents start by themselves once a running one reports.
+  Status: mitigated 2026-11-24 (ADR-0177): `plugins/claudetto/hooks/prompt/conduct.ts` says a call refused at a limit that frees by itself is made again once a running task reports, before the turn ends. The refusals still come from the engine.
+  Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, the same 12-run batch with the line: 0 of 12 final replies handed the user a step, against 5 of 12 vanilla and 9 of 12 claudetto without it; 6 of 6 rows in 12 of 12 runs, every run relaunched the refused agents itself (reports/2026-11-24-research/r525/README.md).
   Trigger: user-held: a Claude Code release with a hook before the concurrent-subagent check, or the user filing that request upstream; then queue at that hook and rerun `reports/2026-11-24-research/r525/run.sh`.
   Source: ISSUES-part4.txt:22-23; reports/2026-11-24-research/r525/README.md.
 
@@ -1182,4 +1240,5 @@
   Owner: delegation.
   Status: mitigated 2026-11-24: the Agent text names no hidden default.
   Verified: 2026-11-24, claude 2.1.331, Haiku 5.5, `reports/2026-11-24-research/r525/run.sh claudetto <n>`: 0 type errors in 3 runs with the shipped text, 0 in 8 more runs with the same sentence; `claude plugin test plugins/claudetto`: 331 pass, 0 fail.
+  Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, the same `r525/run.sh claudetto <1-3>` runs: 0 "Agent type 'general-purpose' not found" results in 3 of 3, 6 of 6 rows each; `claude plugin test .` in plugins/claudetto: 341 pass.
   Source: reports/2026-11-24-research/r525/README.md.

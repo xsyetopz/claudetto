@@ -1,6 +1,6 @@
 # False Tool-Behaviour Card in you-should-know (issue #65)
 
-A sentence that ties a claim about tool behaviour to output in the session does not reduce false cards. It does not ship, and RISK-510 is accepted. Measured on Claude Code 2.1.327, 2026-11-20.
+On Claude Code 2.1.327 (2026-11-20) a sentence that ties a claim about tool behaviour to output in the session did not reduce false cards, so it did not ship. On 2.1.329 (2026-11-24) the prompt without it gave false cards in 8 of 12 replays and the prompt with it in 4 of 18, so the sentence ships (RISK-510).
 
 ## Fault
 
@@ -20,3 +20,14 @@ A card counts as false when it states a git behaviour that git contradicts.
 The true cards (a-2, a-6, b-1) say that new files in `reports/` need a force-add. An extra unscored call on arm a (a-0) replied `learn: none`.
 
 Outcome: the candidate does not beat the current prompt (2 false against 1 in 6), so it does not ship (ADR-0177). The replay drops the tools from the fork, so its context differs from the live fork's in tool definitions only.
+
+## Rerun on 2.1.329
+
+`CLAUDE_BIN=~/.local/share/claude/versions/2.1.329 bash replay.sh <a|b|o> <rep> <out>`, 2026-11-24. `prompt.ts` arm o is the prompt without the sentence, b adds it, and a is the prompt as the plugin builds it, which carries the sentence once it ships in `hooks/request/propose-text.ts`. `replies-2.1.329.txt` holds each reply's learn line. Cost: $9.29 for 30 calls.
+
+| Arm | Cards | False | False claims |
+|---|---|---|---|
+| o, without the sentence | 10 of 12 | 8 | later edits to the force-added file will not show in `git status` (o-1, 2, 4, 5, 6, 8, 10, 12) |
+| b and shipped, with the sentence | 6 of 18 | 4 | the file can be missing from other clones (s-1, s-2); later edits will not show (s-5, s-10) |
+
+Outcome: the sentence beats the prompt without it on 2.1.329 (4 of 18 false against 8 of 12), so it ships (ADR-0177).

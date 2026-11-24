@@ -7,6 +7,8 @@ import { FILL_VERSION } from "../defaults";
 /** Serves a settings file and a store to a session start; records writes and the store. */
 const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 	const writes: string[] = [];
+	const commands: string[] = [];
+	const logs: string[] = [];
 	const store = new Map<string, unknown>(Object.entries(seed));
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
@@ -25,8 +27,15 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 		store.set(e.key, e.value);
 		return { value: undefined };
 	});
-	on("ui.log", () => ({ value: undefined }));
-	return { writes, store };
+	on("ui.log", (_$, e) => {
+		logs.push(e.text);
+		return { value: undefined };
+	});
+	on("command.run", (_$, e) => {
+		commands.push(e.command);
+		return { text: "Reloaded" };
+	});
+	return { writes, store, commands, logs };
 };
 
 describe("settings fill at session start", () => {
@@ -88,5 +97,37 @@ describe("settings fill at session start", () => {
 		for (const text of writes) {
 			expect(JSON.parse(text)).toMatchObject({ outputStyle: "Proactive" });
 		}
+	});
+
+	test("unloads the builtins it turned off by running /reload-plugins in an interactive session", async ($, on) => {
+		// Arrange
+		const { commands, logs } = serve(on, "{}");
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		expect(commands).toEqual(["reload-plugins"]);
+		expect(logs.join("\n")).not.toContain("Run /reload-plugins");
+	});
+
+	test("runs no reload in a print session, which refuses it", async ($, on) => {
+		// Arrange
+		const { commands, logs } = serve(on, "{}");
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: false
+		});
+
+		// Assert
+		expect(commands).toEqual([]);
+		expect(logs.join("\n")).toContain("stay loaded until the next start");
 	});
 });

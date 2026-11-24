@@ -1,5 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
+import { fault } from "../shared/fault";
+
 /** What the fetch pipeline needs from a browser; tests stand in for it. */
 export interface Chrome {
 	/** The page's DOM after scripts ran, or undefined when the render failed. */
@@ -34,7 +36,10 @@ const PATH_NAMES = [
 
 /** The path `which` prints for `name`, or null when it finds none or cannot run. */
 async function which($: EngineInterface, name: string): Promise<string | null> {
-	const found = await $.process.run(["which", name]).catch(() => null);
+	const found = await $.process.run(["which", name]).catch((error: unknown) => {
+		fault($, `which ${name}`, error);
+		return null;
+	});
 	const path = found?.stdout.trim() ?? "";
 	return found?.exitCode === 0 && path !== "" ? path : null;
 }
@@ -109,7 +114,10 @@ export function makeChrome(
 			exclusive(async () => {
 				const out = await $.process
 					.run([...base, ...HEADLESS, url], { timeoutMs: 60_000 })
-					.catch(() => null);
+					.catch((error: unknown) => {
+						fault($, "Chrome render", error);
+						return null;
+					});
 				return out?.exitCode === 0 && out.stdout.trim() !== ""
 					? out.stdout
 					: undefined;

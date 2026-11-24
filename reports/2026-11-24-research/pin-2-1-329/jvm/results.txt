@@ -1,0 +1,62 @@
+plugin 2 built=0 unsandboxed_calls=0 cost=0.0316955
+plugin 1 built=0 unsandboxed_calls=0 cost=0.035568600000000006
+plugin 3 built=0 unsandboxed_calls=0 cost=0.0289955
+vanilla 2 built=0 unsandboxed_calls=1 cost=0.1022111
+vanilla 1 built=0 unsandboxed_calls=1 cost=0.10211280000000002
+vanilla 3 built=0 unsandboxed_calls=1 cost=0.10000210000000001
+--- plugin arm with the fill block, 2026-11-24
+plugin f2 built=1 unsandboxed_calls=1 cost=0.1007893
+plugin f1 built=0 unsandboxed_calls=1 cost=0.1228645
+plugin f3 built=1 unsandboxed_calls=1 cost=0.12796860000000002
+--- A/B: line = proxy wrap (RISK-544), plugin = main 0f46a699d, 2026-11-24
+line 1 built=0 unsandboxed_calls=0 cost=0.0566366
+line 2 built=1 unsandboxed_calls=0 cost=0.0496749
+line 3 built=1 unsandboxed_calls=1 cost=0.060270699999999996
+line 4 built=0 unsandboxed_calls=0 cost=0.0715385
+line 5 built=1 unsandboxed_calls=1 cost=0.0527155
+vanilla v5 built=0 unsandboxed_calls=1 cost=0.06482569999999999
+vanilla v4 built=0 unsandboxed_calls=1 cost=0.0660876
+line 6 built=0 unsandboxed_calls=0 cost=0.0719359
+vanilla v6 built=0 unsandboxed_calls=0 cost=0.0586175
+plugin f4 built=0 unsandboxed_calls=1 cost=0.07409160000000001
+plugin f6 built=0 unsandboxed_calls=0 cost=0.0759388
+plugin f5 built=1 unsandboxed_calls=1 cost=0.0858304
+--- A/B with Maven hosts allowed in every arm, plugin arms with the fill's write paths, 2026-11-24, claude 2.1.329 (Claude Code)
+plugin a1 built=1 unsandboxed_calls=0 cost=0.039307999999999996
+vanilla a4 built=0 unsandboxed_calls=0 cost=0.056997900000000004
+vanilla a5 built=0 unsandboxed_calls=1 cost=0.056984400000000004
+line a5 built=1 unsandboxed_calls=0 cost=0.0887787
+vanilla a2 built=0 unsandboxed_calls=1 cost=0.057423499999999995
+vanilla a6 built=0 unsandboxed_calls=1 cost=0.0636731
+vanilla a1 built=0 unsandboxed_calls=1 cost=0.06342170000000001
+vanilla a3 built=0 unsandboxed_calls=1 cost=0.0674445
+plugin a3 built=1 unsandboxed_calls=0 cost=0.0393578
+line a2 built=1 unsandboxed_calls=0 cost=0.0910541
+line a4 built=1 unsandboxed_calls=0 cost=0.0835087
+plugin a5 built=1 unsandboxed_calls=0 cost=0.040112600000000005
+line a6 built=1 unsandboxed_calls=0 cost=0.0831723
+plugin a6 built=1 unsandboxed_calls=0 cost=0.0450284
+plugin a2 built=1 unsandboxed_calls=0 cost=0.039818200000000005
+line a1 built=1 unsandboxed_calls=0 cost=0.08396870000000001
+plugin a4 built=1 unsandboxed_calls=0 cost=0.0397942
+line a3 built=1 unsandboxed_calls=0 cost=0.089898
+--- batch a above is void: every arm read commons-lang3 3.14.0 from ~/.gradle, so no run needed the network
+--- batch b: one uncached commons-lang3 version per run, 2026-11-24, claude 2.1.329 (Claude Code)
+vanilla b2 3.2.1 built=0 unsandboxed_calls=1 cost=0.060404299999999994
+vanilla b3 3.3.2 built=0 unsandboxed_calls=1 cost=0.06571289999999999
+vanilla b1 3.0.1 built=0 unsandboxed_calls=1 cost=0.06016569999999999
+vanilla b6 3.11 built=0 unsandboxed_calls=1 cost=0.061625599999999996
+vanilla b4 3.6 built=0 unsandboxed_calls=1 cost=0.0674791
+vanilla b5 3.8.1 built=0 unsandboxed_calls=1 cost=0.0713978
+line b6 3.10 built=1 unsandboxed_calls=0 cost=0.045199300000000005
+plugin b1 3.1 built=1 unsandboxed_calls=2 cost=0.0636942
+line b2 3.2 built=1 unsandboxed_calls=0 cost=0.0462703
+line b1 3.0 built=1 unsandboxed_calls=0 cost=0.0453612
+line b5 3.8 built=1 unsandboxed_calls=0 cost=0.0462033
+line b3 3.3.1 built=1 unsandboxed_calls=0 cost=0.053483600000000006
+line b4 3.5 built=1 unsandboxed_calls=0 cost=0.0524851
+plugin b4 3.7 built=1 unsandboxed_calls=2 cost=0.0645439
+plugin b2 3.3 built=1 unsandboxed_calls=2 cost=0.06676860000000001
+plugin b5 3.9 built=1 unsandboxed_calls=1 cost=0.06069050000000001
+plugin b3 3.4 built=1 unsandboxed_calls=1 cost=0.06315480000000001
+plugin b6 3.12.0 built=1 unsandboxed_calls=1 cost=0.06609500000000001

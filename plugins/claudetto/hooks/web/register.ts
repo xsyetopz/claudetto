@@ -1,5 +1,6 @@
 import type { EngineInterface, On, SessionStartInput } from "claude-code";
 
+import { fault } from "../shared/fault";
 import { type Chrome, findChrome, makeChrome } from "./chrome";
 import { parseJar } from "./cookies";
 import { type FetchDeps, fetchPage } from "./fetch";
@@ -98,7 +99,11 @@ async function makeDeps(
 		},
 		writeFile: (path, text) => $.fs.write(path, text),
 		readFile: async (path) => {
-			const text = await $.fs.read(path).catch(() => null);
+			// No saved copy yet is the usual case; the debug log tells it from a failed read.
+			const text = await $.fs.read(path).catch((error: unknown) => {
+				fault($, "saved page read", error);
+				return null;
+			});
 			return typeof text === "string" ? text : undefined;
 		},
 		saveDir: `${data}/web`

@@ -1,0 +1,5 @@
+{
+	"name": "reloadprobe",
+	"version": "0.0.1",
+	"engines": { "claude-code": ">=2.1.329" }
+}

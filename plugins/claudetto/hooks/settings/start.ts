@@ -24,18 +24,38 @@ async function readSettings(
 	return (await $.fs.exists(path)) ? $.fs.read(path) : undefined;
 }
 
+/**
+ * Unloads the builtins the repair just turned off by running /reload-plugins, which a hook can run
+ * in an interactive session (claude 2.1.329: "Reloaded: 1 plugin …"); a print session refuses it
+ * ("isn't available over a remote connection"), so there they stay loaded until the next start.
+ */
+async function unloadNow(
+	$: EngineInterface,
+	isInteractive: boolean
+): Promise<string> {
+	const later = "They stay loaded until the next start.";
+	if (!isInteractive) {
+		return later;
+	}
+	try {
+		await $.command.run({ command: "reload-plugins" });
+		return "claudetto reloaded the plugins, so they are unloaded now.";
+	} catch (error) {
+		fault($, "builtin reload", error);
+		return later;
+	}
+}
+
 /** Tells the person what the repair and the fill changed. */
-function logChanges(
+async function logChanges(
 	$: EngineInterface,
 	path: string,
 	drifted: readonly string[],
 	added: readonly string[],
 	isInteractive: boolean
-): void {
+): Promise<void> {
 	if (drifted.length > 0) {
-		const reload = isInteractive
-			? "Run /reload-plugins to unload them now."
-			: "They stay loaded until the next start.";
+		const reload = await unloadNow($, isInteractive);
 		$.ui.log(
 			`claudetto turned off ${drifted.length} builtin plugin(s) in user settings: ${drifted.join(", ")}. ${reload}`
 		);
@@ -112,7 +132,7 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 		if (changed) {
 			await $.fs.write(path, settled.text);
 		}
-		logChanges($, path, repair.drifted, settled.added, e.isInteractive);
+		await logChanges($, path, repair.drifted, settled.added, e.isInteractive);
 		await record($, settled);
 		// Only an explicit turn-on counts: an unset switch is the fill's to set, and a value the fill wrote just now is not read back until the next session.
 		if (ownGitOn(options) && (await builtinGitForced($))) {

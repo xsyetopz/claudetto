@@ -15,6 +15,7 @@
   Owner: cost.
   Status: closed 2026-11-18. The budget line that read total_cost_usd is out (REQ-COST-002, REQ-COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (REQ-COST-046).
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -F total_cost_usd -- plugins/` -> no match (exit 1).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -F total_cost_usd -- plugins/`: no match.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958; plugins/claudetto/statusline/segments.ts@088a227c.
 
 - [x] **RISK-374** Fan-out runaway: the model picks its own fan-out and model and spends the quota.
@@ -31,6 +32,7 @@
   Source: external/please-use-me-often/agent-failure-dossier/judged/subagent.jsonl:56; external/2026-11-10/reddit.com-r-claudeai-comments-1xphfvn-yo-claude-you-dont-need-166-agen-20261109T153055Z.md:2 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xphfvn/yo_claude_you_dont_need_166_agents_for_this/>); external/2026-11-10/reddit.com-r-claudecode-comments-1xrw5rg-are-you-serious-20261110T095552Z.md:195 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xrw5rg/are_you_serious/>); external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:84; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:80; external/2026-11-16/reddit.com-r-claudeai-comments-1xw205g-the-problem-with-fable-52-20261114T143353Z.md:41 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xw205g/the_problem_with_fable_52/>). Unlocated: the 394-call, 99%-of-weekly-limit, $100, and 95%/70% figures.
   Status: partial at abed830ed: the fill writes CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3; the caps in effect and the subagent model deny are unprobed.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS 3 in hooks/settings/defaults.ts take effect in the probe; Opus and Fable spawns refused by agent.spawn; no defaults.ts change needed.
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n` in plugins/claudetto/hooks/settings/defaults.ts -> CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH "1" at :50 and CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS "3" at :51; the cc-inspect cli probe with `--plugin-dir plugins/claudetto` logs both env keys among the values the plugin fills into settings.json (its Agent-call outcome was cut from the output, so the refusal was not seen there); `claude plugin test .` in plugins/claudetto -> 341 pass, 0 fail across 58 files, including "agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet".
   Status: mitigated 2026-11-18: the spawn-depth and concurrency caps take effect and Opus and Fable spawns are refused (Verified line).
 
 - [x] **RISK-375** Subagent sprawl: many tiny subagents cost more than inline work.
@@ -47,6 +49,7 @@
   Source: external/2026-10-21/reddit.com-r-claudecode-comments-1x97ix2-a-readonly-custom-subagent-cut-20261020T101449Z.md:2 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x97ix2/a_readonly_custom_subagent_cut_our_tokens_per/>) (the read-only subagent cut tokens per call from about 116k to 30k); external/2026-10-22/reddit.com-r-claudecode-comments-1vqwab1-disable-subagents-massive-toke-20261022T122250Z.md:97 (url: <https://www.reddit.com/r/ClaudeCode/comments/1vqwab1/disable_subagents_massive_token_savings/>). The 50k threshold: Dropped (2026-11-18): no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
   Status: closed 2026-11-19: spawn depth and concurrency are capped.
   Verified: defaults.ts sets CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH 1, MAX_CONCURRENT_SUBAGENTS 3 and FORK_SUBAGENT 0; spawn.test.ts passes (2.1.327, 2026-11-19). Weak tick: no context threshold is shipped.
+  Verified: 2026-11-24, claude 2.1.329, hooks/settings/defaults.ts sets CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH "1" (line 50), CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS "3" (51) and CLAUDE_CODE_FORK_SUBAGENT "0" (48); `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, `hooks/delegation/__tests__/spawn.test.ts` included.
 
 ## Guards
 
@@ -64,6 +67,7 @@
   Owner: cost.
   Status: closed 2026-11-18. The price-step hook is out (REQ-COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e price-step -e 'usage wait' -- plugins/` -> no match (exit 1).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -F -e price-step -e 'usage wait' -- plugins/`: no match.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:71; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:595-597.
 
 ## Verification and Honesty
@@ -84,6 +88,7 @@
   Trigger: A status check fails or times out.
   Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (REQ-COST-017); the rebuild has no status check to misread.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/` -> no match (exit 1).
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/`: no match.
   Source: not located: the commenter's post in the old plan; unresolved.
 
 ## Agent Conduct
@@ -121,6 +126,7 @@
   - Status: closed 2026-11-19: the per-process `ps` watcher is not shipped (ADR-0190), so the 30000 ms poll cannot occur.
   - Source: reported, user, 2026-11-14; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:32617.
   Verified: hooks/guards/memory.ts runs `memory_pressure -Q` once per held call and catches a failed read through fault(); no `ps` poll ships (grep ' ps ' memory.ts -> 0 hits) (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -c ' ps ' plugins/claudetto/hooks/guards/memory.ts`: 0; memory.ts:41 runs `memory_pressure -Q` through $.process.run and its hook ends in a .catch handler (line 46).
 
 ## Refusals and Model Fallback
 
@@ -191,6 +197,7 @@
   $0.35; neither arm thrashed. In a background run that did thrash, the engine itself stopped the reader with
   "Autocompact is thrashing ... Try reading in smaller chunks" and the lead still listed all 10 codes; claudetto's
   thrash note never appeared in the stream. The engine already gives the note's advice, so the note adds nothing.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, the same thrash fixture, `bash reports/2026-11-24-research/pin-2-1-329/thrash/run.sh <rep> <root> [--plugin-dir plugins/claudetto]` (the prompt asks for the reader in the foreground; `results.txt`): vanilla 10 of 10 codes for $0.40, claudetto 10 of 10 for $0.35, neither thrashed. Without "foreground" the claudetto lead started the reader in the background and ended its turn before the result came, so the one-shot driver read 0 codes ($0.03) while vanilla, which ran it in the foreground, read 10 ($0.48).
 
 ## Audit Skill at Top Effort
 
@@ -209,6 +216,7 @@
   Source: external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:29; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:49; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:53; external/2026-11-02/reddit.com-r-claudeai-comments-1xkrwiv-i-tried-running-the-cloudflare-s-20261101T191448Z.md:63 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xkrwiv/i_tried_running_the_cloudflare_securityaudit/>)
   Status: mitigated 2026-11-20 (issue #52): claudetto sets CLAUDE_CODE_SUBAGENT_MODEL to Sonnet, denies an Agent call that names Opus or Fable, and caps concurrent subagents at 3, so a fan-out no longer runs on the top model; the main session's model stays the user's choice.
   Verified: `claude plugin test plugins/claudetto` on claude 2.1.327, 2026-11-20: hooks/delegation/**tests**/spawn.test.ts ("refuses opus and fable by alias and id") and hooks/settings/**tests**/defaults.test.ts (concurrency cap 3 written) pass; hooks/settings/defaults.ts:44 sets CLAUDE_CODE_SUBAGENT_MODEL to claude-sonnet-5-5.
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "agent.spawn model bar > refuses opus and fable by alias and id, naming Sonnet"; hooks/settings/defaults.ts:45 sets CLAUDE_CODE_SUBAGENT_MODEL "claude-sonnet-5-5" (moved from 44) and :51 sets MAX_CONCURRENT_SUBAGENTS "3".
 
 ## Compaction and Memory
 
@@ -247,6 +255,7 @@
   - Status: closed 2026-11-19: the shipped status line has no colour, so the cause left with the removed statusline code.
   - Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:37 (observed); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13).
   Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -in 'color|NO_COLOR|1M|200k' plugins/claudetto/hooks/statusline/statusline.ts`: 0 hits (also 0 with -E); `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, `hooks/statusline/__tests__/statusline.test.ts` included.
 
 - [x] **RISK-388** The statusline reports a 1M window when the system uses 300k.
   - Category: product fault (statusline).
@@ -263,6 +272,7 @@
   - Status: closed 2026-11-19: the shipped status line has no window, so the cause left with the removed statusline code.
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/4c68767f-62e8-43f8-a3c5-95dcd42c18d8.jsonl:1353 (reported, user, 2026-11-09).
   Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -in 'color|NO_COLOR|1M|200k' plugins/claudetto/hooks/statusline/statusline.ts`: 0 hits (also 0 with -E); `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, `hooks/statusline/__tests__/statusline.test.ts` included.
 
 - [x] **RISK-389** A paid-run tool asks for an API key.
   - Category: product fault (tooling).
@@ -297,6 +307,7 @@
   Status: closed 2026-11-19: the shipped status line has no colour, so the cause left with the removed statusline code.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
   Verified: hooks/statusline/statusline.ts draws plain text with no colour code and no window label (grep -in 'color|NO_COLOR|1M|200k' -> 0 hits); statusline.test.ts passes (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.329, `grep -in 'color|NO_COLOR|1M|200k' plugins/claudetto/hooks/statusline/statusline.ts`: 0 hits (also 0 with -E); `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, `hooks/statusline/__tests__/statusline.test.ts` included.
 
 ## Conduct
 
@@ -318,6 +329,7 @@
   Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
   Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
   Verified: claude 2.1.327, 2026-11-19, cc-inspect cli (fake API) with `--plugin-dir plugins/claudetto` and its filled permissions and sandbox (excludedCommands holds `claude *`): a `claude -p` Bash call lands in `permission_denials`; with `Bash(claude -p *)` added to allow it runs (a nested request reaches the stub) and no denial is listed; a sandboxed `echo` lists none. Mutation: `RETIRED_ALLOWS` emptied in a copy -> 129 pass, 1 fail (issue #51).
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "defaults fill > removes the stash ask rules, and the claude -p allow in one fill" (the test named in the 2026-11-19 line was renamed; RETIRED_ALLOWS no longer exists). The fake-API probe was not rerun.
 
 ## Ungrouped
 
@@ -335,6 +347,7 @@
   Owner: cost
   Status: closed 2026-11-18. The rule file useTestPatterns.md is not in the tree (`find . -name 'useTestPatterns*'` finds none), so the cause left with the removed rule.
   Verified: 2026-11-19, claude 2.1.327, `find . -name 'useTestPatterns*' -not -path './node_modules/*' | wc -l` -> 0.
+  Verified: 2026-11-24, claude 2.1.329, `find . -name 'useTestPatterns*' -not -path './node_modules/*' | wc -l`: 0.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1092 (2.3 times, round 5 dev against stock); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:1871 (changelog hono figures); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3175 (round 6); measured, 2026-11-16
 
 ## Agent Conduct Defects Reported by the User
@@ -357,3 +370,4 @@
   Status: mitigated 2026-11-19: the fill writes no `Bash(claude -p *)` allow and removes the one earlier versions wrote (`RETIRED_ALLOWS`, plugins/claudetto/hooks/settings/defaults.ts), so a paid `claude -p` run meets the permission prompt that vanilla shows (probe of 2026-11-18). An earlier 2026-11-19 status accepted the risk on ADR-0188's allow rule; that acceptance was the user's to give and was withdrawn.
   Verified: `claude plugin test plugins/claudetto` -> 116 pass, 0 fail, including "removes the retired claude -p allow, so a paid headless run asks first", 2026-11-19.
   Verified: claude 2.1.327, 2026-11-19, cc-inspect cli (fake API) with `--plugin-dir plugins/claudetto` and its filled permissions and sandbox (excludedCommands holds `claude *`): a `claude -p` Bash call lands in `permission_denials`; with `Bash(claude -p *)` added to allow it runs (a nested request reaches the stub) and no denial is listed; a sandboxed `echo` lists none. Mutation: `RETIRED_ALLOWS` emptied in a copy -> 129 pass, 1 fail (issue #51).
+  Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, including "defaults fill > removes the stash ask rules, and the claude -p allow in one fill" (the test named in the 2026-11-19 line was renamed; RETIRED_ALLOWS no longer exists). The fake-API probe was not rerun.

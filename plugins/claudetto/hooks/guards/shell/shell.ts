@@ -2,6 +2,7 @@ import type { On, PluginOptions, ToolCheckResult } from "claude-code";
 
 import { fault } from "../../shared/fault";
 import { gateCommit } from "./commit";
+import { proxyJvm } from "./jvm";
 import { limitCommand, minutes } from "./limit";
 import { closeStdin } from "./stdin";
 
@@ -16,7 +17,8 @@ const NAMES_GIT = /\bgit\b/u;
 /**
  * Wraps the model's Bash command in claudetto's guards: stdin from /dev/null
  * (RISK-488), a wall-time limit (RISK-056) and pipefail before a commit or push
- * (RISK-104). A command that names git skips the first two (RISK-499).
+ * (RISK-104), and the sandbox proxy handed to a Gradle or Maven run (RISK-544).
+ * A command that names git skips all but pipefail (RISK-499).
  *
  * @param command The Bash command as the model wrote it.
  * @param limit The time limit in minutes; 0 leaves it out.
@@ -26,7 +28,7 @@ export const guardCommand = (command: string, limit: number): string => {
 	if (NAMES_GIT.test(command)) {
 		return gateCommit(command);
 	}
-	const closed = closeStdin(command);
+	const closed = closeStdin(proxyJvm(command));
 	return gateCommit(limit === 0 ? closed : limitCommand(closed, limit * 60));
 };
 

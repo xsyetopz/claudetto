@@ -51,6 +51,7 @@ function resolveUrl(href: string, base: string): string | null {
 	try {
 		return new URL(href, base).href;
 	} catch {
+		// An href that is no URL is skipped as a link; the throw is the answer.
 		return null;
 	}
 }

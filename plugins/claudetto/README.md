@@ -10,7 +10,7 @@ claude plugin install claudetto --marketplace xsyetopz/bedrock
 
 ## Builtin Plugins
 
-Claude Code bundles 13 plugins (`<name>@builtin`). A plugin cannot refuse a bundled plugin when modules load, so at each session start claudetto sets every bundled id to `false` under `enabledPlugins` in the user settings file (`$CLAUDE_CONFIG_DIR/settings.json`, else `~/.claude/settings.json`). When it changes the file, it logs the ids it turned off. A bundled plugin that already loaded keeps running until `/reload-plugins` or the next start.
+Claude Code bundles 13 plugins (`<name>@builtin`). A plugin cannot refuse a bundled plugin when modules load, so at each session start claudetto sets every bundled id to `false` under `enabledPlugins` in the user settings file (`$CLAUDE_CONFIG_DIR/settings.json`, else `~/.claude/settings.json`). When it changes the file, it logs the ids it turned off. In an interactive session claudetto then runs `/reload-plugins` itself, so the bundled plugins unload at once; a print session refuses that command, so there they unload at the next start.
 
 claudetto leaves a settings file that does not hold a JSON object untouched and logs that it did.
 
@@ -126,7 +126,7 @@ The fill adds permission rules that Claude Code enforces: reads of `.env` files 
 
 Before the model reads a tool result, claudetto masks the values of the project's env-style files and the secrets that `betterleaks` finds, or a set of built-in key shapes when `betterleaks` is not installed. It masks the tool's own record, so the session file in `~/.claude/projects` stores the masked value too: in a run with a printed token, an errored command and an env-style file read, vanilla left 3 of 3 values raw in the session file and claudetto 0 of 3, in 2 of 2 runs. A masked error result reaches the model wrapped in `<tool_use_error>`.
 
-A prompt you type or paste, a slash command's arguments included, is held back when it holds a credential-shaped value: one of those secrets, or a word such as `password` or `token` followed by a value with a letter and a digit. Claude Code stores a sent prompt in plain text in the session file, and in a probe it kept a pasted password there 8 times. The held prompt stays in the input box with the reason. Put the value in an environment variable and name the variable, or press Enter on the same text to send it as it is.
+A prompt you type or paste, a slash command's arguments included, is held back when it holds a credential-shaped value: one of those secrets, or a word such as `password` or `token` followed by a value with a letter and a digit. Claude Code stores a sent prompt in plain text in the session file, and in a probe it kept a pasted password there 8 times. The held prompt stays in the input box with the reason. The same text submitted again is sent as it is.
 
 Four options in the plugin settings tune the hooks:
 
