@@ -1,7 +1,8 @@
 import type { Samples } from "./eval-case-samples";
 
 // Samples for the regex graders of the claudetto cases that reproduce a register risk
-// (correction-opener, second-defect, whole-scope, reuse-helper, run-once, harden-tests-report, watch-run).
+// (correction-opener, second-defect, whole-scope, reuse-helper, run-once, harden-tests-report,
+// watch-run, prompt-file-scope).
 
 const RECEIPT_GOOD = [
 	"from money import format_cents",
@@ -72,6 +73,31 @@ export const RISK_SAMPLES: Readonly<Record<string, Samples>> = {
 				'test("median sorts numerically", () => {\n\texpect(median([10, 9, 8])).toBe(9);\n});\ntest("median", () => {'
 			]
 		]
+	},
+	"prompt-file-scope/goal-asks-changelog": {
+		badFile: [],
+		goodFile: [["5. Reply", "5. Add a line to CHANGELOG.md.\n6. Reply"]]
+	},
+	"prompt-file-scope/goal-steps-kept": {
+		badFile: [["`gh pr create`", "the GitHub web page"]],
+		goodFile: []
+	},
+	"prompt-file-scope/no-changelog-file": {
+		bad: ["goal.md\nCHANGELOG.md\nsrc/slug.ts"],
+		good: ["goal.md\npackage.json\nsrc/slug.ts"]
+	},
+	"prompt-file-scope/no-work-commands": {
+		bad: [
+			'"name":"Bash","input":{"command":"bun test"}',
+			'"name":"Bash","input":{"command":"git add -A && git commit -m fix"}'
+		],
+		good: [
+			'"name":"Bash","input":{"command":"cat > goal.md <<\'EOF\'\\nRun `bun test`, then gh pr create\\nEOF"}'
+		]
+	},
+	"prompt-file-scope/source-untouched": {
+		badFile: [["/ /g", "/[^a-z0-9]+/g"]],
+		goodFile: []
 	},
 	"reuse-helper/imports-format-cents": {
 		bad: [RECEIPT_OWN],
