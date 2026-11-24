@@ -59,3 +59,23 @@ That happened 6 times a run in 3 of the 4 claudetto runs before this fix. The sh
 subagent_type to a listed agent: an untyped call fails", and the type error is gone: 0 in 11 runs.
 
 Cost: $0.03 to $0.32 per run.
+
+## Rerun on 2.1.329
+
+On 2026-11-24, claude 2.1.329, `R525_OUT=<dir> zsh run.sh <vanilla|claudetto> <1-3>` (Haiku, batch) gave 2 refusals in every run of both arms and 6 of 6 rows in all six runs. The claudetto runs had no "general-purpose not found" result and cost $0.14 to $0.15 each; vanilla cost $0.16 to $0.35.
+
+## The Hand-Back After a Refusal
+
+On 2026-11-24, claude 2.1.329, Haiku 5.5, 12 batch runs per arm, the final reply was read for a step handed to
+the user: raise `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, approve a command, or tell the agent what to do. The
+refused agents can start once a running one reports, so none of these steps is the user's.
+
+| Arm | Final reply hands the user a step | 6 of 6 rows |
+|---|---|---|
+| vanilla | 5 of 12 | 12 of 12 |
+| claudetto without the line | 9 of 12 | 12 of 12 |
+| claudetto with the line | 0 of 12 | 12 of 12 |
+
+The line, in `plugins/claudetto/hooks/prompt/conduct.ts`, says a call refused at a limit that frees by itself is
+made again once a running task reports, before the turn ends. It ships (ADR-0177). The engine still refuses 2
+calls per run in every arm.
