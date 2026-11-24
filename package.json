@@ -6,11 +6,11 @@
 		"packages": [],
 		"catalog": {
 			"@types/bun": "1.4.5",
-			"@types/node": "26.6.6",
-			"eslint-plugin-jsdoc": "65.5.1",
+			"@types/node": "26.6.7",
+			"eslint-plugin-jsdoc": "65.5.4",
 			"markdownlint-cli2": "0.24.2",
 			"markdownlint-rule-title-case-style": "0.4.3",
-			"oxlint": "1.94.0",
+			"oxlint": "1.95.0",
 			"oxlint-tsgolint": "7.0.2008",
 			"typescript": "7.0.2"
 		}
@@ -37,7 +37,7 @@
 		"typescript": "catalog:"
 	},
 	"overrides": {
-		"@types/node": "26.6.6"
+		"@types/node": "26.6.7"
 	},
 	"engines": {
 		"bun": ">=1.4.5"
