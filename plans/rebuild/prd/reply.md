@@ -89,10 +89,12 @@
 ## Concise Output Style
 
 - [x] **REQ-REPLY-042** Moved Out as OUT-2822: the `Concise` output style was dropped in the 2.1.327 rebuild (OUT-2570); `plugins/claudetto/output-styles/` holds only `claudetto.md`, which holds neither `- [ ] !` nor "a command only the user can run".
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: `ls plugins/claudetto/output-styles` lists only claudetto.md, no Concise.md ships, and `grep -c -- '- \[ \] !\|a command only the user can run'` on it prints 0, so the Out reason holds.
 
 ## Explanations Output Style
 
 - [x] **REQ-REPLY-043** Moved Out as OUT-3000: not built and no measured check shows an Explanations output style beats vanilla Claude Code 2.1.327, whose built-in `Explanatory` style already explains implementation choices (ADR-0177; ADR-0190 allows a style line only with a measured gain; this session has no paid runs to measure one).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: the 2.1.329 binary carries the built-in Explanatory style ("Claude explains its implementation choices and codebase patterns", keepCodingInstructions true, `binary/bgrep.ts`), and plugins/claudetto/output-styles holds no Explanations style.
 
 ## Reply Quote Command
 
@@ -197,6 +199,7 @@
 ## Prompt and Output Limits
 
 - [x] **REQ-REPLY-107** Moved Out as OUT-2827: OUT-019 and ADR-0190: a cap tuned to stock lengths is out and no custom system prompt ships, so the stock lean prompt and Concise/Proactive bounds have no subject; the kept 200-character description cap holds by count on 2026-11-19 (output style 174, agents 77, 81 and 68, plugin.json 164 and 178).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: each description is at most 200 characters by count: output style 178, agents Artemis 77, Athena 79, Heracles 68, Hermes 102, plugin.json claudetto 164, claudetto-spec 156, claudetto-you-should-know 178.
 
 ## Choices Through AskUserQuestion
 
@@ -242,6 +245,7 @@
 ## Root Prompt Rules
 
 - [x] **REQ-REPLY-121** Moved Out as OUT-2828: OUT-2632 moved the same text Out and the parts it names were dropped in the rebuild: the root prompt (OUT-411) and `rules/useBlockLanguage.md` (OUT-2571) no longer ship, and a style rule on article use has no measured gain (ADR-0177).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: plugins/claudetto has no rules/ directory (`ls plugins/claudetto/rules` fails), so neither the root prompt nor rules/useBlockLanguage.md ships, and the Out reason holds.
 
 ## Conduct Rules
 
@@ -290,6 +294,7 @@
   Evidence: 2026-11-24: the reason's "no line ships" is out of date; plugins/claudetto/agents/Heracles.md:11 ("Keep working until everything the task asks for is done") and paragraph 4 of hooks/prompt/conduct.ts ship its parts.
 
 - [x] **REQ-REPLY-138** Moved Out as OUT-2103: needs a paid model run or a benchmark.
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: `git grep -niE 'plain english|plain-english' -- plugins` prints nothing, so no plain-English reply rule ships; the A/B with a parse score is a benchmark the goal and ADR-0087 bar.
 
 - [x] **REQ-REPLY-139** claudetto shall write no user opinion or stance into memory files, CLAUDE.md or handover text; only rules the user set and facts with a source enter them, each in one named file under a size cap.
   Verified 2026-11-18 on Claude Code 2.1.327 (cc-inspect code search "All user messages:", chunk-m14bt1pz.js@2583892): vanilla compaction asks for every user message; the handover fork prompt in hooks/handover/text.ts asks for user rules and sourced facts and excludes opinions. claudetto writes no memory file or CLAUDE.md (code search of plugins/claudetto/hooks). A behavioural count of opinion lines is left to dogfood.
@@ -302,11 +307,13 @@
   Verified: 2026-11-24, claude 2.1.329, the same probe after the cure: 0 of 6 handovers carry an opinion line and 6 of 6 keep the rule (reports/2026-11-24-research/r139/README.md); `claude plugin test plugins/claudetto` 332 pass.
 
 - [x] **REQ-REPLY-140** Moved Out as OUT-3073: the part is not in plugins/ after ADR-0177 dropped it: on claude 2.1.329 vanilla passed the missing-input fixtures 12 of 12 and the conduct paragraph tied at 12 of 12 (Sonnet 5.5, reports/2026-11-19-research/goal), so no line ships.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (reports/2026-11-24-research/pin-2-1-329/ask/batch.sh, Sonnet 5.5, n=3 per arm, vanilla and the plugin tree): with deploy.sh running rsync and ssh to a host no file names (h329), both arms asked for the host through AskUserQuestion in 3 of 3; with the host in config.json (f329) both read it and ran without asking in 3 of 3 (reports/2026-11-24-research/pin-2-1-329/ask/results.txt). The ask half holds on vanilla, so no line ships. The echo-only seed (m329) ran with `staging` in all 6 after reading the script, so it no longer tests the ask.
 
 - [x] **REQ-REPLY-142** Moved Out as OUT-2768: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
   Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: `git grep -niE 'you are (an?|the) (expert|senior|helpful)|senior engineer|helpful assistant|as an expert' -- plugins` prints nothing outside tests, so no persona or helpful-assistant line ships.
 
 - [x] **REQ-REPLY-145** Moved Out as OUT-3059: ADR-0177: vanilla 2.1.330 Opus 5.5 scored 1.00 on every count fixture, original, long-session replay and hardened in place (issue #130), and the six-case blind held-out set gave a mean delta of 0.00, so no cure can show a gain.
   Verified: 2026-11-24, claude 2.1.329, Opus 5.5, `just eval claudetto` (results 2026-11-24T03-08-24-156Z, `reports/2026-11-24-research/pin-2-1-329/suite/claudetto-cases.txt`): count-after-change and count-in-reply scored 1,1,1 with and 1,1,1 without, so vanilla still passes and no cure can show a gain.
@@ -323,6 +330,7 @@
   Verified: 2026-11-24, claude 2.1.329, Opus 5.5, plist-extract restored from 1197c2fef^ (`reports/2026-11-24-research/pin-2-1-329/suite/removed-cases.txt`): 1,1,1 with and 1,1,1 without, so the note still shows no gain.
 
 - [x] **REQ-REPLY-150** Moved Out as OUT-3061: ADR-0177: the vanilla 2.1.330 goal evaluator already rejected a completion claim that lacked the paid-run total and weekly share (issue #138), and the rule lives in the project CLAUDE.md.
+  Verified: claude 2.1.329, 2026-11-24, demonstration (reports/2026-11-24-research/pin-2-1-329/ask/batch.sh c329, Sonnet 5.5, n=3 per arm): after `./eval.sh` printed a total cost of $1.31, vanilla and the plugin tree named $1.31 in 3 of 3 each (reports/2026-11-24-research/pin-2-1-329/ask/results.txt). No reply named a weekly share; that figure reaches the status line (plugins/claudetto/hooks/statusline/statusline.ts:76 reads `seven_day`), so no line ships.
 
 - [x] **REQ-REPLY-151** When the user asks for a long reusable text artifact (a prompt, a config, a script, a document) that no file holds yet, claudetto shall have the agent write it to a file and reply with the path and a short summary, and keep short answers in the reply.
   Acceptance: the `artifact-to-file` case scores above vanilla, and `artifact-short-answer` and `trivial-typo` score no lower. Graders read files and the last message: a created file and a last message that does not repeat the artifact; the file may come from `Write` or claudetto's `patch`, so no grader names a tool. Verification: eval.

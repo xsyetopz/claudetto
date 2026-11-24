@@ -25,6 +25,7 @@
 ## Context and Budget Display
 
 - [x] **REQ-COST-021** Moved Out as OUT-2950: not built and no measured check shows a claudetto baseline report beats vanilla `/context` (ADR-0177).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: the 2.1.329 binary carries the built-in `context` command ("Show what fills the context", `binary/bgrep.ts` on ~/.local/share/claude/versions/2.1.329), and plugins/claudetto holds no baseline report, so vanilla covers the split.
 
 ## Decider
 
