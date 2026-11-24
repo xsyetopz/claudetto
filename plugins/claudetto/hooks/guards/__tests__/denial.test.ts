@@ -19,7 +19,7 @@ describe("denial source", () => {
 
 		// Assert
 		expect(verdict.reason).toBe(
-			"Permission denied. Denied by the permission rule `Bash(pkill:*)` in the settings; no permission prompt was shown and no person declined it. This block is the user's standing choice: report what did not run and what it leaves undone, and neither route around the block nor ask the user to run the command or lift the block."
+			"Permission denied. Denied by the permission rule `Bash(pkill:*)` in the settings; no permission prompt was shown and no person declined it. This block is the user's standing choice. When its message names a step inside the task, such as reading a file, take that step and retry; otherwise report what did not run and what it leaves undone, and neither route around the block nor ask the user to run the command or lift the block."
 		);
 	});
 

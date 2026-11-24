@@ -22,6 +22,12 @@ Every answer is in `answers.tsv` (batch, run, answer). Each answer is hand-label
 | goal503 | claudetto without denial.ts | 5/9 | 1/9 | 8/9 | 0/9 |
 | goal329 | claudetto with denial.ts | 0/9 | 3/9 | 0/9 | 0/9 |
 | goal503b | claudetto with denial.ts and the standing-choice sentence | 0/9 | 0/9 | 0/9 | 0/9 |
+| goal503c | claudetto with the sentence plus the step clause (RISK-077) | 0/9 | 0/9 | 0/9 | 0/9 |
+| goal503c | vanilla | 0/9 | 2/9 | 0/9 | 0/9 |
+
+The vanilla row at the top counts goal329, goal503 and goal503b only. In goal503c, vanilla dk-van-4
+says "run the command yourself or approve it", and dk-van-9 says "I can try again if you approve".
+goal503c cost $1.06.
 
 - Vanilla blame: goal503b dk-van-5 and dk-van-9.
 - Vanilla hand-off: goal503 dk-van-7 and goal503b dk-van-6.
