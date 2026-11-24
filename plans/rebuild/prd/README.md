@@ -10256,6 +10256,7 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Decision: ADR-0190, Arrange-Act-Assert applies to this repository's tests; no shipped test rule.
   Acceptance: a behaviour test names its Arrange, Act, and Assert sections; the rule file exists. Each change is verified with a real interactive run and a real `-p` run, and quality is judged by runtime behaviour, not by CI. Verification: inspection.
   Basis: reported; user decision, 2026-11-16. Status: partial at 088a227c (rules/useTestPatterns.md). Measured 2026-11-19: no probe was run, because the item ships nothing; the ADR-0190 decision and the test files are the evidence.
+  Evidence: claude 2.1.329 pin, 2026-11-24: 49 files under plugins/claudetto now hold `// Arrange`, not 11.
 
 - [x] **OUT-2801** Out (ADR-0177: on a name defined only in source and missing from the config list, vanilla 2.1.327 answered correctly in 3 of 3 Sonnet 5.5 runs, so no line can beat it (reports/2026-11-19-research/risks-verification, scenario F); the `code` search is a tool of the separate cc-inspect plugin, not of this one; moved from REQ-VERIFICATION-088 in prd/verification.md): claudetto shall mark a name absent only after a literal `code` search of the whole `claude` build, not after one `surface` kind.
   Acceptance: each "absent" mark cites a whole-build search. Verification: inspection.
@@ -10324,6 +10325,7 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Acceptance: character counts meet each bound. Verification: test.
   Basis: reported. Status: partial at 088a227c (output-styles/Concise.md only).
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
+  Evidence: claude 2.1.329 pin, 2026-11-24: the counts are now style 178, Hermes 102, claudetto-spec plugin.json 156 (REQ-REPLY-107); each stays at most 200.
 
 - [x] **OUT-2828** Out (OUT-2632 moved the same text Out and the parts it names were dropped in the rebuild: the root prompt (OUT-411) and `rules/useBlockLanguage.md` (OUT-2571) no longer ship, and a style rule on article use has no measured gain (ADR-0177); moved from REQ-REPLY-121 in prd/reply.md): claudetto shall write the root prompt, tool and agent descriptions, and hook texts in block language, and keep full articles in replies, docs, and the changelog.
   Acceptance: each article rule holds: drop "the" before a noun the reader holds (user, repository, project, code); keep "a" or "an" where it means any one; keep the article before a noun that also reads as a verb; keep an article that prevents a garden path; write the article once before the first item of a series. Verification: inspection.
@@ -10443,6 +10445,7 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Acceptance: a completion report after paid runs names the total cost and the weekly share. Verification: inspection.
   Basis: user report, issue #138. Dossier entries: I04 False completion (external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:17); I12 Cost miscalibration (external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:133).
   Source: issue #138.
+  Evidence: claude 2.1.329, 2026-11-24: the reason's "the project CLAUDE.md already carries" the cost rule is wrong; `grep -niE 'cost|weekly' CLAUDE.md` prints nothing. The 2.1.329 rerun is under REQ-REPLY-150: vanilla named the total cost in 3 of 3.
 
 - [x] **OUT-3063** Out (ADR-0177: delegate-two-files scored 1.00 with and 1.00 without, and trivial-typo 1.00 with and 1.00 without (`just eval claudetto --runs 3 --model claude-opus-5-5`, 2026-11-21, graders read outcomes only), so the note shows no measured gain over vanilla; moved from REQ-GOAL-030 in prd/goal.md): When the active goal names delegation (delegate, subagent, worker) and the main loop calls Edit, Write or NotebookEdit on a non-doc file, claudetto shall add one note of at most 200 characters to that result, once per session, pointing at the Agent tool, and shall never deny.
   Decision: ADR-0177, a component ships only if a measured check shows it beats vanilla Claude Code; removed because delegate-two-files scored 1.00 with and 1.00 without, and trivial-typo 1.00 with and 1.00 without (`just eval claudetto --runs 3 --model claude-opus-5-5`, 2026-11-21, graders read outcomes only), so the note shows no measured gain over vanilla.
@@ -10512,3 +10515,4 @@ ADR-0193 reinstates CON-055 to CON-060 on 2026-11-21; OUT-2501 to OUT-2506 stay 
   Status: done 2026-11-19: claudetto asks for a missing input in 12 of 12 runs on two fixtures and proceeds on a repo-held input in 18 of 18, where vanilla asks needlessly in 10 of 18; the style names no confidence threshold.
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-19-research/goal/run.sh` on the grant, grantc, mail and mailc fixtures, 3 runs each: vanilla passed 12 of 12 (asked for the missing input, proceeded when a file held it), and claudetto with the missing-input paragraph passed 12 of 12, so the paragraph ties vanilla.
   Status: Moved Out 2026-11-24: ADR-0177 dropped the paragraph from `plugins/claudetto/hooks/prompt/conduct.ts` and its README line (RISK-539).
+  Evidence: claude 2.1.329, 2026-11-24: the reason's "on claude 2.1.329" is wrong; the reports/2026-11-19-research/goal runs record 2.1.327. The 2.1.329 rerun is under REQ-REPLY-140 (reports/2026-11-24-research/pin-2-1-329/ask/results.txt): vanilla asked for a missing host in 3 of 3.

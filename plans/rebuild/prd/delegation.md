@@ -24,6 +24,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Delegate Contract Injection
 
 - [x] **REQ-DELEGATION-024** Moved Out as OUT-3002: not built as a `SubagentStart` hook and no measured check shows it beats the contract text in the agent bodies; plugins/claudetto/agents/Heracles.md already carries the denied-call-means-declined line, the report-outcomes-as-they-happened line and the check-with-command-and-exit-code line, and a hook would inject the same text a second time (ADR-0177, ADR-0190).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: `git grep -n SubagentStart -- plugins` prints nothing, and plugins/claudetto/agents/Heracles.md:13 carries the denied-call-means-declined line and :19 the report-outcomes-as-they-happened and command-and-exit-code lines, so the Out reason holds.
 
 ## Model Allowlist Hook
 

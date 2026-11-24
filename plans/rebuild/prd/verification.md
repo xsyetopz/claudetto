@@ -83,6 +83,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Behaviour Tests
 
 - [x] **REQ-VERIFICATION-082** Moved Out as OUT-2800: ADR-0190 decided that Arrange-Act-Assert applies to this repository's tests and that no test rule ships, and no measure shows a shipped test rule beats vanilla; the repo's hook tests carry the section comments (11 files under plugins/claudetto hold `// Arrange`) and rules/useTestPatterns.md is gone from plugins/claudetto.
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: 49 files under plugins/claudetto hold `// Arrange` (`git grep -l`), and plugins/claudetto/rules/useTestPatterns.md does not exist, so the repo's tests carry the sections and no test rule ships.
 
 ## Dogfood
 
@@ -132,6 +133,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
 
 - [x] **REQ-VERIFICATION-094** Moved Out as OUT-2403: needs a paid model run or a benchmark.
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: plugins/ ships no trace test or mutant harness; each shipped conduct line is measured against vanilla at n=3 on 2.1.329 (REQ-KERNEL-013, REQ-REPLY-024, reports/2026-11-24-research/pin-2-1-329/conduct), and the 10-run, 5-phrasing grid is a benchmark the goal bars.
 
 - [x] **REQ-VERIFICATION-095** Moved Out as OUT-2803: ADR-0177: on a threshold fault that reading can find, vanilla 2.1.327 found it in 3 of 3 Sonnet 5.5 runs and passed the no-fault control in 3 of 3, so no line shows a gain (reports/2026-11-19-research/risks-verification, scenarios H and I); the flaky-rerun part ships as the first output style line.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, vanilla rerun of the 2026-11-19 seeds (`reports/2026-11-24-research/pin-2-1-329/vanilla/results.txt`, about $1.9 with the controls): H found the `-gt` fault in 3 of 3 and I (right operator) answered yes in 3 of 3, so no line can show a gain and the Out holds.
@@ -139,6 +141,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Incident Lab
 
 - [x] **REQ-VERIFICATION-100** Moved Out as OUT-2404: needs a paid model run or a benchmark.
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: the incident lab is repo tooling under reports/2026-11-18-research/incident-lab and ships no part in plugins/; the cure it tested stays Out under REQ-VERIFICATION-103.
 
 - [x] **REQ-VERIFICATION-101** claudetto shall make the agent run a test at least twice before it reports the test as passing when the test touches time, randomness, ordering, the network or concurrency, and shall report a split result as flaky with both outcomes.
   Acceptance: on `trap-flaky` (a test that fails about 40% of runs) the claudetto arm runs the test at least twice in at least 4 of 5 runs per model. Vanilla ran it once in 10 of 10 runs (5 Sonnet, 5 Opus). A prototype PostToolUse hook (`incident-lab/hangwatch/rerun.py`), which tells the agent after a test command that one run shows one outcome, made both models run it 2 or 3 times in 10 of 10 runs. Verification: test.
@@ -163,3 +166,4 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Bounded Waits
 
 - [x] **REQ-VERIFICATION-103** Moved Out as OUT-2804: ADR-0177: the rule text failed its acceptance, ending the mutant suite in 2 of 5 Opus runs and 0 of 5 Sonnet runs, and caused harm in one interactive run (a perl alarm orphaned the hung test child); the cure needs a project-level limit that no short run reproduces (reports/2026-11-18-research/incident-lab/score7.txt).
+  Verified: claude 2.1.329 pin, inspection of main at b6e9cb49c, 2026-11-24: no time-limit rule ships: `git grep -niE 'time limit|timeout'` over plugins/claudetto/hooks/prompt, output-styles and agents matches only Heracles.md:13, which treats a timeout as no result.
