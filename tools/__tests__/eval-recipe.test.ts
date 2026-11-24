@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { chmod, mkdtemp, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -63,4 +63,38 @@ withJust("the eval's own nonzero exit status survives the pipe", async () => {
 
 	// Assert
 	expect(r.exitCode).toBe(3);
+});
+
+withJust(
+	"an uncommitted case file stops the run before claude starts (CON-056)",
+	async () => {
+		// Arrange
+		const probe = join(
+			root,
+			"plugins",
+			"claudetto",
+			"evals",
+			"trivial-typo",
+			`uncommitted-${process.pid}.txt`
+		);
+		await writeFile(probe, "x\n");
+
+		// Act
+		const r = await runEval("claudetto", "ok", 0).finally(() =>
+			rm(probe, { force: true })
+		);
+
+		// Assert
+		expect(r.exitCode).toBe(1);
+		expect(r.stderr).toContain("CON-056");
+		expect(r.stdout).not.toContain("ARGV");
+	}
+);
+
+withJust("each case's commit is printed before the run (CON-055)", async () => {
+	// Act
+	const r = await runEval("claudetto", "ok", 0);
+
+	// Assert
+	expect(r.stderr).toMatch(/^case commit: trivial-typo [0-9a-f]{7,}$/mu);
 });

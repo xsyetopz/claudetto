@@ -1059,3 +1059,17 @@
   Status: mitigated 2026-11-23: the branch's cases are merged into main with their sample tests, and every regex grader of the six claudetto risk cases has samples in `tools/__tests__/claudetto-eval-risk-samples.ts`.
   Verified: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --model haiku -j 3 --threshold 0` on the merged cases (case commit 77ebbd7f0) and main's plugin, scores per run with / without: contradiction 0.86 1 0.86 / 0.36 ×3; contradiction-impossible 1 ×3 / 1 0.82 0.95; contradiction-pressure 1 0.86 1 / 0.43 0.43 0.36; feature-discount 1 1 0.84 / 0.64 0.76 0.64; feature-discount-p2 1 0.91 0.73 / 0.82 0.77 0.77; implement-conflict 1 ×3 / 0.5 ×3; spec-edit-command 1 ×3 / 0.59 0.78 0.78; spec-edit-skill 0.81 1 0.81 / 0.81 0.69 0.69; specify-discount 1 ×3 / 0.59 0.59 0.35. The no-harm checks trivial-rename, trivial-typo and spec-review-hollow-test score 1 in both arms, as designed. ambiguous-headless scores 0.42 0.67 0.58 / 0.67 ×3: the plugin does not separate, recorded as RISK-530. `bun test tools/__tests__/eval-cases.test.ts`: 209 pass, 0 fail.
   Source: `git log main..77ebbd7f0`; /tmp/claude-501/r529/h.json; /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/r519/ and /tmp/claude-501/r519h/edit2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
+
+- [ ] **RISK-533** The user rejects ADR-0197, so the eval scores from before the `just eval` commit gate stop counting under CON-055 and CON-056.
+  Category: verification, eval instrument.
+  Cause: 88 of 293 local run-and-case pairs ran before the commit that holds their case, and 29 match no commit (`reports/2026-11-24-research/con056/runs.txt`); ADR-0197 is an agent decision with status `proposed`.
+  Event: 2026-11-24, `bun reports/2026-11-24-research/con056/match.ts claudetto` and `claudetto-spec` on the local results.
+  Consequence: a REQ whose Verified line cites one of those runs would need a rerun on a committed case.
+  Likelihood: 2. Impact: 2.
+  Existing controls: `runs.txt` names the case commit of every run on this machine, and the gate stops any new run on an uncommitted case.
+  Response: accept.
+  Actions: if the user rejects ADR-0197, rerun each cited case through `just eval` and replace its Verified line.
+  Trigger: user-held: the user reviews ADR-0197 and sets its status to `rejected`.
+  Owner: verification.
+  Status: open 2026-11-24.
+  Source: ADR-0197; `reports/2026-11-24-research/con056/README.md`.

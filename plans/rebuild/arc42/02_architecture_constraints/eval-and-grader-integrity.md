@@ -2,15 +2,17 @@
 
 ADR-0193 reinstates these constraints on 2026-11-21, because `claude plugin eval` suites now exist (`plugins/claudetto-spec/evals/`). OUT-2501 to OUT-2506 keep the record of their time Out.
 
-- [ ] **CON-055** Evals and graders shall have a hard pass; a grader is never loosened, and a task, scaffold or grader is never edited after a run was seen to make it pass.
+- [x] **CON-055** Evals and graders shall have a hard pass; a grader is never loosened, and a task, scaffold or grader is never edited after a run was seen to make it pass.
   Acceptance: every score in a report names the case commit (`git log -1 --format=%h -- plugins/<p>/evals/<case>`) it ran on, and no case directory name ends in `-vN`. Verification: inspection.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: done 2026-11-24 under ADR-0197 (proposed): `just eval` prints each case commit before a run, and the eval READMEs name the case commit of each score.
   Source: OUT-2501 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Verified: 2026-11-24, `bun test tools/__tests__/eval-recipe.test.ts` 5 pass (case commit printed); `bun test tools/__tests__/eval-cases.test.ts` (no `-vN` case name); every score line in `plugins/claudetto/evals/README.md` and `plugins/claudetto-spec/evals/README.md` names a case commit from `reports/2026-11-24-research/con056/match.ts`.
 
-- [ ] **CON-056** The prompt, scaffold, graders and criteria of each eval case shall be fixed and committed before its first run; a failing run is a result; a criteria change makes a new case reported apart.
+- [x] **CON-056** The prompt, scaffold, graders and criteria of each eval case shall be fixed and committed before its first run; a failing run is a result; a criteria change makes a new case reported apart.
   Acceptance: each case directory's first commit predates the first `results/` timestamp for that case. Verification: inspection.
-  Basis: user decision. Status: missing at 088a227c.
+  Basis: user decision. Status: done 2026-11-24 under ADR-0197 (proposed): `just eval` refuses a run while any case file is uncommitted; 88 earlier runs started before their case commit and 29 match no commit (`reports/2026-11-24-research/con056/runs.txt`).
   Source: OUT-2502 (the user decision of 2026-11-16 it records); ADR-0193 (reinstated 2026-11-21).
+  Verified: 2026-11-24, probe: an untracked file under `plugins/claudetto/evals/` let `just --no-deps eval claudetto` reach `claude` (exit 0) before the gate; with it, `bun test tools/__tests__/eval-recipe.test.ts` shows exit 1, "CON-056" on stderr and no `claude` call.
 
 - [ ] **CON-057** The agent under test shall be unable to read case definitions or write graders, the held-out set or results.
   Acceptance: `claude plugin eval` hides case files from the agent (docs, read 2026-11-21); `~/.claudetto-holdout` read and write are denied (REQ-GUARDS-058); `just eval-holdout` runs outside the agent's sandbox. Verification: inspection and probe.

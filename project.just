@@ -70,6 +70,16 @@ eval plugin *args: eval-preflight
     set -euo pipefail
     cases=(plugins/{{ plugin }}/evals/*/case.yaml)
     [[ -f "${cases[0]}" ]] || { echo "no plugins/{{ plugin }}/evals/*/case.yaml: is {{ plugin }} a plugin with eval cases?" >&2; exit 1; }
+    # CON-056: a case is committed before it runs, so each score can name the case commit (CON-055).
+    # Only the case folders count; the suite README and the gitignored results/ do not change a run.
+    dirty="$(git status --porcelain --untracked-files=all -- "${cases[@]%/case.yaml}")"
+    if [[ -n "$dirty" ]]; then
+        printf 'FAILED: commit the eval cases before a run (CON-056); uncommitted:\n%s\n' "$dirty" >&2
+        exit 1
+    fi
+    for c in "${cases[@]}"; do
+        echo "case commit: $(basename "$(dirname "$c")") $(git log -1 --format=%h -- "$(dirname "$c")")" >&2
+    done
     grants=()
     while IFS= read -r tool; do
         [[ -n "$tool" ]] && grants+=("$tool")

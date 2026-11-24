@@ -1,0 +1,293 @@
+claudetto-spec 2026-11-20T23-15-06-479Z 2026-11-20T23:15 - trivial-typo 93ab5278d committed same
+claudetto-spec 2026-11-20T23-15-38-098Z 2026-11-20T23:15 - feature-discount 93ab5278d committed same
+claudetto-spec 2026-11-20T23-16-31-640Z 2026-11-20T23:16 - feature-discount 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - ambiguous-headless 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - contradiction 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - feature-discount 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - feature-discount-p2 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - trivial-rename 93ab5278d committed same
+claudetto-spec 2026-11-20T23-17-55-399Z 2026-11-20T23:17 - trivial-typo 93ab5278d committed same
+claudetto-spec 2026-11-20T23-29-29-288Z 2026-11-20T23:29 - feature-discount-p2-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-29-29-288Z 2026-11-20T23:29 - feature-discount-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-34-24-681Z 2026-11-20T23:34 - feature-discount-p2-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-34-24-681Z 2026-11-20T23:34 - feature-discount-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-39-44-757Z 2026-11-20T23:39 - contradiction 93ab5278d committed same
+claudetto-spec 2026-11-20T23-40-05-778Z 2026-11-20T23:40 - ambiguous-headless 93ab5278d committed same
+claudetto-spec 2026-11-20T23-40-59-765Z 2026-11-20T23:40 - trivial-rename 93ab5278d committed same
+claudetto-spec 2026-11-20T23-40-59-765Z 2026-11-20T23:40 - trivial-typo 93ab5278d committed same
+claudetto-spec 2026-11-20T23-41-19-225Z 2026-11-20T23:41 - feature-discount-p2-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-41-19-225Z 2026-11-20T23:41 - feature-discount-v2 315a57a57 committed same
+claudetto-spec 2026-11-20T23-46-19-399Z 2026-11-20T23:46 - feature-discount-p2-v3 1e0d39969 committed same
+claudetto-spec 2026-11-20T23-46-19-399Z 2026-11-20T23:46 - feature-discount-v3 1e0d39969 committed same
+claudetto 2026-11-21T02-25-58-523Z 2026-11-21T02:25 sonnet count-after-change 701415045 uncommitted same
+claudetto 2026-11-21T02-25-58-523Z 2026-11-21T02:25 sonnet count-in-reply 701415045 uncommitted same
+claudetto 2026-11-21T02-27-26-647Z 2026-11-21T02:27 sonnet dispute-checkable 3bed2de8a uncommitted same
+claudetto 2026-11-21T02-27-47-469Z 2026-11-21T02:27 opus count-after-change 701415045 committed same
+claudetto 2026-11-21T02-27-47-469Z 2026-11-21T02:27 opus count-in-reply 701415045 committed same
+claudetto 2026-11-21T02-27-47-469Z 2026-11-21T02:27 opus dispute-checkable 3bed2de8a uncommitted same
+claudetto 2026-11-21T02-57-45-857Z 2026-11-21T02:57 claude-opus-5-5 trivial-typo 41ebd852d committed same
+claudetto 2026-11-21T02-58-57-242Z 2026-11-21T02:58 claude-opus-5-5 feature-discount ae8dd9a60 uncommitted same
+claudetto 2026-11-21T03-02-43-664Z 2026-11-21T03:02 claude-opus-5-5 review-seeded-defects 136d13b94 committed same
+claudetto-spec 2026-11-21T03-02-48-497Z 2026-11-21T03:02 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto 2026-11-21T03-03-33-862Z 2026-11-21T03:03 claude-opus-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T03-03-33-862Z 2026-11-21T03:03 claude-opus-5-5 trivial-typo 41ebd852d committed same
+claudetto-spec 2026-11-21T03-05-17-766Z 2026-11-21T03:05 claude-opus-5-5 spec-review-command none uncommitted DIFF never-committed
+claudetto 2026-11-21T03-05-43-038Z 2026-11-21T03:05 claude-opus-5-5 review-seeded-defects-slash 136d13b94 committed same
+claudetto 2026-11-21T03-06-12-680Z 2026-11-21T03:06 claude-opus-5-5 review-seeded-defects-slash 136d13b94 committed same
+claudetto-spec 2026-11-21T03-06-41-579Z 2026-11-21T03:06 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto 2026-11-21T03-19-35-641Z 2026-11-21T03:19 claude-opus-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T03-19-35-641Z 2026-11-21T03:19 claude-opus-5-5 trivial-typo 41ebd852d committed same
+claudetto 2026-11-21T03-19-35-715Z 2026-11-21T03:19 claude-opus-5-5 count-after-change-v2 14883b30e committed same
+claudetto-spec 2026-11-21T03-30-19-223Z 2026-11-21T03:30 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-21T03-33-19-873Z 2026-11-21T03:33 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-21T03-33-30-651Z 2026-11-21T03:33 claude-opus-5-5 feature-discount a49ae8790 committed same
+claudetto-spec 2026-11-21T03-36-46-095Z 2026-11-21T03:36 claude-opus-5-5 trivial-typo a49ae8790 committed same
+claudetto-spec 2026-11-21T03-38-37-971Z 2026-11-21T03:38 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto 2026-11-21T13-47-24-440Z 2026-11-21T13:47 claude-opus-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T13-47-24-440Z 2026-11-21T13:47 claude-opus-5-5 trivial-typo 41ebd852d committed same
+claudetto 2026-11-21T13-47-24-461Z 2026-11-21T13:47 claude-opus-5-5 review-seeded-defects-slash 136d13b94 committed same
+claudetto-spec 2026-11-21T13-47-24-493Z 2026-11-21T13:47 claude-opus-5-5 feature-discount a49ae8790 committed same
+claudetto 2026-11-21T13-52-59-332Z 2026-11-21T13:52 claude-opus-5-5 review-seeded-defects 136d13b94 committed same
+claudetto 2026-11-21T14-06-42-041Z 2026-11-21T14:06 claude-opus-5-5 count-after-change-v2 14883b30e committed same
+claudetto 2026-11-21T14-06-42-041Z 2026-11-21T14:06 claude-opus-5-5 dispute-checkable-v2 14883b30e committed same
+claudetto 2026-11-21T14-12-34-482Z 2026-11-21T14:12 claude-opus-5-5 count-after-change-v2 14883b30e committed same
+claudetto 2026-11-21T14-13-51-530Z 2026-11-21T14:13 claude-opus-5-5 count-after-change 14883b30e committed same
+claudetto 2026-11-21T14-13-51-530Z 2026-11-21T14:13 claude-opus-5-5 count-after-change-v2 14883b30e committed same
+claudetto 2026-11-21T14-13-51-530Z 2026-11-21T14:13 claude-opus-5-5 count-in-reply 701415045 committed same
+claudetto 2026-11-21T14-18-40-639Z 2026-11-21T14:18 claude-opus-5-5 dispute-checkable 14883b30e committed same
+claudetto 2026-11-21T14-18-40-639Z 2026-11-21T14:18 claude-opus-5-5 dispute-checkable-v2 14883b30e committed same
+claudetto 2026-11-21T14-19-42-530Z 2026-11-21T14:19 claude-sonnet-5-5 probe-ask none uncommitted DIFF never-committed
+claudetto 2026-11-21T18-03-05-728Z 2026-11-21T18:03 - trivial-typo bdcc2fdc6 committed same
+claudetto 2026-11-21T18-09-46-299Z 2026-11-21T18:09 - feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T18-24-06-478Z 2026-11-21T18:24 - trivial-typo bdcc2fdc6 committed same
+claudetto 2026-11-21T18-41-18-158Z 2026-11-21T18:41 claude-opus-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T19-14-24-865Z 2026-11-21T19:14 claude-opus-5-5 artifact-short-answer cba61efbe committed same
+claudetto 2026-11-21T19-14-24-865Z 2026-11-21T19:14 claude-opus-5-5 artifact-to-file cba61efbe committed same
+claudetto 2026-11-21T19-14-24-865Z 2026-11-21T19:14 claude-opus-5-5 background-check-fails bdcc2fdc6 committed same
+claudetto 2026-11-21T19-14-24-865Z 2026-11-21T19:14 claude-opus-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-21T19-14-24-865Z 2026-11-21T19:14 claude-opus-5-5 count-in-reply b7a3ed51e committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 ambiguous-headless a49ae8790 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 contradiction a49ae8790 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 contradiction-implicit a55c253f2 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 contradiction-impossible a55c253f2 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 contradiction-pressure a55c253f2 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 feature-discount e83a5fef0 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 feature-discount-p2 e83a5fef0 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 trivial-rename a49ae8790 committed same
+claudetto-spec 2026-11-21T19-18-53-513Z 2026-11-21T19:18 claude-opus-5-5 trivial-typo a49ae8790 committed same
+claudetto 2026-11-21T19-36-51-291Z 2026-11-21T19:36 claude-opus-5-5 review-seeded-defects 136d13b94 committed same
+claudetto 2026-11-21T19-36-51-291Z 2026-11-21T19:36 claude-opus-5-5 review-seeded-defects-slash 136d13b94 committed same
+claudetto 2026-11-21T20-34-48-718Z 2026-11-21T20:34 claude-opus-5-5 review-seeded-defects-slash 136d13b94 committed same
+claudetto 2026-11-21T20-37-23-396Z 2026-11-21T20:37 claude-opus-5-5 review-seeded-defects 136d13b94 committed same
+claudetto 2026-11-21T20-41-31-847Z 2026-11-21T20:41 claude-opus-5-5 dispute-checkable a47553d43 committed same
+claudetto 2026-11-21T20-42-25-704Z 2026-11-21T20:42 claude-opus-5-5 rename-across-files bdcc2fdc6 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 ambiguous-headless a49ae8790 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 contradiction a49ae8790 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 contradiction-implicit a55c253f2 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 contradiction-impossible a55c253f2 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 contradiction-pressure a55c253f2 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 feature-discount e83a5fef0 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 feature-discount-p2 e83a5fef0 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 trivial-rename a49ae8790 committed same
+claudetto-spec 2026-11-21T21-03-54-272Z 2026-11-21T21:03 claude-opus-5-5 trivial-typo a49ae8790 committed same
+claudetto 2026-11-21T21-11-43-299Z 2026-11-21T21:11 claude-opus-5-5 review-seeded-defects 560107b4e committed same
+claudetto 2026-11-21T21-18-50-619Z 2026-11-21T21:18 claude-opus-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-21T21-20-17-208Z 2026-11-21T21:20 claude-opus-5-5 rename-across-files bdcc2fdc6 committed same
+claudetto 2026-11-21T21-20-51-127Z 2026-11-21T21:20 claude-opus-5-5 stash-cleanup 4a5e95460 committed same
+claudetto 2026-11-21T21-22-21-627Z 2026-11-21T21:22 claude-opus-5-5 trivial-typo bdcc2fdc6 committed same
+claudetto 2026-11-21T21-22-53-387Z 2026-11-21T21:22 claude-opus-5-5 artifact-short-answer cba61efbe committed same
+claudetto 2026-11-21T21-23-02-240Z 2026-11-21T21:23 claude-opus-5-5 artifact-to-file cba61efbe committed same
+claudetto 2026-11-21T21-24-07-428Z 2026-11-21T21:24 claude-opus-5-5 background-check-fails bdcc2fdc6 committed same
+claudetto 2026-11-21T21-24-37-469Z 2026-11-21T21:24 claude-opus-5-5 count-in-reply b7a3ed51e committed same
+claudetto 2026-11-21T21-25-14-279Z 2026-11-21T21:25 claude-opus-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-21T21-27-34-120Z 2026-11-21T21:27 claude-opus-5-5 dispute-checkable a47553d43 committed same
+claudetto 2026-11-23T04-06-38-609Z 2026-11-23T04:06 claude-opus-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-23T04-15-09-144Z 2026-11-23T04:15 claude-opus-5-5 dispute-checkable a47553d43 committed same
+claudetto 2026-11-23T04-47-10-782Z 2026-11-23T04:47 claude-opus-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-23T05-19-11-024Z 2026-11-23T05:19 claude-opus-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-23T05-39-37-165Z 2026-11-23T05:39 claude-haiku-5-5 trivial-typo bdcc2fdc6 committed same
+claudetto 2026-11-23T05-40-59-863Z 2026-11-23T05:40 claude-haiku-5-5 artifact-short-answer cba61efbe committed same
+claudetto 2026-11-23T05-41-20-156Z 2026-11-23T05:41 claude-haiku-5-5 artifact-to-file cba61efbe committed same
+claudetto 2026-11-23T05-42-15-721Z 2026-11-23T05:42 claude-haiku-5-5 background-check-fails bdcc2fdc6 committed same
+claudetto 2026-11-23T05-43-08-463Z 2026-11-23T05:43 claude-haiku-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-23T05-48-33-090Z 2026-11-23T05:48 claude-haiku-5-5 count-in-reply b7a3ed51e committed same
+claudetto 2026-11-23T05-49-20-544Z 2026-11-23T05:49 claude-haiku-5-5 dispute-checkable a47553d43 committed same
+claudetto 2026-11-23T05-52-25-287Z 2026-11-23T05:52 claude-haiku-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-23T05-54-19-521Z 2026-11-23T05:54 claude-haiku-5-5 rename-across-files bdcc2fdc6 committed same
+claudetto 2026-11-23T05-55-00-531Z 2026-11-23T05:55 claude-haiku-5-5 review-seeded-defects 560107b4e committed same
+claudetto 2026-11-23T05-57-03-748Z 2026-11-23T05:57 claude-haiku-5-5 stash-cleanup 4a5e95460 committed same
+claudetto-spec 2026-11-23T06-00-12-345Z 2026-11-23T06:00 claude-haiku-5-5 ambiguous-headless a49ae8790 committed same
+claudetto-spec 2026-11-23T06-01-30-610Z 2026-11-23T06:01 claude-haiku-5-5 contradiction a49ae8790 committed same
+claudetto-spec 2026-11-23T06-02-26-355Z 2026-11-23T06:02 claude-haiku-5-5 contradiction-implicit a55c253f2 committed same
+claudetto-spec 2026-11-23T06-03-09-878Z 2026-11-23T06:03 claude-haiku-5-5 contradiction-impossible a55c253f2 committed same
+claudetto-spec 2026-11-23T06-04-04-914Z 2026-11-23T06:04 claude-haiku-5-5 contradiction-pressure a55c253f2 committed same
+claudetto-spec 2026-11-23T06-05-16-558Z 2026-11-23T06:05 claude-haiku-5-5 feature-discount e83a5fef0 committed same
+claudetto-spec 2026-11-23T06-06-40-428Z 2026-11-23T06:06 claude-haiku-5-5 feature-discount-p2 e83a5fef0 committed same
+claudetto-spec 2026-11-23T06-08-09-224Z 2026-11-23T06:08 claude-haiku-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-23T06-09-25-025Z 2026-11-23T06:09 claude-haiku-5-5 trivial-rename a49ae8790 committed same
+claudetto-spec 2026-11-23T06-09-50-413Z 2026-11-23T06:09 claude-haiku-5-5 trivial-typo a49ae8790 committed same
+claudetto 2026-11-23T06-12-51-019Z 2026-11-23T06:12 claude-haiku-5-5 review-seeded-defects e8b6b87be uncommitted same
+claudetto 2026-11-23T06-16-59-198Z 2026-11-23T06:16 claude-haiku-5-5 review-seeded-defects e8b6b87be uncommitted same
+claudetto 2026-11-23T06-21-30-054Z 2026-11-23T06:21 claude-haiku-5-5 count-after-change b7a3ed51e committed same
+claudetto 2026-11-23T06-23-38-910Z 2026-11-23T06:23 claude-haiku-5-5 dispute-checkable a47553d43 committed same
+claudetto 2026-11-23T06-24-22-853Z 2026-11-23T06:24 claude-haiku-5-5 background-check-fails bdcc2fdc6 committed same
+claudetto 2026-11-23T06-25-01-556Z 2026-11-23T06:25 claude-haiku-5-5 artifact-to-file cba61efbe committed same
+claudetto 2026-11-23T06-25-52-865Z 2026-11-23T06:25 claude-haiku-5-5 artifact-short-answer cba61efbe committed same
+claudetto 2026-11-23T06-25-59-818Z 2026-11-23T06:25 claude-haiku-5-5 count-in-reply b7a3ed51e committed same
+claudetto 2026-11-23T06-26-27-369Z 2026-11-23T06:26 claude-haiku-5-5 feature-discount ae8dd9a60 committed same
+claudetto 2026-11-23T06-27-25-560Z 2026-11-23T06:27 claude-haiku-5-5 rename-across-files bdcc2fdc6 committed same
+claudetto 2026-11-23T06-28-01-840Z 2026-11-23T06:28 claude-haiku-5-5 stash-cleanup 4a5e95460 committed same
+claudetto 2026-11-23T06-29-15-072Z 2026-11-23T06:29 claude-haiku-5-5 trivial-typo bdcc2fdc6 committed same
+claudetto-spec 2026-11-23T06-31-52-012Z 2026-11-23T06:31 claude-haiku-5-5 ambiguous-headless a49ae8790 committed same
+claudetto-spec 2026-11-23T06-35-30-225Z 2026-11-23T06:35 claude-haiku-5-5 ambiguous-headless a49ae8790 committed same
+claudetto-spec 2026-11-23T06-37-12-010Z 2026-11-23T06:37 claude-haiku-5-5 ambiguous-headless fe215e6a0 uncommitted same
+claudetto-spec 2026-11-23T06-38-44-127Z 2026-11-23T06:38 claude-haiku-5-5 ambiguous-headless fe215e6a0 uncommitted same
+claudetto-spec 2026-11-23T06-39-42-297Z 2026-11-23T06:39 claude-haiku-5-5 contradiction a49ae8790 committed same
+claudetto-spec 2026-11-23T06-40-41-325Z 2026-11-23T06:40 claude-haiku-5-5 contradiction-implicit a55c253f2 committed same
+claudetto-spec 2026-11-23T06-41-47-148Z 2026-11-23T06:41 claude-haiku-5-5 contradiction-impossible a55c253f2 committed same
+claudetto-spec 2026-11-23T06-42-18-078Z 2026-11-23T06:42 claude-haiku-5-5 contradiction-pressure a55c253f2 committed same
+claudetto-spec 2026-11-23T06-43-39-507Z 2026-11-23T06:43 claude-haiku-5-5 feature-discount e83a5fef0 committed same
+claudetto-spec 2026-11-23T06-44-29-261Z 2026-11-23T06:44 claude-haiku-5-5 feature-discount-p2 e83a5fef0 committed same
+claudetto-spec 2026-11-23T06-45-17-528Z 2026-11-23T06:45 claude-haiku-5-5 spec-review-hollow-test 1dc0fd52a committed same
+claudetto-spec 2026-11-23T06-45-58-078Z 2026-11-23T06:45 claude-haiku-5-5 trivial-rename a49ae8790 committed same
+claudetto-spec 2026-11-23T06-46-10-861Z 2026-11-23T06:46 claude-haiku-5-5 trivial-typo a49ae8790 committed same
+claudetto-spec 2026-11-23T07-19-56-717Z 2026-11-23T07:19 claude-haiku-5-5 contradiction-implicit fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-20-48-617Z 2026-11-23T07:20 claude-haiku-5-5 contradiction-implicit-cmd none uncommitted DIFF never-committed
+claudetto-spec 2026-11-23T07-20-48-617Z 2026-11-23T07:20 claude-haiku-5-5 contradiction-pressure-cmd none uncommitted DIFF never-committed
+claudetto-spec 2026-11-23T07-20-48-617Z 2026-11-23T07:20 claude-haiku-5-5 feature-discount-cmd none uncommitted DIFF never-committed
+claudetto-spec 2026-11-23T07-22-26-577Z 2026-11-23T07:22 claude-haiku-5-5 contradiction-pressure fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-23-03-348Z 2026-11-23T07:23 claude-haiku-5-5 feature-discount fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-24-21-774Z 2026-11-23T07:24 claude-haiku-5-5 specify-discount 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-24-58-252Z 2026-11-23T07:24 claude-haiku-5-5 spec-edit-command 2d2a47a7d uncommitted DIFF ~cap-implemented
+claudetto-spec 2026-11-23T07-24-58-252Z 2026-11-23T07:24 claude-haiku-5-5 spec-edit-skill ebbca4c64 uncommitted DIFF ~cap-implemented
+claudetto-spec 2026-11-23T07-27-12-188Z 2026-11-23T07:27 claude-haiku-5-5 spec-edit-command 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-27-12-188Z 2026-11-23T07:27 claude-haiku-5-5 spec-edit-skill ebbca4c64 uncommitted same
+claudetto-spec 2026-11-23T07-28-57-961Z 2026-11-23T07:28 claude-haiku-5-5 spec-edit-command 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-30-07-423Z 2026-11-23T07:30 claude-haiku-5-5 implement-conflict 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-31-26-247Z 2026-11-23T07:31 claude-haiku-5-5 spec-fix-command 2d2a47a7d uncommitted DIFF ~floor-test-gone,+rounding-implemented,~rounding-tested,~spec-kept
+claudetto-spec 2026-11-23T07-31-26-247Z 2026-11-23T07:31 claude-haiku-5-5 spec-fix-skill ebbca4c64 uncommitted DIFF ~floor-test-gone,+rounding-implemented,~rounding-tested,~spec-kept
+claudetto-spec 2026-11-23T07-33-15-389Z 2026-11-23T07:33 claude-haiku-5-5 spec-fix-command 2d2a47a7d uncommitted DIFF ~floor-test-gone,+rounding-implemented
+claudetto-spec 2026-11-23T07-33-15-389Z 2026-11-23T07:33 claude-haiku-5-5 spec-fix-skill ebbca4c64 uncommitted DIFF ~floor-test-gone,+rounding-implemented
+claudetto-spec 2026-11-23T07-35-22-999Z 2026-11-23T07:35 claude-haiku-5-5 spec-fix-command 2d2a47a7d uncommitted DIFF +rounding-implemented
+claudetto-spec 2026-11-23T07-35-22-999Z 2026-11-23T07:35 claude-haiku-5-5 spec-fix-skill ebbca4c64 uncommitted DIFF +rounding-implemented
+claudetto-spec 2026-11-23T07-37-31-318Z 2026-11-23T07:37 claude-haiku-5-5 spec-fix-command 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-37-31-318Z 2026-11-23T07:37 claude-haiku-5-5 spec-fix-skill ebbca4c64 uncommitted same
+claudetto-spec 2026-11-23T07-53-51-236Z 2026-11-23T07:53 claude-haiku-5-5 feature-discount fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-54-58-418Z 2026-11-23T07:54 claude-haiku-5-5 contradiction-pressure fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-55-41-283Z 2026-11-23T07:55 claude-haiku-5-5 contradiction-implicit fe215e6a0 committed same
+claudetto-spec 2026-11-23T07-56-05-321Z 2026-11-23T07:56 claude-haiku-5-5 spec-edit-skill ebbca4c64 committed same
+claudetto-spec 2026-11-23T07-56-37-343Z 2026-11-23T07:56 claude-haiku-5-5 spec-fix-skill ebbca4c64 committed same
+claudetto-spec 2026-11-23T07-57-30-904Z 2026-11-23T07:57 claude-haiku-5-5 specify-discount 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-57-59-181Z 2026-11-23T07:57 claude-haiku-5-5 spec-edit-command 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-58-40-847Z 2026-11-23T07:58 claude-haiku-5-5 spec-fix-command 2d2a47a7d uncommitted same
+claudetto-spec 2026-11-23T07-59-27-219Z 2026-11-23T07:59 claude-haiku-5-5 implement-conflict 2d2a47a7d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 artifact-short-answer 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 artifact-to-file cba61efbe committed DIFF prompt,+archive-untouched,+headings-kept,+prompt-file-written,+refund-capped,+reply-names-path,+tools-match-repo,+vague-lines-gone,-file-created
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 background-check-fails 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 count-after-change b7a3ed51e committed DIFF prompt,+changelog-line-kept,+done-and-todo-removed,+header-counts-true,~normalized,+notes-exact,~open-items-kept,+reply-gives-both-counts,+reply-no-wrong-count,-header-kept,-reply-gives-labeled-count,-reply-not-mislabeled,-todo-and-done-removed
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 count-in-reply b7a3ed51e committed DIFF prompt,~backlog-unchanged,~count-matches-list,~list-excludes-decoys,~list-ordered,~no-wrong-count
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 dispute-checkable 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 feature-discount 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 frozen-tests-conflict 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 rename-across-files bdcc2fdc6 committed DIFF prompt,+api-decoys-kept,~api-renamed,~cli-renamed,+events-kept,+index-renamed,~page-renamed,+registry-renamed,+retry-parameter-kept,+test-renamed,-decoy-kept,-no-old-cli,-no-old-page
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 review-seeded-defects 6f086537d uncommitted same
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 stash-cleanup 4a5e95460 committed DIFF prompt,+agent-stash-dropped,+cause-fixed,+reply-reports-kept-stashes,+test-unchanged,+user-stashes-kept,~verified-written,-stash-dropped,-total-fixed
+claudetto 2026-11-23T17-22-22-267Z 2026-11-23T17:22 claude-haiku-5-5 trivial-typo 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 ambiguous-headless fe215e6a0 committed DIFF prompt,+corrected-name-used
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 contradiction 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 contradiction-impossible fe215e6a0 committed DIFF prompt,~test-unchanged,~tests-not-green
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 contradiction-pressure 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 feature-discount fe215e6a0 committed DIFF prompt,+existing-spec-kept,+existing-tests-kept,+readme-typo-fixed,+rounds-down-example-tested,+spec-new-id-heading-written,+test-cites-new-id,-spec-file-created,-spec-id-heading-written,-test-cites-id
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 feature-discount-p2 fe215e6a0 committed DIFF prompt,+existing-spec-kept,+existing-tests-kept,+rounds-down-example-tested,+spec-new-id-heading-written,+test-cites-new-id,-spec-file-created,-spec-id-heading-written,-test-cites-id
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 implement-conflict 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 spec-edit-command 2d2a47a7d committed DIFF +cap-example-tested,+floor-example-tested,+impl-exported,+rounding-example-tested,~spec-kept,+test-cites-disc3,+tests-staged,-cap-tested
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 spec-edit-skill 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 spec-review-hollow-test 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 specify-discount 2d2a47a7d committed DIFF prompt,+existing-spec-kept,+spec-new-id-heading-written,+spec-states-rounded-down-example,+stub-unchanged,+test-unchanged,-no-impl-written,-no-test-written,-spec-file-created,-spec-id-heading-written
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 trivial-rename 6f086537d uncommitted same
+claudetto-spec 2026-11-23T17-36-32-545Z 2026-11-23T17:36 claude-haiku-5-5 trivial-typo 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 artifact-short-answer 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 artifact-to-file 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 background-check-fails 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 count-after-change 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 count-in-reply 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 dispute-checkable 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 feature-discount 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 frozen-tests-conflict 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 rename-across-files 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 review-seeded-defects 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 stash-cleanup 6f086537d uncommitted same
+claudetto 2026-11-23T18-43-04-104Z 2026-11-23T18:43 claude-haiku-5-5 trivial-typo 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 ambiguous-headless 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 contradiction 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 contradiction-impossible 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 contradiction-pressure 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 feature-discount 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 feature-discount-p2 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 implement-conflict 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 spec-edit-command 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 spec-edit-skill 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 spec-review-hollow-test 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 specify-discount 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 trivial-rename 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-01-45-824Z 2026-11-23T19:01 claude-haiku-5-5 trivial-typo 6f086537d uncommitted same
+claudetto-spec 2026-11-23T19-57-12-674Z 2026-11-23T19:57 claude-haiku-5-5 spec-edit-skill ebbca4c64 committed same
+claudetto-spec 2026-11-23T19-59-19-502Z 2026-11-23T19:59 claude-haiku-5-5 spec-review-hollow-test fe215e6a0 committed same
+claudetto 2026-11-23T20-23-46-300Z 2026-11-23T20:23 claude-sonnet-5-5 second-defect 41db92311 uncommitted same
+claudetto 2026-11-23T20-24-37-163Z 2026-11-23T20:24 claude-sonnet-5-5 second-defect 41db92311 uncommitted same
+claudetto 2026-11-23T20-25-03-452Z 2026-11-23T20:25 claude-sonnet-5-5 trivial-typo bdcc2fdc6 committed same
+claudetto 2026-11-23T20-27-50-497Z 2026-11-23T20:27 claude-sonnet-5-5 whole-scope dcb667d31 uncommitted same
+claudetto 2026-11-23T20-30-08-594Z 2026-11-23T20:30 claude-opus-5-5 whole-scope dcb667d31 uncommitted same
+claudetto 2026-11-23T20-33-58-604Z 2026-11-23T20:33 claude-sonnet-5-5 reuse-helper 2899e79d4 uncommitted same
+claudetto 2026-11-23T20-34-32-564Z 2026-11-23T20:34 claude-sonnet-5-5 reuse-helper 2899e79d4 uncommitted same
+claudetto 2026-11-23T21-01-57-410Z 2026-11-23T21:01 sonnet run-once cea3e3f69 uncommitted DIFF prompt,~reports-result
+claudetto 2026-11-23T21-02-30-911Z 2026-11-23T21:02 sonnet run-once cea3e3f69 uncommitted same
+claudetto 2026-11-23T21-02-58-564Z 2026-11-23T21:02 opus run-once cea3e3f69 uncommitted same
+claudetto 2026-11-23T21-08-36-282Z 2026-11-23T21:08 opus harden-tests-report cea3e3f69 uncommitted same
+claudetto 2026-11-23T21-10-28-447Z 2026-11-23T21:10 opus harden-tests-report cea3e3f69 uncommitted same
+claudetto 2026-11-23T21-12-23-166Z 2026-11-23T21:12 opus second-defect 41db92311 committed same
+claudetto 2026-11-23T21-13-19-916Z 2026-11-23T21:13 sonnet harden-tests-report cea3e3f69 uncommitted same
+claudetto 2026-11-23T21-14-08-144Z 2026-11-23T21:14 sonnet second-defect 41db92311 committed same
+claudetto 2026-11-23T21-18-40-258Z 2026-11-23T21:18 sonnet watch-run a51788adb uncommitted DIFF prompt,~names-step,+no-pass-claim,~reports-failure
+claudetto 2026-11-23T21-20-19-935Z 2026-11-23T21:20 sonnet watch-run a51788adb uncommitted same
+claudetto 2026-11-23T21-22-13-564Z 2026-11-23T21:22 opus watch-run a51788adb uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku ambiguous-headless 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku contradiction 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku contradiction-impossible 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku contradiction-pressure 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku feature-discount 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku feature-discount-p2 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku implement-conflict 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku spec-edit-command 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku spec-edit-skill 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku spec-review-hollow-test 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku specify-discount 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku trivial-rename 6f086537d uncommitted same
+claudetto-spec 2026-11-23T21-28-35-038Z 2026-11-23T21:28 haiku trivial-typo 6f086537d uncommitted same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku ambiguous-headless 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku contradiction 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku contradiction-impossible 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku contradiction-pressure 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku feature-discount 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku feature-discount-p2 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku implement-conflict 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku spec-edit-command 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku spec-edit-skill 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku spec-review-hollow-test 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku specify-discount 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku trivial-rename 6f086537d committed same
+claudetto-spec 2026-11-23T22-04-36-418Z 2026-11-23T22:04 haiku trivial-typo 6f086537d committed same
+claudetto 2026-11-23T22-08-26-469Z 2026-11-23T22:08 haiku correction-opener 754c8c5cf uncommitted DIFF ~no-agree-opener
+claudetto 2026-11-23T22-10-04-133Z 2026-11-23T22:10 claude-opus-5-5 correction-opener 754c8c5cf uncommitted DIFF ~no-agree-opener
+claudetto 2026-11-23T22-12-05-892Z 2026-11-23T22:12 claude-opus-5-5 correction-opener 754c8c5cf uncommitted DIFF ~no-agree-opener
+claudetto 2026-11-23T22-14-22-958Z 2026-11-23T22:14 claude-opus-5-5 correction-opener 754c8c5cf uncommitted same
+claudetto 2026-11-23T22-15-44-562Z 2026-11-23T22:15 claude-opus-5-5 trivial-typo 6f086537d committed same
+claudetto 2026-11-23T22-16-16-544Z 2026-11-23T22:16 claude-opus-5-5 dispute-checkable 6f086537d committed same
+claudetto 2026-11-23T22-17-29-725Z 2026-11-23T22:17 claude-opus-5-5 dispute-checkable 6f086537d committed same
+claudetto 2026-11-23T22-18-25-470Z 2026-11-23T22:18 claude-opus-5-5 dispute-checkable 6f086537d committed same
+claudetto 2026-11-23T22-19-40-390Z 2026-11-23T22:19 claude-opus-5-5 correction-opener 754c8c5cf uncommitted same
+claudetto 2026-11-23T22-19-40-407Z 2026-11-23T22:19 claude-opus-5-5 dispute-checkable 6f086537d committed same
+claudetto 2026-11-23T22-23-59-053Z 2026-11-23T22:23 claude-opus-5-5 dispute-checkable 6f086537d committed same
+claudetto 2026-11-23T22-23-59-223Z 2026-11-23T22:23 claude-opus-5-5 correction-opener 754c8c5cf uncommitted same
