@@ -56,6 +56,7 @@
   Basis: measured. Status: missing at 088a227c.
   Source: handover probe A, claude 2.1.325, 2026-11-16, cc-inspect cli on a fake API, stream-json prompts `first one`, `/clear`, `after clear`, plugin under --plugin-dir (recorded in plans/rebuild-curation.md at commit 434bf4cb); user decision, 2026-11-16 19:00 UTC, handover mimics the compaction settings; a manual /clear gets a handover first (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6412); probe A, `claude` 2.1.325, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:6738); live probe F, Haiku 5.5, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:7297).
   Verified: not re-run 2026-11-19 beyond the re-verification: /clear probe on 2.1.327 (cc-inspect fake API): 3 requests, request 2 fork has "effort":"low", request 3 opens with the claudetto:handover block and has no "first one"; clear.test.ts passes.
+  Verified: 2026-11-24, claude 2.1.331, cc-inspect cli on the fake API, plugin under --plugin-dir. Prompts `first one`, `second one`, `/clear`, `third prompt`: 4 requests; request 3 is the fork with `"output_config":{"effort":"low"}`; request 4 opens with the `claudetto:handover` block, then the `/clear` command record and `third prompt`, and a search for `first one` matches requests 1 to 3 only. Prompts `first one`, `/clear`, `second prompt`: 2 requests, no fork, as writer.ts skips the fork for a one-prompt conversation (#64); request 2 opens with the handover block. `claude plugin test plugins/claudetto`: 333 pass, including "a typed /clear runs and its handover goes out once".
 
 - [x] **REQ-HANDOVER-021** claudetto shall show a status line through `$.ui.status` while the fork runs, because the clear waits on it: 2.4 s on Haiku 5.5 over a 67k-token cached prefix. Hook time stops during `$` calls, so the 10 s hook budget does not cut the fork.
   Acceptance: a status line "Writing handover…" shows from the start of the fork until it returns, also when the fork throws; the pending `/clear` handover is kept in `$.store`, because module state is lost on reload. Verification: test.
@@ -145,6 +146,7 @@
   Source: external/2026-10-25_p2/reddit.com-r-claudecode-comments-1x0omjh-i-built-conpact-claude-code-co-20261025T162222Z.md:42 (url: <https://www.reddit.com/r/ClaudeCode/comments/1x0omjh/i_built_conpact_claude_code_compacts_its_own/>); external/2026-10-17/export-Got into a debate work about why my token usage was so high yesterday.jsonl:7; external/2026-10-03/export-I fixed save-token-jev for Claude Code 2.1.283 — 70% context reduction in ~1.1s on a real coding ses.jsonl:22; <https://github.com/anthropics/claude-code/releases/tag/v2.1.326> (release notes).
   Verified: inspection, hooks/handover/writer.ts calls `$.model.fork({ prompt: FORK_PROMPT, effort: "low" })` with no model, and the fork reuses the main thread's model and cached prefix (types/claude-code/index.d.ts, `model.fork` doc) (2.1.327, 2026-11-19).
   Verified: re-verification 2026-11-19: writer.ts fork call passes only prompt and effort, no model; .claude-plugin/types/claude-code/index.d.ts:3053 documents the fork as over the session's OWN transcript; compact.test.ts "the handover fork asks for low effort and names no model" passes (101 pass, 0 fail, 2.1.327).
+  Verified: 2026-11-24, claude 2.1.331: `writer.ts:82` calls `$.model.fork({ prompt: FORK_PROMPT, effort: "low" })` with no model; the 2.1.331 types (`index.d.ts` near line 3307) say the fork sends "The main thread's last request again (its model, system prompt, tools, messages)"; `claude plugin test plugins/claudetto` 333 pass, including "the handover fork asks for low effort and names no model".
 
 ## Memory Guard
 
@@ -164,6 +166,7 @@
   Source: openspec/changes/2-1-325-rearchitecture/design.md:131.
   Verified: re-verification 2026-11-19: /compact probe on 2.1.327 (cc-inspect fake API): cache_control on system[1], system[2] and messages[2]; no "ttl" key in any request.
   Verified: tick-audit rerun 2026-11-19, claude 2.1.327, local stub API, one prompt then `/compact`: both summarizer requests ("CRITICAL: Respond with TEXT ONLY") carry `cache_control` `{type: ephemeral}` at system[1], system[2] and messages[2].content[0], and no request body holds `ttl`, so the write is 5 m -> PASS.
+  Verified: 2026-11-24, claude 2.1.331, cc-inspect cli on the fake API, no plugin, prompts `first one` then `/compact`: the two summarizer requests (2 and 3, "CRITICAL: Respond with TEXT ONLY") carry `cache_control` at system[1], system[2] and messages[2].content[0]; a search for `"ttl"` matches no request, so the write is 5 m -> PASS.
 
 ## Session Boundary
 
@@ -189,6 +192,7 @@
   Verified: test, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto`: 25 pass, including "auto compaction gets the handover and no core call", "a finished last task above 70k renews", "a boundary under 70k does nothing" and "a typed /clear runs and its handover goes out once". No live dogfood session was run.
   Verified: test, `claude plugin test plugins/claudetto` -> 59 pass (2.1.327, 2026-11-19). The dogfood check of the acceptance stays with the goal's dogfood session.
   Verified: not re-run 2026-11-19: auto-compaction is unreachable on the fake API (no session.compact with AUTO_COMPACT_WINDOW=100000); static evidence: plugins/claudetto/hooks/handover/compact.ts:13-35, compact.test.ts passes.
+  Verified: 2026-11-24, claude 2.1.331: `claude plugin test plugins/claudetto` 333 pass, including "auto compaction gets the handover and no core call", "a finished last task above 70k renews", "a boundary under 70k does nothing" and "a typed /clear runs and its handover goes out once". Probe: cc-inspect cli, plugin loaded, `CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE=0.000001`, three prompts: no compaction request and no renewal fault in the debug log, because headless renewal is the driver's (ADR-0184). A manual `/compact` with the plugin still makes core's two summarizer requests, as `compact.ts` keeps core's summary for a manual compaction. The live renewal check stays with the dogfood session.
 
 ## Handover Currency
 

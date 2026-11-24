@@ -101,5 +101,6 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Conflict: Turn Caps.
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): `git grep maxTurns plugins` returns nothing.
   Verified: inspection 2026-11-19: no Metis agent file; plugins/claudetto/agents/Heracles.md holds the `git commit --only` line.
+  Verified: 2.1.331, 2026-11-24: `git grep -n maxTurns plugins` returns nothing, so no worker runs under a turn limit.
 
 ## Rules Passed to Workers
