@@ -27,7 +27,7 @@ First Glob `specs/*.md` and read the specs the request touches.
 
 1. Write tests in the project's own framework; cite the requirement ID in the test name.
 2. Run them and see them fail.
-3. `git add` the test files before writing implementation.
+3. `git add` the test files in a call of their own, and confirm they are staged before writing implementation.
 
 ## Green
 
