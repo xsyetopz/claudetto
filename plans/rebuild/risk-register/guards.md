@@ -60,7 +60,7 @@
 
 - [x] **RISK-034** Moved Out as OUT-2316: the item describes a part that plugins/ does not ship.
   Status: closed 2026-11-24: claudetto at 1f65937ab ships no temp sweep, idle cleanup or hygiene hook, so no claudetto code can drop a batch or delete a folder in use.
-  Verified: 2026-11-24, inspection of main at 1f65937ab, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
+  Verified: 2026-11-24, inspection of main at 1f65937ab, the plugins built for claude 2.1.329, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
 
 - [x] **RISK-035** Each worktree Claude Code creates flips the shared core.hooksPath to an absolute path, and the bedrock guard-base prints "git hooks are off".
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the bedrock repo's guard-base hook, owned by that repo).
@@ -1319,7 +1319,7 @@
 
 - [x] **RISK-108** Moved Out as OUT-2344: the item describes a part that plugins/ does not ship.
   Status: closed 2026-11-24: claudetto at 1f65937ab ships no temp sweep, idle cleanup or hygiene hook, so no claudetto code can drop a batch or delete a folder in use.
-  Verified: 2026-11-24, inspection of main at 1f65937ab, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
+  Verified: 2026-11-24, inspection of main at 1f65937ab, the plugins built for claude 2.1.329, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
 
 - [x] **RISK-109** The temp marker rule blocks the Write tool.
   - Category: product defect.

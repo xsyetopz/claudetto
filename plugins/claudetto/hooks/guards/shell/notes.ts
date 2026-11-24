@@ -3,12 +3,14 @@ import type { On } from "claude-code";
 import { fault } from "../../shared/fault";
 import { fieldOf } from "../../shared/field";
 import {
+	API_KEY_NOTE,
 	type BashAnswer,
 	GREP_COUNT_NOTE,
 	hasNoChecks,
 	isZeroCount,
 	missingCommand,
 	missingNote,
+	needsApiKey,
 	NO_CHECKS_NOTE
 } from "./missing";
 
@@ -117,7 +119,8 @@ export const shellNotes = (command: string, facts: ShellFacts): string[] => {
  * 2026-11-21: background `; echo`, pipe and chain status, zsh word splitting),
  * and to a result that shows a missing command (install it and keep the check)
  * a `grep -c` zero count (zero matches, not a failure), or a `gh pr checks`
- * that reports no checks (none registered yet, not a pass; ISSUES #127). The command runs as
+ * that reports no checks (none registered yet, not a pass; ISSUES #127), and a model call
+ * stopped for lack of an API key (run it on the session's login; RISK-379). The command runs as
  * written; the notes only tell the model what its exit status can and cannot show.
  */
 export function registerNotes(on: On): void {
@@ -152,6 +155,9 @@ export function registerNotes(on: On): void {
 		}
 		if (hasNoChecks(e.command, answer)) {
 			notes.push(NO_CHECKS_NOTE);
+		}
+		if (needsApiKey(answer)) {
+			notes.push(API_KEY_NOTE);
 		}
 		if (notes.length === 0) {
 			return r;

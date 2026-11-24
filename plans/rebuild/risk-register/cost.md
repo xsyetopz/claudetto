@@ -108,6 +108,9 @@
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0afb43bf-4a66-4969-9e0b-5695bf570654.jsonl:9; `CHANGELOG.md:286` at 088a227c; reported, user, 2026-11-11; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13.
   - Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 3 = 3, at or below 5.
   - Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 3.
+  - Evidence: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, reports/2026-11-24-research/pin-2-1-329/r379 (accepted-reply-c case 379, 9 runs per arm): vanilla told the user to set the key in 9 of 9 and showed no summary; claudetto with the shipped note (v5) moved the script to `claude -p` with the same model and showed the summary in 9 of 9, with no hand-off; earlier wordings that let it run `claude -p` by hand left a hand-off in 2 of 9.
+  - Status: mitigated 2026-11-24: `hooks/guards/shell/missing.ts` (`needsApiKey`, `API_KEY_NOTE`) adds a note to a Bash result that reports a missing Anthropic API key: the session runs on the Claude Code login, so the tool makes its call through `claude -p`, and the user is never told to set a key.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, reports/2026-11-24-research/pin-2-1-329/r379 reps 51-59 against vanilla reps 11-19: summary shown 9/9 against 0/9, hand-off 0/9 against 9/9; `claude plugin test plugins/claudetto` -> 347 pass, 0 fail.
 
 ## Hooks, Gates, and Notices
 
