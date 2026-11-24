@@ -77,6 +77,7 @@
   Verified: 2026-11-18, weak evidence. `grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto` finds no hit, so the plugin ships no default for either key and no code reads them; the acceptance holds. The ask rule over edits to these two settings is not built; REQ-SETUP-065 writes autoMemoryEnabled only on a yes. Reopened 2026-11-18 in review: the ask rule clause is open, so the item stays BUILD.
   Source: external/please-use-me-often/agent-terms/ACCEPTABLE-USE-POLICY.md:58; openspec/specs/session-hygiene/spec.md:33.
   Verified: grep -rnE 'cleanupPeriodDays|autoMemoryEnabled' plugins/claudetto -> 0 hits; hooks/guards/wall/rules.ts ASK holds Edit and Write on ~/.claude/settings.json, and the cc-inspect cli fill wrote both ask rules; fill.test.ts pins only the stash, tag-push and process-kill ask entries, so the two settings.json ask entries rest on rules.ts:59-60 and the fill run, not on a test (2.1.327, 2026-11-19).
+  Verified: 2026-11-24, claude 2.1.331: ASK holds `Edit(~/.claude/settings.json)` only, since 2.1.331 matches file checks against Edit rules alone and warned that the Write twin matches nothing (RISK-536); the fill drops a twinned Write rule; `claude plugin test plugins/claudetto` 332 pass.
 
 ## Stop and Reply Checks
 

@@ -66,10 +66,27 @@ const CONFLICTS: readonly (readonly [string, (rule: unknown) => boolean])[] = [
 	["deny", blocksFree]
 ];
 
+/** The path of a `Write(...)` rule, else undefined. */
+const writePath = (rule: unknown): string | undefined =>
+	typeof rule === "string" ? /^Write\((.+)\)$/su.exec(rule)?.[1] : undefined;
+
+/**
+ * Whether a rule is a `Write(path)` rule whose `Edit(path)` twin sits in the
+ * same list. File permission checks match only `Edit(path)` rules, which cover
+ * every file-editing tool, so the `Write` copy matches nothing and Claude Code
+ * 2.1.331 prints a warning for it on every launch (RISK-536).
+ */
+const deadWrite = (rule: unknown, list: readonly unknown[]): boolean => {
+	const path = writePath(rule);
+	return path !== undefined && list.includes(`Edit(${path})`);
+};
+
 /**
  * Removes from `next.permissions` each rule that conflicts with the
  * construction, wherever it came from: a rule an earlier release wrote and a
  * rule the user wrote are judged by what they match, not by who wrote them.
+ * An ask or deny `Write(path)` rule goes too when its `Edit(path)` twin is in
+ * the same list, since only the `Edit` rule is matched.
  *
  * @param next Settings being built; its permission lists are replaced.
  * @param removed Receives one `removed permissions.<list> <rule>` line per removal.
@@ -85,9 +102,11 @@ export function dropConflicts(next: Json, removed: string[]): void {
 			continue;
 		}
 		const entries: unknown[] = held;
-		const dropped = entries.filter((rule) => conflicts(rule));
+		const drops = (rule: unknown): boolean =>
+			conflicts(rule) || (list !== "allow" && deadWrite(rule, entries));
+		const dropped = entries.filter((rule) => drops(rule));
 		if (dropped.length > 0) {
-			permissions[list] = entries.filter((rule) => !conflicts(rule));
+			permissions[list] = entries.filter((rule) => !drops(rule));
 			removed.push(
 				...dropped.map((rule) => `removed permissions.${list} ${String(rule)}`)
 			);

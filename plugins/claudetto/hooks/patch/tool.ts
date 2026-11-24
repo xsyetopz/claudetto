@@ -32,7 +32,7 @@ const RANK: Record<Verdict, number> = { allow: 0, ask: 1, deny: 2 };
 /**
  * The strictest verdict the engine gives the Edit and Write tools for each
  * path, so a deny or ask rule written for them (`Edit(**\/.env)`,
- * `Write(~/.claude/settings.json)`) holds through `patch` too.
+ * `Edit(~/.claude/settings.json)`) holds through `patch` too.
  */
 async function editVerdict(
 	$: EngineInterface,
