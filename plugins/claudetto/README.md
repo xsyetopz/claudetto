@@ -128,6 +128,8 @@ Before the model reads a tool result, claudetto masks the values of the project'
 
 A prompt you type or paste, a slash command's arguments included, is held back when it holds a credential-shaped value: one of those secrets, or a word such as `password` or `token` followed by a value with a letter and a digit. Claude Code stores a sent prompt in plain text in the session file, and in a probe it kept a pasted password there 8 times. The held prompt stays in the input box with the reason. The same text submitted again is sent as it is.
 
+A model request to a host other than Anthropic's goes without the claude.ai or Console login. With `ANTHROPIC_BASE_URL` set and no `ANTHROPIC_AUTH_TOKEN`, Claude Code 2.1.329 sends that login as `Authorization: Bearer` to the custom URL: on a stand-in server it arrived on 3 of 4 requests in each vanilla run, and on none with claudetto. A key or token you set for the gateway (`ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY` or `apiKeyHelper`) still goes with each request.
+
 Four options in the plugin settings tune the hooks:
 
 | Option | Effect |

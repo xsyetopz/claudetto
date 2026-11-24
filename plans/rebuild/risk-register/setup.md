@@ -211,6 +211,9 @@
   Owner: setup.
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 5 = 5, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 5.
+  Evidence: 2026-11-24, claude 2.1.329: with ANTHROPIC_BASE_URL set and no ANTHROPIC_AUTH_TOKEN, vanilla sent the claude.ai login as Authorization: Bearer on 3 of 4 requests in each of 3 runs (reports/2026-11-24-research/pin-2-1-329/r405/README.md).
+  Status: mitigated 2026-11-24 (REQ-GUARDS-085): plugins/claudetto/hooks/settings/base-url.ts drops the credential headers from a model request to a host other than Anthropic's while the session holds the login; 0 of 2 requests carried it in each of 6 runs.
+  Verified: 2026-11-24, claude 2.1.329, reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run405.sh, vanilla reps 21-23 and claudetto reps 21-26, TOKEN=none, with dummy-token, API-key and apiKeyHelper controls; reports/2026-11-24-research/pin-2-1-329/r405/README.md.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:129; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:103 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
 - [x] **RISK-406** A plugin whose hook modifies tool output is held in Anthropic directory review.
