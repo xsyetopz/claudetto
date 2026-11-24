@@ -39,6 +39,7 @@
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 5 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 5 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 5 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:19,36,40,41; openspec/changes/2-1-325-rearchitecture/design.md:195,224; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:26-33; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:48; external/please-use-me-often/agent-failure-dossier/01-grounding-and-memory.md:59-62 (threads 1ws94i6, 1wp1yht, 1ub7lxv).
 
@@ -297,6 +298,7 @@
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 2 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/b8e1aaed-abd0-4456-8651-81e51b934bea.jsonl:7, reported, user, 2026-11-09; reported, user, 2026-11-16 17:37 UTC, no swaps, no needless tests, no benchmarks, no planner worker (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:3998); reported, user, 2026-11-16 17:41 UTC, product first, the rest later (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4166).
 
@@ -369,6 +371,7 @@
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 2 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 2 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 2 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: reported, user, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9309).
 
@@ -386,6 +389,7 @@
   - Owner: kernel
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
   - Verified: tick-audit rerun 2026-11-19, claude 2.1.327, Sonnet 5.5, conduct run.sh and handover-run.sh with the harness files kept out of the repo: claimed cure 3 vanilla 3/3, rerun vanilla 3/3 -> PASS (reports/2026-11-19-research/tick-rerun/conduct/README.md).
+  - Verified: 2026-11-24, claude 2.1.329, conduct `run.sh <cure> <arm> 1..3` (CURES_ROOT=/tmp/claude-501/c329, Sonnet 5.5, both arms): cure 3 vanilla 3/3, style 3/3 -> PASS.
 
   - Source: user decision, 2026-11-16 17:42 UTC, check a user claim before relying on it (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4177).
 

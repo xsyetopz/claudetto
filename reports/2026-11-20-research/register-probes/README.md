@@ -84,3 +84,5 @@ Raw lines: `results3.txt`. Both probes set `TURNS=1`, which writes each stream-j
 Run 25-vanilla-2 shows `pass=0` and was rescored as a pass: its memory reads "the user asked for the format to be my choice, so this is a default, not a requirement", which the scorer's "user asked" pattern caught.
 
 Total spend over the six batches: $7.03.
+
+On 2026-11-24, claude 2.1.329, the style arm of probe 25 scored 0/3 with an empty memory folder: `run.sh` passed two `--settings` flags, and the second (outputStyle) replaced the first (autoMemoryDirectory), so memory went to the default project folder. `run.sh` now merges both into one `--settings`; the rerun scores style 3/3.

@@ -94,8 +94,11 @@ args=(-p ${P:+"$P"} --model "${MODEL:-claude-sonnet-5-5}" --max-budget-usd "${BU
       --permission-mode acceptEdits --allowedTools "Bash Read Edit Write Glob Grep" --no-session-persistence --output-format "$fmt")
 [ "$fmt" = stream-json ] && args+=(--verbose)
 [ -n "${msgs:-}" ] && args+=(--input-format stream-json)
-[ -n "${mem:-}" ] && args+=(--settings "{\"autoMemoryDirectory\":\"$mem\"}")
-[ "$arm" = style ] && args+=(--plugin-dir "${PLUGIN_DIR:-$root/plugin}" --settings '{"outputStyle":"claudetto:Claudetto"}')
+# One --settings flag: a second one replaced the first, so the style arm lost autoMemoryDirectory.
+settings='{}'
+[ -n "${mem:-}" ] && settings=$(jq -c --arg m "$mem" '. + {autoMemoryDirectory: $m}' <<< "$settings")
+[ "$arm" = style ] && { settings=$(jq -c '. + {outputStyle: "claudetto:Claudetto"}' <<< "$settings"); args+=(--plugin-dir "${PLUGIN_DIR:-$root/plugin}"); }
+[ "$settings" != '{}' ] && args+=(--settings "$settings")
 envs=(DISABLE_AUTOUPDATER=1 CLAUDE_CODE_DISABLE_CLAUDE_MDS=1); [ -n "${mem:-}" ] && envs+=(CLAUDE_CODE_DISABLE_AUTO_MEMORY=0)
 if [ -n "${TURNS:-}" ] && [ -n "${msgs:-}" ]; then
   # One message per turn: the next message is written only after the previous turn's result event, so queued messages do not merge into one turn.
