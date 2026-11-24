@@ -58,6 +58,8 @@
   Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:713 (P43, measured).
 
 - [x] **RISK-034** Moved Out as OUT-2316: the item describes a part that plugins/ does not ship.
+  Status: closed 2026-11-24: claudetto at 1f65937ab ships no temp sweep, idle cleanup or hygiene hook, so no claudetto code can drop a batch or delete a folder in use.
+  Verified: 2026-11-24, inspection of main at 1f65937ab, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
 
 - [x] **RISK-035** Each worktree Claude Code creates flips the shared core.hooksPath to an absolute path, and the bedrock guard-base prints "git hooks are off".
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the bedrock repo's guard-base hook, owned by that repo).
@@ -254,6 +256,7 @@
 
 - [x] **RISK-047** A browser agent types into an unfocused box and its keystrokes hit site shortcuts.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the browser tool, owned by agent-browser).
+  Status: open 2026-11-24: the ADR-0190 closure rested on scope, not on a run; a run needs a browser tool signed in to a live account (Chrome extension), which this host's test sessions do not have, and claudetto ships no browser tool (plugins/ at 1f65937ab).
   Category: guards
   Cause: Clicking by element ref gives no focus.
   Event: In Gmail the reply box got no focus; the ? opened the shortcut list, e archives, # deletes; X went to the likes page. A shared Chrome tab switch ran a script on another site.
@@ -326,6 +329,7 @@
 
 - [x] **RISK-051** Bulk run to an outside model sends a secret.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: the outside-model client, owned by the user's bulk-run setup).
+  Status: open 2026-11-24: the ADR-0190 closure rested on scope, not on a run; claudetto ships no client that sends work to an outside model (plugins/ at 1f65937ab), and a run needs the bulk-run setup named in the Source.
   Category: agent
   Cause: The first bulk run to the outside model sent a memory file holding a LAN login, because the client-content screen did not look for secrets.
   Event: A credential leaves the machine.
@@ -883,6 +887,8 @@
 
 - [x] **RISK-082** Delete Through A Junction.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: Windows junction handling, owned by Claude Code).
+  Evidence: 2026-11-24, claude 2.1.329 binary: on Windows the directory walk reports a junction as a symbolic link with its target, not as a directory (chunk-gvhwnc7g.js@53231).
+  Status: open 2026-11-24: a delete through a junction by a shell command needs a run on Windows, which this macOS host cannot give.
   Category: Agent behaviour (Windows).
   Cause: On Windows Claude creates junctions or reparse points to other directories.
   Event: Deleting the scratch space deletes the target files.
@@ -921,6 +927,8 @@
 
 - [x] **RISK-085** Claude on Windows PowerShell chains commands with the ampersand instead of the semicolon, fails, and retries.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: Windows PowerShell dialect, owned by Claude Code).
+  Evidence: 2026-11-24, claude 2.1.329 binary: the PowerShell tool prompt names the edition and its chain rules, "Pipeline chain operators `&&` and `||` are NOT available" for 5.1 and available for 7+, and assumes 5.1 when unknown (chunk-rbrxn03m.js@2652 to 3900).
+  Status: open 2026-11-24: core now states the dialect, the action this item asked for; whether the model still chains with `&` needs a run of the PowerShell tool on Windows, which this macOS host cannot give.
   Category: agent fault
   Cause: Wrong shell dialect
   Event: The command fails and is retried
@@ -954,6 +962,7 @@
 
 - [x] **RISK-087** Wrong Account In Scheduled Run.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: scheduled runs and browser accounts, owned by the user's scheduler setup).
+  Status: open 2026-11-24: the ADR-0190 closure rested on scope, not on a run; a run needs a browser tool signed in to a live account (Chrome extension), which this host's test sessions do not have, and claudetto ships no browser tool (plugins/ at 1f65937ab).
   Category: Agent behaviour.
   Cause: A scheduled run finds the browser signed into another person's account.
   Event: One evening the run was still signed into someone else's LinkedIn account.
@@ -991,6 +1000,9 @@
 
 - [x] **RISK-089** Worktrees and scratchpads in /tmp are wiped or fill memory.
   Verified: 2026-11-18, closed by ADR-0190 (out of scope, cause outside claudetto: WSL temp placement of worktrees, owned by Claude Code).
+  Evidence: 2026-11-24, claude 2.1.329: `--worktree` puts the tree under `<repo>/.claude/worktrees/<name>` (6 of 6 runs of reports/2026-11-24-research/pin-2-1-329/accepted-guards-b/run.sh 035, vanilla and claudetto), and the settings schema names `<project>/.claude/worktrees` as the CLI default (chunk-t39fw2cy.js@239714); a vanilla `claude -p` asked for its scratchpad path answered NONE ($0.02).
+  Status: closed 2026-11-24: on 2.1.329 worktrees live in the repo, not in /tmp, on every platform, so a /tmp wipe on WSL no longer removes them.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `ARM=vanilla|style bash reports/2026-11-24-research/pin-2-1-329/accepted-guards-b/run.sh 035 <1..3>`: worktree list shows REPO/.claude/worktrees/wt in 6 of 6.
   Category: agent failure.
   Cause: On WSL, /tmp is wiped on every restart and Claude Code put parallel git worktrees there (one user; a second commenter in the recovery thread reports the same loss). A second user's unremoved /tmp scratchpads and worktrees from 20-25 agents filled 32 GB of RAM, then the SSD. One commenter notes /tmp as a RAM disk limited to a few GB is a natural constraint on agent writes.
   Event: The restart or the fill removes uncommitted work or crashes the system.
@@ -1297,6 +1309,8 @@
   - Source: observed in transcript, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:2499`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3219`); reported, user, 2026-11-12 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-JagFx/0aeae205-b9f3-46e8-9b4a-f0afa266d523.jsonl:3268`); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:25179`); observed in transcript, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27530`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27639`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27873`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19 (reported, user, 2026-11-13); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6513; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834 (reported, user, 2026-11-12); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134 (observed in transcript, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398 (reported, user, 2026-11-09); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:19; reported, user, 2026-11-13; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/17435f50-2ca0-45f0-82a9-d3bafca667f4.jsonl:6612; reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:13); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:785); reported, user, 2026-11-12 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/7200b9c9-9af5-4a59-adbc-bb90f0b139b5.jsonl:834); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:134, observed in transcript, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cc4fc018-bd65-4a00-ac3d-b422b406186a.jsonl:1398, reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/cd2e74f0-9cdf-4300-b148-fa16b64f6d5c.jsonl:824, observed in transcript, 2026-11-12; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenSAD/a106dac3-8014-4a19-a503-e4426f00617b.jsonl:210 (handoff: the user must remove the 7 old agent worktrees because the plugin blocks the agent); observed in transcript, 2026-11-12 (observed in transcript, 2026-11-12).
 
 - [x] **RISK-108** Moved Out as OUT-2344: the item describes a part that plugins/ does not ship.
+  Status: closed 2026-11-24: claudetto at 1f65937ab ships no temp sweep, idle cleanup or hygiene hook, so no claudetto code can drop a batch or delete a folder in use.
+  Verified: 2026-11-24, inspection of main at 1f65937ab, `grep -rniE "idleTemp|sweep|hygiene|temp-cleanup|rmSync|fs\.rm\(" plugins/*/hooks --exclude-dir=__tests__`: no match in the hooks of claudetto, claudetto-spec or claudetto-you-should-know.
 
 - [x] **RISK-109** The temp marker rule blocks the Write tool.
   - Category: product defect.
