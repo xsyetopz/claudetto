@@ -78,7 +78,7 @@ Each risk carries the fields: Category, Cause, Event, Consequence, Likelihood, I
 
 A settled status (closed, mitigated, accepted, transferred) carries a `Verified:` line naming the check, its result and its date, because a status with no recorded check is one picked to pass (issue #52). The check fits the status:
 
-- closed or mitigated: the test, probe or grep that shows the fault no longer occurs, with its result on 2.1.327;
+- closed or mitigated: the test, probe or grep that shows the fault no longer occurs, with its result on the pinned 2.1.329 (ADR-0198);
 - accepted: the recorded runs or report counts that put Likelihood × Impact at 5 or lower, or measured runs where no candidate beats vanilla (ADR-0177);
 - transferred: the engine site that causes the fault and the recheck-on-release ticket.
 
