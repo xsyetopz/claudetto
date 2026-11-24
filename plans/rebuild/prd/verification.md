@@ -84,6 +84,7 @@
   Source: reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
   Verified: demonstration, 2026-11-18: `just bump claudetto` took plugin.json 0.1.0 to 0.1.1 with no ask; `just release <plugin>` runs the bump before `verify`.
   Verified: not re-run 2026-11-19: `just bump` edits plugin.json, which this session may not change; static evidence: justfile:25-26 (release = bump then verify).
+  Verified: demonstration, 2026-11-24: `just bump claudetto </dev/null` took plugin.json 0.1.0 to 0.1.1 with no ask and exit 0; the file was then restored; `project.just` recipe `release` runs `bump` before `verify`.
 
 - [x] **REQ-VERIFICATION-090** claudetto shall publish nothing to a marketplace and push no release without the user's confirmation, and push a branch only after a green check, never forced.
   Acceptance: the agent asks before publishing. Verification: demonstration.
@@ -91,6 +92,9 @@
   Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:2031); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:473).
   Verified: probe, claude 2.1.327, 2026-11-18, cc-inspect cli `-p` with a Bash call `git push origin HEAD`: the tool result is "This command requires approval" in the default mode; setup writes no defaultMode (ADR-0190), and pre-push refuses a push on a red check.
   Verified: probe 2026-11-19, claude 2.1.327, fake API: Bash `git push origin HEAD` gives "requires approval" in request 2.
+  Evidence: 2026-11-24, claude 2.1.331, fake API, `bun reports/2026-11-24-research/reverify/push.ts "gh release create v1"`: with claudetto the release command ran with no prompt (RISK-538); the 2.1.327 lines above probed vanilla only. A plain branch push runs with no prompt under claudetto, as REQ-GUARDS-070 sets.
+  Status: cured 2026-11-24: ask rules for `gh release create`, `upload` and `edit` (RISK-538).
+  Verified: 2026-11-24, claude 2.1.331, `push.ts` on both arms: `gh release create v1`, `git push origin --tags` and `claude plugin tag --push` each ask under claudetto, and the scratch remote gets no tag; `git push origin HEAD` pushes the branch.
 
 ## Goal Prompt
 
