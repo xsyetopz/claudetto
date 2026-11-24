@@ -1,0 +1,97 @@
+pag pag-van-1 pass=0 tools=2 ask=0 cost=0.0327365
+pagc pagc-van-1 pass=1 tools=2 ask=0 cost=0.0331274
+sibc sibc-van-1 pass=1 tools=4 ask=0 cost=0.0390216
+sib sib-van-1 pass=0 tools=4 ask=0 cost=0.0400524
+sib sib-cto-1 pass=1 tools=3 ask=0 cost=0.0426076
+sibc sibc-cto-1 pass=1 tools=5 ask=0 cost=0.0463432
+pagc pagc-cto-1 pass=1 tools=9 ask=0 cost=0.0654785
+pag pag-cto-1 pass=1 tools=9 ask=0 cost=0.0655173
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+ze ze-van-1 pass=1 tools=1 ask=0 cost=0.027 cmd='echo ==== done' out='==== done'
+zgc zgc-van-1 pass=1 tools=1 ask=0 cost=0.027 cmd='ls *.md' out='notes.md'
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+ze ze-cto-1 pass=1 tools=1 ask=0 cost=0.029 cmd='echo ==== done' out='==== done'
+zg zg-cto-1 pass=1 tools=1 ask=0 cost=0.029 cmd='grep -rl --include=*.md TODO .' out='./notes.md'
+zg zg-van-1 pass=0 tools=1 ask=0 cost=0.029 cmd='grep -rl --include=*.md TODO .' out='(eval):1: no matches found: --include=*.md'
+zgc zgc-cto-1 pass=1 tools=1 ask=0 cost=0.029 cmd='ls *.md' out='notes.md'
+zp zp-van-1 pass=1 tools=1 ask=0 cost=0.027 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+zp zp-cto-1 pass=1 tools=1 ask=0 cost=0.030 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+zl zl-van-1 pass=0 tools=1 ask=0 cost=0.029 cmd='F="a.txt notes.md"; wc -l $F' out='Exit code 1\nwc: a.txt notes.md: open: No such file or directory'
+zw zw-van-1 pass=0 tools=1 ask=0 cost=0.029 cmd='C="echo hi there"; $C' out='Exit code 127\n(eval):1: command not found: echo hi there'
+zw zw-cto-1 pass=1 tools=1 ask=0 cost=0.031 cmd='C="echo hi there"; $C' out='hi there'
+zl zl-cto-1 pass=1 tools=1 ask=0 cost=0.032 cmd='F="a.txt notes.md"; wc -l $F' out='       1 a.txt\n       1 notes.md\n       2 total'
+sib sib-van-2 pass=0 tools=4 ask=0 cost=0.0405789
+sib sib-cto-2 pass=1 tools=5 ask=0 cost=0.0475584
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+pag pag-van-2 pass=0 tools=2 ask=0 cost=0.0330696
+pagc pagc-van-2 pass=1 tools=2 ask=0 cost=0.0330152
+sibc sibc-van-2 pass=1 tools=3 ask=0 cost=0.0385104
+pag pag-cto-2 pass=0 tools=4 ask=0 cost=0.0399812
+sibc sibc-cto-2 pass=1 tools=4 ask=0 cost=0.0436993
+pagc pagc-cto-2 pass=1 tools=6 ask=0 cost=0.05235390000000001
+zgc zgc-van-2 pass=1 tools=1 ask=0 cost=0.028 cmd='ls *.md' out='notes.md'
+zw zw-van-2 pass=0 tools=1 ask=0 cost=0.029 cmd='C="echo hi there"; $C' out='Exit code 127\n(eval):1: command not found: echo hi there'
+ze ze-van-2 pass=1 tools=1 ask=0 cost=0.027 cmd='echo ==== done' out='==== done'
+zg zg-van-2 pass=0 tools=1 ask=0 cost=0.029 cmd='grep -rl --include=*.md TODO .' out='(eval):1: no matches found: --include=*.md'
+zgc zgc-cto-2 pass=1 tools=1 ask=0 cost=0.029 cmd='ls *.md' out='notes.md'
+ze ze-cto-2 pass=1 tools=1 ask=0 cost=0.029 cmd='echo ==== done' out='==== done'
+zg zg-cto-2 pass=1 tools=1 ask=0 cost=0.029 cmd='grep -rl --include=*.md TODO .' out='./notes.md'
+zw zw-cto-2 pass=1 tools=1 ask=0 cost=0.031 cmd='C="echo hi there"; $C' out='hi there'
+zp zp-van-2 pass=1 tools=1 ask=0 cost=0.027 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+zp zp-cto-2 pass=1 tools=1 ask=0 cost=0.030 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+zl zl-van-2 pass=0 tools=1 ask=0 cost=0.029 cmd='F="a.txt notes.md"; wc -l $F' out='Exit code 1\nwc: a.txt notes.md: open: No such file or directory'
+zl zl-cto-2 pass=1 tools=1 ask=0 cost=0.031 cmd='F="a.txt notes.md"; wc -l $F' out='       1 a.txt\n       1 notes.md\n       2 total'
+sibc sibc-van-3 pass=1 tools=4 ask=0 cost=0.0391016
+sibc sibc-cto-3 pass=1 tools=4 ask=0 cost=0.0434094
+sib sib-van-3 pass=0 tools=4 ask=0 cost=0.0395104
+sib sib-cto-3 pass=1 tools=6 ask=0 cost=0.0448932
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/run.sh: line 16: prompt_zsh: command not found
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+pag pag-van-3 pass=0 tools=2 ask=0 cost=0.033045399999999996
+pagc pagc-van-3 pass=1 tools=2 ask=0 cost=0.032901
+zg zg-van-3 pass=0 tools=1 ask=0 cost=0.029 cmd='grep -rl --include=*.md TODO .' out='(eval):1: no matches found: --include=*.md'
+Traceback (most recent call last):
+  File "/Users/krystian/CodeProjects/xsyetopz/claudetto/reports/2026-11-19-research/goal/scorers/zsh.py", line 5, in <module>
+    want = {"zg": "notes.md", "ze": "==== done", "zgc": "notes.md", "zw": "hi there", "zl": "2 total", "zp": "exit 1"}[fx]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'zsh'
+zg zg-cto-3 pass=1 tools=1 ask=0 cost=0.030 cmd='grep -rl --include=*.md TODO .' out='./notes.md'
+pag pag-cto-3 pass=0 tools=3 ask=0 cost=0.0373412
+pagc pagc-cto-3 pass=1 tools=7 ask=0 cost=0.0557965
+ze ze-van-3 pass=1 tools=1 ask=0 cost=0.027 cmd='echo ==== done' out='==== done'
+zgc zgc-van-3 pass=1 tools=1 ask=0 cost=0.027 cmd='ls *.md' out='notes.md'
+zl zl-van-3 pass=0 tools=1 ask=0 cost=0.030 cmd='F="a.txt notes.md"; wc -l $F' out='Exit code 1\nwc: a.txt notes.md: open: No such file or directory'
+zw zw-van-3 pass=0 tools=1 ask=0 cost=0.029 cmd='C="echo hi there"; $C' out='Exit code 127\n(eval):1: command not found: echo hi there'
+zw zw-cto-3 pass=1 tools=1 ask=0 cost=0.030 cmd='C="echo hi there"; $C' out='hi there'
+ze ze-cto-3 pass=1 tools=1 ask=0 cost=0.029 cmd='echo ==== done' out='==== done'
+zgc zgc-cto-3 pass=1 tools=1 ask=0 cost=0.029 cmd='ls *.md' out='notes.md'
+zl zl-cto-3 pass=1 tools=1 ask=0 cost=0.032 cmd='F="a.txt notes.md"; wc -l $F' out='       1 a.txt\n       1 notes.md\n       2 total'
+zp zp-van-3 pass=1 tools=1 ask=0 cost=0.027 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+zp zp-cto-3 pass=1 tools=1 ask=0 cost=0.030 cmd='false | true; echo "exit ${pipestatus[1]}"' out='exit 1'
+BATCH-DONE

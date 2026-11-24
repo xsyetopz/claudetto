@@ -305,6 +305,7 @@
   Source: external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2; not located: the system-card line. Conflict check: the cure scans reply text at Stop and may fall under "No regex Stop check"; the lead decides; unresolved: no source line holds a tool call written as text; the nearest source, the Opus 5.5 prompting guide thread (external/2026-09-29/export-Claude Opus 5.5 official prompting guide.jsonl:2), says only that thinking cannot be turned off and that unattended agents stop early
 
 - [x] **RISK-439** Moved Out as OUT-2408: the part is not in plugins/.
+  Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -i -E 'plugin-dir|eval harness|arm assertion' -- plugins ':!*__tests__*'` -> no match (exit 1): no eval harness ships.
 
 - [x] **RISK-440** Tool error read as negative.
   - Category: Agent behaviour.
@@ -386,6 +387,7 @@
   - Verified: 2026-11-19, batchB, claude 2.1.327, claude-sonnet-5-5, plugin 71ae1e92a (reports/2026-11-19-research/goal/fixtures443.sh, scorers/r443.py). r443a: the last commit changes the xinput and dinput packet builders, and the check script defaults to xinput. r443b: the last commit changes the json and csv renderers, and the check defaults to json. Scored from Bash calls; a run passes when both variants ran. Vanilla 6/6 and 6/6, claudetto 6/6 and 6/6. Cost $1.090.
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures. The controls r443ac and r443bc are defined and not run. Limit: both prompts name the changed commit.
   - Verified: 2026-11-19, batchCTL, claude 2.1.327, Sonnet 5.5, plugin 1b094765a, 6 runs per arm (fixtures443.sh, scorers/r443ac.py and r443bc.py): the controls that were defined and not run now ran. r443ac (dinput ruled out by the user, so checking xinput alone is right): vanilla 6/6, claudetto 6/6. r443bc (csv ruled out): vanilla 6/6, claudetto 6/6. No run touched the ruled-out mode, so claudetto holds level on both controls and the closed status stands.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 3 per arm, fixtures443.sh: r443a vanilla 3/3, claudetto 3/3; r443b vanilla 3/3, claudetto 3/3. The fault stays absent on vanilla.
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures, and claudetto holds both controls at 6/6 (r443ac, r443bc).
 
 - [x] **RISK-444** Agent writes evidence and artefacts by hand that stand for real output.
@@ -518,6 +520,7 @@
   - Verified: 2026-11-19, batchCTL, claude 2.1.327, Sonnet 5.5, plugin 1b094765a, 6 runs per arm (fixtures450.sh, scorers/r450.py): control r450ac, where a broken import in common.py must be fixed before report.py can work, so editing a second file is right: vanilla 5/6, claudetto 6/6. The vanilla miss (run 3) edited only report.py, left the import broken and ran nothing. claudetto holds level on the control and the closed status stands; no r450bc fixture is defined.
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures, and claudetto holds the control r450ac at 6/6 (vanilla 5/6).
   - Verified: 2026-11-19, batchCTL2, claude 2.1.327, Sonnet 5.5, plugin 26539f1f9, 6 runs per arm: new confirm-pair control r450bc (fixtures450.sh, scorers/r450bc.py), the r450b repo where slug.py imports common.collapse and common.py has a syntax error, so fixing common.py first is right. Dry check before the run: the seed fails the hidden test, a correct slug.py alone fails, both fixed pass. Result: vanilla 6/6, claudetto 6/6, $0.674.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 3 per arm, fixtures450.sh: r450a vanilla 3/3, claudetto 3/3; r450b vanilla 3/3, claudetto 3/3. The fault stays absent on vanilla.
   - Status: closed 2026-11-19: the fault was absent in 12/12 vanilla and 12/12 claudetto runs on two fixtures, and claudetto holds both controls at 6/6 (r450ac, vanilla 5/6; r450bc, vanilla 6/6).
 
 - [x] **RISK-451** A background command masks its exit status.
@@ -652,6 +655,7 @@
 ## Relative Plugin Directory in a Probe
 
 - [x] **RISK-458** Moved Out as OUT-2407: the part is not in plugins/.
+  Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -i -E 'plugin-dir|eval harness|arm assertion' -- plugins ':!*__tests__*'` -> no match (exit 1): no probe harness ships.
 
 ## Citation Hygiene: Brief Lines Cited as Source Lines
 
@@ -717,6 +721,7 @@
   - Owner: verification
   - Status: open.
   - Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification). Core code, chunk-m14bt1pz.js offset 4533596: an unknown name returns `Error: No such tool available: <name>` and bad input returns `InputValidationError`, both as an error result the model reads; offset 4714646 raises the unknown-tool error. Probe, bad input: Bash called with `cmd` returned `InputValidationError: Bash failed due to the following issues: The required parameter`command` is missing; An unexpected parameter `cmd`was provided`, and the next call succeeded. Natural runs: 0 tool errors in 4 of 4 vanilla runs (scenario D). The cc-inspect `cli` `calls` option made no tool call in this session, so the wrong-name path is read from code, not run. The cost is one extra turn; the subagent-only lowercase `bash` is not reproduced. The grader-field and recipe-argument causes are project code.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, count over the stream-json logs of this goal's 270 probe runs (/tmp/claude-501/goal329r/out, acc-reply-c/runs, acc-guards-c, acc-guards-d, risks/out; each "claude_code_version":"2.1.329"): 1,012 tool calls, 0 `No such tool available` and 0 `InputValidationError`.
   - Source: external/please-use-me-often/agent-failure-dossier/03-safety-and-trust-boundaries.md:100; the wrong-case item named no source (the only "No such tool available" in `openspec/` is `mcp__claudetto__monitor`, `settings-review.txt:2322`, release-2-1-319, a different name); reported, user, 2026-11-16 18:24 UTC, tool names keep their case, `Bash` not `bash` (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5608).
   Status: moved Out as OUT-2777 (Verified line).
 
@@ -736,6 +741,7 @@
   - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   - Verified: batch14, 2026-11-19, claude 2.1.327, Sonnet 5.5, plugin at 37bd3cf0f, 6 runs per arm (reports/2026-11-19-research/goal/fixtures463.sh, score2.py; the verdict is the answer's first word). Target fixtures, where the name exists only on a second surface: px (an env var read only by tool.sh) vanilla 6/6, claudetto 6/6; fm (a frontmatter key the settings schema leaves out) vanilla 6/6, claudetto 6/6. Absent-name control fmc vanilla 6/6, claudetto 6/6. Absent-name control pxc vanilla 3/6, claudetto 5/6; each of the 4 failures read "this tool" as Claude Code ("yes, Claude Code has a color theme") or asked which tool was meant. None of them called a present name absent. The scenario F data above (3 of 3) predates this goal.
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 3 per arm, fixtures463.sh: px vanilla 3/3, claudetto 3/3; fm vanilla 3/3, claudetto 3/3. The fault stays absent on vanilla.
   - Status: closed 2026-11-19: the fault (absent for a name another surface holds) stayed out of 24 of 24 target runs on two fixtures, vanilla and claudetto.
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
@@ -783,6 +789,7 @@
   - Status: accepted; REQ-VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   - Verified: 2026-11-19, batch D, claude 2.1.327, claude-sonnet-5-5, plugin 71ae1e92a (reports/2026-11-19-research/goal/fixtures466.sh, scorers/_t466.py). Each run's own tests are run against three things: its own implementation, a reference that behaves the same but keeps different internals, and 7-9 mutants that break behaviour. A run passes when the tests are green on both implementations and kill every mutant. r466b (tune: a RateLimiter with a public hits map): vanilla 1/6, shipped style 1/6, with the test-observability line 6/6. r466d (confirm, untouched while tuning: a Cache with a public entries map): vanilla 0/6, shipped style 0/6, with the line 5/6. Every failure without the line came from a test that read hits or entries, so it went red on the reference. The one failure with the line was a thin test that let a mutant survive. Control r466ac (renderEnv, where the exact text is the contract): 6/6 in all three arms. Cost $4.222 (r466 runs, by per-run cost fields).
+  - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 6 per arm, fixtures466.sh, scorers/_t466.py: r466a vanilla 6/6, claudetto 5/6 (rep 4 left one mutant alive); r466b vanilla 0/6 (each failed the reference), claudetto 6/6. Pooled 6/12 against 11/12.
   - Status: mitigated 2026-11-19 by the test-observability line in plugins/claudetto/output-styles/claudetto.md: 11/12 with the line against 1/12 vanilla on two fixtures, with the control level at 6/6.
 
 - [x] **RISK-467** The agent makes verify pass by pointing git at another hooks folder.
@@ -1161,7 +1168,7 @@
   Evidence: 2026-11-24, claude 2.1.329: a second brief, under the goal's leave to spawn Sonnet subagents, ran; a fresh Sonnet subagent wrote 6 harder cases under `~/.claudetto-holdout/claudetto` and reported only folder names and counts. `just eval-holdout claudetto claude-opus-5-5 -j 4 --max-cost-usd 40` then wrote `plugins/claudetto/evals/results/holdout-2026-11-24T06-48-49-510Z.json` (aggregate read only): model `claude-opus-5-5`, claudeVersion 2.1.329, not partial, 11 cases, 8 at score 1.0, mean Δ +0.036, $10.05. The recipe exited 1 from `--threshold` 1.0, not from an abort.
   Counterargument: the tuning agent wrote the subagent's brief, which named claudetto's behaviours, so the new cases are blind to the plugin's text but not to its aims; the gain is small, and ADR-0193 keeps the per-case scores that would attribute it to a part from the tuning agent.
   Status: closed 2026-11-24: claudetto's mean held-out Δ is above 0, so ADR-0177 moves no part Out on this run, and CON-059 is met at the plugin level.
-  Verified: 2026-11-24, `jq '.aggregates|{casesTotal,meanDelta}'` on the held-out file reads 11 and 0.0361; REQ-TOOLS-031 and REQ-GOAL-003 cite it.
+  Verified: 2026-11-24, claude 2.1.329, `jq '{claudeVersion, partial, agg: (.aggregates|{casesTotal,meanDelta})}'` on the held-out file reads 2.1.329, false, 11 and 0.0361; REQ-TOOLS-031 and REQ-GOAL-003 cite it.
 
 - [x] **RISK-537** `just verify` fails on a loaded machine because the `just eval` recipe tests time out.
   Category: verification.
