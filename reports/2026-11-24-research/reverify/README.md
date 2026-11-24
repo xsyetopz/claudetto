@@ -25,6 +25,7 @@ not carry the context a `tool.call` hook adds, so a probe of such a note asks th
 | measure-tools (3 runs) | REQ-TOOLS-001, 002, 004, 005 | plugin main 9 tools, 10,749 chars; Heracles Bash, Read, Skill, patch; no hidden tool anywhere |
 | `plugin details` | REQ-VERIFICATION-073 | 4 agents, always-on ~128 tok |
 | `skills.ts` (fake API) | REQ-SKILLS-001 | fork carries Athena and Read, Grep, Glob; hidden skill adds 0 listing bytes, the control +90 |
+| `push.ts` (fake API) | REQ-VERIFICATION-090, RISK-538 | `gh release create` ran unasked under claudetto until the ask rules; tag pushes ask; a branch push runs |
 | plugin-dir (fake API) | REQ-VERIFICATION-030 | absolute dir loads claudetto; a relative one exits 0 with `path-not-found` in plugin_errors |
 
 `steady.ts` runs two `claude -p hi` launches in one fresh `CLAUDE_CONFIG_DIR` against the fake API, so

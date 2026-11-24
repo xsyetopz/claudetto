@@ -1432,3 +1432,19 @@
   Status: mitigated 2026-11-24: `conflicts.ts` `deadWrite`; ASK holds the `Edit` rule only.
   Verified: 2026-11-24, claude 2.1.331, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with fill.test.ts "removes a Write ask or deny rule whose Edit twin is in the same list"; `bun reports/2026-11-24-research/reverify/steady.ts` printed no "not matched" line on either launch.
   Source: Claude Code 2.1.331 stderr text quoted in Event; `reports/2026-11-24-research/reverify/steady.ts`.
+
+- [x] **RISK-538** claudetto lets `gh release create` publish a release with no prompt, where vanilla asks.
+  Category: permissions.
+  Cause: claudetto turns the sandbox on (REQ-GUARDS-071), and Claude Code runs a sandboxed Bash command with no prompt unless an ask or deny rule matches it; the ASK list in `plugins/claudetto/hooks/guards/wall/rules.ts` held tag pushes but no `gh release` rule.
+  Event: 2026-11-24, claude 2.1.331, fake API, `bun reports/2026-11-24-research/reverify/push.ts "gh release create v1"`: vanilla got "This command requires approval"; with `--plugin-dir plugins/claudetto` the command ran (it failed only because the scratch remote is not a GitHub host).
+  Consequence: a release published with no confirmation, against REQ-VERIFICATION-090.
+  Likelihood: 2. Impact: 4.
+  Existing controls: the tag-push ask rules; a release with a new tag still runs `gh` with no prompt.
+  Response: mitigate.
+  Actions: ask rules `Bash(gh release create*)`, `Bash(gh release upload*)` and `Bash(gh release edit*)`, each with a GUARDED probe.
+  Trigger: a release-publishing command that runs with no prompt under claudetto.
+  Owner: guards.
+  Evidence: the Event probe; `claude plugin tag --push` already asked on both arms, since `claude *` runs outside the sandbox.
+  Status: mitigated 2026-11-24: rules.ts ASK.
+  Verified: 2026-11-24, claude 2.1.331, `bun reports/2026-11-24-research/reverify/push.ts "gh release create v1"`: the claudetto arm now gets "Claude requested permissions to use Bash, but you haven't granted it yet."; `claude plugin test plugins/claudetto` 332 pass, 0 fail.
+  Source: `reports/2026-11-24-research/reverify/push.ts`; `plugins/claudetto/hooks/guards/wall/rules.ts`.

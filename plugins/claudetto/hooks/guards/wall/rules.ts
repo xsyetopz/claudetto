@@ -72,6 +72,10 @@ export const ASK: readonly string[] = [
 	"Bash(git push --tags*)",
 	"Bash(git push * --tags*)",
 	"Bash(git push * refs/tags/*)",
+	// A sandboxed `gh release` runs with no prompt, so a release would publish unasked (REQ-VERIFICATION-090).
+	"Bash(gh release create*)",
+	"Bash(gh release upload*)",
+	"Bash(gh release edit*)",
 	"Bash(pkill *)",
 	"Bash(killall *)",
 	"Edit(~/.claude/settings.json)"
@@ -147,6 +151,12 @@ export const GUARDED: readonly Probe[] = [
 	{ command: "git push --tags", why: "publishes every local tag" },
 	{ command: "git push origin --tags", why: "publishes every local tag" },
 	{ command: "git push origin refs/tags/v1", why: "publishes a tag" },
+	{ command: "gh release create v1", why: "publishes a release" },
+	{ command: "gh release upload v1 a.zip", why: "publishes release assets" },
+	{
+		command: "gh release edit v1 --draft=false",
+		why: "publishes a draft release"
+	},
 	{ command: "pkill node", why: "ends processes of other sessions" },
 	{ command: "killall node", why: "ends processes of other sessions" },
 	{ command: "git push --force", why: "rewrites remote history" },
