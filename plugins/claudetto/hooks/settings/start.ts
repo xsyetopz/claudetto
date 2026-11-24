@@ -2,7 +2,7 @@ import type { EngineInterface, On, PluginOptions } from "claude-code";
 
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
-import { startPatch } from "../patch/tool";
+import { startFileTools } from "../pool/file-tools";
 import { fault } from "../shared/fault";
 import { fieldOf, stringsOf } from "../shared/field";
 import { startWeb } from "../web/register";
@@ -67,10 +67,10 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
 		try {
-			await startPatch($);
+			await startFileTools($);
 		} catch (error) {
-			// The patch tool failing to register must not stop the settings repair or the session.
-			fault($, "patch tool registration", error);
+			// The patch and read tools failing to register must not stop the settings repair or the session.
+			fault($, "file tool registration", error);
 		}
 		try {
 			await startWeb($, e);

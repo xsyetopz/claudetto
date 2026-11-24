@@ -66,9 +66,7 @@ describe("perl diff note", () => {
 		// Assert
 		const context = stringsOf(fieldOf(r, "context")) ?? [];
 		expect(context.length).toBe(1);
-		expect(context[0]).toStartWith(
-			" src/a.ts | 4 ++--\nRead each file above again"
-		);
+		expect(context[0]).toStartWith(" src/a.ts | 4 ++--\nCheck the stat");
 	});
 
 	test("outside a git work tree the note says the stat is unavailable and never says nothing changed", async ($, on) => {
@@ -96,7 +94,7 @@ describe("perl diff note", () => {
 		expect(context.length).toBe(1);
 		expect(context[0]).toStartWith("Diff stat unavailable outside git");
 		expect(context[0]).not.toContain("No tracked file changed");
-		expect(context[0]).toContain("Read each file");
+		expect(context[0]).toContain("may have changed");
 	});
 
 	test("a Bash call without perl -i gets no note", async ($, on) => {

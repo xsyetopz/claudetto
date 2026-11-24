@@ -3,10 +3,14 @@ import type { On } from "claude-code";
 import { fault } from "../shared/fault";
 
 /**
- * The tools every loop loses. `patch` and Bash replace the file tools, and Bash
- * runs `git worktree` in place of the worktree tools (REQ-TOOLS-001). The user
+ * The tools every loop loses. `patch` and `mcp__claudetto__read` replace the
+ * file tools (Read costs 1,292 characters of schema; the claudetto tool is
+ * about a third of that and covers images, notebooks and PDFs), and Bash runs
+ * `git worktree` in place of the worktree tools (REQ-TOOLS-001). The user
  * turned off DesignSync and RemoteTrigger, which serve claude.ai design
- * projects and cloud routines (REQ-TOOLS-004).
+ * projects and cloud routines (REQ-TOOLS-004), and Workflow, ScheduleWakeup
+ * and ReportFindings, whose schemas (5,688, 4,886 and 2,418 characters) ride
+ * every request for features the user does not use.
  */
 export const HIDDEN_TOOLS: readonly string[] = [
 	"Write",
@@ -15,7 +19,11 @@ export const HIDDEN_TOOLS: readonly string[] = [
 	"EnterWorktree",
 	"ExitWorktree",
 	"DesignSync",
-	"RemoteTrigger"
+	"RemoteTrigger",
+	"Workflow",
+	"ScheduleWakeup",
+	"ReportFindings",
+	"Read"
 ];
 
 /**

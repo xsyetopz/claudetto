@@ -36,7 +36,7 @@ describe("REQ-TOOLS-020 direct path", () => {
 
 		// Assert
 		expect(reply).toContain("The Markdown copy could not be saved: EACCES.");
-		expect(reply).not.toContain("Read /data/web");
+		expect(reply).not.toContain("read /data/web");
 	});
 
 	test("passes JSON and plain text through unchanged", async () => {

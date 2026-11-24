@@ -72,9 +72,13 @@ claudetto turns off Write, Edit and NotebookEdit in every loop, the main one and
 - Every Edit and Write permission rule holds through `patch`: its permission check asks for the Edit and Write verdict of each path and takes the strictest.
 - Claude Code loads path-scoped rules (`.claude/rules/**/*.md` with `paths:`) and nested CLAUDE.md files only when Read, Write or Edit touches a file, so `patch` appends the matching ones to its reply, once per session.
 
+## Read Tool
+
+`Read` is hidden and `mcp__claudetto__read` takes its place, with a 362-character schema in place of 1,292. It takes an absolute `file_path` and returns `cat -n` lines (2000 by default; `offset` and `limit` select a window), an image block for PNG, JPEG, GIF and WebP, a `.ipynb` notebook as text cells with their outputs, and a PDF as text. A tool result can carry an image block but the types document no PDF block, so a PDF's text comes from macOS PDFKit through `osascript`, `pages` (such as `1-5`, at most 20 pages) choosing the range. Every `Read` permission rule holds through it. Subagents with a `tools:` list name `mcp__claudetto__read`.
+
 ## Tool Pool
 
-claudetto hides `Write`, `Edit`, `NotebookEdit`, `EnterWorktree`, `ExitWorktree`, `DesignSync` and `RemoteTrigger` from every loop through `tool.offer`, and `SendMessage`, `ListAgents`, Monitor, TaskStop and the goal tools from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 14 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
+claudetto hides `Read`, `Write`, `Edit`, `NotebookEdit`, `EnterWorktree`, `ExitWorktree`, `DesignSync`, `RemoteTrigger`, `Workflow`, `ScheduleWakeup` and `ReportFindings` from every loop through `tool.offer`, and `SendMessage`, `ListAgents`, Monitor, TaskStop and the goal tools from each subagent's loop, so the main conversation can still message other sessions when the user asks. It replaces the description of 14 kept built-ins with text of at most 200 characters through `tool.describe` (`hooks/pool/`); SendMessage gets 393 characters behind ToolSearch and ListAgents 199 inline. Bash keeps its short base plus the claudetto git block. Byte counts are in `reports/2026-11-21-tool-bytes/README.md`.
 
 ## Web Tools
 

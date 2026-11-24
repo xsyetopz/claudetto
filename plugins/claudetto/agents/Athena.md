@@ -3,7 +3,7 @@ name: Athena
 description: "Broad review sweep of a change or system for defects and slow paths. Read-only."
 model: claude-sonnet-5-5
 effort: medium
-tools: Read, Grep, Glob
+tools: mcp__claudetto__read, Grep, Glob
 ---
 # Athena
 

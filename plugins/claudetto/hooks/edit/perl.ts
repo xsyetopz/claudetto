@@ -36,18 +36,18 @@ export const touched = (before: string, after: string): string[] => {
 
 /**
  * The note the model reads after a perl edit: the diff stat of each changed
- * file, then the step that keeps a later Write working, because Write refuses
- * a file changed on disk since its last Read.
+ * file, then a reminder to check it against the edit, because a regex that
+ * matched nothing changes nothing.
  */
 export const note = (stat: string): string =>
-	`${stat.trimEnd()}\nRead each file above again before you Write it, because Write refuses a file that changed after its last Read. Check the stat against the edit you meant; a regex that matched nothing shows no line.`;
+	`${stat.trimEnd()}\nCheck the stat against the edit you meant; a regex that matched nothing shows no line.`;
 
 /**
  * The note outside a git work tree: the files did change, git cannot show how,
  * so the claim "nothing changed" stays out of it (issue #114).
  */
 export const noGit =
-	"Diff stat unavailable outside git; the edited files may have changed. Read each file again before you Write it, because Write refuses a file that changed after its last Read.";
+	"Diff stat unavailable outside git; the edited files may have changed.";
 
 /**
  * Shows what a perl in-place edit changed (REQ-EDIT-002). One perl call
