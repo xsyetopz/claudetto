@@ -1,5 +1,7 @@
 # Handover Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-HANDOVER-017, REQ-HANDOVER-018, REQ-HANDOVER-021, REQ-HANDOVER-022, REQ-HANDOVER-023, REQ-HANDOVER-024, REQ-HANDOVER-055, REQ-HANDOVER-063, REQ-HANDOVER-067, REQ-HANDOVER-072; test files `plugins/claudetto/hooks/handover/__tests__/clear.test.ts`, `plugins/claudetto/hooks/handover/__tests__/compact.test.ts`, `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts`.
+
 ## Post-Compaction Check
 
 ## Review State

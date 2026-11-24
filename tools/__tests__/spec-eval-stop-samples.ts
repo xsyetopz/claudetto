@@ -120,6 +120,22 @@ export const STOP_SAMPLES: Readonly<Record<string, Samples>> = {
 		badFile: [["Then the total is 896", "Then the total is 895"]],
 		goodFile: []
 	},
+	"implement-conflict-exact/impl-not-written": {
+		bad: [DISCOUNT],
+		goodFile: []
+	},
+	"implement-conflict-exact/no-test-written": {
+		bad: [cites("DISC-1")],
+		goodFile: []
+	},
+	"implement-conflict-exact/reply-names-both": names(
+		"DISC-1 rounds down and DISC-4 rounds to the nearest cent: 995 at 10 percent is 895 or 896.",
+		"DISC-1 and DISC-3 conflict."
+	),
+	"implement-conflict-exact/spec-unchanged": {
+		badFile: [["Then the total is 896", "Then the total is 895"]],
+		goodFile: []
+	},
 	...Object.fromEntries([
 		gap(
 			"gap-stock-1",

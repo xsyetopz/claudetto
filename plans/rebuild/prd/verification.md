@@ -1,5 +1,7 @@
 # Verification Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-VERIFICATION-059, REQ-VERIFICATION-104; test files `tools/__tests__/check-catch.test.ts`, `tools/__tests__/eval-recipe.test.ts`.
+
 ## Probe Harness Pattern
 
 - [x] **REQ-VERIFICATION-030** claudetto shall probe with a real `claude` against a fake Messages API (no paid tokens) with settings in the run's own config dir, a tmux TUI harness for interactive dialogs, and `claude plugin test` (fires real hook events with no session, model, or network; mods since 2.1.287). `claude -p` with a relative `--plugin-dir` silently loads nothing.
@@ -9,6 +11,7 @@
   Source: tools/fake-api/usage.ts@088a227c; claude 2.1.327: `--plugin-dir` present (chunk-nj3089xn.js@517). Not located: the old-plan lines that gave the harness pattern.
   Verified: probe 2026-11-19, claude 2.1.327, cc-inspect fake API with an absolute --plugin-dir: 3 requests, the claudetto agents listed, no paid call.
   Verified: PASS: probe 2026-11-24, claude 2.1.331, `claude -p hi --plugin-dir <dir> --output-format stream-json --verbose` against the local fake API (tools/measure-tools/fake-api.ts), empty CLAUDE_CONFIG_DIR: with an absolute dir, init lists claudetto@inline, 1 request, no paid call; with a relative dir resolved from another cwd, init lists no claudetto and plugin_errors holds `path-not-found`, and the exit is now 0 (1 on 2.1.327), so a harness must read plugin_errors, not the exit code.
+  Verified: 2026-11-24, claude 2.1.329, `bun reports/2026-11-24-research/pin-2-1-329/listing.ts`: against the fake API, `claude -p hi --plugin-dir` with an absolute dir loaded `claudetto@inline` in 1 request, exit 0, no paid token; a relative dir resolved from another cwd exited 0 with `path-not-found` in `plugin_errors`.
 
 ## Git Hooks Check
 
@@ -44,6 +47,7 @@
   Decision: ADR-0099: the built-in agents are replaced by the Greek agents Artemis, Athena and Heracles shipped in plugins/claudetto/agents; the earlier "no skills, agents or rules" and the 183-token figure described the plugin before that. `plugin details` resolves a loaded plugin with `--plugin-dir`.
   Verified: claude 2.1.327, 2026-11-19, `claude --plugin-dir $PWD/plugins/claudetto plugin details claudetto`: Skills (0), Agents (3) Artemis, Athena, Heracles, always-on ~92 tok (about 30 per agent).
   Verified: claude 2.1.331, 2026-11-24, `claude --plugin-dir $PWD/plugins/claudetto plugin details claudetto`: Skills (0), Agents (4) Artemis, Athena, Hermes, Heracles, one SessionStart hook with no model-context cost, always-on ~128 tok (Hermes ~40, the others ~30 each). The rise from ~92 is the Hermes agent of REQ-TOOLS-005 (3c6a96e66).
+  Verified: 2026-11-24, claude 2.1.329, `claude --plugin-dir "$PWD/plugins/claudetto" plugin details claudetto`: Agents 4 (Artemis, Athena, Hermes, Heracles), Skills 0, one SessionStart hook with no model-context cost, always-on ~128 tok (the fourth agent, Hermes, makes it 128 rather than 92).
 
 ## Narrow Runs
 
@@ -95,6 +99,7 @@
   Evidence: 2026-11-24, claude 2.1.331, fake API, `bun reports/2026-11-24-research/reverify/push.ts "gh release create v1"`: with claudetto the release command ran with no prompt (RISK-538); the 2.1.327 lines above probed vanilla only. A plain branch push runs with no prompt under claudetto, as REQ-GUARDS-070 sets.
   Status: cured 2026-11-24: ask rules for `gh release create`, `upload` and `edit` (RISK-538).
   Verified: 2026-11-24, claude 2.1.331, `push.ts` on both arms: `gh release create v1`, `git push origin --tags` and `claude plugin tag --push` each ask under claudetto, and the scratch remote gets no tag; `git push origin HEAD` pushes the branch.
+  Verified: 2026-11-24, claude 2.1.329, fake API, `bun reports/2026-11-24-research/reverify/push.ts` with its default, then `"gh release create v1"` and `"git push origin --tags"`: `git push origin HEAD` pushed the branch under claudetto and was refused on vanilla's headless call; the release and the tag push were asked under claudetto ("haven't granted it yet"), and the bare remote got no ref from either.
 
 ## Goal Prompt
 
@@ -104,6 +109,9 @@
   Basis: user decision. Status: missing at 088a227c (`git grep -n -i -E "4,?000" 088a227c -- tools` finds only the STOCK filler at tools/prompt-bytes.ts:16; no /goal prompt)
   Source: user decision, 2026-11-16 21:50 UTC, a goal prompt of at most 4000 characters (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:9249).
   Verified: `wc -m goal.md` prints 3996, 2026-11-19.
+  Evidence: `wc -m plans/rebuild/goal.md`, claude 2.1.329, 2026-11-24: 4338 characters (4268 before PR #210), over 4000.
+  Status: cured 2026-11-24; goal.md wording tightened, every rule, ADR and reference kept.
+  Verified: `wc -m plans/rebuild/goal.md`, claude 2.1.329, 2026-11-24: 3994 characters, at most 4000.
 
 ## Real Runs
 

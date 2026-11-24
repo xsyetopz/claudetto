@@ -1,5 +1,7 @@
 # Kernel Requirements
 
+Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026-11-24: exit 0, 834 tests in 102 files, 0 fail; covers REQ-KERNEL-003; test files `plugins/claudetto/hooks/notice/__tests__/stop.test.ts`.
+
 ## Guard Time Budget
 
 ## Hook Logging and Notice
