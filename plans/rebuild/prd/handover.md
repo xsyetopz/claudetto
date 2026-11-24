@@ -180,6 +180,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Idle Compaction
 
 - [x] **REQ-HANDOVER-059** Moved Out as OUT-2005: renewal at a task boundary above 70k keeps sessions under the idle-compaction floor of 100k tokens (`Math.max(1e5, CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS ?? 2e5)` in 2.1.327), and an idle compaction that does run reaches the handover hook as an automatic trigger (inferred from the trigger type `manual | auto | plugin | precompute`, not probed); the key has no measured gain (ADR-0177).
+  Verified: 2026-11-24, claude 2.1.329 binary (`reports/2026-11-24-research/pin-2-1-329/binary/result.txt`): `var Wds=200000,GGn=1e5` and `Math.max(GGn,s.CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS??Wds)`, so the 100k floor and 200k default hold as on 2.1.327.
 
 ## Handover Cost
 

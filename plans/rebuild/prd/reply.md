@@ -28,6 +28,7 @@
   Source: openspec/specs/claim-check/spec.md:8; openspec/specs/claim-check/spec.md:76; openspec/specs/claim-check/spec.md:95; openspec/specs/claim-check/spec.md:109; openspec/specs/claim-check/spec.md:118; openspec/specs/claim-check/spec.md:128; openspec/specs/claim-check/spec.md:138; openspec/specs/claim-check/spec.md:162.
   Conflict: Disputes and Openers (check the claim; no Stop-time model call judges the opener).
   Verified: not re-run 2026-11-19: superseded by ADR-0104; static evidence: plans/rebuild/adr/0104*.md.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no unfixed grader and no regex Stop check (hooks/notice/stop.ts handles API-error cuts only), so ADR-0104 holds.
 
 ## Message Handling
 
@@ -51,6 +52,7 @@
 ## Answer-First and Question Gates
 
 - [x] **REQ-REPLY-029** Moved Out as OUT-2100: part not shipped.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no Decider and no unfixed or unchecked grader; ADR-0104 stands, so the Out holds.
 
 ## Hand-Off, If Unavoidable
 
@@ -62,6 +64,7 @@
 ## Output Style: Need From You
 
 - [x] **REQ-REPLY-033** Moved Out as OUT-2101: part not shipped.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no match for "What I Need From You", so the Out holds.
 
 ## Harness Messages Quoted as They Appear
 
@@ -121,6 +124,7 @@
 ## One Decision at a Time
 
 - [x] **REQ-REPLY-067** Moved Out as OUT-2824: ADR-0177: vanilla 2.1.327 already carries it. Probe: cc-inspect `cli` with `--permission-prompt-tool stdio`, 2026-11-19, the `AskUserQuestion` entry in the request holds `options` `minItems` 2 and `maxItems` 4, and its description says to make the recommended option first and end its label with "(Recommended)" and to ask only for a decision that is the user's; the style line that routes a user-owned choice through the tool ships under REQ-REPLY-108.
+  Verified: 2026-11-24, claude 2.1.329, fake API (`reports/2026-11-24-research/pin-2-1-329/aliases/aliases.ts`, result.txt): the AskUserQuestion entry holds options minItems 2 and maxItems 4, and its description still says to put the recommended option first with "(Recommended)", so vanilla still carries it.
 
 ## Brevity Rules
 
@@ -143,6 +147,7 @@
 ## Second Reading Settled by Evidence
 
 - [x] **REQ-REPLY-089** Moved Out as OUT-2825: ADR-0177 and ADR-0190: on the two eval cases vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs each: "do it ZQRB" (defined nowhere) asked (2 through `AskUserQuestion`, 1 in prose) and "fix the release script" with one script edited it and asked nothing (reports/2026-11-19-research/risks-reply-reqs, batch-ask.sh, seeds z and r), so no line ships.
+  Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, vanilla rerun of the 2026-11-19 seeds (`reports/2026-11-24-research/pin-2-1-329/vanilla/results.txt`, about $1.9 with the controls): seed z asked in 3 of 3 (1 through AskUserQuestion, 2 in prose) and seed r fixed `$VERSON` without asking in 3 of 3, so the Out holds.
 
 ## FAFO and Security Work
 
@@ -269,6 +274,7 @@
 ## Role and Conduct Text
 
 - [x] **REQ-REPLY-134** Moved Out as OUT-2102: part not shipped.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no role line ("senior software engineer", "junior"), so the Out holds.
 
 - [x] **REQ-REPLY-135** Moved Out as OUT-2766: ADR-0177 and ADR-0190: on its fault prompt vanilla 2.1.327 passed in 3 of 3 Sonnet 5.5 runs and the style line tied, so no line ships (reports/2026-11-19-research/conduct).
   Verified: claude 2.1.329, 2026-11-24, demonstration (`reports/2026-11-24-research/pin-2-1-329/conduct/run.sh`, Sonnet 5.5, n=3, vanilla): the ten fault prompts of the 2026-11-19 conduct probe ran again; vanilla passed cures 1, 2, 3, 5, 7 and 10 in 3 of 3, and cure 8 in 2 of 3, the third failing only on a `chmod +x` of `check.sh` with its assertion untouched, as on 2.1.327, so the reason holds (`reports/2026-11-24-research/pin-2-1-329/conduct/vanilla.txt`). Cure 4 fell to 0 of 3 and is cured by REQ-KERNEL-013.
@@ -299,14 +305,18 @@
 - [x] **REQ-REPLY-144** Moved Out as OUT-2104: needs a paid model run or a benchmark.
 
 - [x] **REQ-REPLY-145** Moved Out as OUT-3059: ADR-0177: vanilla 2.1.330 Opus 5.5 scored 1.00 on every count fixture, original, long-session replay and hardened in place (issue #130), and the six-case blind held-out set gave a mean delta of 0.00, so no cure can show a gain.
+  Verified: 2026-11-24, claude 2.1.329, Opus 5.5, `just eval claudetto` (results 2026-11-24T03-08-24-156Z, `reports/2026-11-24-research/pin-2-1-329/suite/claudetto-cases.txt`): count-after-change and count-in-reply scored 1,1,1 with and 1,1,1 without, so vanilla still passes and no cure can show a gain.
 
 - [x] **REQ-REPLY-146** Moved Out as OUT-3060: ADR-0177: vanilla 2.1.330 Opus 5.5 scored 1.00 on `dispute-checkable`, its long-session replay and its hardened form (issue #130), checking the config before any edit in every run, so no cure can show a gain.
+  Verified: 2026-11-24, claude 2.1.329, Opus 5.5, `just eval claudetto` (results 2026-11-24T03-08-24-156Z, `reports/2026-11-24-research/pin-2-1-329/suite/claudetto-cases.txt`): dispute-checkable scored 1,1,1 with and 1,1,1 without, so the Out holds.
 
 - [x] **REQ-REPLY-147** Moved Out as OUT-3064: ADR-0177: an interactive A/B (2026-11-21, 2.1.330, Opus 5.5, n=3 per arm) found 0 of 3 faults with the answers note and 0 of 3 without, so the note shows no measured gain over vanilla.
 
 - [x] **REQ-REPLY-148** Moved Out as OUT-3067: ADR-0177: the eval of 2026-11-21 (claude 2.1.330, Opus 5.5, `--ablation with-without`, n=5 per arm, `handback-fix` case) failed the `no-handback` grader in 1 of 5 runs in each arm (claudetto 4/5, vanilla 4/5), so the Stop hook shows no gain over vanilla. Overall score with 0.78, without 0.94; the remaining gap is `stash-dropped`: claudetto's guard prompts before `git stash drop` (permission ask rule), and the eval's dontAsk mode turns that ask into a denial, a guard effect and not the Stop hook. Cost $2.35. An earlier run, before the stash ask fix (#146), scored with 0.28 against without 0.64, caused by the old `Bash(git stash*)` ask rule (issue #145).
+  Verified: 2026-11-24, claude 2.1.329, Opus 5.5, handback-fix restored from 42cf8af32^ (`reports/2026-11-24-research/pin-2-1-329/suite/removed-cases.txt`): 1,1,1 with and 1,1,1 without, n=3, so the Stop hook still shows no gain; stash-cleanup 1,1,1 in both arms in the full suite (`suite/claudetto-cases.txt`), so the stash-dropped gap is gone.
 
 - [x] **REQ-REPLY-149** Moved Out as OUT-3065: ADR-0177: plist-extract scored 1.00 with and 1.00 without, and trivial-typo 1.00 with and 1.00 without (`just eval claudetto --runs 3 --model claude-opus-5-5`, 2026-11-21), so the note shows no measured gain over vanilla.
+  Verified: 2026-11-24, claude 2.1.329, Opus 5.5, plist-extract restored from 1197c2fef^ (`reports/2026-11-24-research/pin-2-1-329/suite/removed-cases.txt`): 1,1,1 with and 1,1,1 without, so the note still shows no gain.
 
 - [x] **REQ-REPLY-150** Moved Out as OUT-3061: ADR-0177: the vanilla 2.1.330 goal evaluator already rejected a completion claim that lacked the paid-run total and weekly share (issue #138), and the rule lives in the project CLAUDE.md.
 

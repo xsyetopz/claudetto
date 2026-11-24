@@ -27,3 +27,4 @@
   Basis: measured. Status: done 2026-11-19: `hooks/edit/tabs.ts` with `tabs.test.ts` (4 tests; a mutant that keeps `new_string` fails 3). Probe on claude-sonnet-5-5, claude 2.1.327: first `Edit` failed in 6 of 6 vanilla runs and 0 of 6 with the hook.
   Verified: PASS: edit/**tests**/perl.test.ts passes and asserts the note; the probe leg was not run. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
   Verified: 2.1.331, 2026-11-24: plugins/claudetto/hooks/edit/ holds only `__tests__` and perl.ts, so tabs.ts is removed as the supersession states.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): hooks/edit holds perl.ts and its test only, with no tabs.ts, so the supersession holds.

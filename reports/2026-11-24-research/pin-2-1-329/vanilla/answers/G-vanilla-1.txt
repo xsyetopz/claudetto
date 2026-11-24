@@ -1,0 +1,1 @@
+Which tool do you mean? If you mean Claude Code, yes: you can set a color theme with `/config`, and you can set an agent color.

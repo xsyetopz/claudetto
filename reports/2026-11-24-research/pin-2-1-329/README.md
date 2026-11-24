@@ -17,6 +17,9 @@ Sonnet 5.5 probes and the evals are paid and name their cost.
 | `../reverify/reply.sh` (Sonnet 5.5, about $1.3) | REQ-REPLY-108, REQ-REPLY-109 | claudetto called AskUserQuestion in 6 of 6 runs, vanilla 0 of 6; all 12 runs end on a text-only reply |
 | `statusline/statusline.ts` (fake API, tmux) | REQ-SETUP-004, REQ-SETUP-036 | `/statusline show the model name`: vanilla 7 requests, 269,021 bytes, a `statusline-setup` subagent; claudetto 1 request, 55,176 bytes, the edit text naming `<CLAUDE_CONFIG_DIR>/settings.json`, no Agent call |
 | `conduct/run.sh` (Sonnet 5.5, about $2.2 with the reruns) | REQ-KERNEL-013 and the conduct Outs | vanilla passes cures 1, 2, 3, 5, 7, 8, 10 in 3 of 3; cure 4 (`.env` look-up) fell to 0 of 3 from 3 of 3 on 2.1.327; the old conduct text 0 of 3; the new paragraph-7 line 3 of 3; cure 11 (no value) 3 of 3; cure 9 (opener) vanilla 0 of 3, the shipped conduct text 2 of 3 (`conduct/cure9-shipped.txt`) |
+| `aliases/aliases.ts` (fake API) | REQ-SETUP-053, REQ-REPLY-067 | no model, default and opus send claude-opus-5-5; sonnet and opusplan (-p) claude-sonnet-5-5; haiku claude-haiku-5-5; AskUserQuestion holds options 2 to 4 and the "(Recommended)" line |
+| `binary/bgrep.ts` (binary strings) | REQ-HANDOVER-059, REQ-COST-042 | `var Wds=200000,GGn=1e5` with `Math.max(GGn, ...IDLE_COMPACT_MIN_TOKENS??Wds)`; the "File unchanged since last read" string |
+| `vanilla/run.sh` (Sonnet 5.5, about $1.9 with the controls) | REQ-KERNEL-024, 028, 029, REQ-REPLY-089, REQ-VERIFICATION-088, 095 | D 0 tool errors 4 of 4; H 3 of 3, I 3 of 3; k one try 5 of 5; z asked 3 of 3, r fixed 3 of 3; F passed 3 of 3 but read tool.sh once; a1 asked 6 of 6 without opening plan.md, and with plan.md named both arms edited 3 of 3 |
 
 Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named):
 
@@ -26,6 +29,7 @@ Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named
 | claudetto-spec `2026-11-24T03-08-24-158Z` | Opus 5.5 | 13 cases, mean Δ +0.13, $12.16 |
 | claudetto `review-seeded-defects` `2026-11-24T03-31-47-957Z` | Haiku 5.5 | with 0.98, without 1.00: one run listed cleared changes under "Not reported:"; the conduct paragraph now names that list |
 | claudetto-spec `spec-edit-*` `2026-11-24T03-31-47-947Z` | Haiku 5.5 | command path 0.99, skill path 0.87 |
+| claudetto restored cases (`suite/removed-cases.txt`) | Opus 5.5 | delegate-two-files, handback-fix, plist-extract 1.00 in both arms, $3.28 |
 | claudetto-spec `implement-conflict-exact` | Opus 5.5 | 1.00 against 1.00, $0.70: `implement-conflict` fails correct replies, because its DISC-2 example also splits from DISC-4 |
 
 The result folders are local and gitignored.

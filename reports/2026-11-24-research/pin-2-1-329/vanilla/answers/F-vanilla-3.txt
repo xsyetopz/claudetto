@@ -1,0 +1,1 @@
+Yes — `tool.sh` reads a proxy from the `TOOL_PROXY` environment variable (line 2), though it only prints the value in the echo on line 3 and doesn't use it for any request.

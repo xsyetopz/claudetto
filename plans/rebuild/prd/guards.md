@@ -21,6 +21,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 - [x] **REQ-GUARDS-002** Moved Out as OUT-2300: the item needs a paid model run.
 
 - [x] **REQ-GUARDS-005** Moved Out as OUT-2301: the item is a third-party report with no probe.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no allow-entry token scan; check-ignore and settings.local.json appear only in hooks/git/instructions.ts:83, a commit prompt line, so the Out holds.
 
 ## Memory Guard
 
@@ -36,14 +37,18 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Hygiene Sweep
 
 - [x] **REQ-GUARDS-023** Moved Out as OUT-2302: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no trash, hygiene or disk-cleanup part, so the Out holds.
 
 - [x] **REQ-GUARDS-024** Moved Out as OUT-2303: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no trash, hygiene or disk-cleanup part, so the Out holds.
 
 - [x] **REQ-GUARDS-025** Moved Out as OUT-2304: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no trash rules, so the Out holds.
 
 ## Worktree and Branch Hygiene Sweep
 
 - [x] **REQ-GUARDS-027** Moved Out as OUT-2305: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no worktree remover under hooks/ (the worktree tools are hidden), so the Out holds.
 
 ## Protected Files and Walls
 
@@ -85,6 +90,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Stop and Reply Checks
 
 - [x] **REQ-GUARDS-052** Moved Out as OUT-2308: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no open-items check; hooks/notice/stop.ts handles only API-error cuts, so the Out holds.
 
 ## Held-Out Wall
 
@@ -108,10 +114,13 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Web Fetch and Browser Fallback
 
 - [x] **REQ-GUARDS-064** Moved Out as OUT-2309: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): the curl and stdlib Python extractor and the agent-browser fallback are absent, so the Out holds; its note "registers no web fetch tool" is wrong, since hooks/web/register.ts registers web_fetch under REQ-TOOLS-020.
 
 - [x] **REQ-GUARDS-065** Moved Out as OUT-2310: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no agent-browser session and no cf-mitigated check, so the Out holds; the shipped fallback is headless Chrome in hooks/web/chrome.ts (REQ-TOOLS-020), not this design.
 
 - [x] **REQ-GUARDS-066** Moved Out as OUT-2311: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): web_fetch returns a capped slice and names a saved full copy (hooks/web/register.ts:20, REQ-TOOLS-020), not a path and 2 KB outline, so this form is unshipped and the Out holds.
 
 ## Force Push
 
@@ -136,8 +145,10 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Disk Hygiene
 
 - [x] **REQ-GUARDS-073** Moved Out as OUT-2312: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no 24-hour or free-space collector, so the Out holds.
 
 - [x] **REQ-GUARDS-074** Moved Out as OUT-2313: the item describes a part that plugins/ does not ship.
+  Verified: 2026-11-24, claude 2.1.329 pin, inspection of main at 069fefa3d (git grep and ls over plugins/): no temp-folder or worktree cleanup hook, so the Out holds.
 
 - [x] **REQ-GUARDS-076** claudetto shall claim that a path is protected against Bash writers only when the sandbox is on. With the sandbox off, a `permissions.deny` rule `Edit(path/**)` stops only the Edit tool. With the sandbox on, the sandbox merges `Edit(...)` deny paths into its write deny list (CTX-845).
   Acceptance: setup text and rule files that name a protected path either require `sandbox.enabled` true or state that Bash writers are not stopped. A probe plants a redirect, `tee`, `cp` and `sed -i` against the path, plus one write to an allowed neighbour path. It checks each result's exit code and text, not `is_error`. Verification: probe.

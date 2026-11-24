@@ -47,6 +47,7 @@
 ## Cache and Tokens
 
 - [x] **REQ-COST-042** Moved Out as OUT-3051: ADR-0177: vanilla 2.1.327 already serves a second Read of an unchanged file short ("File unchanged since last read", present in the 2.1.327 binary, checked 2026-11-19), so claudetto adds no code.
+  Verified: 2026-11-24, claude 2.1.329 binary (`reports/2026-11-24-research/pin-2-1-329/binary/result.txt`): the string "File unchanged since last read. The content from the earlier Read tool_result in this conversation is still current" is present, so vanilla still serves the short second Read.
 
 ## Paid Calls
 
