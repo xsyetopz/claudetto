@@ -2,9 +2,13 @@ import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
 
-/** What the model reads when an in-place edit is refused (REQ-GUARDS-079). */
+/**
+ * What the model reads when an in-place edit is refused (REQ-GUARDS-079). It names `patch`, the
+ * edit tool claudetto offers, because the Edit tool is hidden (REQ-TOOLS-001) and a reason naming
+ * it sent the model on to `perl -pi`, which the sandbox refuses in a loaded plugin's folder (RISK-542).
+ */
 export const REASON =
-	"Use the Edit tool for this change, not an in-place sed: Edit refuses a file you have not read, and it shows the diff of the change. Read the file, then Edit it. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
+	"Use the mcp__claudetto__patch tool for this change, not an in-place sed: patch writes only where its context lines match the file, writes nothing when one fails, and lists each file it changed. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
 
 /** A heredoc: the start line (kept) and the body up to its delimiter line, which is text, not commands. */
 const HEREDOC =
@@ -36,7 +40,7 @@ export const editsInPlace = (command: string): boolean =>
 	IN_PLACE.test(command.replaceAll(HEREDOC, "$1").replaceAll(QUOTED, "''"));
 
 /**
- * Refuses an in-place sed edit with a pointer to the Edit tool
+ * Refuses an in-place sed edit with a pointer to the patch tool
  * (REQ-GUARDS-079). The check runs on the model's own command, before any
  * rewrite and with no dependence on a hook's best-effort `if` filter, so a
  * command that Claude Code cannot split is judged like any other.

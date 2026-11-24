@@ -5,6 +5,10 @@
 - Install [Bun](https://bun.sh), [just](https://just.systems) and Claude Code.
 - Start one session with `claude --plugin-dir plugins/<plugin>` per plugin; Claude Code writes the
   `.claude-plugin/types` folder that typechecking needs.
+- To work on this repo with claudetto loaded, load an installed copy or a copy outside the tree
+  (`cp -R plugins/claudetto "$TMPDIR/claudetto"`, then `--plugin-dir "$TMPDIR/claudetto"`). Claude Code
+  2.1.329 denies Bash writes inside a loaded plugin's folder under the sandbox claudetto turns on, so
+  `perl -pi`, `git stash` and test fixtures in `plugins/claudetto` fail with EPERM (RISK-542).
 
 ## Layout
 

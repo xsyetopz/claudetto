@@ -1152,8 +1152,11 @@
   Consequence: one wasted Bash call per edit of the plugin's own files; the edit and its commit were correct. A session that loads the plugin from a marketplace copy edits its own repository and is not affected.
   Likelihood: 2. Impact: 1.
   Existing controls: the patch tool runs in-process, outside the Bash sandbox, and edits the file.
-  Response: accept.
-  Status: accepted 2026-11-24: measured on the run below, the cost is one Bash call and the result was right, so no hint text changes for a case only claudetto's own development meets.
-  Verified: 2026-11-24, claude 2.1.329, the dogfood run above: 9 turns, $0.12, `dogfood/rename` committed `bd9db0d26` with the rename and nothing else; the second prompt's `just typescript::test` gave 275 pass, 1 skip, 0 fail.
+  Response: mitigate.
+  Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, the same rename prompt, n=3 per arm, each in its own scratch clone. Plugin loaded from the edited tree: `perl -pi` met the sandbox deny in 4 of 6 runs and one run also failed `git stash` on the same folder; patch made the edit in 6 of 6. Plugin loaded from a copy outside the tree: `perl -pi` made the edit at the first call in 3 of 3, no "Operation not permitted" line, and each run committed the 2-line rename on `dogfood/rename` ($0.06 to $0.07 a run).
+  Evidence: the dogfood setup caused it: `plans/rebuild/goal.md:38` dogfoods an installed claudetto, which runs from a copy, while these sessions loaded `--plugin-dir` from the tree they edited.
+  Evidence: the inplace refusal named the Edit tool, which `plugins/claudetto/hooks/pool/offer.ts:13` hides; it now names `mcp__claudetto__patch` (REQ-GUARDS-079).
+  Status: closed 2026-11-24: `CONTRIBUTING.md` says to load claudetto from an installed copy or a copy outside the tree when working on this repo, and the measured runs above show that setup edits and commits with no sandbox deny.
+  Verified: 2026-11-24, claude 2.1.329, the copy arm above: 3 of 3 runs committed the rename with 0 EPERM lines.
   Owner: verification.
   Source: RISK-541; the session transcript `s1.jsonl` of the 2026-11-24 dogfood (scratch, not kept).
