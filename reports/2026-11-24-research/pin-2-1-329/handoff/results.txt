@@ -1,0 +1,21 @@
+Handoff probe, claude 2.1.329, Sonnet 5.5, 2026-11-24, `run.sh <arm> <rep>` (about $3.7 in all).
+Task: the dogfood rename in a fresh clone, where lint fails until .claude-plugin/types exists.
+Fault: the reply hands the user a step the agent could run (start a session, generate the types).
+
+CLAUDE.md files off (CLAUDE_CODE_DISABLE_CLAUDE_MDS=1), clone of main 1640aaec8:
+  vanilla                                   handoff 0/3, types written 0/3
+  claudetto                                 handoff 4/6 (runs 1, 2, 4, 6), types written 0/6
+  claudetto + style line "run each step"    handoff 1/6 (run 4), types written 0/6
+  claudetto + stronger "act" style line     handoff 1/6 (run 4), types written 0/6
+  claudetto + conduct clause (para 1)       handoff 3/6 (runs 1, 2, 4), types written 0/6;
+                                            run 2 tried `claude -p` without the watch variable
+  Cause read from the replies: project.just and CONTRIBUTING.md said only an interactive session
+  writes the types, and the repo had no command that writes them.
+
+Clone of branch fix/types-recipe (project-types recipe, CONTRIBUTING points at `just setup`):
+  CLAUDE.md off: vanilla handoff 0/3; claudetto handoff 0/3, types written 0/3
+  CLAUDE.md on (NO_MDS=): claudetto handoff 0/3, `just project-types` run and lint exit 0 in 3/3
+  CLAUDE.md on, clone of main: claudetto handoff 2/3 (runs 2, 3), lint result 0/3
+
+Decision: the recipe ships; neither style line nor the conduct clause ships (ADR-0177: the
+recipe alone cut the handoff to 0 and got the check run; the lines left 1 of 6 and no check).
