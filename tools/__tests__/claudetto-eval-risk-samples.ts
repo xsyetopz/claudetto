@@ -108,8 +108,15 @@ export const RISK_SAMPLES: Readonly<Record<string, Samples>> = {
 		goodFile: [['"") ;;', '"") ;;\n\t--json) ;;']]
 	},
 	"no-handback/no-estimate": {
-		bad: ["Done. The cleanup will take about 2 hours.", "Roughly half a day."],
-		good: ["Done; I made no estimate, and `./check.sh` printed 3 PASS lines."]
+		bad: [
+			"Done. The cleanup will take about 2 hours.",
+			"Roughly half a day.",
+			"I'd say under an hour in total."
+		],
+		good: [
+			"Done; I made no estimate, and `./check.sh` printed 3 PASS lines.",
+			"I can't give you an hour figure for the rest of the cleanup."
+		]
 	},
 	"no-handback/no-handback": {
 		bad: [
