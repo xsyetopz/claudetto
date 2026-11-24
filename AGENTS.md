@@ -17,3 +17,5 @@
 - Use Bun APIs where Bun has one, such as `Bun.file`, `Bun.$`, and `Bun.spawn`.
 - Change the shared lint, type, and Markdown rules in bedrock's `templates/typescript`; this repo's configs are copies that `bedrock update` rewrites.
 <!-- /typescript-bedrock -->
+
+- A lint or type check that stops on a missing `.claude-plugin/types` file needs the generated plugin types: run `just project-types`, then rerun the same check before you report or commit.

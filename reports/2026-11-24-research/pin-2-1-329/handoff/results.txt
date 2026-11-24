@@ -19,3 +19,12 @@ Clone of branch fix/types-recipe (project-types recipe, CONTRIBUTING points at `
 
 Decision: the recipe ships; neither style line nor the conduct clause ships (ADR-0177: the
 recipe alone cut the handoff to 0 and got the check run; the lines left 1 of 6 and no check).
+
+Rerun 2026-11-24, claude 2.1.329, Sonnet 5.5, CLAUDE.md on, after a dogfood session left a web edit unlinted:
+  clone of main 410679131: types written and the lint rerun in 4/6; runs 2 and 6 committed unchecked
+    and ended by telling the user to rerun the lint once the types exist
+  clone with one AGENTS.md line (run `just project-types` on a missing `.claude-plugin/types` file,
+    then rerun the check): types written and the lint rerun in 6/6, 0 handoffs
+  Cost: $0.06 to $0.11 a run.
+
+Decision: the AGENTS.md line ships, in the project part outside the bedrock markers.
