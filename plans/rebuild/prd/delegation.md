@@ -108,5 +108,6 @@ The next measured candidate removes the exit the model took: at the bound, a Sto
   Verified: claude 2.1.327, 2026-11-18, cc-inspect cli (fake API): `git grep maxTurns plugins` returns nothing.
   Verified: inspection 2026-11-19: no Metis agent file; plugins/claudetto/agents/Heracles.md holds the `git commit --only` line.
   Verified: 2.1.331, 2026-11-24: `git grep -n maxTurns plugins` returns nothing, so no worker runs under a turn limit.
+  Verified: inspection, 2026-11-24 (claude 2.1.329): `git grep maxTurns -- plugins` finds nothing (exit 1), so no shipped agent or fork sets a turn limit; the conduct section (hooks/prompt/conduct.ts) has a choice already made carried out and hands back only what is the user's to give.
 
 ## Rules Passed to Workers

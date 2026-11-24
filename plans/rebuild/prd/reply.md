@@ -189,6 +189,7 @@
   Basis: reported, user. Status: done 2026-11-19; the line ships in output-styles/claudetto.md. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: on three toggles whose order does not matter, every name came in backticks with no numbers in 3 of 3 runs with the line alone and 3 of 3 in the full style, vanilla 0 of 3; on the control of four ordered router steps, all three arms numbered the list 3 of 3.
   Source: reported, user, 2026-11-13 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352`).
   Verified: inspection 2026-11-19: plugins/claudetto/output-styles/claudetto.md:14 lists controls in backticks as a bulleted list with no numbers.
+  Verified: inspection, claude 2.1.329, 2026-11-24: the captured request of the REQ-GUARDS-079 probe carries the style paragraph "Write a list of controls, buttons, or steps the user performs with each literal name in backticks, as a bulleted list with no numbers when the order does not matter"; `tools/__tests__/style-recipes.test.ts` keeps it.
 
 ## No Padding
 

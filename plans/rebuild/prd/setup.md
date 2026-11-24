@@ -145,6 +145,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: measured (2.1.323 research probes); cited (Claude Code warns on an MCP result past 10,000 tokens). Status: have at 088a227c.
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/inventory.md:57; plugins/claudetto/hooks/features/setup/settings.ts:137@088a227c.
   Verified: PASS: defaults.ts bashOutputMaxChars 8000 and MAX_MCP_OUTPUT_TOKENS "10000"; the test asserts 8000 through DEFAULTS. Binary 2.1.327, 2026-11-19, re-checked from the B-setup report.
+  Verified: test, claude 2.1.329, 2026-11-24, `claude plugin test plugins/claudetto` 332 pass, 0 fail, including `hooks/settings/__tests__/defaults.test.ts` (`bashOutputMaxChars` 8000 and `env.MAX_MCP_OUTPUT_TOKENS`).
 
 ## Env Keys
 
@@ -164,6 +165,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Source: user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:12); user decision, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:459).
   Verified: PASS: cc-inspect cli, binary 2.1.327, 2026-11-19: with the sandbox block (enabled, autoAllowBashIfSandboxed, allowUnsandboxedCommands, excludedCommands claude *, allowWrite /private/var/folders) a Bash file-creating call ran (result done_0); with no settings the same call was not run.
   Verified: 2.1.331, 2026-11-24: cc-inspect cli, default permission mode, Bash `touch made.txt && mkdir -p sub && echo x > sub/y && echo done_$?`: with --settings holding the sandbox block (enabled, autoAllowBashIfSandboxed, allowUnsandboxedCommands, excludedCommands `claude *`, allowWrite /private/var/folders) it ran with no prompt (result done_0, sandbox_enabled true); with no settings it was refused ("A variable in this command can't be checked before it runs") -> PASS.
+  Verified: demonstration, claude 2.1.329, 2026-11-24: with the sandbox settings claudetto writes (enabled, autoAllowBashIfSandboxed, allowUnsandboxedCommands, excludedCommands `claude *`), `touch made.txt && mkdir -p sub && echo x > sub/y && echo done_$?` ran with no prompt and printed `done_0`; with no settings the same call was refused ("A variable in this command can't be checked before it runs").
 
 ## Auto Mode
 

@@ -125,3 +125,4 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   - Total held-out spend: $2.92 over three runs.
   Source: ADR-0177; ADR-0193.
   Verified: `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json` (claude 2.1.330, `claude-opus-5-5`, 1 run per arm): `holdout-ratelimit-retry` and `holdout-slug-unique` 1.00 against 0.23 (Δ +0.77 each); `holdout-contradiction-due` and `holdout-trivial-version` 1.00 against 1.00 (Δ 0, both arms at the ceiling, so no loss); mean Δ +0.38. Not rerun on Haiku: the held-out set is not read in this repo's sessions.
+  Verified: demonstration, claude 2.1.329, 2026-11-24: `just eval-holdout claudetto-spec claude-opus-5-5 --runs 1 -j 4 --max-cost-usd 5`, result `plugins/claudetto-spec/evals/results/holdout-2026-11-24T04-29-25-777Z.json`: claudeVersion 2.1.329, model `claude-opus-5-5`, not partial, mean Δ +0.38, $2.19. Only the aggregate was read (ADR-0193).
