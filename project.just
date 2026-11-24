@@ -77,9 +77,10 @@ eval plugin *args: eval-preflight
         printf 'FAILED: commit the eval cases before a run (CON-056); uncommitted:\n%s\n' "$dirty" >&2
         exit 1
     fi
-    for c in "${cases[@]}"; do
-        echo "case commit: $(basename "$(dirname "$c")") $(git log -1 --format=%h -- "$(dirname "$c")")" >&2
-    done
+    # One history walk names each case's latest commit; a git log per case made the recipe twice as slow.
+    git log --format='>%h' --name-only -- "${cases[@]%/case.yaml}" \
+        | awk '/^>/ { h = substr($0, 2); next } NF { split($0, p, "/"); if (!(p[4] in s)) { s[p[4]] = h; print "case commit: " p[4] " " h } }' \
+        | sort >&2
     grants=()
     while IFS= read -r tool; do
         [[ -n "$tool" ]] && grants+=("$tool")
