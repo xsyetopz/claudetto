@@ -1141,3 +1141,19 @@
   Trigger: user-held: approval to change `tools/__tests__/eval-recipe.test.ts`.
   Owner: verification.
   Status: open 2026-11-24, user-held: the cure edits a test, which the goal reserves to the user.
+  Evidence: 2026-11-24, the user approved the skip-when-not-writable change. A probe in this session's sandbox showed `access(dir, W_OK)` and a write both fail with EPERM on a write-denied folder, so the check sees the same deny the write meets. The CON-056 test now skips with that reason when `plugins/claudetto/evals/trivial-typo` is not writable; its assertions are unchanged.
+  Status: closed 2026-11-24: the test skips where the sandbox denies the folder and still runs elsewhere.
+  Verified: 2026-11-24, claude 2.1.329: outside a session `bun test tools/__tests__/eval-recipe.test.ts` gave 5 pass, 0 fail, CON-056 included. In the fake-API session replay that loads claudetto from the clone, 4 pass, 1 skip, 0 fail in 2 of 2 runs, and `just typescript::test` gave 275 pass, 1 skip, 0 fail.
+
+- [x] **RISK-542** A session that loads claudetto from this tree cannot edit the plugin's own files from Bash, so the inplace guard's `perl -0pi -e` hint fails there.
+  Category: verification, dogfood.
+  Cause: the settings fill turns the sandbox on (`plugins/claudetto/hooks/guards/wall/fill.ts:27`), and Claude Code 2.1.329 write-denies a loaded plugin's folder in it, the cause RISK-541 met; an in-place edit needs a temp file in that folder.
+  Event: dogfood 2026-11-24, claude 2.1.329, Sonnet 5.5, `claude -p --plugin-dir <clone>/plugins/claudetto` in a scratch clone, a rename in `plugins/claudetto/hooks/guards/memory.ts`: `sed -i` was refused by the inplace guard, then `perl -pi` printed "Cannot make temp name: Operation not permitted", then the patch tool made the edit.
+  Consequence: one wasted Bash call per edit of the plugin's own files; the edit and its commit were correct. A session that loads the plugin from a marketplace copy edits its own repository and is not affected.
+  Likelihood: 2. Impact: 1.
+  Existing controls: the patch tool runs in-process, outside the Bash sandbox, and edits the file.
+  Response: accept.
+  Status: accepted 2026-11-24: measured on the run below, the cost is one Bash call and the result was right, so no hint text changes for a case only claudetto's own development meets.
+  Verified: 2026-11-24, claude 2.1.329, the dogfood run above: 9 turns, $0.12, `dogfood/rename` committed `bd9db0d26` with the rename and nothing else; the second prompt's `just typescript::test` gave 275 pass, 1 skip, 0 fail.
+  Owner: verification.
+  Source: RISK-541; the session transcript `s1.jsonl` of the 2026-11-24 dogfood (scratch, not kept).

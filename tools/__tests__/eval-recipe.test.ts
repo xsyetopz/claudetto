@@ -1,5 +1,12 @@
 import { expect, test } from "bun:test";
-import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
+import {
+	access,
+	chmod,
+	constants,
+	mkdtemp,
+	rm,
+	writeFile
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -65,18 +72,19 @@ withJust("the eval's own nonzero exit status survives the pipe", async () => {
 	expect(r.exitCode).toBe(3);
 });
 
-withJust(
+const caseDir = join(root, "plugins", "claudetto", "evals", "trivial-typo");
+// A sandboxed Claude Code session that loads claudetto from this tree write-denies the
+// plugin folder, so the probe file cannot be planted there (RISK-541).
+const caseDirWritable = await access(caseDir, constants.W_OK).then(
+	() => true,
+	() => false
+);
+
+test.skipIf(Bun.which("just") === null || !caseDirWritable)(
 	"an uncommitted case file stops the run before claude starts (CON-056)",
 	async () => {
 		// Arrange
-		const probe = join(
-			root,
-			"plugins",
-			"claudetto",
-			"evals",
-			"trivial-typo",
-			`uncommitted-${process.pid}.txt`
-		);
+		const probe = join(caseDir, `uncommitted-${process.pid}.txt`);
 		await writeFile(probe, "x\n");
 
 		// Act
