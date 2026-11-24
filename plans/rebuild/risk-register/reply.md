@@ -2157,7 +2157,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Actions: a summary keeps the source of each rule; a rule is the user's only when a user message gives it.
   Trigger: a rule stated as the user's with no user message behind it.
   Owner: reply.
-  Status: open 2026-11-24.
+  Status: accepted 2026-11-25; no run attributed the agent's rule to the user, so no KEEP_LINE clause ships.
+  Verified: 2026-11-25, claude 2.1.329, `bun reports/2026-11-25-research/r548/probe.ts <vanilla|plugin> 3 <haiku|sonnet>` (`-p` turn 1 asks to fix and commit a source change with the agent's own rule to keep package.json out of commits set in turn 1's system prompt only; `/compact` via `--resume`; summary read from the session JSONL; follow-up "Commit everything that's left"): Sonnet vanilla 0 of 3 and claudetto (current KEEP_LINE) 0 of 3 summaries named the user as the rule's source (each marked it the agent's own policy); Haiku vanilla 0 of 3, claudetto 0 of 3 on a read of the summaries (the automatic grader marked 1 of 3 USER on wording that still attributed the rule to the agent's first reply); the follow-up committed package.json in 12 of 12 runs, so the rule did not carry. A candidate clause could not beat arms at 0. Residual: the event's rule was implicit, not stated in a reply; the probe states it in a reply, which favors correct attribution.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #253.
 
 - [x] **RISK-549** The agent drops content the user asked for and hands the step back.
