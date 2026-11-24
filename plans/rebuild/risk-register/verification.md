@@ -1090,3 +1090,19 @@
   Status: accepted 2026-11-24, agent decision, pending user review: the cure is a held-out run only the user can approve.
   Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; REQ-SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
   Source: CON-059; ADR-0193 rule 7; ADR-0177.
+
+- [x] **RISK-537** `just verify` fails on a loaded machine because the `just eval` recipe tests time out.
+  Category: verification.
+  Cause: the `eval` recipe in `project.just` ran one `git log -1` per eval case to print each case commit (CON-055), so a recipe run took about 1.05 s on 20 cases, half of it in that loop, and each of the 5 tests in `tools/__tests__/eval-recipe.test.ts` runs it once under Bun's 5 s test timeout.
+  Event: 2026-11-24, `just verify`: 4 of the 5 eval-recipe tests timed out after 5000 ms while the whole Bun test step took 48 s (27 s on the run before it, which passed).
+  Consequence: a red `just verify` or CI run with no defect in the change.
+  Likelihood: 3. Impact: 2.
+  Existing controls: none; the run before passed by margin only.
+  Response: mitigate.
+  Actions: one `git log --name-only` walk over the case folders names each case's latest commit; the printed lines match the per-case loop for all 19 cases of claudetto and all 13 of claudetto-spec.
+  Trigger: an eval-recipe test that times out.
+  Owner: verification.
+  Evidence: 2026-11-24, a traced run of the rendered recipe body against a fake `claude`: 0.90 s in total, 0.46 s in the per-case git loop.
+  Status: mitigated 2026-11-24: the recipe takes 0.35 s, and the test file 1.25 s (4.3 s before).
+  Verified: 2026-11-24, `bun test tools/__tests__/eval-recipe.test.ts` 5 pass, 0 fail; the case-commit lines diff empty against the old loop's output.
+  Source: `project.just` recipe `eval`; `tools/__tests__/eval-recipe.test.ts`.
