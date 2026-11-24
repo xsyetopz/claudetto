@@ -9,8 +9,9 @@ import { closeStdin } from "./stdin";
 /**
  * Matches a command that names git. Claude Code refuses a git command in a
  * worktree-isolated agent when it is more than a plain list of commands or
- * when an interpreter such as perl runs before git, and the stdin group and the
- * watchdog both add that. Such a command keeps only pipefail, a plain line.
+ * when an interpreter such as perl runs before git, and the watchdog adds that.
+ * The stdin line is skipped with it. Such a command keeps only pipefail, a
+ * plain line.
  */
 const NAMES_GIT = /\bgit\b/u;
 
