@@ -60,15 +60,18 @@ function frame(
 	via: string,
 	markdown: string,
 	range: { offset: number; max: number },
-	path: string
+	copy: { path: string } | { unsaved: string }
 ): string {
 	const body = markdown.slice(range.offset, range.offset + range.max);
 	const end = range.offset + body.length;
+	const read = "path" in copy ? `, or Read ${copy.path}` : "";
 	const rest =
-		end < markdown.length
-			? ` More: call again with offset=${end}, or Read ${path}.`
-			: "";
-	return `${url} (${via}) chars ${range.offset}-${end} of ${markdown.length}. Full Markdown saved: ${path}.${rest}\n---\n${body}`;
+		end < markdown.length ? ` More: call again with offset=${end}${read}.` : "";
+	const saved =
+		"path" in copy
+			? `Full Markdown saved: ${copy.path}.`
+			: `The Markdown copy could not be saved: ${copy.unsaved}.`;
+	return `${url} (${via}) chars ${range.offset}-${end} of ${markdown.length}. ${saved}${rest}\n---\n${body}`;
 }
 
 function clampInt(
@@ -158,6 +161,7 @@ function parseUrl(text: string): URL | string {
 	try {
 		parsed = new URL(text);
 	} catch {
+		// The refusal names the text, which is all the parse error says.
 		return `Not a URL: ${text}`;
 	}
 	return parsed.protocol === "http:" || parsed.protocol === "https:"
@@ -222,7 +226,7 @@ export async function fetchPage(
 	if (saved !== undefined) {
 		return range.offset >= saved.length
 			? `Offset ${range.offset} is past the end (${saved.length} chars): ${url.href}`
-			: frame(url.href, "saved copy", saved, range, path);
+			: frame(url.href, "saved copy", saved, range, { path });
 	}
 
 	const got = await obtain(deps, url);
@@ -231,8 +235,10 @@ export async function fetchPage(
 	}
 	try {
 		await deps.writeFile(path, got.markdown);
-	} catch {
-		// The window below still answers; only paging from the saved copy is lost.
+	} catch (error) {
+		// The window below still answers; the reply names the failed save, so no Read goes to a missing copy.
+		const why = error instanceof Error ? error.message : String(error);
+		return frame(url.href, got.via, got.markdown, range, { unsaved: why });
 	}
-	return frame(url.href, got.via, got.markdown, range, path);
+	return frame(url.href, got.via, got.markdown, range, { path });
 }

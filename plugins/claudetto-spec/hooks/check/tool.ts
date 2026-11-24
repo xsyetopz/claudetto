@@ -55,8 +55,13 @@ export async function runSpecCheck(
 export async function registerTool($: EngineInterface): Promise<void> {
 	try {
 		await $.tool.register(SPEC_TOOL);
-	} catch {
-		$.ui.log("claudetto-spec: spec_check registration failed", { to: "debug" });
+	} catch (error) {
+		$.ui.log(
+			`claudetto-spec: spec_check registration failed: ${String(error)}`,
+			{
+				to: "debug"
+			}
+		);
 	}
 }
 

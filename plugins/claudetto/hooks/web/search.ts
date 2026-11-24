@@ -42,6 +42,7 @@ export function decodeDdgUrl(href: string): string | undefined {
 	try {
 		url = new URL(absolute, "https://duckduckgo.com/");
 	} catch {
+		// A link that is no URL is skipped; the throw is the answer.
 		return undefined;
 	}
 	if (url.hostname.endsWith("duckduckgo.com")) {
@@ -144,6 +145,7 @@ export function parseBrave(json: string): SearchResult[] {
 	try {
 		data = JSON.parse(json);
 	} catch {
+		// A body that is no JSON holds no rows; the caller then asks DuckDuckGo.
 		return [];
 	}
 	const web = isRecord(data) ? data["web"] : undefined;
@@ -178,6 +180,10 @@ export type SearchDeps = Pick<
 	braveKey: string | undefined;
 };
 
+/** A caught value as text for the reply. */
+const messageOf = (error: unknown): string =>
+	error instanceof Error ? error.message : String(error);
+
 const BLOCKED_MESSAGE =
 	"DuckDuckGo blocked the search as automated traffic. Set BRAVE_SEARCH_API_KEY to use Brave Search, or use web_fetch on a known URL.";
 
@@ -185,7 +191,8 @@ const BLOCKED_MESSAGE =
 async function braveSearch(
 	deps: SearchDeps,
 	query: string,
-	count: number
+	count: number,
+	failures: string[]
 ): Promise<SearchResult[]> {
 	if (deps.braveKey === undefined || deps.braveKey === "") {
 		return [];
@@ -200,8 +207,9 @@ async function braveSearch(
 			}
 		);
 		return res.status >= 200 && res.status < 300 ? parseBrave(res.text) : [];
-	} catch {
-		// Brave is unreachable: DuckDuckGo still answers.
+	} catch (error) {
+		// Brave is unreachable: DuckDuckGo still answers, and the failure reaches the reply if it does not.
+		failures.push(`Brave: ${messageOf(error)}`);
 		return [];
 	}
 }
@@ -209,7 +217,8 @@ async function braveSearch(
 /** DuckDuckGo's HTML endpoint by plain request; a bot check or a failure is an empty list. */
 async function ddgDirect(
 	deps: SearchDeps,
-	url: string
+	url: string,
+	failures: string[]
 ): Promise<SearchResult[]> {
 	try {
 		const res = await deps.net(url, {
@@ -217,7 +226,8 @@ async function ddgDirect(
 			"accept-language": "en-US,en;q=0.9"
 		});
 		return isDdgBlocked(res.status, res.text) ? [] : parseDdg(res.text);
-	} catch {
+	} catch (error) {
+		failures.push(`DuckDuckGo: ${messageOf(error)}`);
 		return [];
 	}
 }
@@ -267,9 +277,10 @@ export async function searchWeb(
 	const wanted = Math.trunc(input.max_results ?? DEFAULT_RESULTS);
 	const max = Math.min(Math.max(wanted || DEFAULT_RESULTS, 1), MAX_RESULTS);
 	const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-	let hits = await braveSearch(deps, query, max);
+	const failures: string[] = [];
+	let hits = await braveSearch(deps, query, max, failures);
 	if (hits.length === 0) {
-		hits = await ddgDirect(deps, url);
+		hits = await ddgDirect(deps, url, failures);
 	}
 	if (hits.length > 0) {
 		return formatResults(hits, max);
@@ -278,5 +289,8 @@ export async function searchWeb(
 	if (browsed.hits.length > 0) {
 		return formatResults(browsed.hits, max);
 	}
-	return browsed.blocked ? BLOCKED_MESSAGE : `No results for: ${query}`;
+	// A request that failed is named, so a network fault does not read as a query with no hits (RISK-001).
+	const failed =
+		failures.length === 0 ? "" : ` Failed requests: ${failures.join("; ")}.`;
+	return `${browsed.blocked ? BLOCKED_MESSAGE : `No results for: ${query}`}${failed}`;
 }

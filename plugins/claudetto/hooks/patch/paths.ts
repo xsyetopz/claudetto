@@ -38,6 +38,7 @@ async function landing(
 	if (abs === "" || abs === "/") {
 		return undefined;
 	}
+	// A path that does not exist yet throws; the walk then resolves its parent, so the throw is the answer.
 	const stat = await $.fs.stat(abs, { resolve: true }).catch(() => null);
 	if (stat !== null) {
 		return stat.realPath === undefined ? undefined : `${stat.realPath}${rest}`;

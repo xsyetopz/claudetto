@@ -22,6 +22,23 @@ describe("REQ-TOOLS-020 direct path", () => {
 		expect(renders.length).toBe(0);
 	});
 
+	test("a failed save is named, and the reply points no Read at the missing copy", async () => {
+		// Arrange
+		const web = fakeWeb({ [PAGE]: html(ARTICLE) });
+		const { deps } = fakeDeps(web.net);
+		const failing = {
+			...deps,
+			writeFile: () => Promise.reject(new Error("EACCES"))
+		};
+
+		// Act
+		const reply = await fetchPage(failing, { url: PAGE, max_chars: 10 });
+
+		// Assert
+		expect(reply).toContain("The Markdown copy could not be saved: EACCES.");
+		expect(reply).not.toContain("Read /data/web");
+	});
+
 	test("passes JSON and plain text through unchanged", async () => {
 		// Arrange
 		const web = fakeWeb({
