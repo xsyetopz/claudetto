@@ -3,7 +3,14 @@ export interface Goal {
 	condition: string;
 	/** Stop-hook blocks in the current turn; the engine ends the turn past its cap. */
 	blocks: number;
+	/** Whether a block row has carried the goal tools note; `-p` drops the set-time copy (RISK-531). */
+	announced?: boolean;
 }
+
+/** What the model reads once per goal about the goal tools, three of which sit behind ToolSearch. */
+export const TOOLS_NOTE =
+	"claudetto: mcp__claudetto__pause_goal is loaded; get_goal, set_goal and clear_goal are available through ToolSearch. " +
+	"When the condition is met, call clear_goal with the checks you ran.";
 
 /**
  * What claudetto knows of the session's goal. The engine keeps the real

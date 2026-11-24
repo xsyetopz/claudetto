@@ -1841,7 +1841,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, same command with `--plugin-dir plugins/claudetto`: 3 blocks in 3 of 3 runs (one hand-off, `pause_goal`, then `Goal cleared` after the turn), against 9 in 4 of 4 vanilla. With `pause_goal` deferred it took 7 blocks in 5 of 5 runs, because the model loaded it only at the cap note. Controls that the agent can finish (`bun app.js` prints hello; `bun test` passes and README.md documents math.js): claudetto met both in 3 of 3 with no `pause_goal` call, as vanilla did in 2 of 2. `claude plugin test plugins/claudetto`: 327 pass, 0 fail.
   Residual: the pause is the model's own judgment; a goal it could still finish may be paused, and `set_goal` resumes it. The traces are in /tmp/claude-501/r520.
 
-- [ ] **RISK-531** The note claudetto adds to `/goal` at set time does not reach a headless model.
+- [x] **RISK-531** The note claudetto adds to `/goal` at set time does not reach a headless model.
   Category: goal tools.
   Cause: `registerCommand` returns the note as the command's `context`; under `-p` the transcript holds no copy of it.
   Event: 2026-11-24, claude 2.1.331, the RISK-520 probe traces (/tmp/claude-501/r520/fix6.jsonl): `grep -c "goal tools are available"` printed 0, and the model loaded `pause_goal` through ToolSearch only after the cap note named it.
@@ -1854,6 +1854,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Owner: reply.
   Status: open 2026-11-24.
   Source: the RISK-520 probe, 2026-11-24.
+  Evidence: 2026-11-24, claude 2.1.331, cc-inspect `cli` probe of `-p "/goal the file done.txt exists"` with claudetto at a615305ea: the first request holds `Goal set` and the engine directive but not the note.
+  Status: mitigated 2026-11-24: the goal's first block row carries the note once (`plugins/claudetto/hooks/goal/feedback.ts`, test `hooks/goal/__tests__/announce.test.ts`).
+  Verified: 2026-11-24, `reports/2026-11-24-research/r531/run.sh claudetto 1..3` on Sonnet: the note reached the transcript in 3 of 3 runs, against 0 of 3 at a615305ea; block rows stayed at 2 per run on both builds (`reports/2026-11-24-research/r531/README.md`).
 
 - [x] **RISK-521** The agent calls an unfamiliar CLI with a guessed flag.
   Category: agent conduct.
