@@ -2098,7 +2098,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto` 332 pass, 0 fail, with 11 conduct paragraphs.
   Source: ADR-0177; REQ-REPLY-140; OUT-3073.
 
-- [ ] **RISK-545** The agent states durations and hour estimates with no measured basis.
+- [x] **RISK-545** The agent states durations and hour estimates with no measured basis.
   Category: conduct.
   Cause: the agent answers a question about remaining work with hour figures it cannot back.
   Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #250).
@@ -2110,9 +2110,11 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a reply with an hour or minute estimate for agent work.
   Owner: reply.
   Status: open 2026-11-24.
+  Status: mitigated 2026-11-25: the hand-back paragraph in output-styles/claudetto.md gives no estimate, even when asked, and starts none of the named work.
+  Verified: 2026-11-24, claude 2.1.329, `just eval claudetto --case no-handback` run 2026-11-24T22-19-09-743Z, no-estimate grader narrowed to estimate phrasing: with the style 0 of 3 replies held an estimate, without it 2 of 3; scores 1.00 against 0.89, $0.13-0.14 per run on both arms. A first wording ("do the work instead") made the agent do the unrequested cleanup in 3 of 3 runs (run 2026-11-24T22-17-32-358Z) and was dropped.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #250.
 
-- [ ] **RISK-546** The agent's report lists checks it skipped instead of running them (an escape hatch).
+- [x] **RISK-546** The agent's report lists checks it skipped instead of running them (an escape hatch).
   Category: conduct.
   Cause: the agent reports "not checked" or "not verified" for a check within its reach and stops.
   Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #251).
@@ -2124,6 +2126,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a report that names a check, read or step it did not do, or lists open items or gaps in place of doing them.
   Owner: reply.
   Status: open 2026-11-24.
+  Status: mitigated 2026-11-25: the style's first paragraph runs each case a claim needs instead of marking it "not run", and the hand-back paragraph lists nothing left undone.
+  Verified: 2026-11-24, claude 2.1.329, plugins/claudetto/evals/no-handback run 2026-11-24T22-19-09-743Z: no-skipped-check and ran-check passed in 3 of 3 runs with the style; vanilla also passed both in 3 of 3, so the case shows no gap on this grader.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #251.
 
 - [x] **RISK-547** The agent does unrequested side work in place of the requested edit.
@@ -2156,7 +2160,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open 2026-11-24.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #253.
 
-- [ ] **RISK-549** The agent drops content the user asked for and hands the step back.
+- [x] **RISK-549** The agent drops content the user asked for and hands the step back.
   Category: conduct.
   Cause: the agent leaves out a requested line on its own judgment and tells the user to add it.
   Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #254).
@@ -2168,9 +2172,11 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a reply that names requested content it left out.
   Owner: reply.
   Status: open 2026-11-24.
+  Status: mitigated 2026-11-25: the hand-back paragraph does the whole request and lists nothing left undone.
+  Verified: 2026-11-24, claude 2.1.329, plugins/claudetto/evals/no-handback run 2026-11-24T22-19-09-743Z: the requested README line was written in 3 of 3 runs with the style and 3 of 3 without; the drop did not reproduce on either arm.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #254.
 
-- [ ] **RISK-550** The agent asks the user questions in plain text instead of AskUserQuestion.
+- [x] **RISK-550** The agent asks the user questions in plain text instead of AskUserQuestion.
   Category: conduct.
   Cause: a closing question or hand-back is written as reply text.
   Event: 2026-11-24, claude 2.1.329, reported by the user in the session below (issue #255).
@@ -2182,6 +2188,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Trigger: a reply that ends with a question or an "if you want" offer.
   Owner: reply.
   Status: open 2026-11-24.
+  Status: mitigated 2026-11-25: the hand-back paragraph closes with no offer and sends any question through `AskUserQuestion`.
+  Verified: 2026-11-24, claude 2.1.329, plugins/claudetto/evals/no-handback: no closing question or offer in 6 of 6 runs with the style (runs 2026-11-24T22-17-32-358Z and 22-19-09-743Z); without it 1 of 3 baseline runs ended with one.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #255.
 - [x] **RISK-551** Asked to update a goal prompt, the agent carries out the goal in the current session.
   Category: conduct.
