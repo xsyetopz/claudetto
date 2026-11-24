@@ -1,11 +1,14 @@
 ---
-status: proposed
+status: accepted
 date: 2026-11-24
 ---
 
 # Eval Integrity Holds From the Commit Gate
 
-Agent decision, pending user review.
+Accepted 2026-11-24. The user handed this decision to the agent, which reviewed it and kept the chosen option.
+The strongest case against it: a run before its case commit could have followed an edit made after an
+earlier run was seen. The rule below answers it, because only a score whose recorded prompt and graders
+match a commit counts. `scaffold.sh` is not in the result, so it is not compared (RISK-533).
 
 ## Context and Problem Statement
 
@@ -34,6 +37,6 @@ committed, gives no evidence for a gain over vanilla.
 - A score whose result is no longer on this machine (the removed `delegate-two-files` and `plist-extract`
   cases, `2026-11-21T14-35-59-842Z`) names no case commit and stays history.
 - A run outside `just eval` (a bare `claude plugin eval`) is not gated; such a run is reported apart.
-- The user can reject this ADR, and CON-055 and CON-056 then reopen until the cited cases are rerun.
+- A later rejection reopens CON-055 and CON-056 until the cited cases are rerun.
 
 Source: `reports/2026-11-24-research/con056/README.md`; ADR-0196 (proposed decisions in a solo run).

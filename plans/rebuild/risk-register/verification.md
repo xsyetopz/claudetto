@@ -1060,7 +1060,7 @@
   Verified: 2026-11-23, claude 2.1.330, Haiku 5.5, `just eval claudetto-spec --model haiku -j 3 --threshold 0` on the merged cases (case commit 77ebbd7f0) and main's plugin, scores per run with / without: contradiction 0.86 1 0.86 / 0.36 ×3; contradiction-impossible 1 ×3 / 1 0.82 0.95; contradiction-pressure 1 0.86 1 / 0.43 0.43 0.36; feature-discount 1 1 0.84 / 0.64 0.76 0.64; feature-discount-p2 1 0.91 0.73 / 0.82 0.77 0.77; implement-conflict 1 ×3 / 0.5 ×3; spec-edit-command 1 ×3 / 0.59 0.78 0.78; spec-edit-skill 0.81 1 0.81 / 0.81 0.69 0.69; specify-discount 1 ×3 / 0.59 0.59 0.35. The no-harm checks trivial-rename, trivial-typo and spec-review-hollow-test score 1 in both arms, as designed. ambiguous-headless scores 0.42 0.67 0.58 / 0.67 ×3: the plugin does not separate, recorded as RISK-530. `bun test tools/__tests__/eval-cases.test.ts`: 209 pass, 0 fail.
   Source: `git log main..77ebbd7f0`; /tmp/claude-501/r529/h.json; /var/folders/cl/89dcg0fs7_n4j1vbwn_cf4bm0000gn/T/r519/ and /tmp/claude-501/r519h/edit2.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
 
-- [ ] **RISK-533** The user rejects ADR-0197, so the eval scores from before the `just eval` commit gate stop counting under CON-055 and CON-056.
+- [x] **RISK-533** The user rejects ADR-0197, so the eval scores from before the `just eval` commit gate stop counting under CON-055 and CON-056.
   Category: verification, eval instrument.
   Cause: 88 of 293 local run-and-case pairs ran before the commit that holds their case, and 29 match no commit (`reports/2026-11-24-research/con056/runs.txt`); ADR-0197 is an agent decision with status `proposed`.
   Event: 2026-11-24, `bun reports/2026-11-24-research/con056/match.ts claudetto` and `claudetto-spec` on the local results.
@@ -1071,7 +1071,8 @@
   Actions: if the user rejects ADR-0197, rerun each cited case through `just eval` and replace its Verified line.
   Trigger: user-held: the user reviews ADR-0197 and sets its status to `rejected`.
   Owner: verification.
-  Status: open 2026-11-24.
+  Status: closed 2026-11-24: ADR-0197 is accepted (the user handed the decision to the agent), so the trigger can no longer fire.
+  Verified: 2026-11-24, `plans/rebuild/adr/0197-eval-integrity-holds-from-the-commit-gate.md` front matter reads `status: accepted`.
   Source: ADR-0197; `reports/2026-11-24-research/con056/README.md`.
 
 - [ ] **RISK-534** A claudetto part's gain over vanilla rests on dev runs and probes, so CON-059 is unmet for claudetto until a held-out run backs it.
@@ -1085,6 +1086,7 @@
   Actions: the user approves a `just eval-holdout claudetto` run; a part whose held-out Δ is 0 or less moves Out under ADR-0177.
   Trigger: user-held: the user approves and runs `just eval-holdout claudetto` from an unsandboxed terminal.
   Owner: verification.
+  Evidence: 2026-11-24, after the user handed the decisions to the agent, its call of `just eval-holdout claudetto` and a count of the held-out folders were both refused by Claude Code's auto-mode permission check, so the held-out wall holds against the agent and the run stays with the user.
   Status: accepted 2026-11-24, agent decision, pending user review: the cure is a held-out run only the user can approve.
   Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; REQ-SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
   Source: CON-059; ADR-0193 rule 7; ADR-0177.
