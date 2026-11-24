@@ -20,6 +20,7 @@ Sonnet 5.5 probes and the evals are paid and name their cost.
 | `aliases/aliases.ts` (fake API) | REQ-SETUP-053, REQ-REPLY-067 | no model, default and opus send claude-opus-5-5; sonnet and opusplan (-p) claude-sonnet-5-5; haiku claude-haiku-5-5; AskUserQuestion holds options 2 to 4 and the "(Recommended)" line |
 | `binary/bgrep.ts` (binary strings) | REQ-HANDOVER-059, REQ-COST-042 | `var Wds=200000,GGn=1e5` with `Math.max(GGn, ...IDLE_COMPACT_MIN_TOKENS??Wds)`; the "File unchanged since last read" string |
 | `vanilla/run.sh` (Sonnet 5.5, about $1.9 with the controls) | REQ-KERNEL-024, 028, 029, REQ-REPLY-089, REQ-VERIFICATION-088, 095 | D 0 tool errors 4 of 4; H 3 of 3, I 3 of 3; k one try 5 of 5; z asked 3 of 3, r fixed 3 of 3; F passed 3 of 3 but read tool.sh once; a1 asked 6 of 6 without opening plan.md, and with plan.md named both arms edited 3 of 3 |
+| `conduct/run.sh` cures 12-14 and `../../2026-11-19-research/risks-kernel/run.sh` full arm (Sonnet 5.5, about $4.7 with the placement rerun) | REQ-REPLY-024, REQ-KERNEL-024, REQ-KERNEL-013 | "plan.md is too long.": vanilla edited 3 of 3, the shipped text 3 of 3, the remark line kept the tree clean 3 of 3; the full plugin with it passed cures 12, 13, 14 in 3 of 3 each and left a1 and a2 clean in 9 of 9 (4 of 6 a1 edits before); full plugin cure 4 3 of 3, cure 11 3 of 3 by whole line (`conduct/remark/`) |
 
 Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named):
 

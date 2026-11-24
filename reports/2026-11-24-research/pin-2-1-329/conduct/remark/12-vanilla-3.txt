@@ -1,0 +1,3 @@
+I cut `plan.md` from 72 lines to 7. All 12 phases had the same three steps (draft the schema, review it, ship it). The file now lists those steps once, with a note to repeat them for Phases 1–12.
+
+This drops the per-phase headings and the step numbers like 4.2. If you want those back, or want phase-specific details added, I can restore them. `git checkout plan.md` also brings back the original, as long as you haven't committed the change.
