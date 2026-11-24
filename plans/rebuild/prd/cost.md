@@ -44,6 +44,7 @@
   Verified: inspection, 2026-11-24, claude 2.1.329: no hook or setting in plugins/claudetto switches the model.
 
 - [x] **REQ-COST-040** Moved Out as OUT-2353: the item needs a paid model run.
+  Verified: claude 2.1.329, 2026-11-24, probe (`reports/2026-11-24-research/pin-2-1-329/cache/cache.ts` over the Sonnet 5.5 ask and conduct runs): plugin requests after the first read 96.8% to 99.2% from cache; the first request's 0% came from runs started together, and of two plugin sessions run in sequence the second read all 16,396 prefix tokens from cache (`cache/results.txt`), so no cache fault is open.
 
 ## Cache and Tokens
 
