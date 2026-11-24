@@ -1129,7 +1129,7 @@
   Source: REQ-VERIFICATION-105; prd/goal.md.
   Verified: 2026-11-24, inspection: `plans/rebuild/adr/0199-version-recheck-runs-under-per-suite-caps.md` reads `status: proposed`; REQ-VERIFICATION-105's acceptance names the exception, and its 2026-11-24 Verified line lists each paid run under its cap.
 
-- [ ] **RISK-541** The eval-recipe CON-056 test fails inside a sandboxed session that loads claudetto from this tree, so `just verify` fails there with no defect in the code.
+- [x] **RISK-541** The eval-recipe CON-056 test fails inside a sandboxed session that loads claudetto from this tree, so `just verify` fails there with no defect in the code.
   Category: verification, test isolation.
   Cause: `tools/__tests__/eval-recipe.test.ts:80` writes `uncommitted-<pid>.txt` into `plugins/claudetto/evals/trivial-typo`, and Claude Code 2.1.329 puts a loaded plugin's folder in the sandbox's `denyWithinAllow` list, so the write fails with EPERM.
   Event: dogfood 2026-11-24, claude 2.1.329, Sonnet 5.5, `claude -p --plugin-dir <clone>/plugins/claudetto` in a scratch clone: `just typescript::test` printed 275 pass, 1 fail; a fake-API session replay of `bun test tools/__tests__/eval-recipe.test.ts` showed `EPERM: operation not permitted, open '.../plugins/claudetto/evals/trivial-typo/uncommitted-85024.txt'` in 4 of 4 runs; the same suite run outside a session passed 276 of 276 in 5 of 5.
