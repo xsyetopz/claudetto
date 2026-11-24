@@ -438,4 +438,5 @@
   - Verified: 2026-11-21, paid Haiku 5.5 runs above (about $0.2 in all, under the $1 cap).
   - Verified: 2026-11-21, the repo's claudetto plugin on 2.1.330 against the fake API: a `/clear` after one prompt sends 0 handover requests; after two prompts it sends 1.
   - Verified: 2026-11-21, `claude plugin test plugins/claudetto` -> 154 pass, 0 fail, including "handover after one request"; Likelihood 1 × Impact 1 = 1.
+  - Verified: 2026-11-24, claude 2.1.329, `reports/2026-11-20-research/fork-recheck/run.sh "$(command -v claude)" 18764` (fake API, free): messages[1] is a list of 1 with `cache_control` in the parent and a string in the fork, same bytes False, so the fault holds on 2.1.329 and the one-request skip stays. `claude plugin test plugins/claudetto` on 2.1.329: 341 pass, 0 fail, the five "handover after one request" cases among them.
   - Source: issue #60.

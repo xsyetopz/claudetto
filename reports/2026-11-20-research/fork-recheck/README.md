@@ -9,6 +9,7 @@ RISK-507, issue #64. On 2.1.327 to 2.1.330 the engine sends its role-system bloc
 | Version | messages[1] in the parent | in the fork | Same bytes |
 | --- | --- | --- | --- |
 | 2.1.330 | list of 1, `cache_control` | string | no |
+| 2.1.329 (2026-11-24) | list of 1, `cache_control` | string | no |
 
 The earlier runs of 2026-11-20 (2.1.327 to 2.1.329) compared the parent's last message, which is messages[1] when the session has made one request, and showed the same shape change.
 

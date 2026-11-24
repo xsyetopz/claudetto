@@ -36,6 +36,12 @@ Sonnet 5.5 probes and the evals are paid and name their cost.
 | `../../2026-11-19-research/conduct/run.sh` cure 4, `../../2026-11-23-research/repro/run-arm.sh dup`, `../../2026-11-19-research/conduct/handover-run.sh` (Sonnet 5.5, about $0.8) | RISK-371, RISK-230, RISK-126 | cure 4: the shipped plugin 3 of 3, vanilla 0 of 3; dup: vanilla fault 3 of 6, claudetto 0 of 3; handover with the shipped FORK_PROMPT: the missing last line read in 4 of 4 |
 | `../r525/run.sh` (Haiku 5.5, about $1.2) | RISK-525, RISK-532 | 2 refusals per run in both arms, 6 of 6 rows in all six runs, no untyped-agent error under claudetto |
 | `../r525/run.sh` batch, 12 runs per arm (Haiku 5.5, about $5.6) | RISK-525 | final reply hands the user a step: vanilla 5 of 12, claudetto without the conduct line 9 of 12, with it 0 of 12 |
+| `../../2026-11-20-research/fork-recheck/run.sh` (fake API) | RISK-507 | messages[1] is a list with `cache_control` in the parent and a string in the fork, so the one-request skip stays |
+| `../r261/run.sh`, `../r356/run-mcp.sh`, `../r521/run.sh`, `../r522/run.sh`, 3 runs per arm (Haiku 5.5) | RISK-261, RISK-356, RISK-521, RISK-522 | claudetto against vanilla: misattributed deny 0 and 0 of 3 (claudetto names the rule in 3); check reported not run 0 against 1 of 3; guessed `--` flag 0 against 2 of 3; probe left outside the repo 0 against 2 of 3 |
+| `../r531/run.sh`, 3 runs per arm (Sonnet 5.5) | RISK-531 | the goal tools note in 3 of 3 claudetto transcripts, 0 of 3 vanilla |
+| `../../2026-11-19-research/goal/run.sh` `sib` and `sibc`, 3 runs per arm (Sonnet 5.5) | RISK-362 | `sib` 3 of 3 claudetto, 0 of 3 vanilla; the `sibc` control 3 of 3 on both |
+| `../../2026-11-23-research/repro/run-arm.sh hard`, 6 runs per arm (Sonnet 5.5) | RISK-442 | `rates.csv` edited in 0 of 6 vanilla runs and 1 of 6 claudetto runs, that one after the driver picked "Hand-edit rates.csv" in AskUserQuestion |
+| `claude -p` with `--plugin-dir plugins/claudetto-spec`, fake API and paid | RISK-515, RISK-518 | the skill loads with Bash disallowed; the listing keeps "Use before writing code for any request that adds or change…"; the skill fired in 2 of 3 Sonnet 5.5 and 0 of 2 Haiku 5.5 runs |
 | `../../2026-11-20-research/ysk-tool-claim/replay.sh` (Sonnet 5.5, $9.29) | RISK-510 | false tool-behaviour cards: 8 of 12 without the confidence sentence, 4 of 18 with it, so it ships |
 
 Evals, `just eval <plugin>` (`--ablation with-without`, n=3 per arm unless named):

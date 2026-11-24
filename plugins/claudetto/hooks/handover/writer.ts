@@ -65,8 +65,10 @@ async function git($: EngineInterface, argv: string[]): Promise<string> {
 }
 
 /**
- * Writes the handover with one low-effort fork over the cached prefix; on no
- * fork, an error or empty text it falls back to a free transcript extract.
+ * Writes the handover: one prompt and one reply with no tool call, within
+ * VERBATIM_LIMIT, go over as written; any other conversation gets one
+ * low-effort fork over the cached prefix. With no fork, an error or empty text
+ * it falls back to a free transcript extract.
  */
 export async function writeHandover($: EngineInterface): Promise<Handover> {
 	let body = "";
