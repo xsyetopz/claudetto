@@ -1,6 +1,6 @@
 # Claudetto-Spec
 
-A spec-first loop for Claude Code: requirements get IDs, tests cite the IDs, failing tests are staged before the implementation, and a deferred tool, `spec_check`, reports coverage from the files.
+A spec-first loop for Claude Code: requirements get IDs, tests cite the IDs, failing tests are staged before the implementation, and a tool, `spec_check`, reports coverage from the files.
 
 ## Install
 
@@ -53,7 +53,7 @@ Open: how long does the lock last?
 
 ## `spec_check`
 
-`mcp__claudetto-spec__spec_check` is deferred (load it through ToolSearch). It reads the files git lists (`git ls-files --cached --others --exclude-standard`) on every call and stores nothing. Optional input: `{ "path": "specs/auth.md" }` limits the report to one spec.
+`mcp__claudetto-spec__spec_check` is in the tool list from the start, because each spec run calls it and a deferred tool costs a ToolSearch turn first. It reads the files git lists (`git ls-files --cached --others --exclude-standard`) on every call and stores nothing. Optional input: `{ "path": "specs/auth.md" }` limits the report to one spec.
 
 It returns JSON text:
 

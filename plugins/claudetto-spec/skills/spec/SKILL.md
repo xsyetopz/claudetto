@@ -37,6 +37,6 @@ First Glob `specs/*.md` and read the specs the request touches.
 
 ## Check
 
-- Load `spec_check` through ToolSearch (deferred) and call it.
+- Call `spec_check`.
 - Run the project's test command.
 - Report both results.

@@ -24,6 +24,6 @@ Read the specs in `specs/*.md` as they are now; the user may have edited them si
 
 ## Check
 
-- Load `spec_check` through ToolSearch (deferred) and call it.
+- Call `spec_check`.
 - Run the project's test command.
 - Report both results.
