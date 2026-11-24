@@ -334,7 +334,7 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
   - Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
 
-- [ ] **RISK-261** Agent treats a denied or cancelled prompt as the user's decision.
+- [x] **RISK-261** Agent treats a denied or cancelled prompt as the user's decision.
   - Category: conduct.
   - Cause: An AskUserQuestion call returns "The user doesn't want to take this action right now" after the user answered a different pasted note; the agent reads it as a decision.
   - Event: The agent states a decision the user never made, and blames a cancelled run on the wrong cause.
@@ -351,6 +351,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   - Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
   - Evidence: 2026-11-23, vanilla, the user's own session: the agent said the user had rejected an install that the permission layer denied; it corrected itself only after the user pushed back twice (ISSUES-part3.txt:151-157).
   - Status: open 2026-11-23: the fault recurred on vanilla in the user's sessions, so the acceptance above does not hold.
+  - Evidence: 2026-11-24, claude 2.1.331, `reports/2026-11-24-research/r261/run.sh`: a settings rule denied `brew install figlet`; vanilla's reply said the user declined it or a prompt was denied in 5 of 6 runs (Haiku 3 of 3, Sonnet 2 of 3).
+  - Status: mitigated 2026-11-24: the denial note from RISK-503 (`plugins/claudetto/hooks/guards/denial.ts:45`) names the rule, and claudetto replies named it in 6 of 6 runs. On the auto mode path, vanilla's text already names the classifier (cc-inspect `cli` probe, flagged safeguard). A person's own cancel at a prompt is that person's action, so naming the user there is correct; guessing why they cancelled has no claudetto control, and a `-p` run has no person to cancel, so that path needs a user at a prompt to measure (user-held Trigger: a reply that states a reason for a cancel the user did not give).
+  - Verified: 2026-11-24, `run.sh <arm> 1..3 haiku|sonnet`: claudetto 0 of 6 replies misattributed the deny, vanilla 5 of 6 (`reports/2026-11-24-research/r261/README.md`).
 
 ## Autonomy, Consent, and Scope
 
