@@ -11,7 +11,7 @@ export const CUT_TAIL = "The response above may be incomplete.";
 
 /** The continuation the model reads after a cut; the plugin frame tells it the plugin sent it. */
 export const RESUME_TEXT =
-	"Your response above was cut off mid-stream by a dropped connection. Resume from the exact point where it stops, " +
+	"Your response above was cut off mid-stream; the note at its end names the cause. Resume from the exact point where it stops, " +
 	"so the user reads one continuous answer. If none of it survived, answer the request from the start.";
 
 /** Resumes per window: a second cut gets a second try, a third means the link is down and the person decides. */
