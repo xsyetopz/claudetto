@@ -16,6 +16,20 @@ export const GREP_COUNT_NOTE =
 export const NO_CHECKS_NOTE =
 	"No check has registered yet, so this is not a pass. Wait until the checks appear and finish, then rerun `gh pr checks` before merging.";
 
+/** The note for a model call that lacks an API key, within 200 characters. */
+export const API_KEY_NOTE =
+	"This session runs on the Claude Code login and holds no API key. Change the tool to call `claude -p` with the same model and prompt, rerun it, and name the change. Never tell the user to set a key.";
+
+/**
+ * A missing Anthropic API key, as a script or SDK reports it: the variable
+ * named beside "not set" and the like, or the API's own x-api-key error.
+ */
+const NO_API_KEY = [
+	/ANTHROPIC_API_KEY\b[^\n]{0,40}\b(?:is not set|not set|is missing|missing|is required|required|is empty|undefined)/iu,
+	/(?:missing|set|provide|requires?)\b[^\n]{0,40}ANTHROPIC_API_KEY\b/iu,
+	/x-api-key header is required|invalid x-api-key/iu
+];
+
 /** `gh pr checks`, bare or behind `gh` flags, in command position. */
 const GH_PR_CHECKS = /(?:^|[;&|(]\s*)gh\s+(?:-\S+\s+)*pr\s+checks\b/u;
 
@@ -121,3 +135,15 @@ export const isZeroCount = (command: string, answer: BashAnswer): boolean => {
  */
 export const hasNoChecks = (command: string, answer: BashAnswer): boolean =>
 	GH_PR_CHECKS.test(command) && /no checks reported/iu.test(textOf(answer));
+
+/**
+ * Whether a Bash answer shows a model call stopped for lack of an Anthropic
+ * API key. The session itself runs on the Claude Code login, which `claude -p`
+ * uses, so the call can go on without a key from the user (RISK-379).
+ *
+ * @param answer What the call returned.
+ */
+export const needsApiKey = (answer: BashAnswer): boolean => {
+	const text = textOf(answer);
+	return NO_API_KEY.some((pattern) => pattern.test(text));
+};
