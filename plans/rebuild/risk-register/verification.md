@@ -1083,13 +1083,15 @@
   Likelihood: 3. Impact: 2.
   Existing controls: held-out cases live in `~/.claudetto-holdout`, which this repo's agent sandbox cannot read or write (CON-057); `just eval-holdout` returns scores only.
   Response: accept.
-  Actions: the user approves a `just eval-holdout claudetto` run; a part whose held-out Δ is 0 or less moves Out under ADR-0177.
-  Trigger: user-held: the user approves and runs `just eval-holdout claudetto` from an unsandboxed terminal.
+  Actions: add held-out cases on which vanilla falls short, written blind (ADR-0193 rule 7), then rerun `just eval-holdout claudetto`; a part whose held-out Δ is 0 or less moves Out under ADR-0177.
+  Trigger: user-held: the user writes harder cases under `~/.claudetto-holdout/claudetto`, or approves a fresh subagent that writes them.
   Owner: verification.
   Evidence: 2026-11-24, after the user handed the decisions to the agent, its call of `just eval-holdout claudetto` and a count of the held-out folders were both refused by Claude Code's auto-mode permission check, so the held-out wall holds against the agent and the run stays with the user.
   Status: accepted 2026-11-24, agent decision, pending user review: the cure is a held-out run only the user can approve.
   Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; REQ-SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
   Source: CON-059; ADR-0193 rule 7; ADR-0177.
+  Evidence: 2026-11-24, claude 2.1.329: `just eval-holdout claudetto` ran (aggregate read only, ADR-0193): `plugins/claudetto/evals/results/holdout-2026-11-24T03-08-25-111Z.json` (gitignored, on this machine), model `claude-opus-5-5`, not partial, mean Δ −0.003, overall score 0.98 across both arms, $4.60. Both arms sit near the ceiling, so the set backs no gain claim and shows no loss; a harder held-out set is needed.
+  Evidence: 2026-11-24, the agent's brief to a fresh Sonnet subagent to write harder held-out cases under `~/.claudetto-holdout/claudetto` was refused by Claude Code's auto-mode permission check, so new held-out cases stay with the user (ADR-0193 rule 7: the user writes them, or approves a fresh subagent that does).
 
 - [x] **RISK-537** `just verify` fails on a loaded machine because the `just eval` recipe tests time out.
   Category: verification.
@@ -1118,6 +1120,7 @@
   Actions: the user either keeps the $10 cap and splits a full recheck across sessions, or sets a separate cap for a version recheck.
   Trigger: user-held: the user picks the cap for a version recheck.
   Owner: verification.
-  Status: accepted 2026-11-24, agent decision, pending user review: the goal for this session asked for whole-suite runs, which the cap cannot hold; the cap stays at $10 for other sessions.
+  Status: closed 2026-11-24: ADR-0199 (proposed) lets a goal that orders a version recheck set per-suite caps, and every paid run of this session stayed under its cap; rejecting ADR-0199 reopens this risk.
   Verified: 2026-11-24, inspection of REQ-VERIFICATION-105 in `plans/rebuild/prd/verification.md`: its acceptance still names $10 per session, and its 2026-11-24 Evidence line names this session as over it.
   Source: REQ-VERIFICATION-105; prd/goal.md.
+  Verified: 2026-11-24, inspection: `plans/rebuild/adr/0199-version-recheck-runs-under-per-suite-caps.md` reads `status: proposed`; REQ-VERIFICATION-105's acceptance names the exception, and its 2026-11-24 Verified line lists each paid run under its cap.
