@@ -1,0 +1,16 @@
+#!/usr/bin/env -S bun --no-env-file
+
+import { run } from "../hooks/statusline/line/main.ts";
+
+const read = async (path) => {
+	const file = Bun.file(path);
+	return (await file.exists()) ? file.text().catch(() => undefined) : undefined;
+};
+
+let raw = "";
+try {
+	raw = await Bun.stdin.text();
+} catch {
+	raw = "";
+}
+process.stdout.write(`${await run(raw, process.env, Date.now(), read)}\n`);

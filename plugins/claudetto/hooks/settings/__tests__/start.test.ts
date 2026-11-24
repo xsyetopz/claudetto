@@ -130,4 +130,41 @@ describe("settings fill at session start", () => {
 		expect(commands).toEqual([]);
 		expect(logs.join("\n")).toContain("stay loaded until the next start");
 	});
+
+	test("sets the user's status line to the plugin script when there is none", async ($, on) => {
+		// Arrange
+		const { writes } = serve(on, "{}");
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		const written: unknown = JSON.parse(writes.at(-1) ?? "{}");
+		expect(fieldOf(fieldOf(written, "statusLine"), "command")).toContain(
+			"claudetto-statusline"
+		);
+	});
+
+	test("keeps a status line the user wrote", async ($, on) => {
+		// Arrange
+		const { writes } = serve(
+			on,
+			'{"statusLine": {"type": "command", "command": "my-line"}}'
+		);
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		const written: unknown = JSON.parse(writes.at(-1) ?? "{}");
+		expect(fieldOf(fieldOf(written, "statusLine"), "command")).toBe("my-line");
+	});
 });
