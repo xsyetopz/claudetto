@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Request: $ARGUMENTS
 
-The requirement format is under Spec below. Read the specs the request touches in one call (one `cat` of every file), listing `specs/` only if you have not listed it yet.
+The requirement format is under Spec below. Read the specs the request touches in one call (one `cat` of every file), listing `specs/` only if you have not listed it yet, plus `grep -h '^## ' specs/*.md`, because a new ID must be free in every spec, not only the one you edit.
 
 ## Clarify
 
