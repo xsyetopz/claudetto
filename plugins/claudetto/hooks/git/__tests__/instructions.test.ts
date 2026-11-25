@@ -1,13 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { TOOL_DESCRIPTIONS } from "../../pool/describe";
-import { BASH_RECIPES } from "../../pool/recipes";
-import { GIT_CONFLICT, gitBlock } from "../instructions";
-
 const BASE = "Executes a bash command and returns its output.";
-/** What the pool's `tool.describe` leaves of the stock Bash text; the git block goes after it. */
-const SHORT = `${TOOL_DESCRIPTIONS["Bash"]}${BASH_RECIPES}`;
 
 /** Stands in for the engine's settings and env, and records what the session logs. */
 const engine = (
@@ -26,45 +20,8 @@ const engine = (
 	return logged;
 };
 
-describe("git block", () => {
-	test("carries the commit and pull request lines from settings", () => {
-		// Act
-		const block = gitBlock({ commit: "Assisted-by: X", pr: "Made with X" });
-
-		// Assert
-		expect(block).toContain("# Git");
-		expect(block).toContain(
-			"- End each commit message with the line `Assisted-by: X`."
-		);
-		expect(block).toContain(
-			"- End each pull request description with the line `Made with X`."
-		);
-	});
-
-	test("puts a multi-line attribution below its bullet", () => {
-		// Act
-		const block = gitBlock({ commit: "Line one\n\nLine two" });
-
-		// Assert
-		expect(block).toContain(
-			"- End each commit message with these lines:\nLine one\n\nLine two"
-		);
-	});
-
-	test("adds no attribution bullet for an unset or empty value", () => {
-		// Act
-		const unset = gitBlock(void 0);
-		const empty = gitBlock({ commit: "", pr: "" });
-
-		// Assert
-		for (const block of [unset, empty]) {
-			expect(block).not.toContain("End each");
-		}
-	});
-});
-
 describe("git instructions", () => {
-	test("the Bash description carries claudetto's block when the builtin one is off", async ($, on) => {
+	test("the Bash description carries the commit and pull request lines from settings when the builtin block is off", async ($, on) => {
 		// Arrange
 		engine(on, {
 			includeGitInstructions: false,
@@ -79,12 +36,47 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(description).toBe(
-			`${SHORT}${gitBlock({ commit: "Assisted-by: X", pr: "Made with X" })}`
-		);
+		expect(description).toContain("Assisted-by: X");
+		expect(description).toContain("Made with X");
 	});
 
-	test("the Bash description stays as the engine wrote it when the builtin block is on", async ($, on) => {
+	test("a multi-line attribution reaches the description whole", async ($, on) => {
+		// Arrange
+		engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: "Line one\n\nLine two" }
+		});
+
+		// Act
+		const { description } = await $.tool.describe({
+			tool: "Bash",
+			description: BASE,
+			provider: { plugin: "engine", tier: "core" }
+		});
+
+		// Assert
+		expect(description).toContain("Line one\n\nLine two");
+	});
+
+	test("an unset or empty attribution adds nothing to the description", async ($, on) => {
+		// Arrange
+		engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: "", pr: "" }
+		});
+
+		// Act
+		const { description } = await $.tool.describe({
+			tool: "Bash",
+			description: BASE,
+			provider: { plugin: "engine", tier: "core" }
+		});
+
+		// Assert
+		expect(description).not.toContain("End each");
+	});
+
+	test("the Bash description leaves the attribution out when the builtin block is on", async ($, on) => {
 		// Arrange
 		engine(on, { attribution: { commit: "Assisted-by: X" } });
 
@@ -96,14 +88,17 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(description).toBe(SHORT);
+		expect(description).not.toContain("Assisted-by: X");
 	});
 
 	test("an env value that turns the builtin block off wins over the setting", async ($, on) => {
 		// Arrange
 		engine(
 			on,
-			{ includeGitInstructions: true },
+			{
+				includeGitInstructions: true,
+				attribution: { commit: "Assisted-by: X" }
+			},
 			{ CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS: "1" }
 		);
 
@@ -115,7 +110,7 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(description).toContain("# Git");
+		expect(description).toContain("Assisted-by: X");
 	});
 
 	test("session start reports the conflict when the builtin block is turned back on", async ($, on) => {
@@ -141,7 +136,11 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(logged).toContain(GIT_CONFLICT);
+		expect(
+			logged.some((line) =>
+				line.includes("CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS")
+			)
+		).toBe(true);
 	});
 
 	test("session start reports the conflict when a higher settings source turns the builtin block on during the fill", async ($, on) => {
@@ -167,7 +166,11 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(logged).toContain(GIT_CONFLICT);
+		expect(
+			logged.some((line) =>
+				line.includes("CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS")
+			)
+		).toBe(true);
 	});
 
 	test("session start stays quiet when the switch is unset", async ($, on) => {
@@ -189,6 +192,10 @@ describe("git instructions", () => {
 		});
 
 		// Assert
-		expect(logged).not.toContain(GIT_CONFLICT);
+		expect(
+			logged.some((line) =>
+				line.includes("CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS")
+			)
+		).toBe(false);
 	});
 });

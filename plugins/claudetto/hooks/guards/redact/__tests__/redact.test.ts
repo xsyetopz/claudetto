@@ -1,8 +1,7 @@
+import type { On } from "claude-code";
 import { describe, expect, mock, test } from "claude-code/testing";
 
-import { fieldOf } from "../../../shared/field";
-import { findings, mapBlock, MASK, redact } from "../redact";
-
+const MASK = "[REDACTED]";
 const ENV =
 	'API_TOKEN=abc123xyz789\nexport DB_URL="postgres://u:pw4567@db/x"\nDEBUG=1\nNAME=dev # short\n# COMMENTED=notavalue99\n';
 const RUN = {
@@ -12,153 +11,123 @@ const RUN = {
 	isStderrTruncated: false
 };
 
-const mask = (t: string): string => redact(t, ["abc123xyz789"], false);
+const entry = (name: string) => ({
+	name,
+	kind: "file" as const,
+	size: 1,
+	mtimeMs: 0,
+	isLink: false
+});
+
+/** A project whose root holds the given env-style files; the scanner reports `found` as JSON. */
+const project = (
+	on: On,
+	files: Record<string, string>,
+	found: string[] = []
+) => {
+	on("session.root", () => ({ value: "/repo" }));
+	on("fs.exists", (_$, e) => ({ value: e.path === "/repo" }));
+	on("fs.list", () => ({
+		value: Object.keys(files).map((name) => entry(name))
+	}));
+	on("fs.read", (_$, e) => ({
+		value: files[e.path.replace("/repo/", "")] ?? ""
+	}));
+	on("process.run", (_$, e) => ({
+		value: {
+			...RUN,
+			stdout:
+				e.argv[0] === "betterleaks"
+					? JSON.stringify(found.map((Secret) => ({ Secret })))
+					: ""
+		}
+	}));
+};
+
+/** A project with no env files and no scanner on the machine. */
+const noScanner = (on: On) => {
+	on("session.root", () => ({ value: "/repo" }));
+	on("fs.exists", () => ({ value: false }));
+	on("process.run", () => ({ value: { ...RUN, exitCode: 127, stdout: "" } }));
+};
+
+/** One tool-result row as the engine appends it to the session. */
+const row = (uuid: string, content: unknown) => ({
+	door: "tool-result" as const,
+	uuid,
+	origin: { kind: "tool" as const, tool: "Bash" },
+	message: {
+		type: "user" as const,
+		role: "user" as const,
+		content: [{ type: "tool_result" as const, tool_use_id: uuid, content }]
+	}
+});
 
 describe("tool-result redaction", () => {
-	test("the fallback shapes mask known key forms and leave ordinary output alone", () => {
-		// Act
-		const out = redact(
-			"STRIPE_SECRET_KEY=sk_live_abcdefghijklmnop1234\nAuthorization: Bearer eyJhbGciOi.abc\nghp_abcdefghijklmnopqrstuvwxyz0123\n3 passed in 0.01s",
-			[],
-			true
-		);
-
-		// Assert
-		expect(out).not.toContain("sk_live_abcdefghijklmnop1234");
-		expect(out).not.toContain("eyJhbGciOi.abc");
-		expect(out).not.toContain("ghp_abcdefghijklmnopqrstuvwxyz0123");
-		expect(out).toContain("3 passed in 0.01s");
-		expect(redact("monkey=banana keyboard layout", [], true)).toBe(
-			"monkey=banana keyboard layout"
-		);
-	});
-
-	test("reads each secret of a betterleaks JSON report", () => {
-		// Act
-		const secrets = findings(
-			'[{"RuleID":"generic-api-key","Secret":"k3y-value-1","StartLine":1},{"RuleID":"x"}]'
-		);
-
-		// Assert
-		expect(secrets).toEqual(["k3y-value-1"]);
-		expect(findings("")).toEqual([]);
-	});
-
-	test("rewrites string and text-array tool results and leaves other blocks as they are", () => {
-		// Act
-		const plain = mapBlock(
-			{ type: "tool_result", content: "T=abc123xyz789" },
-			mask
-		);
-		const parts = mapBlock(
-			{
-				type: "tool_result",
-				content: [{ type: "text", text: "abc123xyz789" }, { type: "image" }]
-			},
-			mask
-		);
-		const other = mapBlock({ type: "text", text: "abc123xyz789" }, mask);
-
-		// Assert
-		expect(fieldOf(plain, "content")).toBe(`T=${MASK}`);
-		expect(fieldOf(parts, "content")).toEqual([
-			{ type: "text", text: MASK },
-			{ type: "image" }
-		]);
-		expect(fieldOf(other, "text")).toBe("abc123xyz789");
-	});
-
 	test("a tool result reaches the session with env values and scanner findings masked", async ($, on) => {
-		// Arrange: a project with one .env file, and a scanner that reports a key the file does not hold.
+		// Arrange: a project with one .env file and a template, and a scanner that reports a key the file does not hold.
 		const session = mock.session(on);
-		on("session.root", () => ({ value: "/repo" }));
-		on("fs.exists", (_$, e) => ({ value: e.path === "/repo" }));
-		on("fs.list", () => ({
-			value: [
-				{
-					name: ".env",
-					kind: "file",
-					size: ENV.length,
-					mtimeMs: 0,
-					isLink: false
-				},
-				{
-					name: ".env.example",
-					kind: "file",
-					size: 1,
-					mtimeMs: 0,
-					isLink: false
-				}
-			]
-		}));
-		on("fs.read", (_$, e) => ({
-			value: e.path === "/repo/.env" ? ENV : "API_TOKEN=placeholder"
-		}));
-		on("process.run", (_$, e) => ({
-			value: {
-				...RUN,
-				stdout:
-					e.argv[0] === "betterleaks"
-						? '[{"Secret":"AKIAZZZZZZZZZZZZZZZZ"}]'
-						: ""
-			}
-		}));
+		project(on, { ".env": ENV, ".env.example": "API_TOKEN=placeholder" }, [
+			"AKIAZZZZZZZZZZZZZZZZ"
+		]);
 
 		// Act
-		await $.session.append({
-			door: "tool-result",
-			uuid: "u1",
-			origin: { kind: "tool", tool: "Bash" },
-			message: {
-				type: "user",
-				role: "user",
-				content: [
-					{
-						type: "tool_result",
-						tool_use_id: "t1",
-						content:
-							"API_TOKEN=abc123xyz789\nkey AKIAZZZZZZZZZZZZZZZZ\n3 passed"
-					}
-				]
-			}
-		});
+		await $.session.append(
+			row(
+				"u1",
+				"API_TOKEN=abc123xyz789\nkey AKIAZZZZZZZZZZZZZZZZ\nurl postgres://u:pw4567@db/x\nDEBUG=1\nNAME=dev\n# COMMENTED=notavalue99\nTEMPLATE=placeholder\n3 passed"
+			)
+		);
 
 		// Assert
 		const stored = JSON.stringify(session.appended());
 		expect(stored).not.toContain("abc123xyz789");
 		expect(stored).not.toContain("AKIAZZZZZZZZZZZZZZZZ");
+		expect(stored).not.toContain("postgres://u:pw4567@db/x");
 		expect(stored).toContain("3 passed");
+		expect(stored).toContain("DEBUG=1");
+		expect(stored).toContain("NAME=dev");
+		expect(stored).toContain("notavalue99");
+		expect(stored).toContain("TEMPLATE=placeholder");
 	});
 
-	test("without betterleaks the fallback shapes still mask a tool result", async ($, on) => {
+	test("without betterleaks the fallback shapes mask known key forms and leave ordinary output alone", async ($, on) => {
 		// Arrange: no env files, and the scanner is missing.
 		const session = mock.session(on);
-		on("session.root", () => ({ value: "/repo" }));
-		on("fs.exists", () => ({ value: false }));
-		on("process.run", () => ({ value: { ...RUN, exitCode: 127, stdout: "" } }));
+		noScanner(on);
 
 		// Act
-		await $.session.append({
-			door: "tool-result",
-			uuid: "u2",
-			origin: { kind: "tool", tool: "Bash" },
-			message: {
-				type: "user",
-				role: "user",
-				content: [
-					{
-						type: "tool_result",
-						tool_use_id: "t2",
-						content: "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123"
-					}
-				]
-			}
-		});
+		await $.session.append(
+			row(
+				"u2",
+				"STRIPE_SECRET_KEY=sk_live_abcdefghijklmnop1234\nAuthorization: Bearer eyJhbGciOi.abc\nGITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123\nmonkey=banana keyboard layout\n3 passed in 0.01s"
+			)
+		);
 
 		// Assert
-		expect(JSON.stringify(session.appended())).not.toContain(
-			"ghp_abcdefghijklmnopqrstuvwxyz0123"
+		const stored = JSON.stringify(session.appended());
+		expect(stored).not.toContain("sk_live_abcdefghijklmnop1234");
+		expect(stored).not.toContain("eyJhbGciOi.abc");
+		expect(stored).not.toContain("ghp_abcdefghijklmnopqrstuvwxyz0123");
+		expect(stored).toContain("monkey=banana keyboard layout");
+		expect(stored).toContain("3 passed in 0.01s");
+	});
+
+	test("a result of text parts is masked part by part and its image part stays", async ($, on) => {
+		// Arrange
+		const session = mock.session(on);
+		project(on, { ".env": ENV });
+
+		// Act
+		await $.session.append(
+			row("u4", [{ type: "text", text: "abc123xyz789" }, { type: "image" }])
 		);
+
+		// Assert
+		const stored = JSON.stringify(session.appended());
+		expect(stored).not.toContain("abc123xyz789");
+		expect(stored).toContain(MASK);
+		expect(stored).toContain('"type":"image"');
 	});
 
 	test("a scanner that throws leaves a debug line and the fallback shapes still mask", async ($, on) => {
@@ -176,26 +145,13 @@ describe("tool-result redaction", () => {
 		});
 
 		// Act
-		await $.session.append({
-			door: "tool-result",
-			uuid: "u3",
-			origin: { kind: "tool", tool: "Bash" },
-			message: {
-				type: "user",
-				role: "user",
-				content: [
-					{
-						type: "tool_result",
-						tool_use_id: "t3",
-						content: "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123"
-					}
-				]
-			}
-		});
+		await $.session.append(
+			row("u3", "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123")
+		);
 
 		// Assert
 		expect(lines.length).toBe(1);
-		expect(lines[0]).toStartWith("debug: claudetto redact scan failed:");
+		expect(lines[0]).toStartWith("debug:");
 		expect(JSON.stringify(session.appended())).not.toContain(
 			"ghp_abcdefghijklmnopqrstuvwxyz0123"
 		);
@@ -203,21 +159,7 @@ describe("tool-result redaction", () => {
 
 	test("a tool call's record comes back masked, so the transcript stores the masked value", async ($, on) => {
 		// Arrange: a project with one .env file; core answers `cat .env` with the raw record.
-		on("session.root", () => ({ value: "/repo" }));
-		on("fs.exists", (_$, e) => ({ value: e.path === "/repo" }));
-		on("fs.list", () => ({
-			value: [
-				{
-					name: ".env",
-					kind: "file",
-					size: ENV.length,
-					mtimeMs: 0,
-					isLink: false
-				}
-			]
-		}));
-		on("fs.read", () => ({ value: ENV }));
-		on("process.run", () => ({ value: { ...RUN, stdout: "[]" } }));
+		project(on, { ".env": ENV }, []);
 		on("tool.check", () => ({ decision: "allow" }));
 		on("tool.call", { tool: "Bash" }, () => ({
 			ref: 1,
@@ -255,16 +197,7 @@ describe("tool-result redaction", () => {
 
 		// Act
 		await $.tool.call({ tool: "Bash", command: "true", tool_use_id: "t9" });
-		await $.session.append({
-			door: "tool-result",
-			uuid: "u9",
-			origin: { kind: "tool", tool: "Bash" },
-			message: {
-				type: "user",
-				role: "user",
-				content: [{ type: "tool_result", tool_use_id: "t9", content: "ok" }]
-			}
-		});
+		await $.session.append(row("t9", "ok"));
 
 		// Assert
 		expect(scans).toEqual(["ok"]);

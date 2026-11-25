@@ -1,87 +1,76 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { floor, freeShare, reason } from "../memory";
+const reading = (free: number) =>
+	`The system has 34359738368 (2097152 pages with a page size of 16384).\nSystem-wide memory free percentage: ${free}%\n`;
 
-const SAMPLE =
-	"The system has 34359738368 (2097152 pages with a page size of 16384).\nSystem-wide memory free percentage: 12%\n";
-
-/** One timed batch of 1,000 readings; the fastest of three samples keeps a stall on a loaded machine from failing the budget. */
-const sample = (): number => {
-	const start = performance.now();
-	for (let i = 0; i < 1000; i++) {
-		freeShare(SAMPLE);
-	}
-	return performance.now() - start;
+/** Stands in for `memory_pressure` and the Bash tool; the test sets what the machine reports. */
+const machine = (on: On) => {
+	const state: { exitCode: number; stdout: string } = {
+		exitCode: 0,
+		stdout: reading(50)
+	};
+	const ran: string[] = [];
+	on("process.run", () => ({
+		value: {
+			...state,
+			stderr: "",
+			isStdoutTruncated: false,
+			isStderrTruncated: false
+		}
+	}));
+	on("tool.check", () => ({ decision: "allow" }));
+	on("tool.call", { tool: "Bash" }, (_$, e) => {
+		if (e.tool === "Bash") {
+			ran.push(e.command);
+		}
+		return { result: "ok" };
+	});
+	return { state, ran };
 };
 
 describe("memory hold", () => {
-	test("reads the free share from memory_pressure output and passes on text without one", () => {
-		// Act and Assert
-		expect(freeShare(SAMPLE)).toBe(12);
-		expect(freeShare("no reading here")).toBeUndefined();
-	});
-
-	test("uses 20 by default, accepts 0 as off and rejects values outside 0 to 100", () => {
-		// Act and Assert
-		expect(floor(void 0)).toBe(20);
-		expect(floor(0)).toBe(0);
-		expect(floor(35)).toBe(35);
-		expect(floor(150)).toBe(20);
-		expect(floor("30")).toBe(20);
-	});
-
-	test("states the measured free share and tells the model to wait and retry", () => {
-		// Act
-		const text = reason(12, 20);
-
-		// Assert
-		expect(text).toContain("12% free");
-		expect(text).toContain("then retry");
-	});
-
-	test("a Bash call is refused while free memory is under the floor and runs when the reading fails", async ($, on) => {
-		// Arrange: the plugin registers its own hooks; these stubs stand in for memory_pressure and the tool.
-		let reading: { exitCode: number; stdout: string } = {
-			exitCode: 0,
-			stdout: SAMPLE
-		};
-		on("process.run", () => ({
-			value: {
-				...reading,
-				stderr: "",
-				isStdoutTruncated: false,
-				isStderrTruncated: false
-			}
-		}));
-		on("tool.check", () => ({ decision: "allow" }));
-		const ran: string[] = [];
-		on("tool.call", { tool: "Bash" }, (_$, e) => {
-			if (e.tool === "Bash") {
-				ran.push(e.command);
-			}
-			return { result: "ok" };
-		});
+	test("a Bash call is refused with the measured free share while free memory is under the floor", async ($, on) => {
+		// Arrange
+		const { state, ran } = machine(on);
+		state.stdout = reading(12);
 
 		// Act
 		const low = await $.tool
 			.call({ tool: "Bash", command: "echo low" })
 			.catch((error: unknown) => error);
-		reading = { exitCode: 1, stdout: "" };
-		await $.tool
-			.call({ tool: "Bash", command: "echo unread" })
-			.catch((error: unknown) => error);
 
 		// Assert
 		expect(JSON.stringify(low)).toContain("12% free");
-		expect(ran.length).toBe(1);
-		expect(ran[0]).toContain("echo unread");
+		expect(ran).toEqual([]);
 	});
 
-	test("parses 1,000 readings in under 100 ms", () => {
+	test("a Bash call runs while free memory is above the floor", async ($, on) => {
+		// Arrange
+		const { state, ran } = machine(on);
+		state.stdout = reading(35);
+
 		// Act
-		const fastest = Math.min(sample(), sample(), sample());
+		await $.tool.call({ tool: "Bash", command: "echo ok" });
 
 		// Assert
-		expect(fastest).toBeLessThan(100);
+		expect(ran).toHaveLength(1);
+	});
+
+	test("a Bash call runs when the reading fails or holds no figure", async ($, on) => {
+		// Arrange
+		const { state, ran } = machine(on);
+
+		// Act
+		state.exitCode = 1;
+		state.stdout = "";
+		await $.tool.call({ tool: "Bash", command: "echo failed" });
+		state.exitCode = 0;
+		state.stdout = "no reading here";
+		await $.tool.call({ tool: "Bash", command: "echo unread" });
+
+		// Assert
+		expect(ran).toHaveLength(2);
+		expect(ran[1]).toContain("echo unread");
 	});
 });

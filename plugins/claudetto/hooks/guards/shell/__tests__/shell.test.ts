@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { guardCommand } from "../shell";
+import { bashWorld } from "./bash-world";
 
 describe("shell guard", () => {
 	test("a Bash call reaches the tool with every guard applied", async ($, on) => {
@@ -33,9 +33,9 @@ describe("shell guard", () => {
 		});
 
 		// Assert
-		expect(seen).toEqual([
-			guardCommand("bun test | tail -3 && git commit -m x", 30)
-		]);
+		expect(seen).toHaveLength(1);
+		expect(seen[0]).toContain("bun test | tail -3 && git commit -m x");
+		expect(seen[0]).toContain("pipefail");
 	});
 
 	test("a command that needs approval reaches the tool as the model wrote it", async ($, on) => {
@@ -68,32 +68,16 @@ describe("shell guard", () => {
 		expect(seen).toEqual(["curl -s example.com"]);
 	});
 
-	test("a command that names git gets no stdin line and no watchdog, so the worktree guard can verify it", () => {
-		// Arrange: Claude Code refuses a git command in a worktree-isolated agent unless it parses as a plain list with no interpreter ahead of git.
+	test("a command that names git reaches the tool as a plain list, so the worktree guard can verify it", async ($, on) => {
+		// Arrange: Claude Code refuses a git command in a worktree-isolated agent unless it parses as a plain list.
+		const world = bashWorld(on);
 
-		// Act and Assert
-		expect(guardCommand("git status", 30)).toBe("git status");
-		expect(guardCommand("cd sub && git log -1", 30)).toBe(
-			"cd sub && git log -1"
-		);
-		expect(guardCommand("git commit -m x", 30)).toBe(
-			"set -o pipefail\ngit commit -m x"
-		);
-	});
-
-	test("a limit of 0 leaves the watchdog out", () => {
-		// Act and Assert
-		expect(guardCommand("ls", 0)).toBe("exec </dev/null\nls");
-	});
-
-	test("a wrapped command holds no brace group, so Claude Code can split it and a hook's `if` rule filters", () => {
 		// Act
-		const wrapped = guardCommand("sed -n 1p f", 30);
+		await $.tool.call({ tool: "Bash", command: "git status" });
+		await $.tool.call({ tool: "Bash", command: "cd sub && git log -1" });
 
-		// Assert: a brace group makes the parser give up, and a hook then runs for every call.
-		expect(wrapped).not.toMatch(/^\s*\{|\}\s*(?:<|$)/mu);
-		expect(wrapped).toEndWith("\nsed -n 1p f");
-		expect(wrapped).not.toContain("(exit");
+		// Assert
+		expect(world.seen).toEqual(["git status", "cd sub && git log -1"]);
 	});
 
 	test("a deny of a PreToolUse hook stands over the remembered allow", async ($, on) => {

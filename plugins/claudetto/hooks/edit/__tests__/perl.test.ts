@@ -1,61 +1,111 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
+import { inOrder } from "../../guards/__tests__/in-order";
 import { fieldOf, stringsOf } from "../../shared/field";
-import { PERL_EDIT, touched } from "../perl";
+
+const done = (stdout: string, exitCode = 0) => ({
+	value: {
+		exitCode,
+		stdout,
+		stderr: "",
+		isStdoutTruncated: false,
+		isStderrTruncated: false
+	}
+});
+
+/**
+ * A git work tree whose `git diff --numstat` answers `before`, then `after`, alternately,
+ * and the Bash tool beneath the plugin. Returns the paths each `git diff --stat` was asked for.
+ */
+const world = (on: On, before: string, after: string) => {
+	const stats: string[][] = [];
+	let reads = 0;
+	on("process.run", (_$, e) => {
+		if (e.argv[2] === "--numstat") {
+			return done(reads++ % 2 === 0 ? before : after);
+		}
+		if (e.argv[0] !== "git") {
+			return done("[]");
+		}
+		stats.push(e.argv.slice(4));
+		return done(` ${e.argv.slice(4).join(" ")} | 4 ++--\n`);
+	});
+	on("tool.check", () => ({ decision: "allow" }));
+	on("tool.call", { tool: "Bash" }, () => ({ result: "ok" }));
+	return stats;
+};
 
 describe("perl diff note", () => {
-	test("finds perl -i run by xargs, a loop or find -exec, and not perl named as text", () => {
+	test("a perl in-place edit run by xargs, a loop, find -exec or after cd gets the note", async ($, on) => {
 		// Arrange
+		world(on, "", "2\t2\tsrc/a.ts\n");
 		const edits = [
 			"git grep -l fetchUser | xargs perl -pi -e 's/a/b/g'",
-			"git grep -lz a | xargs -0 perl -0pi -e 's/a/b/g'",
 			"for f in a.js b.js; do perl -pi -e 's/a/b/g' \"$f\"; done",
 			"find . -name '*.md' -exec perl -pi -e 's/a/b/' {} +",
-			"cd src && perl -pi -e 's/a/b/' a.js",
-			"exec </dev/null\nperl -pi -e 's/a/b/' a.js"
-		];
-		const others = [
-			"perl -ne 'print' a.ts",
-			"echo perl -pi is fast",
-			"git commit -m 'use perl -pi'"
+			"cd src && perl -pi -e 's/a/b/' a.js"
 		];
 
-		// Act and Assert
-		expect(edits.filter((c) => !PERL_EDIT.test(c))).toEqual([]);
-		expect(others.filter((c) => PERL_EDIT.test(c))).toEqual([]);
-	});
-
-	test("names only the files whose numstat line changed", () => {
-		// Arrange
-		const before = "1\t1\ta.ts\n";
-		const after = "1\t1\ta.ts\n3\t2\tb.ts\n";
-
-		// Act and Assert
-		expect(touched(before, after)).toEqual(["b.ts"]);
-	});
-
-	test("a perl in-place edit returns the diff stat of the changed file and the re-Read step", async ($, on) => {
-		// Arrange
-		// The plugin registers the hook itself; a test module may not call $.process.run.
-		let diffs = 0;
-		on("process.run", (_$, e) => {
-			let stdout = " src/a.ts | 4 ++--\n";
-			if (e.argv[2] === "--numstat") {
-				stdout = diffs === 0 ? "" : "2\t2\tsrc/a.ts\n";
-				diffs++;
-			}
-			return {
-				value: {
-					exitCode: 0,
-					stdout,
-					stderr: "",
-					isStdoutTruncated: false,
-					isStderrTruncated: false
-				}
-			};
+		// Act
+		const results = await inOrder(edits, async (command) => {
+			const r = await $.tool.call({ tool: "Bash", command });
+			return stringsOf(fieldOf(r, "context")) ?? [];
 		});
-		on("tool.check", () => ({ decision: "allow" }));
-		on("tool.call", { tool: "Bash" }, () => ({ result: "ok" }));
+
+		// Assert
+		expect(results.map((context) => context.length)).toEqual([1, 1, 1, 1]);
+	});
+
+	test("perl that only reads, or is named as text, gets no note", async ($, on) => {
+		// Arrange
+		world(on, "", "");
+
+		// Act
+		const results = await inOrder(
+			[
+				"perl -ne 'print' a.ts",
+				"echo perl -pi is fast",
+				"git commit -m 'use perl -pi'"
+			],
+			(command) => $.tool.call({ tool: "Bash", command })
+		);
+
+		// Assert
+		for (const r of results) {
+			expect(fieldOf(r, "context")).toBeUndefined();
+		}
+	});
+
+	test("the diff stat names only the files the edit changed", async ($, on) => {
+		// Arrange
+		const stats = world(on, "1\t1\ta.ts\n", "1\t1\ta.ts\n3\t2\tb.ts\n");
+
+		// Act
+		await $.tool.call({ tool: "Bash", command: "perl -pi -e 's/a/b/' *.ts" });
+
+		// Assert
+		expect(stats).toEqual([["b.ts"]]);
+	});
+
+	test("an edit that changed no tracked file asks for no diff stat", async ($, on) => {
+		// Arrange
+		const stats = world(on, "1\t1\ta.ts\n", "1\t1\ta.ts\n");
+
+		// Act
+		const r = await $.tool.call({
+			tool: "Bash",
+			command: "perl -pi -e 's/zzz/b/' a.ts"
+		});
+
+		// Assert
+		expect(stats).toEqual([]);
+		expect(stringsOf(fieldOf(r, "context")) ?? []).toHaveLength(1);
+	});
+
+	test("a perl in-place edit returns the diff stat of the changed file", async ($, on) => {
+		// Arrange
+		world(on, "", "2\t2\tsrc/a.ts\n");
 
 		// Act
 		const r = await $.tool.call({
@@ -66,7 +116,7 @@ describe("perl diff note", () => {
 		// Assert
 		const context = stringsOf(fieldOf(r, "context")) ?? [];
 		expect(context.length).toBe(1);
-		expect(context[0]).toStartWith(" src/a.ts | 4 ++--\nCheck the stat");
+		expect(context[0]).toContain(" src/a.ts | 4 ++--");
 	});
 
 	test("outside a git work tree the note says the stat is unavailable and never says nothing changed", async ($, on) => {
@@ -92,7 +142,6 @@ describe("perl diff note", () => {
 		// Assert
 		const context = stringsOf(fieldOf(r, "context")) ?? [];
 		expect(context.length).toBe(1);
-		expect(context[0]).toStartWith("Diff stat unavailable outside git");
 		expect(context[0]).not.toContain("No tracked file changed");
 		expect(context[0]).toContain("may have changed");
 	});

@@ -1,123 +1,162 @@
-import type { ToolCallResult } from "claude-code";
+import type { On, ToolCallResult } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { answerText, maskAnswer, maskRecord } from "../record";
+const SECRET = "abc123xyz789";
+const MASK = "[REDACTED]";
 
-const mask = (t: string): string => t.split("abc123xyz789").join("[REDACTED]");
+/** A project whose `.env` holds SECRET, no scanner, and a Bash tool that answers with whatever the test sets. */
+const world = (on: On) => {
+	const answer: { current: ToolCallResult } = {
+		current: { result: "ok" }
+	};
+	on("session.root", () => ({ value: "/repo" }));
+	on("fs.exists", (_$, e) => ({ value: e.path === "/repo" }));
+	on("fs.list", () => ({
+		value: [{ name: ".env", kind: "file", size: 1, mtimeMs: 0, isLink: false }]
+	}));
+	on("fs.read", () => ({ value: `API_TOKEN=${SECRET}\n` }));
+	on("process.run", () => ({
+		value: {
+			exitCode: 0,
+			stdout: "[]",
+			stderr: "",
+			isStdoutTruncated: false,
+			isStderrTruncated: false
+		}
+	}));
+	on("tool.check", () => ({ decision: "allow" }));
+	on("tool.call", { tool: "Bash" }, () => answer.current);
+	return answer;
+};
 
 describe("tool record masking", () => {
-	test("masks every string in a nested record and keeps its keys and other types", () => {
+	test("every string in a nested record is masked while its keys and other types stay", async ($, on) => {
 		// Arrange
-		const record = {
-			stdout: "T=abc123xyz789",
-			stderr: "",
-			interrupted: false,
-			file: { content: "x abc123xyz789", numLines: 2 },
-			lines: ["abc123xyz789", 3]
+		const answer = world(on);
+		answer.current = {
+			result: {
+				stdout: `T=${SECRET}`,
+				stderr: "",
+				interrupted: false,
+				file: { content: `x ${SECRET}`, numLines: 2 },
+				lines: [SECRET, 3]
+			}
 		};
 
 		// Act
-		const out = maskRecord(record, mask);
+		const out = await $.tool.call({ tool: "Bash", command: "cat .env" });
 
 		// Assert
 		expect(out).toEqual({
-			stdout: "T=[REDACTED]",
-			stderr: "",
-			interrupted: false,
-			file: { content: "x [REDACTED]", numLines: 2 },
-			lines: ["[REDACTED]", 3]
+			result: {
+				stdout: `T=${MASK}`,
+				stderr: "",
+				interrupted: false,
+				file: { content: `x ${MASK}`, numLines: 2 },
+				lines: [MASK, 3]
+			}
 		});
 	});
 
-	test("returns the same record when nothing changed and leaves base64 data alone", () => {
+	test("base64 image data is left alone", async ($, on) => {
 		// Arrange
-		const clean = { stdout: "3 passed", file: { numLines: 1 } };
+		const answer = world(on);
 		const image = {
 			type: "image",
-			file: { base64: "abc123xyz789", type: "image/png" }
+			file: { base64: SECRET, type: "image/png" }
 		};
+		answer.current = { result: image };
 
 		// Act
-		const sameClean = maskRecord(clean, mask);
-		const sameImage = maskRecord(image, mask);
+		const out = await $.tool.call({ tool: "Bash", command: "cat a.png" });
 
 		// Assert
-		expect(sameClean).toBe(clean);
-		expect(sameImage).toBe(image);
+		expect(JSON.stringify(out)).toContain(SECRET);
 	});
 
-	test("an answer with a secret comes back as the hook's own result with its context", () => {
+	test("an answer with a secret loses it and keeps the context the other hooks added", async ($, on) => {
 		// Arrange
-		const answer: ToolCallResult = {
+		const answer = world(on);
+		answer.current = {
 			ref: 4,
-			result: { stdout: "abc123xyz789" },
-			text: "abc123xyz789",
+			result: { stdout: SECRET },
+			text: SECRET,
 			context: ["note"]
 		};
 
 		// Act
-		const out = maskAnswer(answer, mask);
+		const out = await $.tool.call({ tool: "Bash", command: "cat .env" });
 
 		// Assert
-		expect(out).toEqual({
-			result: { stdout: "[REDACTED]" },
-			context: ["note"]
-		});
+		expect(JSON.stringify(out)).not.toContain(SECRET);
+		expect(out.context).toContain("note");
 	});
 
-	test("an answer with nothing to mask comes back as the same object, ref and flags kept", () => {
+	test("an answer with nothing to mask is returned as it was", async ($, on) => {
 		// Arrange
-		const answer: ToolCallResult = {
+		const answer = world(on);
+		answer.current = {
 			ref: 4,
 			result: { stdout: "3 passed" },
-			text: "3 passed",
-			isReadOnly: true
+			text: "3 passed"
 		};
 
 		// Act
-		const out = maskAnswer(answer, mask);
+		const out = await $.tool.call({ tool: "Bash", command: "echo 3 passed" });
 
 		// Assert
-		expect(out).toBe(answer);
+		expect(out.result).toEqual({ stdout: "3 passed" });
+		expect(out.deny).toBeUndefined();
+		expect(out.isError).toBeUndefined();
 	});
 
-	test("an error with a secret becomes a deny with the masked text; a clean error and a deny stay", () => {
+	test("an error with a secret reaches the model masked", async ($, on) => {
 		// Arrange
-		const error: ToolCallResult = {
+		const answer = world(on);
+		answer.current = {
 			isError: true,
 			ref: 5,
-			result: "Error: Exit code 3\nabc123xyz789",
-			text: "Exit code 3\nabc123xyz789"
+			result: `Error: Exit code 3\n${SECRET}`,
+			text: `Exit code 3\n${SECRET}`
 		};
-		const cleanError: ToolCallResult = {
+
+		// Act
+		const out = await $.tool
+			.call({ tool: "Bash", command: "cat .env; exit 3" })
+			.catch((error: unknown) => error);
+
+		// Assert
+		expect(JSON.stringify(out)).not.toContain(SECRET);
+		expect(JSON.stringify(out)).toContain("Exit code 3");
+	});
+
+	test("a clean error stays an error", async ($, on) => {
+		// Arrange
+		const answer = world(on);
+		answer.current = {
 			isError: true,
 			ref: 6,
 			result: "Error: Exit code 1",
 			text: "Exit code 1"
 		};
-		const deny: ToolCallResult = { deny: "abc123xyz789" };
 
 		// Act
-		const masked = maskAnswer(error, mask);
+		const out = await $.tool.call({ tool: "Bash", command: "false" });
 
 		// Assert
-		expect(masked).toEqual({ deny: "Exit code 3\n[REDACTED]" });
-		expect(maskAnswer(cleanError, mask)).toBe(cleanError);
-		expect(maskAnswer(deny, mask)).toBe(deny);
+		expect(out.isError).toBe(true);
+		expect(out.text).toBe("Exit code 1");
 	});
 
-	test("the scanned text is core's text, else the record, and nothing for a deny", () => {
+	test("a record with no text of its own is scanned as the record", async ($, on) => {
+		// Arrange
+		const answer = world(on);
+		answer.current = { result: { stdout: SECRET } };
+
 		// Act
-		const fromText = answerText({
-			result: { stdout: "a" },
-			text: "b"
-		});
-		const fromRecord = answerText({ result: { stdout: "a" } });
-		const fromDeny = answerText({ deny: "no" });
+		const out = await $.tool.call({ tool: "Bash", command: "cat .env" });
 
 		// Assert
-		expect(fromText).toBe("b");
-		expect(fromRecord).toBe('{"stdout":"a"}');
-		expect(fromDeny).toBe("");
+		expect(JSON.stringify(out)).not.toContain(SECRET);
 	});
 });

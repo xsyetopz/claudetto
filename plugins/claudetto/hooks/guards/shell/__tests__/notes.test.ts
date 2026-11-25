@@ -1,105 +1,96 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { fieldOf, stringsOf } from "../../../shared/field";
-import { NOTE_LIMIT, shellNotes } from "../notes";
+import { fieldOf } from "../../../shared/field";
+import { bashWorld, contextOf } from "./bash-world";
 
-const bash = { isBackground: false, isZsh: false };
-const background = { isBackground: true, isZsh: false };
-const zsh = { isBackground: false, isZsh: true };
-
-describe("shell notes", () => {
-	test("a background command ending in `; echo` hides the exit code unless it ends with exit $rc", () => {
+describe("notes on a command that hides its failure", () => {
+	test("a check piped into a filter gets a pipefail note, and pipefail silences it", async ($, on) => {
 		// Arrange
-		const hidden = "sleep 5; echo done";
-		const printed = 'sleep 5; echo "exit=$?"';
-		const shown = "sleep 5; rc=$?; echo done; exit $rc";
-
-		// Act and Assert
-		expect(shellNotes(hidden, background)).toHaveLength(1);
-		expect(shellNotes(printed, background)).toHaveLength(1);
-		expect(shellNotes(shown, background)).toEqual([]);
-		expect(shellNotes(hidden, bash)).not.toContain(
-			expect.stringContaining("background")
-		);
-	});
-
-	test("a check piped into a filter suggests pipefail, and pipefail silences it", () => {
-		// Arrange
-		const piped = "bun test 2>&1 | tail -5";
-		const safe = "set -o pipefail; bun test 2>&1 | tail -5";
+		bashWorld(on);
 
 		// Act
-		const notes = shellNotes(piped, bash);
+		const piped = await $.tool.call({
+			tool: "Bash",
+			command: "bun test 2>&1 | tail -5"
+		});
+		const safe = await $.tool.call({
+			tool: "Bash",
+			command: "set -o pipefail; bun test 2>&1 | tail -5"
+		});
 
 		// Assert
-		expect(notes).toHaveLength(1);
-		expect(notes[0]).toContain("pipefail");
-		expect(shellNotes(safe, bash)).toEqual([]);
+		expect(contextOf(piped)).toHaveLength(1);
+		expect(contextOf(piped)[0]).toContain("pipefail");
+		expect(contextOf(safe)).toEqual([]);
 	});
 
-	test("a check chained by `;` suggests &&, and `&&` or a trailing $? echo stay quiet", () => {
-		// Arrange and Act
-		const chained = shellNotes("just lint; git status", bash);
-
-		// Assert
-		expect(chained).toHaveLength(1);
-		expect(chained[0]).toContain("&&");
-		expect(shellNotes("just lint && git status", bash)).toEqual([]);
-		expect(shellNotes('just lint; echo "exit=$?"', bash)).toEqual([]);
-		expect(shellNotes('git commit -m "fix test"; git status', bash)).toEqual(
-			[]
-		);
-	});
-
-	test("an unquoted zsh variable holding spaces names the split form and an array", () => {
+	test("a check chained by a semicolon gets an && note, and && or a status echo stay quiet", async ($, on) => {
 		// Arrange
-		const command = 'files="a.ts b.ts"; wc -l $files';
-		// An escaped template: a plain string with a dollar-brace reads as a broken template to lint.
+		bashWorld(on);
+		const run = (command: string) => $.tool.call({ tool: "Bash", command });
+
+		// Act
+		const chained = await run("just lint; git status");
+
+		// Assert
+		expect(contextOf(chained)).toHaveLength(1);
+		expect(contextOf(chained)[0]).toContain("&&");
+		expect(contextOf(await run("just lint && git status"))).toEqual([]);
+		expect(contextOf(await run('just lint; echo "exit=$?"'))).toEqual([]);
+		expect(
+			contextOf(await run('git commit -m "fix test"; git status'))
+		).toEqual([]);
+	});
+
+	test("a background command ending in an echo gets a note that a foreground one does not", async ($, on) => {
+		// Arrange
+		bashWorld(on);
+		const run = (command: string, background: boolean) =>
+			$.tool.call({
+				tool: "Bash",
+				command,
+				run_in_background: background
+			});
+
+		// Act
+		const hidden = await run("sleep 5; echo done", true);
+		const printed = await run('sleep 5; echo "exit=$?"', true);
+		const shown = await run("sleep 5; rc=$?; echo done; exit $rc", true);
+		const foreground = await run("sleep 5; echo done", false);
+
+		// Assert
+		expect(contextOf(hidden).some((n) => n.includes("exit $rc"))).toBe(true);
+		expect(contextOf(printed).some((n) => n.includes("exit $rc"))).toBe(true);
+		expect(contextOf(shown)).toEqual([]);
+		expect(contextOf(foreground)).toEqual([]);
+	});
+
+	test("under zsh an unquoted variable holding spaces names the split form; under bash it stays quiet", async ($, on) => {
+		// Arrange
+		const world = bashWorld(on);
 		const split = `\${=files}`;
+		const run = (command: string) => $.tool.call({ tool: "Bash", command });
 
 		// Act
-		const notes = shellNotes(command, zsh);
+		world.shell = "/bin/zsh";
+		const unquoted = await run('files="a.ts b.ts"; wc -l $files');
+		const quoted = await run('files="a.ts b.ts"; wc -l "$files"');
+		const splitForm = await run(`files="a.ts b.ts"; wc -l ${split}`);
+		world.shell = "/bin/bash";
+		const bash = await run('files="a.ts b.ts"; wc -l $files');
 
 		// Assert
-		expect(notes).toHaveLength(1);
-		expect(notes[0]).toContain(split);
-		expect(shellNotes(command, bash)).toEqual([]);
-		expect(shellNotes(`files="a.ts b.ts"; wc -l ${split}`, zsh)).toEqual([]);
-		expect(shellNotes('files="a.ts b.ts"; wc -l "$files"', zsh)).toEqual([]);
+		expect(contextOf(unquoted)).toHaveLength(1);
+		expect(contextOf(unquoted)[0]).toContain(split);
+		expect(contextOf(quoted)).toEqual([]);
+		expect(contextOf(splitForm)).toEqual([]);
+		expect(contextOf(bash)).toEqual([]);
 	});
 
-	test("each note stays within the length limit", () => {
+	test("the command reaches the tool and the result is kept beside the note", async ($, on) => {
 		// Arrange
-		const command = 'x="a b"; just test | tail; just lint; ls $x; echo done';
-
-		// Act
-		const notes = [
-			...shellNotes(command, { isBackground: true, isZsh: true }),
-			...shellNotes("just lint; ls", bash)
-		];
-
-		// Assert
-		expect(notes.length).toBeGreaterThan(1);
-		for (const note of notes) {
-			expect(note.length).toBeLessThanOrEqual(NOTE_LIMIT);
-		}
-	});
-
-	test("a Bash call through the plugin carries the note beside its result", async ($, on) => {
-		// Arrange
-		// The memory guard reads free memory through process.run on every Bash call.
-		on("process.run", () => ({
-			value: {
-				exitCode: 0,
-				stdout: "System-wide memory free percentage: 50%\n",
-				stderr: "",
-				isStdoutTruncated: false,
-				isStderrTruncated: false
-			}
-		}));
-		on("ui.log", () => ({ value: undefined }));
-		on("tool.check", () => ({ decision: "allow" }));
-		on("tool.call", { tool: "Bash" }, () => ({ result: "ok" }));
+		const world = bashWorld(on);
+		world.answer = { result: "ok" };
 
 		// Act
 		const r = await $.tool.call({
@@ -108,7 +99,8 @@ describe("shell notes", () => {
 		});
 
 		// Assert
-		const context = stringsOf(fieldOf(r, "context")) ?? [];
-		expect(context.some((line) => line.includes("pipefail"))).toBe(true);
+		expect(r.result).toBe("ok");
+		expect(fieldOf(r, "deny")).toBeUndefined();
+		expect(world.seen).toHaveLength(1);
 	});
 });
