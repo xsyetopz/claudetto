@@ -153,19 +153,38 @@ When a turn stops on an API error, claudetto raises a notification naming the er
 
 ## Status Line
 
-claudetto draws a status line of up to eight rows through a command, `bin/claudetto-statusline`. At session start it sets the `statusLine` in your user settings file to that command when you have none, or when the one there is claudetto's own for another plugin root; a status line you wrote is left alone.
+claudetto draws a status line through a command, `bin/claudetto-statusline`. At session start it sets the `statusLine` in your user settings file to that command when you have none, or when the one there is claudetto's own for another plugin root; a status line you wrote is left alone.
+
+The rows carry no labels and run from the broadest figure to the narrowest, items split by ` · ` as Claude Code splits its own:
+
+```text
+● working · Opus 5.5 medium ↯ fast · ctx █░░░░░░░░░ 9% 90k/1M · cache 98% warm 58m/1h
+⌂ owner/repo · ⎇ main · ⇄ #7 approved · ◔ 20h22m (api 2h30m) · +4491 -336
+5h ██░░░░░░░░ 21% 0.3x ↻10:29pm · 7d ██████░░░░ 62% 1.8x runs out Nov 27 at 7:24am ↻Nov 30 at 11:39am
+⚒ 42 tools 3.5/min · ⏵ 2 agents 1 done · ▸ Read main.ts
+☑ 1/3 ██░░░ ◐ Writing tests
+mem █░░░░ 26% 32.0G · swap 1.0G/2.0G · load 2.4/10 · claude 847M · tree 3.0G 17 procs · top node 418M
+⚑ waiting on you: permission for Bash
+● Explore find login 3m · 5 tools · ▸ Grep foo
+✓ Plan 5m · 9 tools
+```
 
 | Row | Figures | Source |
 | --- | --- | --- |
-| Head | phase (`working` or `idle`), model, effort, `think`, `ctx` bar and percent of the window | hooks; `model`, `effort`, `thinking`, `context_window` |
-| `Pace:` | `5h` and `7d` use over the share of the window elapsed, and when the use runs out | `rate_limits` with `resets_at` |
-| `Session:` | name, time, lines added and removed, the dollar estimate (only without a rate-limit window), prompt-cache hit and warmth | `session_name`, `cost`, `prompt_cache` |
-| `Project:` | folder or repository, branch, pull request and review state | `workspace`, `worktree`, `pr`, `.git/HEAD` |
-| `Account:` | `5h`, `7d` and spend bars with reset times | `rate_limits` |
-| `⚑ waiting on you` | a permission prompt, a question, or your next prompt | hooks (`tool.check`, `turn.complete`) |
-| `⏵` | each running subagent with its age, three at most | hooks (`agent.spawn`, `agent.report`) |
+| Turn | phase (`working` or `idle`), model, effort, fast mode, an output style other than the default, the `--agent` name, context bar with tokens of the window, prompt-cache hit, warmth and misses | hooks; `model`, `effort`, `fast_mode`, `output_style`, `agent`, `context_window`, `prompt_cache` |
+| Place | folder or repository, branch, linked worktree, pull request and review state, session name, wall and API time, lines added and removed, the dollar estimate (only without a rate-limit window) | `workspace`, `worktree`, `pr`, `.git/HEAD`, `session_name`, `cost` |
+| Limits | `5h`, `7d` and spend bars, the pace (use over the share of the window elapsed), when the use runs out at that pace, and the reset | `rate_limits` |
+| Activity | tool calls started in the session and their rate per minute of wall time, running and finished subagents, the lead's last tool call | hooks (`tool.run`, `agent.spawn`, `agent.report`), `cost.total_duration_ms` |
+| Tasks | tasks done of all, and the one in progress or next | hooks (`TaskCreate`, `TaskUpdate`, `TodoWrite` calls) |
+| Machine | memory in use by the kernel's pressure figure, swap in use, one-minute load over the logical cores, Claude Code's resident memory, the memory and count of the processes under it, and the heaviest of them | `sysctl` on macOS, `/proc/meminfo` on Linux, `ps`, Node's `os` |
+| Waiting | a permission prompt, a question, or your next prompt | hooks (`tool.check`, `turn.complete`) |
+| Agents | each subagent running or finished this turn with its age, tool calls and last call, three at most and the rest counted | hooks |
 
-A figure the source does not report is left out, and none is estimated; tokens saved against vanilla Claude Code are not shown because nothing measures them. Each row fits `COLUMNS` minus 4, with countdowns in place of clock times when it does not, and `NO_COLOR` turns the colour off. The hooks write the phase, the prompt and the agents to `claudetto/status/<session_id>.json` under the Claude Code config folder. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
+A figure the source does not report is left out, and none is estimated: tokens saved against vanilla Claude Code are not shown because nothing measures them, and GPU use is not shown because no source reads it in the time a status line has. Each row fits `COLUMNS` minus 4, with countdowns in place of clock times when it does not, and `NO_COLOR` turns the colour off.
+
+The colours are Claude Code's own for the theme you set (`theme` in the nearest settings file, else the global config `/theme` writes): the model in the `claude` colour, bars in the `/usage` fill and empty colours, readings in `success`, `warning` and `error`. The six built-in themes are copied from claude 2.1.329; `auto` follows `COLORFGBG`, and a custom theme falls back to `dark` as Claude Code does. A 24-bit terminal gets the exact colours, a 256-colour one chalk's nearest shade, and a 16-colour one the theme's ANSI variant.
+
+The hooks write the phase, the prompt, the agents, the tool count and the task list to `claudetto/status/<session_id>.json` under the Claude Code config folder. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
 
 ## Shell Start-Up
 

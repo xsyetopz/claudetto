@@ -2,7 +2,7 @@ import { describe, expect, test } from "claude-code/testing";
 
 import { branchOf, type Reader } from "../branch";
 import { statusWithFiles } from "../main";
-import { readState, statePath, writeState } from "../state";
+import { type LiveState, readState, statePath, writeState } from "../state";
 
 const filesOf =
 	(files: Record<string, string>): Reader =>
@@ -10,12 +10,37 @@ const filesOf =
 		Promise.resolve(files[path]);
 
 describe("state file", () => {
-	test("round-trips phase, the waiting prompt and the agents", () => {
+	test("round-trips phase, the waiting prompt, agents, tool calls and tasks", () => {
 		// Arrange
-		const state = {
-			phase: "working" as const,
-			waiting: { kind: "question" as const, tool: "AskUserQuestion" },
-			agents: [{ id: "a", type: "Explore", description: "d", startedAt: 5 }]
+		const state: LiveState = {
+			phase: "working",
+			waiting: { kind: "question", tool: "AskUserQuestion" },
+			agents: [
+				{
+					id: "a",
+					type: "Explore",
+					description: "d",
+					startedAt: 5,
+					tools: 2,
+					doing: "Read x"
+				}
+			],
+			finished: [
+				{
+					id: "b",
+					type: "Plan",
+					description: "",
+					startedAt: 1,
+					tools: 0,
+					endedAt: 4,
+					end: "failed"
+				}
+			],
+			tools: 7,
+			doing: "Bash ls",
+			tasks: [
+				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }
+			]
 		};
 
 		// Act and Assert
@@ -27,6 +52,21 @@ describe("state file", () => {
 		expect(readState("")).toBeUndefined();
 		expect(readState("{")).toBeUndefined();
 		expect(readState('{"waitingKind":"bogus"}')?.waiting).toBeUndefined();
+	});
+
+	test("reads a file an older version wrote, with no tool count or tasks", () => {
+		// Act and Assert
+		expect(
+			readState('{"phase":"idle","agents":[{"id":"a","startedAt":1}]}')
+		).toEqual({
+			phase: "idle",
+			agents: [
+				{ id: "a", type: "agent", description: "", startedAt: 1, tools: 0 }
+			],
+			finished: [],
+			tools: 0,
+			tasks: []
+		});
 	});
 
 	test("keeps a session id from leaving the status folder", () => {
@@ -84,6 +124,48 @@ describe("status from files", () => {
 		);
 
 		// Assert
-		expect(out).toBe("● working\nProject: ⌂ p · ⎇ main");
+		expect(out).toBe("● working\n⌂ p · ⎇ main");
+	});
+
+	test("takes the theme from the nearest settings file before the global config", async () => {
+		// Arrange
+		const read = filesOf({
+			"/p/.claude/settings.json": '{"theme":"light-ansi"}',
+			"/h/.claude.json": '{"theme":"dark"}'
+		});
+		const raw = JSON.stringify({
+			model: { display_name: "Opus 5.5" },
+			workspace: { project_dir: "/p" }
+		});
+
+		// Act
+		const out = await statusWithFiles(
+			raw,
+			{ HOME: "/h", COLORTERM: "truecolor" },
+			0,
+			read
+		);
+
+		// Assert: light-ansi paints the model in a palette slot, never in truecolor.
+		expect(out).toContain("Opus 5.5");
+		expect(out).not.toContain("38;2;");
+	});
+
+	test("adds the machine's figures the probe returns, and draws without them when it fails", async () => {
+		// Arrange
+		const raw = '{"model":{"display_name":"Opus 5.5"}}';
+		const env = { NO_COLOR: "1" };
+
+		// Act
+		const shown = await statusWithFiles(raw, env, 0, filesOf({}), () =>
+			Promise.resolve({ load: 2, cores: 8 })
+		);
+		const failed = await statusWithFiles(raw, env, 0, filesOf({}), () =>
+			Promise.reject(new Error("ps"))
+		);
+
+		// Assert
+		expect(shown).toBe("Opus 5.5\nload 2.0/8");
+		expect(failed).toBe("Opus 5.5");
 	});
 });

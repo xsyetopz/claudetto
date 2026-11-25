@@ -1,10 +1,43 @@
 #!/usr/bin/env -S bun --no-env-file
 
+import { cpus, loadavg, platform, totalmem } from "node:os";
+
 import { run } from "../hooks/statusline/line/main.ts";
+import { probe } from "../hooks/statusline/line/resources.ts";
+
+// Each probe command gets this long; Claude Code kills the whole status line command after 5 seconds.
+const EXEC_MS = 1500;
 
 const read = async (path) => {
 	const file = Bun.file(path);
 	return (await file.exists()) ? file.text().catch(() => undefined) : undefined;
+};
+
+const exec = async (argv) => {
+	try {
+		const child = Bun.spawn([...argv], {
+			stdout: "pipe",
+			stderr: "ignore",
+			timeout: EXEC_MS
+		});
+		const [text, code] = await Promise.all([
+			new Response(child.stdout).text(),
+			child.exited
+		]);
+		return code === 0 ? text : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const host = {
+	platform: platform(),
+	ppid: process.ppid,
+	loadavg: loadavg(),
+	cores: cpus().length,
+	totalmem: totalmem(),
+	exec,
+	read
 };
 
 let raw = "";
@@ -13,4 +46,6 @@ try {
 } catch {
 	raw = "";
 }
-process.stdout.write(`${await run(raw, process.env, Date.now(), read)}\n`);
+process.stdout.write(
+	`${await run(raw, process.env, Date.now(), read, () => probe(host))}\n`
+);

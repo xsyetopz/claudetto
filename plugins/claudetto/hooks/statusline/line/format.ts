@@ -66,23 +66,26 @@ export const baseName = (dir: string): string =>
 export const wholePercent = (n: number): number =>
 	n < 100 ? Math.min(Math.round(n), 99) : Math.round(n);
 
-const cellStyle = (index: number, paint: Paint): ((text: string) => string) => {
-	if (index < 4) {
-		return paint.ok;
-	}
-	return index < 7 ? paint.warn : paint.bad;
+/**
+ * A bar of `cells` cells as Claude Code's `/usage` draws one: filled cells in
+ * the theme's `rate_limit_fill`, the rest in `rate_limit_empty`.
+ */
+export const bar = (percent: number, paint: Paint, cells = CELLS): string => {
+	const filled = Math.min(
+		cells,
+		Math.max(0, Math.round((percent / 100) * cells))
+	);
+	const full = filled > 0 ? paint.fill("█".repeat(filled)) : "";
+	const rest = filled < cells ? paint.empty("░".repeat(cells - filled)) : "";
+	return `${full}${rest}`;
 };
 
-/** ProjectArchitect's 10-cell bar: cells 0-3 green, 4-6 yellow, 7-9 red, empty cells dim. */
-export const bar = (percent: number, paint: Paint): string => {
-	const filled = Math.min(CELLS, Math.max(0, Math.floor(percent / 10 + 0.5)));
-	return Array.from({ length: CELLS }, (_, i) => {
-		if (i >= filled) {
-			return paint.dim("░");
-		}
-		return cellStyle(i, paint)("█");
-	}).join("");
-};
+const MIB = 1024 ** 2;
+const GIB = 1024 ** 3;
+
+/** Bytes as `812M` under a gibibyte and `22.4G` from one, in the binary units `ps` and `sysctl` count in. */
+export const bytes = (n: number): string =>
+	n < GIB ? `${Math.round(n / MIB)}M` : `${(n / GIB).toFixed(1)}G`;
 
 /**
  * The pace of a window at `nowS`: `ratio` is the used percent over the elapsed
