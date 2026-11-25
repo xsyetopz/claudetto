@@ -17,7 +17,10 @@ const fromRoot = (
 	if (path.startsWith("/")) {
 		return path.split("/");
 	}
-	return atHome ? `${base}/${path}`.split("/") : undefined;
+	// A leading `./` names the folder the shell is in, as the bare path does.
+	return atHome
+		? `${base}/${path.replace(/^(?:\.\/+)+/u, "")}`.split("/")
+		: undefined;
 };
 
 /** One path segment of a shell glob, brace lists included, as a regular expression. */
@@ -69,13 +72,13 @@ export const globWords = (command: string): string[] =>
  * compare as folders from the root, segment by segment. The segment that
  * lands on the wall's last folder must not be a bare `*`: a glob over only the
  * folder above the wall is left alone, because refusing `ls ~/*` would refuse
- * too much. A relative glob counts only after the command moves to home, so
- * `ls -a .*` in a project runs.
+ * too much. A relative glob counts only when the command moves to home or
+ * the session runs there, so `ls -a .*` in a project runs.
  *
  * @param words The glob words of the command.
  * @param wall A protected path as `protectedPaths` holds it.
  * @param home The home folder, or undefined when the engine reports none.
- * @param atHome Whether the command moves to home before the glob.
+ * @param atHome Whether the command reads a relative path from home: it moves there first or the session runs there.
  * @returns True when a word matches the wall.
  */
 export const globHitsWall = (
