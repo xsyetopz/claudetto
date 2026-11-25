@@ -2,6 +2,7 @@ import type { EngineInterface, On } from "claude-code";
 
 import { configDir } from "../settings/settings";
 import { fault } from "../shared/fault";
+import { activityOf, tasksAfter } from "./activity";
 import {
 	type Agent,
 	EMPTY_STATE,
@@ -52,11 +53,34 @@ const answered = (current: LiveState): LiveState => {
 	return rest;
 };
 
+/** `current` with no permission or question prompt: a tool that starts running was allowed, so the prompt is answered. */
+const answeredCall = (current: LiveState): LiveState =>
+	current.waiting !== undefined && current.waiting.kind !== "input"
+		? answered(current)
+		: current;
+
+/** The most finished subagents kept for the line, a choice that bounds its height. */
+const FINISHED_KEPT = 3;
+
+/** `current` after a tool call started by the lead (`agentId` undefined) or by subagent `agentId`. */
+const started = (
+	current: LiveState,
+	agentId: string | undefined,
+	doing: string
+): LiveState => ({
+	...current,
+	tools: current.tools + 1,
+	...(agentId === undefined ? { doing } : {}),
+	agents: current.agents.map((agent) =>
+		agent.id === agentId ? { ...agent, tools: agent.tools + 1, doing } : agent
+	)
+});
+
 /** The phase: working from a prompt until the turn ends, and then waiting on the next prompt. Subagent turns are skipped, since the lead's phase is the one shown. */
 function registerPhase(on: On, live: Live): void {
 	on("turn.start", ANY_TURN, async ($, e, next) => {
 		if (e.agentId === undefined) {
-			live.state = { ...answered(live.state), phase: "working" };
+			live.state = { ...answered(live.state), phase: "working", finished: [] };
 			await save($, live.state);
 		}
 		return next(e);
@@ -73,7 +97,7 @@ function registerPhase(on: On, live: Live): void {
 	});
 }
 
-/** The prompt a tool call raises, cleared when a tool starts running: it was allowed, so the prompt is answered. */
+/** The prompt a tool call raises, cleared when a tool starts running; each started call is counted and named, and a task call updates the list. */
 function registerPrompt(on: On, live: Live): void {
 	on("tool.check", { tool: ANY }, async ($, e, next) => {
 		const verdict = await next(e);
@@ -91,21 +115,26 @@ function registerPrompt(on: On, live: Live): void {
 		return next(e);
 	});
 	on("tool.run", async ($, e, next) => {
-		if (
-			live.state.waiting !== undefined &&
-			live.state.waiting.kind !== "input"
-		) {
-			live.state = answered(live.state);
+		live.state = started(
+			answeredCall(live.state),
+			e.agentId,
+			activityOf(e.tool, e)
+		);
+		await save($, live.state);
+		const result = await next(e);
+		const tasks = tasksAfter(live.state.tasks, e.tool, e, result.result);
+		if (tasks !== undefined) {
+			live.state = { ...live.state, tasks };
 			await save($, live.state);
 		}
-		return next(e);
+		return result;
 	}).catch(($, e, next) => {
 		fault($, "status tool run", next.error);
 		return next(e);
 	});
 }
 
-/** The subagents that run: listed from their spawn until their report, and all dropped when the session ends so a resumed one never inherits them. */
+/** The subagents: listed from their spawn until their report, then kept as finished until the lead's next turn; all dropped when the session ends so a resumed one never inherits them. */
 function registerAgents(on: On, live: Live): void {
 	on("agent.spawn", { subagentType: ANY }, async ($, e, next) => {
 		const result = await next(e);
@@ -114,7 +143,8 @@ function registerAgents(on: On, live: Live): void {
 				id: result.agentId,
 				type: e.subagentType,
 				description: e.description,
-				startedAt: await $.clock.now()
+				startedAt: await $.clock.now(),
+				tools: 0
 			};
 			live.state = { ...live.state, agents: [...live.state.agents, agent] };
 			await save($, live.state);
@@ -125,9 +155,14 @@ function registerAgents(on: On, live: Live): void {
 		return next(e);
 	});
 	on("agent.report", async ($, e, next) => {
+		const endedAt = await $.clock.now();
+		const done = live.state.agents.find((item) => item.id === e.agentId);
+		const ended: Agent[] =
+			done === undefined ? [] : [{ ...done, endedAt, end: e.status }];
 		live.state = {
 			...live.state,
-			agents: live.state.agents.filter((agent) => agent.id !== e.agentId)
+			agents: live.state.agents.filter((agent) => agent.id !== e.agentId),
+			finished: [...live.state.finished, ...ended].slice(-FINISHED_KEPT)
 		};
 		await save($, live.state);
 		return next(e);
@@ -145,7 +180,8 @@ function registerAgents(on: On, live: Live): void {
 /**
  * Writes what the hooks observe in one session to the file the status line
  * command reads (ADR-0201): the turn phase, the prompt the session waits on
- * the person for, and the subagents that run. Each change rewrites the whole file.
+ * the person for, the subagents with their tool calls, the lead's last tool
+ * call, and the task list. Each change rewrites the whole file.
  */
 export function registerLive(on: On): void {
 	const live: Live = { state: EMPTY_STATE };

@@ -26,13 +26,15 @@ The second option, because only the command channel draws on 2.1.329 and it carr
 - At session start `wireStatusLine` sets the user's `statusLine` when the user has none, or when it is claudetto's own command (it names `claudetto-statusline`) for another plugin root. A status line the user wrote stays as it is.
 - Each row stays within `COLUMNS` minus 4. A row that does not fit swaps clock times for countdowns, then is cut with `...`.
 
+- Amended 2026-11-25: the rows carry no labels and drop `think`. They run turn (phase, model, effort, fast mode, a non-default output style, the `--agent` name, context, cache), place (project, branch, worktree, PR, session name, wall and API time, lines, dollars), limits (each window's bar, pace, run-out and reset on one row), activity (tool calls and their rate, the agent count, the lead's last call), tasks, machine, waiting, and one row per running or finished subagent with its tool calls. The hooks also write the tool count, each call's subject, and the task list from `TaskCreate`, `TaskUpdate` and `TodoWrite`. The colours are Claude Code's own theme keys for the `theme` setting, copied from the 2.1.329 theme tables, and fall to the theme's ANSI variant on a 16-colour terminal. The machine row reads `sysctl` (macOS) or `/proc/meminfo` (Linux), `ps` and Node's `os` in the command, which runs outside the Bash sandbox; a probe that fails leaves its figures out. GPU use has no source a status line can read in its time, so it is not drawn.
+
 Supersedes the minimal-status-line part of ADR-0190. The rest of ADR-0190 and the `/statusline` command text stand.
 
 ## Consequences
 
 - A user who has their own `statusLine` sees none of this; the plugin leaves it alone and says nothing.
 - A permission prompt the person denies leaves `waiting on you` shown until the next tool run or turn event, since the hooks see no denial event.
-- The command starts a Bun process each time the line refreshes; it reads two small files and prints.
+- The command starts a Bun process each time the line refreshes; it reads a few small files, runs `sysctl` and `ps` (about 70 ms together, measured 2026-11-25 on macOS), and prints.
 - The plan phase of ProjectArchitect's line has no source here, so the phase is the hook-observed working or idle.
 
 Source: ADR-0190; ADR-0177; REQ-COST-004.

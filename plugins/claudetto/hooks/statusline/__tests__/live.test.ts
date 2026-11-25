@@ -47,11 +47,12 @@ describe("live state", () => {
 		await $.turn.complete(DONE);
 
 		// Assert
-		expect(during).toEqual({ phase: "working", agents: [] });
+		const empty = { agents: [], finished: [], tools: 0, tasks: [] };
+		expect(during).toEqual({ phase: "working", ...empty });
 		expect(state()).toEqual({
 			phase: "idle",
 			waiting: { kind: "input" },
-			agents: []
+			...empty
 		});
 	});
 
@@ -97,6 +98,45 @@ describe("live state", () => {
 		});
 	});
 
+	test("counts each started call and names the lead's last one", async ($, on) => {
+		// Arrange
+		const state = serve(on);
+
+		// Act
+		await $.tool.run({
+			tool: "Read",
+			tool_use_id: "r1",
+			file_path: "/r/src/main.ts"
+		});
+		await $.tool.run({
+			tool: "Bash",
+			tool_use_id: "r2",
+			command: "git status"
+		});
+
+		// Assert
+		expect(state()?.tools).toBe(2);
+		expect(state()?.doing).toBe("Bash git status");
+	});
+
+	test("keeps the task list a TodoWrite call sets", async ($, on) => {
+		// Arrange
+		const state = serve(on);
+		const todos = [
+			{ content: "Read", status: "completed" as const, activeForm: "Reading" },
+			{ content: "Test", status: "in_progress" as const, activeForm: "Testing" }
+		];
+
+		// Act
+		await $.tool.run({ tool: "TodoWrite", tool_use_id: "r3", todos });
+
+		// Assert
+		expect(state()?.tasks).toEqual([
+			{ id: "1", subject: "Read", status: "completed", active: "Reading" },
+			{ id: "2", subject: "Test", status: "in_progress", active: "Testing" }
+		]);
+	});
+
 	test("lists a subagent from its spawn until its report", async ($, on) => {
 		// Arrange
 		const state = serve(on);
@@ -129,9 +169,21 @@ describe("live state", () => {
 				id: "id-scan",
 				type: "Explore",
 				description: "scan",
-				startedAt: 1_000_000
+				startedAt: 1_000_000,
+				tools: 0
 			}
 		]);
 		expect(state()?.agents).toEqual([]);
+		expect(state()?.finished).toEqual([
+			{
+				id: "id-scan",
+				type: "Explore",
+				description: "scan",
+				startedAt: 1_000_000,
+				tools: 0,
+				endedAt: 1_000_000,
+				end: "completed"
+			}
+		]);
 	});
 });
