@@ -1,6 +1,6 @@
 #!/bin/bash
 # Replays the propose request on the dogfood session: the session forked with tools off, the prompt as the user turn.
-# Usage: bash replay.sh <arm a|v> <rep> <out-dir>
+# Usage: bash replay.sh <arm a|c|v> <rep> <out-dir>
 arm=$1 rep=$2 out=$3
 here=$(cd "$(dirname "$0")" && pwd)
 D=/private/tmp/claude-501/df

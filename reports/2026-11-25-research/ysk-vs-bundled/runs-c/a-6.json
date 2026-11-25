@@ -1,0 +1,73 @@
+{
+	"duration_api_ms": 3295,
+	"stop_reason": "end_turn",
+	"session_id": "858377d0-a371-4a74-aab8-3f263c76fdfe",
+	"total_cost_usd": 0.0051865,
+	"usage": {
+		"input_tokens": 2,
+		"cache_creation_input_tokens": 0,
+		"cache_read_input_tokens": 22925,
+		"output_tokens": 289,
+		"output_tokens_details": { "thinking_tokens": 0 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 0,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 2,
+			"outputTokens": 289,
+			"cacheReadInputTokens": 22925,
+			"cacheCreationInputTokens": 0,
+			"webSearchRequests": 0,
+			"costUSD": 0.0051865,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 0,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 0,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 1,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "learn: Both commits that add the dogfood README exist only because we force-added it past .gitignore, so `reports/` stays ignored and future edits there won't show up in `git status`.\ntag: Heads up\nexplain:\n**Force-added README is still gitignored**\n- `reports/` is listed in .gitignore, so we used `git add -f` for the dogfood README on both `feat/2.1.327-next` and `side`.\n- Git keeps tracking a file once it is committed, so edits to that README will show up normally.\n- Any new file under `reports/` will stay invisible to `git status` and never be committed unless it is force-added too.\n- Other files in `reports/2026-11-19-research/` may still be uncommitted, so they would not be on other machines or branches.\n- Run `git ls-files reports` to see which report files are actually tracked, and decide whether `.gitignore` needs an exception.",
+	"ttft_ms": 3374,
+	"type": "result",
+	"duration_ms": 3382,
+	"uuid": "4dc8b2d1-d95a-4eda-af7a-593e21bb9200",
+	"ttft_stream_ms": 1080,
+	"time_to_request_ms": 92,
+	"first_content_frame_ms": 1080,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}
