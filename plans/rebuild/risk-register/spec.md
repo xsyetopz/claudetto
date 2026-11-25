@@ -105,3 +105,23 @@
   - Verified: 2026-11-24, claude 2.1.329, Opus 5.5, `just eval claudetto-spec` run `2026-11-24T03-08-24-158Z`: with the plugin `ambiguous-headless` 1.00, `specify-discount` 1.00, `feature-discount` 0.96; `trivial-rename` and `trivial-typo` 1.00 in both arms.
   - Residual: Haiku still skips the skill in about 1 run in 7 on this prompt (6 of 7 fired across probe and suite), and `reply-flags-readme` fails in both arms (with 2 of 3, without 3 of 3). Likelihood falls from 3 to 2.
   - Source: /tmp/claude-501/r529/h.json; this session, 8c1c0180-9331-498b-bcfa-eb1bef224e21.
+
+- [x] **RISK-556** The spec loop takes more model and tool calls than vanilla, so claudetto-spec costs more on the same tasks.
+  - Category: spec, cost.
+  - Cause: a request that contradicts a requirement never loads the skill, so the agent edits spec, test and code and the Stop gate's revert costs about 9 turns; the skill sends the agent to read `references/FORMAT.md`, Glob `specs/` and look for `ARCHITECTURE.md` as calls of their own; it stages tests, runs `spec_check` and runs the tests in separate turns; and a second behaviour sentence draws an `inflated` finding and a rerun.
+  - Event: 2026-11-24, claude 2.1.329, Haiku 5.5 high, `just eval claudetto-spec` run 2026-11-24T23-37-48-724Z: cost 0.12 against vanilla 0.10 and 160 turns against 118, summed over case means.
+  - Consequence: the plugin fails the release bar of fewer calls and lower cost than vanilla.
+  - Likelihood: 4
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: a repo with `specs/` gets the amend rule as a session prompt section (`hooks/check/amend.ts`); the skill and commands read the specs and the files they name in one call, run the red tests and `git add` in one command, call `spec_check` once with the test run in the same turn, keep one behaviour sentence per requirement, and name the session directory as the root of every path.
+  - Trigger: a spec suite run where claudetto-spec takes more turns or costs more than vanilla.
+  - Owner: spec
+  - Status: mitigated 2026-11-25: fewer turns and tool calls than vanilla at a cost 4% above it.
+  - Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto-spec -j 4` run 2026-11-25T02-18-21-934Z:
+    per run with $0.00676, 7.64 turns, 6.43 tool calls, 132792 tokens; without $0.00648, 8.21 turns, 7.21 tool calls,
+    123417 tokens; mean score delta +0.25; contradiction 1.00 against 0.36 in 5.3 turns against 9.0.
+  - Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto-spec`: 56 pass, 0 fail.
+  - Residual: the feature cases write a spec and tests that vanilla skips, so their cost stays above vanilla (feature-discount-p2 $0.012 against $0.009 for 1.00 against 0.80).
+  - Source: the two eval runs above, traces under plugins/claudetto-spec/evals/results.

@@ -31,3 +31,13 @@ export const AMEND_RULE =
 /** Opens the reason a Stop is blocked; one line per finding follows. */
 export const STOP_BLOCK_HEAD =
 	"spec_check findings; for each, fix it or tell the user why it stands:";
+
+/** The id of the prompt section a repo with `specs/` gets. */
+export const AMEND_SECTION_ID = "claudetto-spec:amend";
+
+/**
+ * The amend rule in the system prompt of a repo with `specs/`. The spec skill states it
+ * too, but a request that never loads the skill edits spec, test and code to fit, and the
+ * Stop gate's revert then costs more turns than the rule up front.
+ */
+export const AMEND_SECTION = `This repository keeps requirements in specs/: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID.`;

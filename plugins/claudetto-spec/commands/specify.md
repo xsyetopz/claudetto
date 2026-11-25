@@ -8,18 +8,18 @@ disable-model-invocation: true
 
 Request: $ARGUMENTS
 
-Formats: the `spec` skill's `references/FORMAT.md`. Glob `specs/*.md` first and read the specs the request touches.
+The requirement format is under Spec below. Read the specs the request touches in one call (one `cat` of every file), listing `specs/` only if you have not listed it yet.
 
 ## Clarify
 
-- Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root, if present. Never create a constitution file.
+- Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root when a listing you already made shows one. Never create a constitution file.
 - Interactive session: ask each expensive unknown through `AskUserQuestion`.
 - No one to answer (non-interactive `-p` run): write each unknown as an `Open:` line in the spec, also when you take a cheap default.
 
 ## Spec
 
 - Edit the capability's existing `specs/<capability>.md`, or add one. Never create a proposal, plan or tasks file.
-- Per requirement: `## <ID> <title>` (`[A-Z][A-Z0-9]*-\d+`, such as `CART-1`), one sentence of behaviour, at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
+- Per requirement: `## <ID> <title>` (`[A-Z][A-Z0-9]*-\d+`, such as `CART-1`), one sentence of behaviour (a single full stop; put each detail in a scenario, because `spec_check` flags a second sentence), at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
 
 ## Stop
 

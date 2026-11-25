@@ -6,37 +6,32 @@ license: MIT
 
 # Spec
 
-Loop: clarify, spec, red, green, check. Formats and `spec_check` output: `references/FORMAT.md`.
+Loop: clarify, spec, red, green, check. The requirement format is under Spec below; read `references/FORMAT.md` only when a `spec_check` finding is unclear.
 
-A user who wants to review the spec before any test or code splits the loop with two commands: `/claudetto-spec:specify <request>` stops after the spec, and `/claudetto-spec:implement` runs red, green and check from the spec as the user left it. This skill runs the whole loop.
-
-First Glob `specs/*.md` and read the specs the request touches.
+First read the specs the request touches, with the code and tests they name, in one call (one `cat` of every file), listing `specs/` only if you have not listed it yet. `specs/` and every path here are in the session's working directory, never this skill's directory.
 
 ## Clarify
 
-- Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root, if present, for constraints before writing the spec. Never create a constitution file.
+- Read `ARCHITECTURE.md` or `DESIGN.md` at the repo root for constraints before writing the spec, when a listing you already made shows one. Never create a constitution file.
 - Interactive session: ask each expensive unknown through `AskUserQuestion`.
 - No one to answer (non-interactive `-p` run): write each unknown as an `Open:` line in the spec, also when you take a cheap default for it (`Open: rate form; assumed a fraction`), and list each assumption in the final reply.
 
 ## Spec
 
 - Edit the capability's existing `specs/<capability>.md`, or add one. Never create a proposal, plan or tasks file.
-- Per requirement: `## <ID> <title>`, where the ID is an uppercase prefix, one hyphen and a number (`[A-Z][A-Z0-9]*-\d+`, such as `CART-1`), one sentence of behaviour, at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
+- Per requirement: `## <ID> <title>`, where the ID is an uppercase prefix, one hyphen and a number (`[A-Z][A-Z0-9]*-\d+`, such as `CART-1`), one sentence of behaviour (a single full stop; put each detail in a scenario, because `spec_check` flags a second sentence), at most 3 scenarios of `Given`/`When`/`Then`/`And` lines.
 
 ## Red
 
 1. Write tests in the project's own framework; cite the requirement ID in the test name.
-2. Run them and see them fail.
-3. `git add` the test files in a call of their own, and confirm they are staged before writing implementation.
+2. Run them and see them fail, and `git add` the test files in that same command (`<test command>; git add <files>`), before writing implementation.
 
 ## Green
 
 - Implement without editing staged tests.
-- The spec as the session found it, with the user's uncommitted edits, is the spec to implement. A requirement changes only when the request cites its ID or says to change the spec. Describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not.
-- If the request contradicts a requirement it does not cite, or a staged test cannot pass honestly, change nothing: stop and report the conflict naming the requirement ID. Never edit the test or spec to fit.
+- The spec as the session found it, with the user's uncommitted edits, is the spec to implement; the session prompt's amend rule says when a requirement may change. A staged test that cannot pass honestly is a conflict to report, never a test to edit.
 
 ## Check
 
-- Call `spec_check`.
-- Run the project's test command.
+- Call `spec_check` once, here and not before, and run the project's test command in the same turn.
 - Report both results.
