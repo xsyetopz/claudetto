@@ -8,13 +8,12 @@ disable-model-invocation: true
 
 Scope: $ARGUMENTS (empty: every requirement in `specs/` without a test citing its ID).
 
-Read the specs in `specs/*.md` as they are now; the user may have edited them since they were written. The spec is the source of truth: implement it as written.
+Read the specs in `specs/*.md` as they are now, with the code and tests they name, in one call (one `cat` of every file); the user may have edited them since they were written. The spec is the source of truth: implement it as written.
 
 ## Red
 
 1. Write tests in the project's own framework; cite the requirement ID in the test name.
-2. Run them and see them fail.
-3. `git add` the test files in a call of their own, and confirm they are staged before writing implementation.
+2. Run them and see them fail, and `git add` the test files in that same command (`<test command>; git add <files>`), before writing implementation.
 
 ## Green
 
@@ -24,6 +23,5 @@ Read the specs in `specs/*.md` as they are now; the user may have edited them si
 
 ## Check
 
-- Call `spec_check`.
-- Run the project's test command.
+- Call `spec_check` once, here and not before, and run the project's test command in the same turn.
 - Report both results.
