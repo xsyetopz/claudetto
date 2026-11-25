@@ -20,7 +20,9 @@ test(
 		// Arrange
 		const box = freshBox();
 		const band = await offered($, on, box, {
-			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map(lineReply)
+			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map((reply) =>
+				lineReply(reply)
+			)
 		});
 		await typedTurns($, ["t2", "t3"]);
 		await checkIn($, "t4");
@@ -50,7 +52,9 @@ test(
 		// Arrange
 		const box = freshBox();
 		const band = await offered($, on, box, {
-			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map(lineReply)
+			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map((reply) =>
+				lineReply(reply)
+			)
 		});
 		await typedTurns($, ["t2", "t3"]);
 		await checkIn($, "t4");

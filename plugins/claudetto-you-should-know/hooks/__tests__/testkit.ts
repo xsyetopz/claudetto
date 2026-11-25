@@ -100,7 +100,7 @@ export interface Box {
 	toasts: string[];
 	forks: number;
 	/** The arguments of each fork, in order. */
-	args?: unknown[];
+	args?: { prompt?: unknown }[];
 	/** The mocked clock, set by `offered`. */
 	clock?: MockClock;
 	/** Prompt texts the plugin submitted itself. */
@@ -284,7 +284,7 @@ export const checkIn = async ($: Engine, turnId: string): Promise<void> => {
 
 /** The request prompt of each fork the plugin made, in order. */
 export const promptsOf = (box: Box): string[] =>
-	(box.args ?? []).map((arg) => String((arg as { prompt?: unknown }).prompt));
+	(box.args ?? []).map((arg) => String(arg.prompt));
 
 /** A fresh box for a test that watches the engine calls. */
 export const freshBox = (): Box => ({

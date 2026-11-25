@@ -60,7 +60,7 @@ describe("tool.offer", () => {
 		const answers = await offered($, on, MESSAGING, false);
 
 		// Assert
-		expect(answers.every((o) => o)).toBe(true);
+		expect(answers.every(Boolean)).toBe(true);
 	});
 
 	test("hides SendMessage and ListAgents in a subagent's loop", async ($, on) => {
@@ -76,7 +76,7 @@ describe("tool.offer", () => {
 		const answers = await offered($, on, WORKER_HIDDEN, false);
 
 		// Assert
-		expect(answers.every((o) => o)).toBe(true);
+		expect(answers.every(Boolean)).toBe(true);
 	});
 
 	test("hides Monitor, TaskStop and the goal tools in a subagent's loop", async ($, on) => {
@@ -97,6 +97,6 @@ describe("tool.offer", () => {
 		);
 
 		// Assert
-		expect(answers.every((o) => o)).toBe(true);
+		expect(answers.every(Boolean)).toBe(true);
 	});
 });

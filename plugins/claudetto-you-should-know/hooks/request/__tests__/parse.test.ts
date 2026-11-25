@@ -36,7 +36,7 @@ const ACCEPTED: readonly {
 		reply: 'learn: "Quoted line"',
 		shows: "Quoted line.",
 		// The drawn tree is JSON, so a leftover closing quote would appear as line\"
-		hides: 'line\\"'
+		hides: String.raw`line\"`
 	},
 	{
 		title: "reads a bullet, a quote-wrapped line and a dash tag",
