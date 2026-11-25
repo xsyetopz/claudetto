@@ -13,7 +13,7 @@ import {
 	TOOL_NAME
 } from "./texts";
 
-/** The `read` registration: in front of the model (not deferred), `file_path` required. */
+/** The `read` registration: in front of the model (not deferred), `file_path` required, `also` for more files. */
 export const READ_TOOL = {
 	name: TOOL_NAME,
 	description: TOOL_DESCRIPTION,
@@ -23,7 +23,8 @@ export const READ_TOOL = {
 			file_path: { type: "string" },
 			offset: { type: "number" },
 			limit: { type: "number" },
-			pages: { type: "string" }
+			pages: { type: "string" },
+			also: { type: "array", items: { type: "string" } }
 		},
 		required: ["file_path"]
 	},
@@ -155,13 +156,52 @@ async function contentOf(
 	);
 }
 
+/** The paths of `also`, the strings only; anything else is no path. */
+const alsoPaths = (input: unknown): string[] => {
+	const also = fieldOf(input, "also");
+	return Array.isArray(also)
+		? also.filter((p): p is string => typeof p === "string" && p !== "")
+		: [];
+};
+
+/** Every path a call reads: `file_path` first, then each of `also`. */
+export function readPaths(input: unknown): string[] {
+	const given = fieldOf(input, "file_path");
+	return [
+		...(typeof given === "string" && given !== "" ? [given] : []),
+		...alsoPaths(input)
+	];
+}
+
+const failure = (path: string, error: unknown): string =>
+	`read failed for ${path}: ${error instanceof Error ? error.message : String(error)}`;
+
+const blocksOf = (content: unknown): unknown[] =>
+	Array.isArray(content) ? content : [{ type: "text", text: String(content) }];
+
+/** Joins each file's content: text under a `==> path <==` header, an image as its blocks. */
+function joined(parts: readonly { path: string; content: unknown }[]): unknown {
+	if (parts.length === 1) {
+		return parts[0]?.content;
+	}
+	const blocks: unknown[] = parts.flatMap(({ path, content }): unknown[] => [
+		{ type: "text", text: `==> ${path} <==` },
+		...blocksOf(content)
+	]);
+	const texts = blocks.map((b) =>
+		fieldOf(b, "type") === "text" ? fieldOf(b, "text") : undefined
+	);
+	return texts.every((t) => typeof t === "string") ? texts.join("\n") : blocks;
+}
+
 /**
- * Reads a file for the model: numbered text lines, an image block, a notebook
+ * Reads files for the model: numbered text lines, an image block, a notebook
  * as cells, or a PDF as text. The engine's tool result carries no PDF block,
- * so a PDF's text comes from macOS PDFKit.
+ * so a PDF's text comes from macOS PDFKit. `also` reads more files whole in
+ * the same call, because a call per file costs a model turn each.
  *
  * @param $ The engine.
- * @param input The call's `file_path`, `offset`, `limit` and `pages`.
+ * @param input The call's `file_path`, `offset`, `limit`, `pages` and `also`.
  * @returns The result for the model, or the refusal.
  */
 export async function runRead(
@@ -174,10 +214,21 @@ export async function runRead(
 	}
 	const cwd = await $.session.cwd();
 	const path = absolute(cwd, given);
+	const more = alsoPaths(input).map((p) => absolute(cwd, p));
 	try {
-		const content = await contentOf($, path, input);
+		const first = await contentOf($, path, input);
+		// One missing file among several reads as its error, so the rest still arrive.
+		const rest = await Promise.all(
+			more.map(async (p) => ({
+				path: p,
+				content: await contentOf($, p, {}).catch((error: unknown) =>
+					failure(p, error)
+				)
+			}))
+		);
+		const content = joined([{ path, content: first }, ...rest]);
 		// The built-in Read loads the file's path-scoped rules and nested CLAUDE.md; hiding it must not drop them.
-		const context = await instructionsFor($, cwd, [path]);
+		const context = await instructionsFor($, cwd, [path, ...more]);
 		if (context.length === 0) {
 			return { result: content };
 		}
@@ -189,9 +240,7 @@ export async function runRead(
 				: `${String(content)}\n\n${extra}`
 		};
 	} catch (error) {
-		return {
-			deny: `read failed for ${path}: ${error instanceof Error ? error.message : String(error)}`
-		};
+		return { deny: failure(path, error) };
 	}
 }
 
@@ -214,14 +263,26 @@ export function registerRead(on: On): void {
 	);
 	on("tool.check", { tool: TOOL_FULL_NAME }, async ($, e, next) => {
 		const verdict = await next(e);
-		const given = fieldOf(e.input, "file_path");
-		if (verdict.decision === "deny" || typeof given !== "string") {
+		const paths = readPaths(e.input);
+		if (
+			verdict.decision === "deny" ||
+			typeof fieldOf(e.input, "file_path") !== "string"
+		) {
 			return verdict;
 		}
-		const file_path = absolute(await $.session.cwd(), given);
-		const read = await $.tool.check({ tool: "Read", input: { file_path } });
-		if (read.decision !== "allow") {
-			return read;
+		const cwd = await $.session.cwd();
+		// Each path gets the verdict the built-in Read would get for it alone.
+		const verdicts = await Promise.all(
+			paths.map((given) =>
+				$.tool.check({
+					tool: "Read",
+					input: { file_path: absolute(cwd, given) }
+				})
+			)
+		);
+		const refused = verdicts.find((read) => read.decision !== "allow");
+		if (refused !== undefined) {
+			return refused;
 		}
 		// A rule written for `read` itself keeps its ask; the engine's default ask for an MCP tool gives way to the Read verdict.
 		return verdict.rule === undefined ? { decision: "allow" } : verdict;

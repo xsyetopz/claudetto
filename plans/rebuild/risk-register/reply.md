@@ -2209,4 +2209,9 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: open 2026-11-24.
   Status: accepted 2026-11-25: with the goal text in the request, neither arm carried out the goal; the case plugins/claudetto/evals/prompt-file-scope guards it in every suite run.
   Verified: 2026-11-24, claude 2.1.329, plugins/claudetto/evals/prompt-file-scope run 2026-11-24T22-17-10-205Z: 6 of 6 runs edited goal.md only and left src/slug.ts untouched, 3 with claudetto and 3 without.
+  Status: mitigated 2026-11-25: the prompt-file rule leads the scope paragraph of output-styles/claudetto.md.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto --case prompt-file-scope --runs 6`:
+  the goal's steps ran in 4 of 6 with-plugin runs and 2 of 6 without (2026-11-25T02-06-12-868Z, score 0.63
+  against 0.78); with the rule first, with 0.96 in 4.5 turns at $0.004 a run against without 0.63 in 8.3 at
+  $0.006 (2026-11-25T02-10-06-865Z), and 1.00 against 0.56 in the full run 2026-11-25T02-12-37-465Z.
   Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/654a19b8-3b7c-423a-949a-d6c9e01fb8b3.jsonl, 2026-11-24; issue #257.
