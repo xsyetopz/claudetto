@@ -456,3 +456,43 @@
   Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 394 pass, 0 fail.
   Residual: on the 21 cases that stay under the 100k price step, with costs $0.00787 a run against
   $0.00664, from more output and thinking tokens; RISK-553 tracks it.
+
+## Proof Runs Beyond the Check
+
+- [x] **RISK-557** claudetto proves a passing test can fail on a mutated scratch copy, and reports a helper's
+  short list over the data it was asked for, so it costs more than vanilla and scores below it on two cases.
+  Category: cost.
+  Cause: the style's "a run that could have failed" read as a demand to break the code and rerun; "act only on
+  what the check supports" left open whether a seen-wrong helper or the user's count still sets the answer.
+  Event: 2026-11-25, Haiku 5.5 high, `just eval claudetto -j 4`, run 2026-11-25T05-01-56-360Z: feature-discount
+  0.88 against vanilla 1.00 (a mutant run's fail came after the final pass in 2 of 3 runs), count-in-reply 0.58
+  against 0.79 (2 of 3 runs pasted the script's 9 rows after naming the 7 it drops).
+  Consequence: an extra turn per test task, and a wrong list when a shortcut disagrees with its data.
+  Likelihood: 3. Impact: 3.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: the pass proof is a run of the check on the final code, with no scratch copy or mutated code; the
+  second run covers an unseeded random source; the data the user pointed to outranks a count, summary line or
+  helper script that describes it (output-styles/claudetto.md).
+  Trigger: a with-plugin run that edits a copy of the code to make a test fail, or a reply that delivers a
+  helper's output after naming rows it drops.
+  Owner: cost.
+  Status: mitigated 2026-11-25: feature-discount and count-in-reply score at or above vanilla; on the 21 cases
+  under the 100k price step claudetto still costs more per run from thinking tokens.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto -j 4 --ablation none`, run
+  2026-11-25T05-38-21-089Z against vanilla of run 2026-11-25T05-01-56-360Z: feature-discount 1.00, count-in-reply
+  0.79; on the 21 cases under the price step with $0.00770 a run (main $0.00805), 6.57 turns, 5.51 tool calls,
+  133103 tokens against vanilla $0.00670, 8.08, 7.06, 129451.
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto -j 4 --ablation none` with the style cut to its
+  header, run 2026-11-25T06-22-14-091Z: $0.00708 a run on the same 21 cases and thinking 3877 against 4332,
+  with 9 cases scoring below the full style, so the style stays and its thinking is not the whole premium.
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto -j 4 --case feature-discount --runs 6 --ablation
+  none` with the final wording (stand-in code or data named), run 2026-11-25T06-44-49-218Z: 6 of 6 runs at 1.00.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto -j 4` with the final wording, run
+  2026-11-25T06-47-22-918Z: mean delta +0.12 over vanilla; all 24 cases $0.00913 a run, 7.82 turns, 6.40 tool
+  calls against vanilla $0.03030, 7.92, 6.61; feature-discount 1.00 (vanilla 0.94), count-in-reply 0.79 (0.58). count-after-change scored 0.91 against 1.00:
+  one run compacted, met the sandbox refusing the normalizer's `mktemp` file and asked how to run it; the rerun
+  `just eval claudetto --case count-after-change --runs 6 --ablation none`, run 2026-11-25T07-20-30-935Z, scored
+  6 of 6 at 1.00.
+  Residual: on the 21 cases under the 100k price step claudetto costs $0.00789 a run against vanilla $0.00642,
+  from thinking (4630 against 2615 tokens a run) and output (6785 against 4387).
