@@ -202,6 +202,7 @@
   "Autocompact is thrashing ... Try reading in smaller chunks" and the lead still listed all 10 codes; claudetto's
   thrash note never appeared in the stream. The engine already gives the note's advice, so the note adds nothing.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, the same thrash fixture, `bash reports/2026-11-24-research/pin-2-1-329/thrash/run.sh <rep> <root> [--plugin-dir plugins/claudetto]` (the prompt asks for the reader in the foreground; `results.txt`): vanilla 10 of 10 codes for $0.40, claudetto 10 of 10 for $0.35, neither thrashed. Without "foreground" the claudetto lead started the reader in the background and ended its turn before the result came, so the one-shot driver read 0 codes ($0.03) while vanilla, which ran it in the foreground, read 10 ($0.48).
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5, subscription auth, `bash reports/2026-11-25-research/cache-ttl/probe.sh` (`results.txt`): the main thread writes `ephemeral_1h` only; a resume after 6 min read 10,157 tokens from cache, after 55 min idle 14,768 (62 written), and after 62 min idle 0 with 14,867 written again. The main-thread cache lives one hour and no longer, so work that idles past 60 minutes pays a full rewrite.
 
 ## Audit Skill at Top Effort
 
