@@ -428,6 +428,9 @@
   cases: claudetto turns 64.5 -> 55.0 summed (harden-tests-report 15.7 -> 9.7, artifact-short-answer 2.7 -> 1.8,
   background-check-fails 9.7 -> 8.3), vanilla 45.9; no case's score fell, and each is at or above vanilla.
   Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 391 pass, 0 fail.
+  Status: mitigated 2026-11-26: each request goes out at effort medium or lower (REQ-COST-049); turns fall below vanilla.
+  Verified: 2026-11-26, claude 2.1.329, `just eval claudetto -j 4`, run 2026-11-25T22-10-32-289Z: claudetto 421
+  turns and $0.40 on 23 cases x 3, vanilla 535 turns and $1.64; mean score 0.93 against 0.82.
 
 ## Round Trips per File
 
