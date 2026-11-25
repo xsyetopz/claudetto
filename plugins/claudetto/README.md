@@ -113,6 +113,17 @@ claudetto ships four agents: `Artemis` (Haiku, read-only search), `Hermes` (Haik
 
 claudetto serves `get_goal`, `set_goal`, `pause_goal` and `clear_goal` to the model and withdraws Claude Code's own goal tools, which a server gate withholds from many sessions. `clear_goal` ends a goal that is met and takes the condition plus the checks the model ran; claudetto refuses it when the last check failed or no tool result backs it, and shows the user what the model claimed. `set_goal` and `clear_goal` take effect when the turn ends, because Claude Code cannot run a goal command mid-turn. `/goal <condition>` warns when the condition names a path that does not exist, and the goal still starts. Two blocks before the stop cap (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`, 8 by default) the model's feedback names the cap, since the goal pauses at it. claudetto cannot raise the cap or change the evaluator.
 
+## Pre-Decide
+
+With `TYPESAFE_API_KEY` set in the environment, each prompt a person types is rated by TypeSafe Jev before the model reads it, and code turns the ratings into notes beside the prompt (the notes are in the model's context and not in the transcript). Without the key the step is off and no text leaves the machine. The prompt goes to `api.typesafe.ai` only after the credential check has passed.
+
+| Statement Jev rates | A rating of 0.7 or above adds |
+| --- | --- |
+| The prompt asks whether an idea or change is good, and does not ask for the change | Give the verdict first with the file or line that settles it, and edit nothing |
+| The prompt states a specific project fact as settled that the files could contradict | Check each fact against the files and say so where they differ |
+
+A rating at or below 0.3 is no and a rating between is unsettled; only a yes adds a note. A Jev call that fails (no reply, no answer in 2.5 s, a non-2xx status, a bad body) is an error, not a no: the same statements go to Haiku 5.5 at high effort through `$.model.complete`, and when that fails too the prompt passes unchanged. The model and effort are the `deciderModel` and `deciderEffort` settings. The wording lives in `hooks/prompt/questions.ts`. See ADR-0202.
+
 ## Settings Defaults
 
 At a session start, claudetto fills defaults into the user settings file, once per set of defaults. It writes a key only when you left it unset, and adds only the list entries that are missing, so a value you chose stays. It logs one line naming what it changed.

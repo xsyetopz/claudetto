@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0202
 date: recorded in openspec/changes/archive/2026-11-09-release-2-1-319/design.md:154 (day of decision not recorded)
 ---
 

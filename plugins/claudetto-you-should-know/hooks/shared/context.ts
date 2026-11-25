@@ -29,6 +29,8 @@ export interface Ctx {
 	readonly idle: Map<string, Watched>;
 	/** Notes already sent along with a prompt. */
 	readonly autoSent: Set<string>;
+	/** The tail of the main agent's reply text since each session's note was shown, for the recheck. */
+	readonly since: Map<string, string>;
 }
 
 export const newCtx = (): Ctx => ({
@@ -42,5 +44,6 @@ export const newCtx = (): Ctx => ({
 	rendered: new Set(),
 	bridge: new Set(),
 	idle: new Map(),
-	autoSent: new Set()
+	autoSent: new Set(),
+	since: new Map()
 });

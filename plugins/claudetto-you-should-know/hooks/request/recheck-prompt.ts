@@ -1,5 +1,6 @@
 /** The recheck prompt: asks whether a shown note still holds, and the strict reading of its one-word answer. */
 
+import type { Statement } from "../judge/judge";
 import { SIDE_REQUEST_FRAME } from "./prompt";
 
 export type Verdict = "keep" | "drop";
@@ -26,6 +27,17 @@ Answer DROP when something later makes the note untrue or no longer applicable. 
 <format>
 Reply with one word and nothing else: KEEP or DROP.
 </format>`;
+
+/**
+ * The recheck as a statement Jev rates, beside the fork prompt above: `note` is
+ * the shown note and `after` the reply text since. A yes drops the note; a no
+ * or an unsettled rating keeps it, as the fork's "cannot tell" does.
+ */
+export const NOTE_NO_LONGER_HOLDS: Statement = {
+	id: "note_no_longer_holds",
+	statement:
+		"`after` shows something that makes `note` untrue or no longer applicable, for example a fix that removes the problem `note` names, or a change that settles the choice it describes."
+};
 
 /** Reads the reply strictly: only `KEEP` or `DROP`, alone, counts; anything else is `undefined`. */
 export function parseVerdict(text: string): Verdict | undefined {

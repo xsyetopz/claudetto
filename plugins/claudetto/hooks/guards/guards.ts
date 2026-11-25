@@ -14,7 +14,7 @@ export const registerGuards = (on: On, options: PluginOptions = {}): void => {
 	registerDenial(on);
 	registerMemory(on, options);
 	registerRedact(on);
-	registerPromptSecrets(on);
+	registerPromptSecrets(on, options);
 	// Before the shell guard: a hook registered earlier sees the command as the model wrote it.
 	registerNotes(on);
 	registerInplace(on);

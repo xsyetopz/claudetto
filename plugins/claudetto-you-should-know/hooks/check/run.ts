@@ -68,6 +68,8 @@ async function accept(
 		}
 	});
 	ctx.promptsSince.delete(at.id);
+	// the recheck judges only what happened after this note was shown
+	ctx.since.delete(at.id);
 	$.ui.invalidate("ui.render");
 	return "shown";
 }

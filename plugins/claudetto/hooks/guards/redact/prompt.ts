@@ -1,5 +1,6 @@
-import type { On } from "claude-code";
+import type { On, PluginOptions } from "claude-code";
 
+import { withNotes } from "../../prompt/decide";
 import { fault } from "../../shared/fault";
 import { maskFor, shapesOnly } from "./redact";
 
@@ -46,7 +47,10 @@ export const holdsSecret = (
  * before it renders. Prompts from plugins, tasks and peers pass, as nobody
  * pasted them.
  */
-export function registerPromptSecrets(on: On): void {
+export function registerPromptSecrets(
+	on: On,
+	options: PluginOptions = {}
+): void {
 	let held: string | undefined;
 	on("prompt.submit", async ($, e, next) => {
 		if (!TYPED.has(e.origin.kind)) {
@@ -54,11 +58,14 @@ export function registerPromptSecrets(on: On): void {
 		}
 		const again = held === e.text;
 		held = undefined;
-		if (again || !holdsSecret(e.text, await maskFor($, e.text))) {
+		if (again) {
 			return next(e);
 		}
-		held = e.text;
-		return { drop: HELD };
+		if (holdsSecret(e.text, await maskFor($, e.text))) {
+			held = e.text;
+			return { drop: HELD };
+		}
+		return next(await withNotes($, e, options));
 	}).catch(($, e, next) => {
 		fault($, "prompt secret check", next.error);
 		if (next.called || held === e.text || !holdsSecret(e.text, (t) => t)) {

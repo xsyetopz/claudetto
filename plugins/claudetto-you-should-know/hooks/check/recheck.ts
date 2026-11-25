@@ -2,7 +2,12 @@
 
 import type { EngineInterface } from "claude-code";
 
-import { parseVerdict, recheckPrompt } from "../request/recheck-prompt";
+import { rate, read } from "../judge/judge";
+import {
+	NOTE_NO_LONGER_HOLDS,
+	parseVerdict,
+	recheckPrompt
+} from "../request/recheck-prompt";
 import { isSameShowing, type OpenView, rowOf, withRow } from "../session/rows";
 import type { Ctx } from "../shared/context";
 import { fault, swallow } from "../shared/fault";
@@ -44,12 +49,32 @@ async function withdraw(
 	return true;
 }
 
-/** Asks the fork about `offer`; any fault or unclear answer keeps it (fail open). */
+/**
+ * Asks whether `offer` still holds; any fault or unclear answer keeps it (fail
+ * open). With `TYPESAFE_API_KEY` set, Jev rates the note against the reply text
+ * since it was shown (Haiku only when Jev fails); a yes drops it. Without the
+ * key the fork reads the whole session, as before.
+ */
 async function verdictOn(
 	$: EngineInterface,
-	offer: Extract<OpenView, { kind: "offer" }>
+	id: string,
+	offer: Extract<OpenView, { kind: "offer" }>,
+	ctx: Ctx
 ): Promise<"keep" | "drop"> {
 	try {
+		const after = ctx.since.get(id) ?? "";
+		const ratings = await rate($, "recheck", {
+			statements: [NOTE_NO_LONGER_HOLDS],
+			state: {
+				note: `${offer.line}${offer.explanation === undefined ? "" : `\n${offer.explanation}`}`,
+				after
+			}
+		});
+		if (ratings !== undefined) {
+			return read(ratings[NOTE_NO_LONGER_HOLDS.id] ?? 0.5) === "yes"
+				? "drop"
+				: "keep";
+		}
 		const reply = await $.model.fork({
 			prompt: recheckPrompt(offer.line, offer.explanation)
 		});
@@ -70,14 +95,15 @@ async function verdictOn(
 /** Rechecks the untouched offer of `turnId`; never throws. */
 export async function runRecheck(
 	$: EngineInterface,
-	at: RecheckAt
+	at: RecheckAt,
+	ctx: Ctx
 ): Promise<void> {
 	const offer = await untouchedOffer($, at.id, at.turnId);
 	if (offer === undefined) {
 		return;
 	}
 	const started = Date.now();
-	if ((await verdictOn($, offer)) !== "drop") {
+	if ((await verdictOn($, at.id, offer, ctx)) !== "drop") {
 		return;
 	}
 	if (await withdraw($, at.id, offer)) {
@@ -97,7 +123,7 @@ export function startRecheck(
 	}
 	ctx.checking.set(
 		at.id,
-		runRecheck($, at)
+		runRecheck($, at, ctx)
 			.catch(swallow($, "recheck"))
 			.finally(() => {
 				ctx.checking.delete(at.id);

@@ -40,6 +40,18 @@
 			"title": "claudetto's git instructions",
 			"description": "Adds a short git block with the attribution lines from settings to the Bash tool, in place of Claude Code's own, which setup turns off with includeGitInstructions false. Turned off here, set includeGitInstructions to true in settings to get the builtin block back.",
 			"default": true
+		},
+		"deciderModel": {
+			"type": "string",
+			"title": "Fallback model for the pre-decide step",
+			"description": "Rates the prompt when the TypeSafe Jev call fails. The step runs only when TYPESAFE_API_KEY is set.",
+			"default": "claude-haiku-5-5"
+		},
+		"deciderEffort": {
+			"type": "string",
+			"title": "Fallback model effort",
+			"description": "One of low, medium, high, xhigh, max.",
+			"default": "high"
 		}
 	}
 }

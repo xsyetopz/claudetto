@@ -197,6 +197,26 @@ async function watchEnd(
 	}
 }
 
+/** The most reply text kept per session for a recheck; the tail holds what happened last. */
+export const SINCE_MAX = 3000;
+
+/** Adds the step's reply text to the session's digest, keeping the tail; best effort. */
+async function remember(
+	$: EngineInterface,
+	ctx: Ctx,
+	text: string
+): Promise<void> {
+	try {
+		if (text === "") {
+			return;
+		}
+		const id = await $.session.id();
+		ctx.since.set(id, `${ctx.since.get(id) ?? ""}\n${text}`.slice(-SINCE_MAX));
+	} catch (error) {
+		swallow($, "turn.step digest")(error);
+	}
+}
+
 export function registerStep(on: On, ctx: Ctx): void {
 	on("turn.complete", ($, e, next) => {
 		if (e.agentId === undefined) {
@@ -209,6 +229,15 @@ export function registerStep(on: On, ctx: Ctx): void {
 			return yield* next(e);
 		}
 		void watchStep($, e, ctx);
-		return yield* next(e);
+		const stream = next(e);
+		let text = "";
+		for await (const chunk of stream) {
+			if (chunk.kind === "text") {
+				text += chunk.text;
+			}
+			yield chunk;
+		}
+		await remember($, ctx, text);
+		return stream.result;
 	});
 }
