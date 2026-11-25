@@ -43,6 +43,24 @@ async function homeOf($: EngineInterface): Promise<string | undefined> {
 	return home;
 }
 
+/** Whether the session runs in home, so a relative path is read from there; false after a failed read, which is logged. */
+async function runsInHome(
+	$: EngineInterface,
+	home: string | undefined
+): Promise<boolean> {
+	if (home === undefined) {
+		return false;
+	}
+	try {
+		return (
+			(await $.session.cwd()).replace(/\/+$/u, "") === home.replace(/\/+$/u, "")
+		);
+	} catch (error) {
+		fault($, "wall cwd", error);
+		return false;
+	}
+}
+
 /** Whether the command moves to home first (`cd`, `cd ~`, `cd $HOME`), so a relative glob is read from there. */
 const movesHome = (command: string, home: string | undefined): boolean => {
 	const target = [
@@ -196,7 +214,7 @@ export function registerWall(on: On, options: PluginOptions = {}): void {
 		}
 		// Without a home the `~/` and `$HOME/` spellings and globs still match; only the expanded one is lost.
 		const home = await homeOf($);
-		const atHome = movesHome(text, home);
+		const atHome = movesHome(text, home) || (await runsInHome($, home));
 		// After a move to home, a plain relative word names a folder of home as much as a glob does.
 		const reach = atHome
 			? text
