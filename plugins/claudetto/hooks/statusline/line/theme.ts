@@ -19,7 +19,11 @@ export type ThemeKey =
 	| "autoAccept"
 	| "fastMode"
 	| "rate_limit_fill"
-	| "rate_limit_empty";
+	| "rate_limit_empty"
+	| "promptBorder"
+	| "cyan_FOR_SUBAGENTS_ONLY"
+	| "green_FOR_SUBAGENTS_ONLY"
+	| "purple_FOR_SUBAGENTS_ONLY";
 
 /** The built-in theme names claude 2.1.329 accepts for `theme`, besides `auto`. */
 export type ThemeName =
@@ -43,7 +47,11 @@ const DARK: Palette = {
 	autoAccept: "rgb(175,135,255)",
 	fastMode: "rgb(255,120,20)",
 	rate_limit_fill: "rgb(177,185,249)",
-	rate_limit_empty: "rgb(80,83,112)"
+	rate_limit_empty: "rgb(80,83,112)",
+	promptBorder: "rgb(136,136,136)",
+	cyan_FOR_SUBAGENTS_ONLY: "rgb(8,145,178)",
+	green_FOR_SUBAGENTS_ONLY: "rgb(22,163,74)",
+	purple_FOR_SUBAGENTS_ONLY: "rgb(130,125,189)"
 };
 
 const LIGHT: Palette = {
@@ -57,7 +65,11 @@ const LIGHT: Palette = {
 	autoAccept: "rgb(135,0,255)",
 	fastMode: "rgb(255,106,0)",
 	rate_limit_fill: "rgb(87,105,247)",
-	rate_limit_empty: "rgb(213,218,253)"
+	rate_limit_empty: "rgb(213,218,253)",
+	promptBorder: "rgb(138,138,138)",
+	cyan_FOR_SUBAGENTS_ONLY: "rgb(8,145,178)",
+	green_FOR_SUBAGENTS_ONLY: "rgb(22,163,74)",
+	purple_FOR_SUBAGENTS_ONLY: "rgb(130,125,189)"
 };
 
 const DARK_DALTONIZED: Palette = {
@@ -71,7 +83,11 @@ const DARK_DALTONIZED: Palette = {
 	autoAccept: "rgb(175,135,255)",
 	fastMode: "rgb(255,120,20)",
 	rate_limit_fill: "rgb(153,204,255)",
-	rate_limit_empty: "rgb(69,92,115)"
+	rate_limit_empty: "rgb(69,92,115)",
+	promptBorder: "rgb(136,136,136)",
+	cyan_FOR_SUBAGENTS_ONLY: "rgb(102,204,204)",
+	green_FOR_SUBAGENTS_ONLY: "rgb(102,255,102)",
+	purple_FOR_SUBAGENTS_ONLY: "rgb(178,102,255)"
 };
 
 const LIGHT_DALTONIZED: Palette = {
@@ -85,7 +101,11 @@ const LIGHT_DALTONIZED: Palette = {
 	autoAccept: "rgb(135,0,255)",
 	fastMode: "rgb(255,106,0)",
 	rate_limit_fill: "rgb(51,102,255)",
-	rate_limit_empty: "rgb(204,217,255)"
+	rate_limit_empty: "rgb(204,217,255)",
+	promptBorder: "rgb(138,138,138)",
+	cyan_FOR_SUBAGENTS_ONLY: "rgb(0,178,178)",
+	green_FOR_SUBAGENTS_ONLY: "rgb(0,204,0)",
+	purple_FOR_SUBAGENTS_ONLY: "rgb(128,0,128)"
 };
 
 const DARK_ANSI: Palette = {
@@ -99,7 +119,11 @@ const DARK_ANSI: Palette = {
 	autoAccept: "ansi:magentaBright",
 	fastMode: "ansi:redBright",
 	rate_limit_fill: "ansi:yellow",
-	rate_limit_empty: "ansi:blackBright"
+	rate_limit_empty: "ansi:blackBright",
+	promptBorder: "ansi:white",
+	cyan_FOR_SUBAGENTS_ONLY: "ansi:cyanBright",
+	green_FOR_SUBAGENTS_ONLY: "ansi:greenBright",
+	purple_FOR_SUBAGENTS_ONLY: "ansi:magentaBright"
 };
 
 const LIGHT_ANSI: Palette = {
@@ -113,7 +137,11 @@ const LIGHT_ANSI: Palette = {
 	autoAccept: "ansi:magenta",
 	fastMode: "ansi:red",
 	rate_limit_fill: "ansi:blue",
-	rate_limit_empty: "ansi:white"
+	rate_limit_empty: "ansi:white",
+	promptBorder: "ansi:white",
+	cyan_FOR_SUBAGENTS_ONLY: "ansi:cyan",
+	green_FOR_SUBAGENTS_ONLY: "ansi:green",
+	purple_FOR_SUBAGENTS_ONLY: "ansi:magenta"
 };
 
 const PALETTES: Readonly<Record<ThemeName, Palette>> = {
@@ -136,6 +164,9 @@ const ANSI_OF: Readonly<Record<ThemeName, ThemeName>> = {
 };
 
 const isTheme = (name: string): name is ThemeName => name in PALETTES;
+
+/** Whether `name` is a theme key the line has a colour for, as /context names its rows' colours. */
+export const isThemeKey = (name: string): name is ThemeKey => name in DARK;
 
 type Env = Readonly<Record<string, string | undefined>>;
 

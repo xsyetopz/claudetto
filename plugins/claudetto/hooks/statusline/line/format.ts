@@ -1,4 +1,4 @@
-import type { Paint } from "./color";
+import type { Paint, Style } from "./color";
 
 /** Seconds in the 5 hour window of `rate_limits.five_hour`. */
 export const FIVE_HOUR_S = 18_000;
@@ -67,15 +67,61 @@ export const wholePercent = (n: number): number =>
 	n < 100 ? Math.min(Math.round(n), 99) : Math.round(n);
 
 /**
- * A bar of `cells` cells as Claude Code's `/usage` draws one: filled cells in
- * the theme's `rate_limit_fill`, the rest in `rate_limit_empty`.
+ * `cells` split by `weights` by largest remainder, so the parts always sum
+ * to `cells` and each part is within one cell of its exact share.
  */
-export const bar = (percent: number, paint: Paint, cells = CELLS): string => {
+export const apportion = (
+	weights: readonly number[],
+	cells: number
+): number[] => {
+	const total = weights.reduce((sum, w) => sum + Math.max(0, w), 0);
+	if (total <= 0 || cells <= 0) {
+		return weights.map(() => 0);
+	}
+	const exact = weights.map((w) => (Math.max(0, w) / total) * cells);
+	const parts = exact.map((n) => Math.floor(n));
+	const left = cells - parts.reduce((sum, n) => sum + n, 0);
+	const order = exact
+		.map((n, i) => ({ i, rest: n - Math.floor(n) }))
+		.toSorted((a, b) => b.rest - a.rest);
+	for (const { i } of order.slice(0, left)) {
+		parts[i] = (parts[i] ?? 0) + 1;
+	}
+	return parts;
+};
+
+/** One coloured part of a bar: its share of the filled cells and its style. */
+export interface Slice {
+	readonly weight: number;
+	readonly style: Style;
+}
+
+/**
+ * A bar of `cells` cells as Claude Code's `/usage` draws one: the filled
+ * cells in the theme's `rate_limit_fill`, or split among `slices` by
+ * weight when given, and the rest in `rate_limit_empty`.
+ */
+export const bar = (
+	percent: number,
+	paint: Paint,
+	cells = CELLS,
+	slices: readonly Slice[] = []
+): string => {
 	const filled = Math.min(
 		cells,
 		Math.max(0, Math.round((percent / 100) * cells))
 	);
-	const full = filled > 0 ? paint.fill("█".repeat(filled)) : "";
+	const parts =
+		slices.length === 0
+			? [{ style: paint.fill, count: filled }]
+			: apportion(
+					slices.map((slice) => slice.weight),
+					filled
+				).map((count, i) => ({ style: slices[i]?.style ?? paint.fill, count }));
+	const full = parts
+		.filter(({ count }) => count > 0)
+		.map(({ style, count }) => style("█".repeat(count)))
+		.join("");
 	const rest = filled < cells ? paint.empty("░".repeat(cells - filled)) : "";
 	return `${full}${rest}`;
 };
@@ -87,35 +133,60 @@ const GIB = 1024 ** 3;
 export const bytes = (n: number): string =>
 	n < GIB ? `${Math.round(n / MIB)}M` : `${(n / GIB).toFixed(1)}G`;
 
+/** Within this many points of the expected use, a window is on pace (CodexBar's `onTrack` band). */
+const ON_PACE_POINTS = 2;
+/** Past this many points off pace, a deficit draws as an error (CodexBar's `farAhead` stage). */
+export const FAR_POINTS = 12;
+
+/** A window's pace in CodexBar's terms (steipete/CodexBar `UsagePace.swift`). */
+export interface Pace {
+	/** The percent used by now at an even rate over the window. */
+	readonly expected: number;
+	/** Used minus expected, in points: above 0 is a deficit, below a reserve. */
+	readonly delta: number;
+	/** `deficit`, `reserve`, or `on` within two points (rounded to 0 included). */
+	readonly stage: "deficit" | "reserve" | "on";
+	/** The epoch second use reaches 100 percent at the rate so far; set only when that comes before the reset. */
+	readonly runOutAt: number | undefined;
+}
+
+/** The side of the expected use a delta off pace lies on. */
+const stageOf = (delta: number): "deficit" | "reserve" =>
+	delta > 0 ? "deficit" : "reserve";
+
 /**
- * The pace of a window at `nowS`: `ratio` is the used percent over the elapsed
- * percent of the window (1 is even use, above 1 runs ahead), `elapsed` the
- * elapsed percent, and `runOutAt` the epoch second the use reaches 100 percent
- * at this rate, set only when that comes before the reset. `undefined` while
- * the window is too young or `resets_at` lies outside it.
+ * The pace of a window at `nowS`, as CodexBar computes it: the expected use
+ * is the elapsed share of the window, the delta is the use above it, and the
+ * run-out time extends the rate so far. `undefined` while the window is too
+ * young for one request not to swing it, or `resets_at` lies outside it.
  */
 export const paceOf = (
 	used: number,
 	resetsAt: number,
 	nowS: number,
 	spanS: number
-):
-	| { ratio: number; elapsed: number; runOutAt: number | undefined }
-	| undefined => {
+): Pace | undefined => {
 	const left = resetsAt - nowS;
-	if (!(left >= 0 && left <= spanS)) {
+	if (!(left > 0 && left <= spanS)) {
 		return undefined;
 	}
-	const fraction = (spanS - left) / spanS;
-	if (fraction < PACE_MIN_FRACTION) {
+	const elapsedS = spanS - left;
+	if (elapsedS / spanS < PACE_MIN_FRACTION) {
 		return undefined;
 	}
-	const runsOut = used > 0 && used < 100 && used / fraction > 100;
+	const actual = Math.min(100, Math.max(0, used));
+	const expected = Math.min(100, Math.max(0, (elapsedS / spanS) * 100));
+	const delta = actual - expected;
+	const near = Math.abs(delta) <= ON_PACE_POINTS || Math.round(delta) === 0;
+	const stage = near ? "on" : stageOf(delta);
+	const untilEmptyS =
+		actual > 0
+			? ((100 - actual) * elapsedS) / actual
+			: Number.POSITIVE_INFINITY;
 	return {
-		ratio: used / (100 * fraction),
-		elapsed: 100 * fraction,
-		runOutAt: runsOut
-			? nowS + ((100 - used) * fraction * spanS) / used
-			: undefined
+		expected,
+		delta,
+		stage,
+		runOutAt: untilEmptyS < left ? nowS + untilEmptyS : undefined
 	};
 };

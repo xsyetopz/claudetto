@@ -48,8 +48,8 @@ export const modelText = ({ input, paint }: Ctx): Text => {
 	);
 };
 
-/** `ctx ████░░░░░░ 40% 80k/200k` from `context_window`. */
-export const contextText = ({ input, paint }: Ctx): Text => {
+/** `ctx ████░░░░░░ 40% 80k/200k` from `context_window`, its filled cells split by /context's rows in their colours once a hook recorded them. */
+export const contextText = ({ input, paint, state }: Ctx): Text => {
 	const context = sub(input, "context_window");
 	const used = num(context?.["used_percentage"]);
 	if (used === undefined) {
@@ -58,7 +58,15 @@ export const contextText = ({ input, paint }: Ctx): Text => {
 	const size = num(context?.["context_window_size"]);
 	return words(
 		paint.dim("ctx"),
-		bar(used, paint),
+		bar(
+			used,
+			paint,
+			undefined,
+			(state?.context ?? []).map((part) => ({
+				weight: part.tokens,
+				style: paint.tone(part.color)
+			}))
+		),
 		paint.level(used)(`${wholePercent(used)}%`),
 		size !== undefined &&
 			paint.dim(`${thousands((used / 100) * size)}/${windowText(size)}`)

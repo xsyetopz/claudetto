@@ -22,7 +22,8 @@ import { registerRead } from "./read/tool";
 import { registerBaseUrl } from "./settings/base-url";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
-import { registerLive } from "./statusline/live";
+import { newLive, registerLive } from "./statusline/live";
+import { registerUsage } from "./statusline/usage/register";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -48,7 +49,9 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerSpawn(on);
 	registerOffer(on);
 	registerGoal(on);
-	registerLive(on);
+	const live = newLive();
+	registerLive(on, live);
+	registerUsage(on, live);
 	registerStatuslineCommand(on);
 	registerWeb(on);
 	registerCompose(on);

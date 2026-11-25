@@ -35,6 +35,28 @@ export interface Task {
 	readonly active?: string;
 }
 
+/** One row of the context breakdown the window holds: its /context colour key and its tokens. */
+export interface ContextPart {
+	readonly color: string;
+	readonly tokens: number;
+}
+
+/**
+ * The use of a rate-limit window when this session first saw it, so the line
+ * can tell earlier use from the use since. A window that resets during the
+ * session starts over at 0: all of the new window came after the start.
+ */
+export interface Baseline {
+	/** The window's name in `rate_limits`, as `five_hour`. */
+	readonly kind: string;
+	/** Percent used at `since`. */
+	readonly before: number;
+	/** Epoch seconds of the window's reset as last seen. */
+	readonly resetsAt?: number;
+	/** Epoch milliseconds of the first reading. */
+	readonly since: number;
+}
+
 /**
  * What claudetto's hooks observed in one session, written to a small file the
  * status line command reads: stdin carries none of it.
@@ -51,6 +73,10 @@ export interface LiveState {
 	/** The lead's last tool call, as `Read main.ts`. */
 	readonly doing?: string;
 	readonly tasks: readonly Task[];
+	/** The rows of the context window by /context's local estimate at the last measure, `used` rows only. */
+	readonly context?: readonly ContextPart[];
+	/** The rate-limit windows as the session first saw them. */
+	readonly limits?: readonly Baseline[];
 }
 
 /** The state of a session that has seen no event yet. */
@@ -120,6 +146,32 @@ const taskOf = (value: unknown): Task | undefined => {
 	return { id, subject, status, ...(active === undefined ? {} : { active }) };
 };
 
+const partOf = (value: unknown): ContextPart | undefined => {
+	const row = rec(value);
+	const color = str(row?.["color"]);
+	const tokens = num(row?.["tokens"]);
+	return color === undefined || tokens === undefined
+		? undefined
+		: { color, tokens };
+};
+
+const baselineOf = (value: unknown): Baseline | undefined => {
+	const row = rec(value);
+	const kind = str(row?.["kind"]);
+	const before = num(row?.["before"]);
+	const since = num(row?.["since"]);
+	if (kind === undefined || before === undefined || since === undefined) {
+		return undefined;
+	}
+	const resetsAt = num(row?.["resetsAt"]);
+	return {
+		kind,
+		before,
+		since,
+		...(resetsAt === undefined ? {} : { resetsAt })
+	};
+};
+
 const waitingOf = (kind: string | undefined, tool: string | undefined) =>
 	isKind(kind)
 		? { waiting: { kind, ...(tool === undefined ? {} : { tool }) } }
@@ -139,6 +191,20 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 		tools: num(found["tools"]) ?? 0,
 		tasks: listOf(found["tasks"]).flatMap((item) => taskOf(item) ?? []),
 		...(doing === undefined ? {} : { doing }),
+		...(Array.isArray(found["context"])
+			? {
+					context: listOf(found["context"]).flatMap(
+						(item) => partOf(item) ?? []
+					)
+				}
+			: {}),
+		...(Array.isArray(found["limits"])
+			? {
+					limits: listOf(found["limits"]).flatMap(
+						(item) => baselineOf(item) ?? []
+					)
+				}
+			: {}),
 		...waitingOf(str(found["waitingKind"]), str(found["waitingTool"]))
 	};
 };
@@ -153,5 +219,7 @@ export const writeState = (state: LiveState): string =>
 		finished: state.finished,
 		tools: state.tools,
 		doing: state.doing,
-		tasks: state.tasks
+		tasks: state.tasks,
+		context: state.context,
+		limits: state.limits
 	});
