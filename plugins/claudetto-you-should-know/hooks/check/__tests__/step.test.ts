@@ -1,6 +1,6 @@
 import type { RenderSurface } from "claude-code";
 import type { Engine } from "claude-code/testing";
-import { describe, expect, mock, test } from "claude-code/testing";
+import { expect, mock, test } from "claude-code/testing";
 
 import {
 	type Box,
@@ -16,7 +16,6 @@ import {
 	submitTyped,
 	USAGE
 } from "../../__tests__/testkit";
-import { isCheckStep } from "../step";
 
 type On = Parameters<typeof offered>[1];
 
@@ -134,21 +133,24 @@ test(
 	}
 );
 
-describe("isCheckStep", () => {
-	test("never fires on the first step", () => {
-		expect(isCheckStep(0)).toBe(false);
-	});
+test(
+	"a turn starts no check on its first step and checks again as it runs on",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const counted = await session($, on, ["terminal"], ["terminal"]);
 
-	test("fires first on step 3, then on every sixth step", () => {
-		expect(isCheckStep(3)).toBe(true);
-		expect([1, 2, 4, 5, 7, 9, 11].some((n) => isCheckStep(n))).toBe(false);
-		expect([6, 12, 18].every((n) => isCheckStep(n))).toBe(true);
-	});
+		// Act
+		await step($, "t1", 0);
+		const first = counted.forks;
+		await step($, "t2", 1);
+		await step($, "t3", 2);
+		const early = counted.forks;
+		await step($, "t4", 3);
 
-	test("fires only on steps 3, 6 and 12 of 0..13", () => {
-		const fired = Array.from({ length: 14 }, (_, i) => i).filter((n) =>
-			isCheckStep(n)
-		);
-		expect(fired).toEqual([3, 6, 12]);
-	});
-});
+		// Assert
+		expect(first).toBe(0);
+		expect(early).toBe(0);
+		expect(counted.forks).toBe(1);
+	}
+);

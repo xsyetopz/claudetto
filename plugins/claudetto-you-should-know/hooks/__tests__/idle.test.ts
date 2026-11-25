@@ -3,8 +3,6 @@ import { expect, test } from "claude-code/testing";
 import { fresh, IDLE, later, ON, send, withNote } from "./idling";
 import { offered, settle } from "./testkit";
 
-type Kept = Map<string, unknown>;
-
 test(
 	"a narrow terminal that cannot hold the five-label row starts no idle clock",
 	IDLE,
@@ -65,20 +63,7 @@ for (const [name, patch] of [
 test("debug rows stop the idle clock", IDLE, async ($, on) => {
 	// Arrange
 	const box = fresh();
-	const checks = [
-		{
-			number: 1,
-			step: 6,
-			outcome: "none",
-			latencyMs: 1500,
-			at: 1_700_000_000_000
-		}
-	];
-	const kept: Kept = new Map([
-		["sessions", [{ id: "s1", checked: 1, checks }]]
-	]);
 	await offered($, on, box, {
-		kept,
 		env: { ...ON, CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG: "1" }
 	});
 

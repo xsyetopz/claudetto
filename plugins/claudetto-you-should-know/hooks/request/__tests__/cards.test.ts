@@ -1,89 +1,28 @@
-import { describe, expect, test } from "claude-code/testing";
+import { expect, test } from "claude-code/testing";
 
 import {
-	type Box,
+	type Band,
+	freshBox,
 	MOUNT,
 	offered,
 	PLUGIN,
 	PROPS,
+	textOf,
 	untilShown
 } from "../../__tests__/testkit";
-import { parseExplanation } from "../cards";
 
-describe("parseExplanation", () => {
-	test("splits titled cards with a sketch and a caption", () => {
-		expect(
-			parseExplanation(
-				"**Order**\nTests run top to bottom.\n```\nA -> B\n```\nCaption here\n\n**Second**\nLead2"
-			)
-		).toEqual([
-			{
-				title: "Order",
-				lead: "Tests run top to bottom.",
-				sketch: ["A -> B"],
-				caption: "Caption here"
-			},
-			{ title: "Second", lead: "Lead2", sketch: [], caption: "" }
-		]);
-	});
-
-	test("returns no card for empty text", () => {
-		expect(parseExplanation("")).toEqual([]);
-	});
-
-	test("clips a long caption at a word with an ellipsis", () => {
-		const long = `**T**\n${"word ".repeat(1500)}`;
-		const cards = parseExplanation(long);
-		const lead = cards[0]?.lead ?? "";
-		expect(lead.length).toBeLessThanOrEqual(4001);
-		expect(lead.endsWith("…")).toBe(true);
-	});
-
-	test("starts a new card on a second fence and drops blank prose", () => {
-		const cards = parseExplanation("```\na\n```\n\n```\nb\n```");
-		expect(cards.length).toBe(2);
-	});
-
-	test("keeps at most 12 sketch lines and a title of a card with a line feed", () => {
-		const text = `**T**\n\`\`\`\n${Array.from({ length: 20 }, (_, i) => `r${i}`).join("\n")}\n\`\`\``;
-		expect(parseExplanation(text)[0]?.sketch.length).toBe(12);
-	});
-	test("a title over its limit ends in an ellipsis at a word boundary", () => {
-		// Arrange
-		const text = `**${"word ".repeat(40).trim()}**\nbody`;
-
-		// Act
-		const title = parseExplanation(text)[0]?.title ?? "";
-
-		// Assert
-		expect(title.endsWith("…")).toBe(true);
-		expect(title.length).toBeLessThanOrEqual(120);
-		expect(title.slice(0, -1).endsWith("word")).toBe(true);
-	});
-
-	test("a new fence starts a new card and an escape sequence in a sketch line is removed", () => {
-		// Arrange
-		const text = "**A**\n```\nx\u001B[31my\n```\n```\nb\n```";
-
-		// Act
-		const cards = parseExplanation(text);
-
-		// Assert
-		expect(cards.map((c) => c.sketch)).toEqual([["xy"], ["b"]]);
-	});
-});
-
-const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
 const WIDE = "W".repeat(150);
 const REPLY = `learn: Tests run in order.\ntag: You should know\nexplain: **Order**\nThey run one after another.\n\`\`\`\nA -> B\n${WIDE}\n\`\`\`\nCaption here`;
 
+/** Shows the offer for `reply` and opens its explanation card. */
 const open = async (
 	$: Parameters<typeof offered>[0],
 	on: Parameters<typeof offered>[1],
+	reply: string,
 	props?: object
-) => {
-	const band = await offered($, on, fresh(), {
-		replies: [REPLY],
+): Promise<Band> => {
+	const band = await offered($, on, freshBox(), {
+		replies: [reply],
 		props: { ...PROPS, ...props }
 	});
 	await band.press({ key: "Learn more" });
@@ -96,10 +35,10 @@ test(
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const band = await open($, on);
+		const band = await open($, on, REPLY);
 
 		// Act
-		const drawn = JSON.stringify(await band.drawn());
+		const drawn = await textOf(band);
 
 		// Assert
 		expect(drawn).toContain("Code");
@@ -109,14 +48,14 @@ test(
 );
 
 test(
-	"a sketch line wider than the body minus the inset ends in an ellipsis",
+	"a sketch line wider than the body ends in an ellipsis",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const band = await open($, on, { bodyColumns: 40 });
+		const band = await open($, on, REPLY, { bodyColumns: 40 });
 
 		// Act
-		const drawn = JSON.stringify(await band.drawn());
+		const drawn = await textOf(band);
 
 		// Assert
 		expect(drawn).not.toContain(WIDE);
@@ -125,11 +64,70 @@ test(
 );
 
 test(
+	"an explanation with two titled parts draws both",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const band = await open(
+			$,
+			on,
+			"learn: x\nexplain: **Order**\nTests run top to bottom.\n\n**Second**\nLead2"
+		);
+
+		// Act
+		const drawn = await textOf(band);
+
+		// Assert
+		expect(drawn).toContain("Order");
+		expect(drawn).toContain("Tests run top to bottom.");
+		expect(drawn).toContain("Second");
+		expect(drawn).toContain("Lead2");
+	}
+);
+
+test(
+	"a title that is too long is cut short with an ellipsis",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const title = "word ".repeat(40).trim();
+		const band = await open($, on, `learn: x\nexplain: **${title}**\nbody`);
+
+		// Act
+		const drawn = await textOf(band);
+
+		// Assert
+		expect(drawn).not.toContain(title);
+		expect(drawn).toContain("…");
+	}
+);
+
+test(
+	"an escape sequence in a sketch line is not drawn",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const band = await open(
+			$,
+			on,
+			"learn: x\nexplain: **A**\n```\nx\u001B[31my\n```"
+		);
+
+		// Act
+		const drawn = await textOf(band);
+
+		// Assert
+		expect(drawn).toContain('"source":"xy"');
+		expect(drawn).not.toContain("[31m");
+	}
+);
+
+test(
 	"a survey keeps the sketch card and draws no button",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const band = await open($, on);
+		const band = await open($, on, REPLY);
 		const survey = await $.ui.mount({
 			plugin: PLUGIN,
 			surface: "terminal",
@@ -138,7 +136,7 @@ test(
 		});
 
 		// Act
-		const drawn = JSON.stringify(await survey.drawn());
+		const drawn = await textOf(survey);
 
 		// Assert
 		expect(await band.find({ key: "Understood" })).toBeDefined();

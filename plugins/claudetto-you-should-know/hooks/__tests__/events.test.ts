@@ -3,29 +3,25 @@ import { expect, test } from "claude-code/testing";
 
 import {
 	type Box,
+	checkIn,
+	freshBox,
+	isOffered,
 	MOUNT,
 	offered,
 	pause,
 	settle,
-	until,
-	viewKind
+	until
 } from "./testkit";
 
-const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
 const OFF_TEXT = "/plugin disable claudetto-you-should-know";
-
-type Kept = Map<string, unknown>;
-
-const view = viewKind;
 
 /** Presses Disable twice so the off view is up and the command sits in the prompt box. */
 const armed = async (
 	$: Engine,
 	on: Parameters<typeof offered>[1],
-	box: Box,
-	kept: Kept
+	box: Box
 ) => {
-	const band = await offered($, on, box, { kept });
+	const band = await offered($, on, box);
 	await band.press({ key: "Disable" });
 	await pause();
 	await band.press({ key: "Press again to disable" });
@@ -35,27 +31,27 @@ const armed = async (
 };
 
 test(
-	"turning off fills the command and shows the off view",
+	"turning off fills the command, draws no offer and holds back the next check",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
+		const box = freshBox();
+		const band = await armed($, on, box);
 
 		// Act
-		await armed($, on, box, kept);
+		await checkIn($, "t2");
 
 		// Assert
 		expect(box.filled).toEqual([OFF_TEXT]);
-		expect(view(kept)).toBe("off");
+		expect(await isOffered(band)).toBe(false);
+		expect(box.forks).toBe(1);
 	}
 );
 
-test("a typed disable takes the off view down", MOUNT, async ($, on) => {
+test("a typed disable lets the next check run", MOUNT, async ($, on) => {
 	// Arrange
-	const box = fresh();
-	const kept: Kept = new Map();
-	await armed($, on, box, kept);
+	const box = freshBox();
+	await armed($, on, box);
 
 	// Act
 	await $.prompt.submit({
@@ -64,19 +60,19 @@ test("a typed disable takes the off view down", MOUNT, async ($, on) => {
 		wait: false
 	});
 	await settle();
+	await checkIn($, "t2");
 
 	// Assert
-	expect(view(kept)).toBeUndefined();
+	expect(box.forks).toBe(2);
 });
 
 test(
-	"the next ordinary prompt takes an unconfirmed off view down too",
+	"the next ordinary prompt lets the next check run after an unconfirmed off",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
-		await armed($, on, box, kept);
+		const box = freshBox();
+		await armed($, on, box);
 
 		// Act
 		await $.prompt.submit({
@@ -85,21 +81,21 @@ test(
 			wait: false
 		});
 		await settle();
+		await checkIn($, "t2");
 
 		// Assert
-		expect(view(kept)).toBeUndefined();
+		expect(box.forks).toBe(2);
 	}
 );
 
 test(
-	"a plugin command typed by the person takes the off view down",
+	"a plugin command typed by the person lets the next check run",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
 		on("command.run", () => ({}));
-		const box = fresh();
-		const kept: Kept = new Map();
-		await armed($, on, box, kept);
+		const box = freshBox();
+		await armed($, on, box);
 
 		// Act
 		await $.command.run({
@@ -109,44 +105,56 @@ test(
 			presentation: { isFullscreen: false, columns: 80 }
 		});
 		await settle();
+		await checkIn($, "t2");
 
 		// Assert
-		expect(view(kept)).toBeUndefined();
+		expect(box.forks).toBe(2);
 	}
 );
 
-test("ending the session clears an open offer", MOUNT, async ($, on) => {
-	// Arrange
-	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
-	const kept: Kept = new Map();
-	await offered($, on, fresh(), { kept });
-	const before = view(kept);
+test(
+	"ending the session lets the next check run after an open offer",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
+		const box = freshBox();
+		await offered($, on, box);
+		await checkIn($, "t2");
+		const whileOpen = box.forks;
 
-	// Act
-	await $.session.end({
-		sessionId: "s1",
-		reason: "other",
-		resume: { id: "s1" }
-	});
+		// Act
+		await $.session.end({
+			sessionId: "s1",
+			reason: "other",
+			resume: { id: "s1" }
+		});
+		await checkIn($, "t3");
 
-	// Assert
-	expect(before).toBe("offer");
-	expect(view(kept)).toBeUndefined();
-});
+		// Assert
+		expect(whileOpen).toBe(1);
+		expect(box.forks).toBe(2);
+	}
+);
 
-test("ending the session clears an off view", MOUNT, async ($, on) => {
-	// Arrange
-	on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
-	const kept: Kept = new Map();
-	await armed($, on, fresh(), kept);
+test(
+	"ending the session lets the next check run after an off view",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		on("session.end", (_$, e) => ({ sessionId: e.sessionId }));
+		const box = freshBox();
+		await armed($, on, box);
 
-	// Act
-	await $.session.end({
-		sessionId: "s1",
-		reason: "other",
-		resume: { id: "s1" }
-	});
+		// Act
+		await $.session.end({
+			sessionId: "s1",
+			reason: "other",
+			resume: { id: "s1" }
+		});
+		await checkIn($, "t2");
 
-	// Assert
-	expect(view(kept)).toBeUndefined();
-});
+		// Assert
+		expect(box.forks).toBe(2);
+	}
+);
