@@ -403,3 +403,28 @@
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 351 pass, 0 fail; `just verify` exit 0.
   Source: reports/2026-11-24-research/turn2/raw.ts and capture.ts (request bodies per arm); the eval transcripts'
   sandbox_instructions and output_style_instructions attachment records.
+
+## Checks Beyond the Need
+
+- [x] **RISK-553** Prompt rules drive checks no grader or user needs, so claudetto takes more turns than vanilla.
+  Category: cost.
+  Cause: four rules read wider than their reason: a second run of any test that touches ordering, a run behind
+  every statement of what a tool does, removal of each scratch file under `$TMPDIR`, and a defect fix in a
+  script the task only runs.
+  Event: 2026-11-24, Haiku 5.5 high, `just eval claudetto`, run 2026-11-24T23-37-48-728Z: equal scores, with
+  harden-tests-report 15.7 turns against vanilla 7.7, frozen-tests-conflict 6.0 against 3.3, and
+  artifact-short-answer 2.7 against 1.0.
+  Consequence: more model and tool calls, and a higher cost than vanilla on short tasks.
+  Likelihood: 4. Impact: 2.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: the second run covers a test that reads the clock, a random source or shared state before a pass is
+  reported; a standard tool's documented behaviour needs no run; a scratch file under `$TMPDIR` stays; a script
+  the task only runs stays as it is even when it misreports (output-styles/claudetto.md, hooks/prompt/conduct.ts).
+  Trigger: a case with equal scores where claudetto takes 2 or more turns over vanilla.
+  Owner: cost.
+  Status: mitigated 2026-11-25: the four rules are narrowed; claudetto still takes more turns than vanilla.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto --case <case> --runs 6` on eight
+  cases: claudetto turns 64.5 -> 55.0 summed (harden-tests-report 15.7 -> 9.7, artifact-short-answer 2.7 -> 1.8,
+  background-check-fails 9.7 -> 8.3), vanilla 45.9; no case's score fell, and each is at or above vanilla.
+  Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 391 pass, 0 fail.
