@@ -122,8 +122,8 @@ describe("status line rows", () => {
 		expect(rows[1]).toBe(
 			"⌂ claudetto · ⎇ main · ⇄ #7 approved · work · ◔ 12m (api 4m) · +12 -3"
 		);
-		expect(rows[2]).toStartWith("5h █████░░░░░ 50% 1.0x ↻");
-		expect(rows[2]).toContain(" · 7d █░░░░░░░░░ 10% 0.2x ↻");
+		expect(rows[2]).toStartWith("5h █████░░░░░ 50% on pace ↻");
+		expect(rows[2]).toContain(" · 7d █░░░░░░░░░ 10% 47% reserve ↻");
 		expect(rows[3]).toBe(
 			"⚒ 42 tools 3.5/min · ⏵ 1 agent 1 done · ▸ Read main.ts"
 		);
@@ -267,14 +267,26 @@ describe("status line rows", () => {
 });
 
 describe("pace", () => {
-	test("is used percent over elapsed percent of the window", () => {
+	test("is CodexBar's delta of used over the elapsed share, with a run-out before the reset", () => {
 		// Act: half of the 5h window is gone and 75 percent is used.
 		const pace = paceOf(75, NOW_S + 9000, NOW_S, 18_000);
 
 		// Assert
-		expect(Math.abs((pace?.ratio ?? 0) - 1.5)).toBeLessThan(1e-9);
-		expect(Math.abs((pace?.elapsed ?? 0) - 50)).toBeLessThan(1e-9);
+		expect(pace?.stage).toBe("deficit");
+		expect(Math.abs((pace?.expected ?? 0) - 50)).toBeLessThan(1e-9);
+		expect(Math.abs((pace?.delta ?? 0) - 25)).toBeLessThan(1e-9);
 		expect(Math.abs((pace?.runOutAt ?? 0) - (NOW_S + 3000))).toBeLessThan(1e-6);
+	});
+
+	test("is on pace within two points and a reserve below that, with no run-out", () => {
+		// Act
+		const on = paceOf(51.5, NOW_S + 9000, NOW_S, 18_000);
+		const reserve = paceOf(30, NOW_S + 9000, NOW_S, 18_000);
+
+		// Assert
+		expect(on?.stage).toBe("on");
+		expect(reserve?.stage).toBe("reserve");
+		expect(reserve?.runOutAt).toBeUndefined();
 	});
 
 	test("shows nothing while the window is under 3 percent elapsed or resets_at lies outside it", () => {

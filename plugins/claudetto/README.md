@@ -160,7 +160,7 @@ The rows carry no labels and run from the broadest figure to the narrowest, item
 ```text
 ● working · Opus 5.5 medium ↯ fast · ctx █░░░░░░░░░ 9% 90k/1M · cache 98% warm 58m/1h
 ⌂ owner/repo · ⎇ main · ⇄ #7 approved · ◔ 20h22m (api 2h30m) · +4491 -336
-5h ██░░░░░░░░ 21% 0.3x ↻10:29pm · 7d ██████░░░░ 62% 1.8x runs out Nov 27 at 7:24am ↻Nov 30 at 11:39am
+5h ██░░░░░░░░ 21% 18% reserve ↻10:29pm · 7d ██████░░░░ 62% 9% deficit runs out Nov 27 at 7:24am ↻Nov 30 at 11:39am
 ⚒ 42 tools 3.5/min · ⏵ 2 agents 1 done · ▸ Read main.ts
 ☑ 1/3 ██░░░ ◐ Writing tests
 mem █░░░░ 26% 32.0G · swap 1.0G/2.0G · load 2.4/10 · claude 847M · tree 3.0G 17 procs · top node 418M
@@ -171,9 +171,9 @@ mem █░░░░ 26% 32.0G · swap 1.0G/2.0G · load 2.4/10 · claude 847M ·
 
 | Row | Figures | Source |
 | --- | --- | --- |
-| Turn | phase (`working` or `idle`), model, effort, fast mode, an output style other than the default, the `--agent` name, context bar with tokens of the window, prompt-cache hit, warmth and misses | hooks; `model`, `effort`, `fast_mode`, `output_style`, `agent`, `context_window`, `prompt_cache` |
+| Turn | phase (`working` or `idle`), model, effort, fast mode, an output style other than the default, the `--agent` name, context bar split by /context's rows in /context's colours with tokens of the window, prompt-cache hit, warmth and misses | hooks (`session.measure` with the free local `/context` estimate); `model`, `effort`, `fast_mode`, `output_style`, `agent`, `context_window`, `prompt_cache` |
 | Place | folder or repository, branch, linked worktree, pull request and review state, session name, wall and API time, lines added and removed, the dollar estimate (only without a rate-limit window) | `workspace`, `worktree`, `pr`, `.git/HEAD`, `session_name`, `cost` |
-| Limits | `5h`, `7d` and spend bars, the pace (use over the share of the window elapsed), when the use runs out at that pace, and the reset | `rate_limits` |
+| Limits | `5h`, `7d` and spend bars, the use before the session's first reading in the fill colour and since it in Claude's orange, the pace as CodexBar computes it (`on pace` within 2 points of the elapsed share of the window, otherwise the points `in deficit` or `in reserve`), when the use runs out at that rate, and the reset | `rate_limits`; hooks (`session.start`, `session.measure`) |
 | Activity | tool calls started in the session and their rate per minute of wall time, running and finished subagents, the lead's last tool call | hooks (`tool.run`, `agent.spawn`, `agent.report`), `cost.total_duration_ms` |
 | Tasks | tasks done of all, and the one in progress or next | hooks (`TaskCreate`, `TaskUpdate`, `TodoWrite` calls) |
 | Machine | memory in use by the kernel's pressure figure, swap in use, one-minute load over the logical cores, Claude Code's resident memory, the memory and count of the processes under it, and the heaviest of them | `sysctl` on macOS, `/proc/meminfo` on Linux, `ps`, Node's `os` |
@@ -184,7 +184,16 @@ A figure the source does not report is left out, and none is estimated: tokens s
 
 The colours are Claude Code's own for the theme you set (`theme` in the nearest settings file, else the global config `/theme` writes): the model in the `claude` colour, bars in the `/usage` fill and empty colours, readings in `success`, `warning` and `error`. The six built-in themes are copied from claude 2.1.329; `auto` follows `COLORFGBG`, and a custom theme falls back to `dark` as Claude Code does. A 24-bit terminal gets the exact colours, a 256-colour one chalk's nearest shade, and a 16-colour one the theme's ANSI variant.
 
-The hooks write the phase, the prompt, the agents, the tool count and the task list to `claudetto/status/<session_id>.json` under the Claude Code config folder. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
+The hooks write the phase, the prompt, the agents, the tool count, the task list, the context rows and the rate-limit baselines to `claudetto/status/<session_id>.json` under the Claude Code config folder. `/statusline` has the main model write a `statusLine` command into the user settings file itself, in place of starting the `statusline-setup` subagent.
+
+### Usage Band and Pane
+
+A status line command takes no clicks, so the band above the prompt carries one chip each for the context window and for the 5-hour and 7-day windows that have a reading, each with the same split bar and its percent. Pressing a chip, its hotkey (`c`, `5` or `7`) while the band has focus, or typing `/breakdown [ctx|5h|7d]` opens the usage pane on that view:
+
+- **ctx**: the window as `/context` counts it (its free local estimate, no API call), a bar split by row and one line per row with its tokens and share, in `/context`'s colours; deferred tool schemas, outside the window, last and dim.
+- **5h** and **7d**: the use, the bar split into the use before the session's first reading and since then (every session on the account counts, not this one alone), CodexBar's pace with the expected use by now, whether the window lasts to the reset at this rate or when it runs out, and the reset.
+
+A window that resets during the session starts its baseline at 0. When the first reading of a session comes after its first response, the "before" part already holds that response's use.
 
 ## Shell Start-Up
 

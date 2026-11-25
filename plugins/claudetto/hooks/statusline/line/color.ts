@@ -1,4 +1,10 @@
-import { type Depth, sgrOf, type ThemeKey, type ThemeName } from "./theme";
+import {
+	type Depth,
+	isThemeKey,
+	sgrOf,
+	type ThemeKey,
+	type ThemeName
+} from "./theme";
 
 /** An ANSI style: the text wrapped in its code and a reset, so a cut never leaks colour. */
 export type Style = (text: string) => string;
@@ -52,7 +58,10 @@ export const paintOf = ({ on, theme, depth }: Look) => {
 		/** The empty cells of a bar, as Claude Code's `/usage` draws them. */
 		empty: styleOf(on, key("rate_limit_empty")),
 		/** Success below 60 percent, warning below 85, error from 85: the colour of a use reading. */
-		level: (percent: number): Style => styleOf(on, key(levelKey(percent)))
+		level: (percent: number): Style => styleOf(on, key(levelKey(percent))),
+		/** The colour /context gives a breakdown row, by its theme key; a key the line lacks draws dim. */
+		tone: (name: string): Style =>
+			styleOf(on, key(isThemeKey(name) ? name : "inactive"))
 	};
 };
 

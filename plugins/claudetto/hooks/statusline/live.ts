@@ -3,6 +3,7 @@ import type { EngineInterface, On } from "claude-code";
 import { configDir } from "../settings/settings";
 import { fault } from "../shared/fault";
 import { activityOf, tasksAfter } from "./activity";
+import { baselinesAfter, partsOf } from "./baseline";
 import {
 	type Agent,
 	EMPTY_STATE,
@@ -25,9 +26,12 @@ const ANY = /^/u;
 const ANY_TURN = { turnId: ANY } as const;
 
 /** The state of one session; a hook instance is per session, so the holder lives in the registration. */
-interface Live {
+export interface Live {
 	state: LiveState;
 }
+
+/** A holder for one session's state, before its first event. */
+export const newLive = (): Live => ({ state: EMPTY_STATE });
 
 /** Writes the state file of this session; a failed write is logged and never fails the hook. */
 async function save($: EngineInterface, state: LiveState): Promise<void> {
@@ -178,14 +182,57 @@ function registerAgents(on: On, live: Live): void {
 }
 
 /**
+ * The rate-limit baselines and the context rows: the windows as the session
+ * starts, then at each measure (after each turn, and when a window moves a
+ * point) the rows /context's free local estimate gives, and any window seen
+ * for the first time or reset since. The band and the usage pane redraw.
+ */
+function registerMeasure(on: On, live: Live): void {
+	// A failed usage read is logged here rather than thrown: the session.start
+	// hooks upstream would otherwise report it as their own failure.
+	on("session.start", { cwd: ANY }, async ($, e, next) => {
+		try {
+			const { rateLimits } = await $.session.usage();
+			const now = await $.clock.now();
+			live.state = {
+				...live.state,
+				limits: baselinesAfter(live.state.limits ?? [], rateLimits, now)
+			};
+			await save($, live.state);
+		} catch (error) {
+			fault($, "status session start", error);
+		}
+		return next(e);
+	});
+	on("session.measure", async ($, e, next) => {
+		try {
+			const usage = await $.session.usage({ breakdown: "summary" });
+			const categories = usage.context.breakdown?.categories;
+			const now = await $.clock.now();
+			live.state = {
+				...live.state,
+				limits: baselinesAfter(live.state.limits ?? [], e.rateLimits, now),
+				...(categories === undefined ? {} : { context: partsOf(categories) })
+			};
+			await save($, live.state);
+			$.ui.invalidate("ui.render");
+		} catch (error) {
+			fault($, "status measure", error);
+		}
+		return next(e);
+	});
+}
+
+/**
  * Writes what the hooks observe in one session to the file the status line
  * command reads (ADR-0201): the turn phase, the prompt the session waits on
  * the person for, the subagents with their tool calls, the lead's last tool
- * call, and the task list. Each change rewrites the whole file.
+ * call, the task list, the context rows, and the rate-limit baselines. Each
+ * change rewrites the whole file into `live`, which the usage pane reads too.
  */
-export function registerLive(on: On): void {
-	const live: Live = { state: EMPTY_STATE };
+export function registerLive(on: On, live: Live): void {
 	registerPhase(on, live);
 	registerPrompt(on, live);
 	registerAgents(on, live);
+	registerMeasure(on, live);
 }
