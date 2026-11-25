@@ -52,9 +52,8 @@ async function runsInHome(
 		return false;
 	}
 	try {
-		return (
-			(await $.session.cwd()).replace(/\/+$/u, "") === home.replace(/\/+$/u, "")
-		);
+		const cwd = await $.session.cwd();
+		return cwd.replace(/\/+$/u, "") === home.replace(/\/+$/u, "");
 	} catch (error) {
 		fault($, "wall cwd", error);
 		return false;
