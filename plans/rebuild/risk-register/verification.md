@@ -58,6 +58,7 @@
   Verified: 2026-11-18, commit 328809c7f, `claude plugin test plugins/claudetto`: text.test.ts pins the 70k default as the literal 70000, so an undefined constant fails.
   Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/text.test.ts` ("handover text > threshold defaults to 70k; percent beats tokens (and parseTokens reads plain, k and M)").
   Status: mitigated 2026-11-18: the threshold test pins the literal 70000 (Verified line).
+  Verified: 2026-11-26, `plugins/claudetto/hooks/handover/__tests__/text.test.ts` is removed as a test of implementation detail; `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts:69` and `plugins/claudetto/hooks/handover/__tests__/renewal.test.ts:77` pin the default threshold by behavior, a 90000-token run renewing and a 50000-token run not.
 
 ## Verification and Honesty
 

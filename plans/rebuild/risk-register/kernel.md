@@ -469,6 +469,7 @@
   - Verified: 2026-11-20, claude 2.1.327, `claude plugin test plugins/claudetto` (2.1.327 binary) -> 130 pass, 0 fail, including "stdin guard > reads stdin from /dev/null and keeps a heredoc intact"; the guard is plugins/claudetto/hooks/guards/shell/stdin.ts:10 (the status cites hooks/guards/stdin.ts, which does not exist); `bash` on `{ cat <<EOF >/dev/null ... EOF; wc -l } </dev/null` -> prints 0 and exits 0.
   - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/guards/shell/__tests__/stdin.test.ts` ("stdin guard > reads stdin from /dev/null and keeps a heredoc intact").
   - Source: arc42/03_context_and_scope/tools.md CTX-837, CTX-838.
+  - Verified: 2026-11-26, `plugins/claudetto/hooks/guards/shell/__tests__/stdin.test.ts` is removed as a test of implementation detail; `plugins/claudetto/hooks/guards/shell/__tests__/shell.test.ts:83` asserts that a stdin reader reaches the Bash tool after the `</dev/null` line.
 
 - [x] **RISK-508** zsh passes an unquoted `$VAR` that holds a command with its arguments, or a list of files, as one word (issue #61, cluster E).
   - Category: host behaviour.

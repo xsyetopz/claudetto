@@ -80,6 +80,41 @@ describe("shell guard", () => {
 		expect(world.seen).toEqual(["git status", "cd sub && git log -1"]);
 	});
 
+	test("a command that reads stdin reaches the tool with stdin at /dev/null, so it ends at EOF", async ($, on) => {
+		// Arrange
+		const world = bashWorld(on);
+
+		// Act
+		await $.tool.call({ tool: "Bash", command: "wc -l" });
+
+		// Assert
+		expect(world.seen).toHaveLength(1);
+		const [run = ""] = world.seen;
+		expect(run.indexOf("</dev/null")).toBeGreaterThanOrEqual(0);
+		expect(run.indexOf("</dev/null")).toBeLessThan(run.indexOf("wc -l"));
+	});
+
+	test("a Gradle or Maven run reaches the tool with the sandbox proxy handed to the JVM; other commands get none", async ($, on) => {
+		// Arrange
+		const world = bashWorld(on);
+
+		// Act
+		await $.tool.call({ tool: "Bash", command: "./gradlew build" });
+		await $.tool.call({ tool: "Bash", command: "CI=1 mvn -q package" });
+		await $.tool.call({ tool: "Bash", command: "bun test" });
+
+		// Assert
+		const [gradle = "", maven = "", other = ""] = world.seen;
+		for (const run of [gradle, maven]) {
+			expect(run).toContain("GRADLE_OPTS");
+			expect(run).toContain("MAVEN_ARGS");
+			expect(run).toContain("HTTPS_PROXY");
+		}
+		expect(other).toContain("bun test");
+		expect(other).not.toContain("GRADLE_OPTS");
+		expect(other).not.toContain("MAVEN_ARGS");
+	});
+
 	test("a deny of a PreToolUse hook stands over the remembered allow", async ($, on) => {
 		// Arrange: the stub beneath the guard answers as the engine does for a denying hook.
 		on("tool.check", (_$, e) =>
