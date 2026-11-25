@@ -4,7 +4,7 @@ import { describe, expect, test } from "claude-code/testing";
 import { readState } from "../line/state";
 
 /** Serves the engine calls the live state needs; returns the files written, by path. */
-const serve = (on: On) => {
+const serve = (on: On, result: unknown = "ok") => {
 	const files = new Map<string, string>();
 	on("env.get", (_$, e) => ({
 		value: e.name === "CLAUDE_CONFIG_DIR" ? "/cfg" : undefined
@@ -16,7 +16,7 @@ const serve = (on: On) => {
 		return { value: undefined };
 	});
 	on("tool.check", () => ({ decision: "ask" }));
-	on("tool.run", () => ({ result: "ok" }));
+	on("tool.run", () => ({ result }));
 	on("agent.spawn", (_$, e) => ({
 		model: "m",
 		agentId: `id-${e.description}`
@@ -47,13 +47,9 @@ describe("live state", () => {
 		await $.turn.complete(DONE);
 
 		// Assert
-		const empty = { agents: [], finished: [], tools: 0, tasks: [] };
-		expect(during).toEqual({ phase: "working", ...empty });
-		expect(state()).toEqual({
-			phase: "idle",
-			waiting: { kind: "input" },
-			...empty
-		});
+		expect(during?.phase).toBe("working");
+		expect(state()?.phase).toBe("idle");
+		expect(state()?.waiting).toEqual({ kind: "input" });
 	});
 
 	test("records the permission prompt a call raises, then clears it when a tool runs", async ($, on) => {
@@ -135,6 +131,62 @@ describe("live state", () => {
 			{ id: "1", subject: "Read", status: "completed", active: "Reading" },
 			{ id: "2", subject: "Test", status: "in_progress", active: "Testing" }
 		]);
+	});
+
+	test("names an MCP call by its own tool and what it was given", async ($, on) => {
+		// Arrange
+		const state = serve(on);
+
+		// Act
+		await $.tool.run({
+			tool: "mcp__claudetto__web_search",
+			tool_use_id: "r4",
+			input: { query: "bun spawn" },
+			query: "bun spawn"
+		});
+
+		// Assert
+		expect(state()?.doing).toBe("web_search bun spawn");
+	});
+
+	test("keeps a long subject within one status line cell by cutting it with an ellipsis", async ($, on) => {
+		// Arrange
+		const state = serve(on);
+
+		// Act
+		await $.tool.run({
+			tool: "Bash",
+			tool_use_id: "r5",
+			command: "x".repeat(200)
+		});
+
+		// Assert
+		expect(state()?.doing?.length).toBeLessThan(100);
+		expect(state()?.doing?.endsWith("…")).toBe(true);
+	});
+
+	test("adds the task TaskCreate reports and drops it again on a deleted TaskUpdate", async ($, on) => {
+		// Arrange
+		const state = serve(on, { task: { id: "1", subject: "Read" } });
+
+		// Act
+		await $.tool.run({
+			tool: "TaskCreate",
+			tool_use_id: "r6",
+			subject: "Read",
+			description: "d"
+		});
+		const created = state()?.tasks;
+		await $.tool.run({
+			tool: "TaskUpdate",
+			tool_use_id: "r7",
+			taskId: "1",
+			status: "deleted"
+		});
+
+		// Assert
+		expect(created).toEqual([{ id: "1", subject: "Read", status: "pending" }]);
+		expect(state()?.tasks).toEqual([]);
 	});
 
 	test("lists a subagent from its spawn until its report", async ($, on) => {

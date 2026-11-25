@@ -1,16 +1,32 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { branchOf, type Reader } from "../branch";
+import type { Reader } from "../branch";
 import { statusWithFiles } from "../main";
-import { type LiveState, readState, statePath, writeState } from "../state";
+import { type LiveState, statePath, writeState } from "../state";
 
 const filesOf =
 	(files: Record<string, string>): Reader =>
 	(path) =>
 		Promise.resolve(files[path]);
 
+/** Draws the status line for a session with the given files, as the status line script does. */
+const draw = (
+	files: Record<string, string>,
+	session: Record<string, unknown> = {}
+) =>
+	statusWithFiles(
+		JSON.stringify({
+			session_id: "s1",
+			workspace: { project_dir: "/p" },
+			...session
+		}),
+		{ NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" },
+		0,
+		filesOf(files)
+	);
+
 describe("state file", () => {
-	test("round-trips phase, the waiting prompt, agents, tool calls and tasks", () => {
+	test("a state file the hooks wrote shows the phase, the waiting prompt, agents and tasks", async () => {
 		// Arrange
 		const state: LiveState = {
 			phase: "working",
@@ -19,87 +35,102 @@ describe("state file", () => {
 				{
 					id: "a",
 					type: "Explore",
-					description: "d",
+					description: "scan",
 					startedAt: 5,
-					tools: 2,
-					doing: "Read x"
+					tools: 2
 				}
 			],
-			finished: [
-				{
-					id: "b",
-					type: "Plan",
-					description: "",
-					startedAt: 1,
-					tools: 0,
-					endedAt: 4,
-					end: "failed"
-				}
-			],
+			finished: [],
 			tools: 7,
-			doing: "Bash ls",
 			tasks: [
 				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }
 			]
 		};
 
-		// Act and Assert
-		expect(readState(writeState(state))).toEqual(state);
+		// Act
+		const out = await draw({ [statePath("/cfg", "s1")]: writeState(state) });
+
+		// Assert
+		expect(out).toContain("● working");
+		expect(out).toContain("waiting on you: an answer");
+		expect(out).toContain("Explore scan");
+		expect(out).toContain("Doing s");
 	});
 
-	test("reads a missing, broken or foreign file as no state", () => {
-		// Act and Assert
-		expect(readState("")).toBeUndefined();
-		expect(readState("{")).toBeUndefined();
-		expect(readState('{"waitingKind":"bogus"}')?.waiting).toBeUndefined();
-	});
-
-	test("reads a file an older version wrote, with no tool count or tasks", () => {
-		// Act and Assert
-		expect(
-			readState('{"phase":"idle","agents":[{"id":"a","startedAt":1}]}')
-		).toEqual({
-			phase: "idle",
-			agents: [
-				{ id: "a", type: "agent", description: "", startedAt: 1, tools: 0 }
-			],
-			finished: [],
-			tools: 0,
-			tasks: []
+	test("a broken or foreign state file draws as no state", async () => {
+		// Act
+		const broken = await draw({ [statePath("/cfg", "s1")]: "{" });
+		const foreign = await draw({
+			[statePath("/cfg", "s1")]: '{"waitingKind":"bogus"}'
 		});
+
+		// Assert
+		expect(broken).toBe("⌂ p");
+		expect(foreign).not.toContain("waiting");
 	});
 
-	test("keeps a session id from leaving the status folder", () => {
-		// Act and Assert
-		expect(statePath("/cfg", "../../etc/x")).toBe(
-			"/cfg/claudetto/status/.._.._etc_x.json"
+	test("a file an older version wrote, with no tool count or tasks, still draws", async () => {
+		// Act
+		const out = await draw({
+			[statePath("/cfg", "s1")]:
+				'{"phase":"idle","agents":[{"id":"a","startedAt":1}]}'
+		});
+
+		// Assert
+		expect(out).toContain("⏵ 1 agent");
+	});
+
+	test("a session id cannot make the status line read outside the status folder", async () => {
+		// Arrange
+		const asked: string[] = [];
+		const read: Reader = (path) => {
+			asked.push(path);
+			return filesOf({})(path);
+		};
+
+		// Act
+		await statusWithFiles(
+			JSON.stringify({ session_id: "../../etc/x" }),
+			{ NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" },
+			0,
+			read
 		);
+
+		// Assert
+		expect(asked.some((path) => path.includes("claudetto/status"))).toBe(true);
+		expect(asked.filter((path) => path.split("/").includes(".."))).toEqual([]);
 	});
 });
 
 describe("branch", () => {
-	test("reads the branch from HEAD of the folder or a parent", async () => {
-		// Arrange
-		const read = filesOf({ "/r/.git/HEAD": "ref: refs/heads/feat/x\n" });
+	test("shows the branch from HEAD of the project folder or a parent", async () => {
+		// Act
+		const out = await draw(
+			{ "/p/.git/HEAD": "ref: refs/heads/feat/x\n" },
+			{ workspace: { project_dir: "/p/sub/dir" } }
+		);
 
-		// Act and Assert
-		expect(await branchOf("/r/sub/dir", read)).toBe("feat/x");
+		// Assert
+		expect(out).toContain("⎇ feat/x");
 	});
 
 	test("follows a worktree's .git file and shortens a detached hash", async () => {
-		// Arrange
-		const read = filesOf({
-			"/w/.git": "gitdir: /r/.git/worktrees/w\n",
+		// Act
+		const out = await draw({
+			"/p/.git": "gitdir: /r/.git/worktrees/w\n",
 			"/r/.git/worktrees/w/HEAD": `${"ab12".repeat(10)}\n`
 		});
 
-		// Act and Assert
-		expect(await branchOf("/w", read)).toBe("ab12ab1");
+		// Assert
+		expect(out).toContain("⎇ ab12ab1");
 	});
 
-	test("is undefined outside a repository", async () => {
-		// Act and Assert
-		expect(await branchOf("/nowhere", filesOf({}))).toBeUndefined();
+	test("shows no branch outside a repository", async () => {
+		// Act
+		const out = await draw({});
+
+		// Assert
+		expect(out).not.toContain("⎇");
 	});
 });
 

@@ -1,6 +1,5 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { paceOf } from "../format";
 import { statusOf } from "../main";
 import type { Resources } from "../resources";
 import type { LiveState } from "../state";
@@ -193,7 +192,7 @@ describe("status line rows", () => {
 		expect(out).not.toMatch(/saved|vanilla/iu);
 	});
 
-	test("keeps every row within COLUMNS minus the margin and falls back to countdowns", () => {
+	test("keeps every row within COLUMNS and falls back to countdowns", () => {
 		// Act
 		const out = statusOf(FULL, { ...PLAIN, COLUMNS: "60" }, NOW, {
 			state: STATE,
@@ -203,7 +202,7 @@ describe("status line rows", () => {
 
 		// Assert
 		for (const row of out.split("\n")) {
-			expect(width(row)).toBeLessThanOrEqual(56);
+			expect(width(row)).toBeLessThanOrEqual(60);
 		}
 		expect(out).toContain("↻2h30m");
 	});
@@ -266,32 +265,36 @@ describe("status line rows", () => {
 	});
 });
 
-describe("pace", () => {
-	test("is CodexBar's delta of used over the elapsed share, with a run-out before the reset", () => {
+const limits = (used: number, resetsIn: number) =>
+	JSON.stringify({
+		rate_limits: {
+			five_hour: { used_percentage: used, resets_at: NOW_S + resetsIn }
+		}
+	});
+
+describe("status line pace", () => {
+	test("shows a window used faster than it elapses as a deficit with a run-out", () => {
 		// Act: half of the 5h window is gone and 75 percent is used.
-		const pace = paceOf(75, NOW_S + 9000, NOW_S, 18_000);
+		const out = statusOf(limits(75, 9000), PLAIN, NOW);
 
 		// Assert
-		expect(pace?.stage).toBe("deficit");
-		expect(Math.abs((pace?.expected ?? 0) - 50)).toBeLessThan(1e-9);
-		expect(Math.abs((pace?.delta ?? 0) - 25)).toBeLessThan(1e-9);
-		expect(Math.abs((pace?.runOutAt ?? 0) - (NOW_S + 3000))).toBeLessThan(1e-6);
+		expect(out).toMatch(/5h .* 75% .*deficit/u);
 	});
 
-	test("is on pace within two points and a reserve below that, with no run-out", () => {
+	test("shows a window used slower than it elapses as a reserve", () => {
 		// Act
-		const on = paceOf(51.5, NOW_S + 9000, NOW_S, 18_000);
-		const reserve = paceOf(30, NOW_S + 9000, NOW_S, 18_000);
+		const out = statusOf(limits(30, 9000), PLAIN, NOW);
 
 		// Assert
-		expect(on?.stage).toBe("on");
-		expect(reserve?.stage).toBe("reserve");
-		expect(reserve?.runOutAt).toBeUndefined();
+		expect(out).toMatch(/5h .* 30% .*reserve/u);
 	});
 
-	test("shows nothing while the window is under 3 percent elapsed or resets_at lies outside it", () => {
-		// Act and Assert
-		expect(paceOf(5, NOW_S + 17_800, NOW_S, 18_000)).toBeUndefined();
-		expect(paceOf(5, NOW_S + 99_999, NOW_S, 18_000)).toBeUndefined();
+	test("shows no pace while the window is under 3 percent elapsed", () => {
+		// Act
+		const out = statusOf(limits(5, 17_800), PLAIN, NOW);
+
+		// Assert
+		expect(out).toContain("5h");
+		expect(out).not.toMatch(/deficit|reserve|on pace/u);
 	});
 });

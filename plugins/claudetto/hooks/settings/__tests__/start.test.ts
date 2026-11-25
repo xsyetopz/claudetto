@@ -2,7 +2,6 @@ import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 import { fieldOf } from "../../shared/field";
-import { FILL_VERSION } from "../defaults";
 
 /** Serves a settings file and a store to a session start; records writes and the store. */
 const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
@@ -10,6 +9,7 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 	const commands: string[] = [];
 	const logs: string[] = [];
 	const store = new Map<string, unknown>(Object.entries(seed));
+	let current = file;
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 	on("env.get", (_$, e) => ({
@@ -17,9 +17,10 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 	}));
 	on("settings.read", () => ({ value: {} }));
 	on("fs.exists", () => ({ value: true }));
-	on("fs.read", () => ({ value: file }));
+	on("fs.read", () => ({ value: current }));
 	on("fs.write", (_$, e) => {
 		writes.push(e.text);
+		current = e.text;
 		return { value: undefined };
 	});
 	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
@@ -35,13 +36,16 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 		commands.push(e.command);
 		return { text: "Reloaded" };
 	});
-	return { writes, store, commands, logs };
+	const edit = (text: string): void => {
+		current = text;
+	};
+	return { writes, store, commands, logs, edit };
 };
 
 describe("settings fill at session start", () => {
-	test("writes the construction over the user's style, then records the fill version and the keys it wrote", async ($, on) => {
+	test("writes the construction over the user's style", async ($, on) => {
 		// Arrange
-		const { writes, store } = serve(on, '{"outputStyle": "Proactive"}');
+		const { writes } = serve(on, '{"outputStyle": "Proactive"}');
 
 		// Act
 		await $.session.start({
@@ -53,11 +57,6 @@ describe("settings fill at session start", () => {
 		// Assert
 		expect(JSON.parse(writes.at(-1) ?? "{}")).toMatchObject({
 			outputStyle: "claudetto:Claudetto"
-		});
-		expect(store.get("setup.filled")).toBe(FILL_VERSION);
-		expect(store.get("setup.owned")).toContainEqual({
-			path: ["outputStyle"],
-			value: "claudetto:Claudetto"
 		});
 	});
 
@@ -80,23 +79,21 @@ describe("settings fill at session start", () => {
 		expect(fieldOf(written, "env")).not.toHaveProperty("RETIRED_SWITCH");
 	});
 
-	test("does not fill again under the same fill version, so a user's edit holds", async ($, on) => {
+	test("does not fill again on the next start, so a user's edit holds", async ($, on) => {
 		// Arrange
-		const { writes } = serve(on, '{"outputStyle": "Proactive"}', {
-			"setup.filled": FILL_VERSION
-		});
+		const { writes, edit } = serve(on, "{}");
+		const start = () =>
+			$.session.start({ cwd: "/home/u/p", surface: null, isInteractive: true });
+		await start();
+		edit('{"outputStyle": "Proactive"}');
 
 		// Act
-		await $.session.start({
-			cwd: "/home/u/p",
-			surface: null,
-			isInteractive: true
-		});
+		await start();
 
 		// Assert
-		for (const text of writes) {
-			expect(JSON.parse(text)).toMatchObject({ outputStyle: "Proactive" });
-		}
+		expect(JSON.parse(writes.at(-1) ?? "{}")).toMatchObject({
+			outputStyle: "Proactive"
+		});
 	});
 
 	test("unloads the builtins it turned off by running /reload-plugins in an interactive session", async ($, on) => {
@@ -166,5 +163,45 @@ describe("settings fill at session start", () => {
 		// Assert
 		const written: unknown = JSON.parse(writes.at(-1) ?? "{}");
 		expect(fieldOf(fieldOf(written, "statusLine"), "command")).toBe("my-line");
+	});
+
+	test("moves claudetto's own status line command to the installed plugin and keeps its padding", async ($, on) => {
+		// Arrange
+		const own = {
+			statusLine: {
+				type: "command",
+				command: 'bun --no-env-file "/old/bin/claudetto-statusline"',
+				padding: 2
+			}
+		};
+		const { writes } = serve(on, JSON.stringify(own));
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		const line = fieldOf(JSON.parse(writes.at(-1) ?? "{}"), "statusLine");
+		expect(fieldOf(line, "command")).toContain("claudetto-statusline");
+		expect(fieldOf(line, "command")).not.toContain("/old/");
+		expect(fieldOf(line, "padding")).toBe(2);
+	});
+
+	test("leaves the status line alone on the next start once it names the installed plugin", async ($, on) => {
+		// Arrange
+		const { writes } = serve(on, "{}");
+		const start = () =>
+			$.session.start({ cwd: "/home/u/p", surface: null, isInteractive: true });
+		await start();
+		const first = writes.length;
+
+		// Act
+		await start();
+
+		// Assert
+		expect(writes.slice(first)).toEqual([]);
 	});
 });

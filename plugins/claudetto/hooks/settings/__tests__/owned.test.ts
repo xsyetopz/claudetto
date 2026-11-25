@@ -49,20 +49,4 @@ describe("ownership record", () => {
 		);
 		expect(fill?.added).not.toContain("removed env.CHANGED_SWITCH");
 	});
-
-	test("records the scalar keys it names, so the next fill can take them back", () => {
-		// Act
-		const owned = fillSettings("{}")?.owned ?? [];
-
-		// Assert
-		expect(owned).toContainEqual({
-			path: ["outputStyle"],
-			value: "claudetto:Claudetto"
-		});
-		expect(owned).toContainEqual({
-			path: ["env", "CLAUDE_CODE_SILENT_TURN_REMINDER"],
-			value: "0"
-		});
-		expect(owned).toContainEqual({ path: ["sandbox", "enabled"], value: true });
-	});
 });

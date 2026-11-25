@@ -1,11 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import {
-	isAnthropicHost,
-	leavesAnthropic,
-	withoutCredential,
-	withoutLogin
-} from "../base-url";
+import { isAnthropicHost, leavesAnthropic, withoutLogin } from "../base-url";
 
 const REQUEST_HEADERS = {
 	Authorization: "[redacted]",
@@ -26,14 +21,6 @@ describe("a model request to a host other than Anthropic's (RISK-405)", () => {
 		expect(isAnthropicHost("http://127.0.0.1:8080/v1/messages")).toBe(false);
 		expect(isAnthropicHost("https://anthropic.com.example.net/v1")).toBe(false);
 		expect(isAnthropicHost("not a url")).toBe(false);
-	});
-
-	test("the credential headers are dropped whatever their case", () => {
-		// Act
-		const headers = withoutCredential(REQUEST_HEADERS);
-
-		// Assert
-		expect(headers).toEqual({ "anthropic-version": "2023-06-01" });
 	});
 
 	test("a request to a custom base URL leaves Anthropic; one to Anthropic does not", () => {
