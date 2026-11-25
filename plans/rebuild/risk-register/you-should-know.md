@@ -74,6 +74,13 @@
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-20-research/ysk-tool-claim/replay.sh o <1-12>`: the propose prompt as shipped before gave a false tool-behaviour card in 8 of 12 replays (later edits to a force-added file "will not show in git status"), up from 1 of 6 on 2.1.327, so the acceptance at Likelihood 2 no longer holds.
   Status: mitigated 2026-11-24 (ADR-0177): the confidence bullet in `plugins/claudetto-you-should-know/hooks/request/propose-text.ts` now says a claim about how a tool behaves rests on output in this session, and the measured run below shows it beats the prompt without it.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `replay.sh <b|a> <rep>` with the sentence: 4 false cards in 18 replays against 8 in 12 without it, $9.29 for 30 calls (ysk-tool-claim/README.md, replies-2.1.329.txt); `claude plugin test .` in plugins/claudetto-you-should-know: 172 pass, 0 fail.
+  Verified: 2026-11-25, claude 2.1.329, Sonnet 5.5, `reports/2026-11-25-research/ysk-vs-bundled/replay.sh <a|v|c> <rep>`
+  against the bundled 2.1.329 propose prompt: shipped 12,419 bytes, 5 cards in 14 replays (3 true, 2 false);
+  bundled 34,244 bytes, 0 cards in 6; at equal context the bundled request held 7,022 more input tokens, about
+  37% more per uncached call. A sentence carrying the bundled "the main agent often covers it" rule gave 1
+  false of 2 cards in 8 against 1 of 3 in 8 for the shipped prompt, so it did not ship (ADR-0177).
+  Residual: about 1 false tool-behaviour card per 7 replays on this session; the bundled prompt avoids it by
+  writing no card at all.
   Source: issue #65.
 
 - [x] **RISK-527** A you-should-know offer stays up after later steps of the same turn make it untrue.

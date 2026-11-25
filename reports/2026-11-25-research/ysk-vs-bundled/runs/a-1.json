@@ -1,0 +1,73 @@
+{
+	"duration_api_ms": 3333,
+	"stop_reason": "end_turn",
+	"session_id": "973af22b-88c1-4281-be69-d07c1d2de62f",
+	"total_cost_usd": 0.094554,
+	"usage": {
+		"input_tokens": 2,
+		"cache_creation_input_tokens": 22925,
+		"cache_read_input_tokens": 0,
+		"output_tokens": 285,
+		"output_tokens_details": { "thinking_tokens": 0 },
+		"server_tool_use": { "web_search_requests": 0, "web_fetch_requests": 0 },
+		"service_tier": "standard",
+		"cache_creation": {
+			"ephemeral_1h_input_tokens": 22925,
+			"ephemeral_5m_input_tokens": 0
+		},
+		"inference_geo": "global",
+		"iterations": [],
+		"speed": "standard",
+		"fallback_credit": null
+	},
+	"modelUsage": {
+		"claude-sonnet-5-5": {
+			"inputTokens": 2,
+			"outputTokens": 285,
+			"cacheReadInputTokens": 0,
+			"cacheCreationInputTokens": 22925,
+			"webSearchRequests": 0,
+			"costUSD": 0.094554,
+			"contextWindow": 1000000,
+			"maxOutputTokens": 128000,
+			"thinkingTokens": 0,
+			"cacheCreationEphemeral5mInputTokens": 0,
+			"cacheCreationEphemeral1hInputTokens": 22925,
+			"canonicalModel": "claude-sonnet-5-5",
+			"provider": "firstParty",
+			"costBasis": "list"
+		}
+	},
+	"permission_denials": [],
+	"terminal_reason": "completed",
+	"fast_mode_state": "off",
+	"fast_mode_disabled_reason": "disabled_by_env",
+	"subagent_stats": {
+		"spawned": 0,
+		"requested": { "background": 0, "foreground": 0, "unset": 0 },
+		"started_in_background": 0,
+		"max_depth": 0,
+		"spawned_by_subagents": 0,
+		"completed": 0,
+		"failed": 0,
+		"killed": { "parent": 0, "user": 0, "system": 0 },
+		"refused": { "depth_limit": 0, "concurrency_limit": 0, "budget": 0 },
+		"by_type": {}
+	},
+	"safety_stops": 0,
+	"is_error": false,
+	"num_turns": 1,
+	"subtype": "success",
+	"api_error_status": null,
+	"result": "learn: Both commits that add the dogfood README sit in a gitignored `reports/` folder and were force-added, so later edits to those files won't show up in `git status`.\ntag: Heads up\nexplain:\n**Force-added files in ignored folders**\n- `reports/` is listed in .gitignore, so the main agent used `git add -f` to commit the dogfood README on `feat/2.1.327-next` and on `side`.\n- Git tracks a force-added file normally from then on, so edits to those two README files will show up in `git status`.\n- Any new file you create under `reports/` stays ignored and will not show up in `git status`, so it can be missed in a commit.\n- The `side` branch adds the same path with different content, so merging it conflicts (add/add).\n- Check `git ls-files reports/` to see what is actually tracked, and decide whether `reports/` should stay ignored.",
+	"ttft_ms": 3546,
+	"type": "result",
+	"duration_ms": 3552,
+	"uuid": "558196d5-1334-4f99-8ef2-ea643489fd4d",
+	"ttft_stream_ms": 1354,
+	"time_to_request_ms": 226,
+	"first_content_frame_ms": 1354,
+	"queued_turn_count": 0,
+	"result_index": 0,
+	"credential_expires_at": "2026-12-18T05:16:15.642Z"
+}
