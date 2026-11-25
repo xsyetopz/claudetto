@@ -509,3 +509,32 @@
   runs an arm: claudetto $0.00857 a run against vanilla $0.03075, 7.47 against 8.22 turns, 6.11 against 6.93
   tool calls, 26718 against 27189 uncached tokens (147794 against 130935 with cache reads), mean score
   Δ +0.12.
+
+## Sandbox Instructions
+
+- [x] **RISK-558** each session writes the engine's sandbox instructions to the prompt cache at full length,
+  about 9,800 characters on claude 2.1.329, most of them one JSON line of full paths.
+  Category: cost.
+  Cause: the engine renders each denied and allowed path in full, the same path under `/private/tmp` and
+  `/tmp`, under `$HOME` and `~`, and each rule bullet with its reasons.
+  Event: 2026-11-25, claude 2.1.329, `reports/2026-11-25-research/cache-prefix/msg1.ts` (fake API): the
+  first request's sandbox section is 9,765 characters and its messages 19,365 bytes.
+  Consequence: every session pays a 1h cache write (the trace's `ephemeral_1h_input_tokens`) for that text.
+  Likelihood: 5. Impact: 2.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: `hooks/prompt/sandbox.ts` rewrites the `sandbox_instructions` attachment: the config line becomes
+  one list per key with `~`, `.`, `/tmp` and `folder/{a,b}`, and each 2.1.329 bullet whose exact text it knows
+  becomes a shorter one with the same rule; unknown text and any fault pass the attachment through unchanged.
+  Trigger: a later claude build whose sandbox text differs, so the table's keys stop matching.
+  Owner: cost.
+  Status: mitigated 2026-11-25: the sandbox section is 4,227 characters and the first request 13,593 bytes.
+  Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 436 pass, 0 fail.
+  Verified: 2026-11-25, claude 2.1.329, `msg1.ts` with `--plugin-dir plugins/claudetto`: sandbox section
+  9,765 to 4,227 characters, first-request messages 19,365 to 13,593 bytes.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto -j 4`, run
+  2026-11-25T20-47-08-792Z: mean delta +0.13 over vanilla; all 24 cases $0.00870 a run against vanilla
+  $0.03123, 6.63 against 6.78 tool calls, cache hit 0.863 against 0.809; on the 21 cases under the price step
+  16,688 cache-write tokens a run against main's 18,514 (runs from 2026-11-25T20-27-26-439Z).
+  Residual: thinking keeps output (6,549 against 4,254 tokens a run) and model calls (6.22 against 5.19)
+  above vanilla; RISK-553 tracks it.
