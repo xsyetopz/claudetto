@@ -1,95 +1,17 @@
-import type { SessionAppendInput, ToolUseSummary } from "claude-code";
+import { describe, expect, test } from "claude-code/testing";
+
 import {
-	describe,
-	expect,
-	mock,
-	test,
-	type TestBody
-} from "claude-code/testing";
-
-type Dollar = Parameters<TestBody>[0];
-type Mocks = Parameters<TestBody>[1];
-
-const GET = "mcp__claudetto__get_goal";
-const SET = "mcp__claudetto__set_goal";
-const PAUSE = "mcp__claudetto__pause_goal";
-const CLEAR = "mcp__claudetto__clear_goal";
-
-/** The engine's answer to `/goal <condition>` (probed on 2.1.330). */
-const engine = (
-	on: Mocks,
-	existing: readonly string[] = [],
-	uses: readonly ToolUseSummary[] = [],
-	registered: string[] = []
-) => {
-	const ran: string[] = [];
-	on("command.run", (_$, e) => {
-		ran.push(e.args);
-		return {
-			text: e.args === "clear" ? "Goal cleared" : `Goal set: ${e.args}`
-		};
-	});
-	on("session.cwd", () => ({ value: "/work" }));
-	on("fs.exists", (_$, e) => ({ value: existing.includes(e.path) }));
-	on("session.messages", () => ({
-		value: [{ role: "assistant", text: "", toolUses: [...uses] }]
-	}));
-	on("session.start", (_$, e) => ({ cwd: e.cwd }));
-	on("tool.register", (_$, e) => {
-		registered.push(e.description);
-		return { value: { tool: e.name } };
-	});
-	on("ui.notify", () => ({
-		value: { isSent: true, channel: "terminal_bell" }
-	}));
-	on("ui.log", () => ({ value: undefined }));
-	on("env.get", () => ({ value: undefined }));
-	// Advancing the clock runs a queued `/goal`.
-	const clock = mock.clock(on);
-	return { ran, clock };
-};
-
-const row = (
-	door: SessionAppendInput["door"],
-	text: string,
-	name?: string
-): SessionAppendInput => ({
-	door,
-	origin: { kind: "engine" },
-	uuid: `u-${text.length}`,
-	message: {
-		type: door === "response" ? "assistant" : "user",
-		content: [{ type: "text", text }],
-		...(name === undefined ? {} : { name })
-	}
-});
-
-const setGoal = ($: Dollar, args: string) =>
-	$.command.run({
-		command: "goal",
-		args,
-		origin: { kind: "composer" },
-		presentation: { isFullscreen: false, columns: 80 }
-	});
-
-/** Appends `count` block rows one after another, as the engine does, and returns each answer. */
-const blocks = async ($: Dollar, count: number, feedback: string) => {
-	async function* rows() {
-		for (let block = 1; block <= count; block += 1) {
-			yield $.session.append(row("note", feedback));
-		}
-	}
-	const answers: Awaited<ReturnType<Dollar["session"]["append"]>>[] = [];
-	for await (const answer of rows()) {
-		answers.push(answer);
-	}
-	return answers;
-};
-
-const stateOf = async ($: Dollar): Promise<string> => {
-	const { result } = await $.tool.call({ tool: GET });
-	return typeof result === "string" ? result : "";
-};
+	blocks,
+	CLEAR,
+	type Dollar,
+	engine,
+	type Mocks,
+	PAUSE,
+	row,
+	SET,
+	setGoal,
+	stateOf
+} from "./goal-world";
 
 describe("goal command", () => {
 	test("warns when the condition names a path that does not exist", async ($, on) => {
@@ -276,23 +198,75 @@ describe("goal tools", () => {
 		expect(cleared.result).toContain("Goal cleared");
 		expect(ran).toEqual(["bun test passes", "clear"]);
 	});
+});
 
-	test("each tool description stays within 200 characters", async ($, on) => {
+describe("goal command paths", () => {
+	test("a path named twice is reported once, and each missing path is reported", async ($, on) => {
 		// Arrange
-		const registered: string[] = [];
-		engine(on, [], [], registered);
+		engine(on);
 
 		// Act
-		await $.session.start({
-			cwd: "/work",
-			surface: null,
-			isInteractive: false
-		});
+		const result = await setGoal(
+			$,
+			"src/a.ts and ./b/c.md pass; README.md lists src/a.ts"
+		);
 
 		// Assert
-		expect(registered.length).toBeGreaterThanOrEqual(4);
-		for (const description of registered) {
-			expect(description.length).toBeLessThanOrEqual(200);
-		}
+		expect(result.text).toContain("src/a.ts, ./b/c.md, README.md not found");
+	});
+
+	test("versions, URLs, hosts and abbreviations are not taken for paths", async ($, on) => {
+		// Arrange
+		engine(on);
+		const condition =
+			"the file x exists on v2.1.330, e.g. see https://example.com/a/b and example.com";
+
+		// Act
+		const result = await setGoal($, condition);
+
+		// Assert
+		expect(result.text).toBe(`Goal set: ${condition}`);
+	});
+});
+
+describe("goal stop cap setting", () => {
+	const FEEDBACK = "Stop hook feedback:\n[x exists]: nope";
+
+	const notesWith = async (
+		$: Dollar,
+		on: Mocks,
+		cap: string,
+		count: number
+	): Promise<string[]> => {
+		engine(on, [], [], { CLAUDE_CODE_STOP_HOOK_BLOCK_CAP: cap });
+		await setGoal($, "x exists");
+		const outs = await blocks($, count, FEEDBACK);
+		return outs.map((out) => JSON.stringify(out.message?.content));
+	};
+
+	test("a cap in the environment moves the warning", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "4", 3);
+
+		// Assert
+		expect(notes[0]).not.toContain("times in a row");
+		expect(notes[1]).toContain("2 times");
+	});
+
+	test("a cap of 0 never warns", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "0", 12);
+
+		// Assert
+		expect(notes.some((note) => note.includes("times in a row"))).toBe(false);
+	});
+
+	test("an unreadable cap warns as the default cap does", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "abc", 8);
+
+		// Assert
+		expect(notes[4]).not.toContain("times in a row");
+		expect(notes[5]).toContain("6 times");
 	});
 });

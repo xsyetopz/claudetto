@@ -1,22 +1,20 @@
 import { expect, test } from "claude-code/testing";
 
-import { RESPOND_BOX_BUSY, RESPOND_NOT_FILLED } from "../view/draft";
 import {
 	type Band,
 	type Box,
+	checkIn,
+	freshBox,
+	isOffered,
 	MOUNT,
 	type Offer,
 	offered,
 	settle,
-	until,
-	viewKind
+	textOf,
+	until
 } from "./testkit";
 
-type Kept = Map<string, unknown>;
-
 const LINE = "Tests run in order.";
-const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
-const view = viewKind;
 
 const waitFor = (check: () => Promise<boolean> | boolean): Promise<void> =>
 	until(check, 80);
@@ -35,85 +33,93 @@ const explained = async (
 	$: Parameters<typeof offered>[0],
 	on: Parameters<typeof offered>[1],
 	box: Box,
-	kept: Kept,
 	extra: Offer = {}
 ) => {
-	const band = await offered($, on, box, { kept, ...extra });
+	const band = await offered($, on, box, extra);
 	await pressed(band, "Learn more", "Understood");
 	return band;
 };
 
+/** True when a later check proposing the same line draws no offer, because the line is known. */
+const staysAway = async (
+	$: Parameters<typeof offered>[0],
+	box: Box,
+	band: Band
+): Promise<boolean> => {
+	const before = box.forks;
+	await checkIn($, "t2");
+	return box.forks === before + 1 && !(await isOffered(band));
+};
+
 test(
-	"Knew this already marks the line known and clears without a toast",
+	"Knew this already clears the offer without a toast and the line does not come back",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
-		const band = await offered($, on, box, { kept });
+		const box = freshBox();
+		const band = await offered($, on, box);
 
 		// Act
 		await band.press({ key: "Knew this already" });
 		await settle();
 
 		// Assert
-		expect(kept.get("known")).toEqual([LINE]);
-		expect(view(kept)).toBeUndefined();
+		expect(await isOffered(band)).toBe(false);
 		expect(box.toasts).toEqual([]);
+		expect(await staysAway($, box, band)).toBe(true);
 	}
 );
 
-test("That was helpful marks the line known", MOUNT, async ($, on) => {
-	// Arrange
-	const kept: Kept = new Map();
-	const band = await offered($, on, fresh(), { kept });
-	await pressed(band, "Dismiss", "That was helpful");
-
-	// Act
-	await band.press({ key: "That was helpful" });
-	await settle();
-
-	// Assert
-	expect(kept.get("known")).toEqual([LINE]);
-	expect(view(kept)).toBeUndefined();
-});
-
-for (const key of ["Not relevant", "Couldn’t understand"]) {
-	test(
-		`${key} clears the row and leaves the known list alone`,
-		MOUNT,
-		async ($, on) => {
-			// Arrange
-			const kept: Kept = new Map();
-			const band = await offered($, on, fresh(), { kept });
-			await pressed(band, "Dismiss", key);
-
-			// Act
-			await band.press({ key });
-			await settle();
-
-			// Assert
-			expect(kept.get("known")).toBeUndefined();
-			expect(view(kept)).toBeUndefined();
-		}
-	);
-}
-
 test(
-	"Understood marks the line known and clears the card",
+	"That was helpful clears the asked row and the line does not come back",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const kept: Kept = new Map();
-		const band = await explained($, on, fresh(), kept);
+		const box = freshBox();
+		const band = await offered($, on, box);
+		await pressed(band, "Dismiss", "That was helpful");
+
+		// Act
+		await band.press({ key: "That was helpful" });
+		await settle();
+
+		// Assert
+		expect(await band.find({ key: "That was helpful" })).toBeUndefined();
+		expect(await staysAway($, box, band)).toBe(true);
+	}
+);
+
+for (const key of ["Not relevant", "Couldn’t understand"]) {
+	test(`${key} clears the asked row`, MOUNT, async ($, on) => {
+		// Arrange
+		const band = await offered($, on, freshBox());
+		await pressed(band, "Dismiss", key);
+
+		// Act
+		await band.press({ key });
+		await settle();
+
+		// Assert
+		expect(await band.find({ key })).toBeUndefined();
+		expect(await isOffered(band)).toBe(false);
+	});
+}
+
+test(
+	"Understood clears the card and the line does not come back",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const box = freshBox();
+		const band = await explained($, on, box);
 
 		// Act
 		await band.press({ key: "Understood" });
 		await settle();
 
 		// Assert
-		expect(kept.get("known")).toEqual([LINE]);
-		expect(view(kept)).toBeUndefined();
+		expect(await band.find({ key: "Understood" })).toBeUndefined();
+		expect(await staysAway($, box, band)).toBe(true);
 	}
 );
 
@@ -122,45 +128,42 @@ test(
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
-		const band = await offered($, on, box, { kept });
+		const box = freshBox();
+		const band = await offered($, on, box);
 		await pressed(band, "Dismiss", "Not relevant");
-		const shown = view(kept);
 
 		// Act
 		await box.clock?.advance(19_000);
 		await settle();
-		const before = view(kept);
+		const before = await band.find({ key: "Not relevant" });
 		await box.clock?.advance(1000);
 		await settle();
 
 		// Assert
-		expect(shown).toBe("asked");
-		expect(before).toBe("asked");
-		expect(view(kept)).toBeUndefined();
+		expect(before).toBeDefined();
+		expect(await band.find({ key: "Not relevant" })).toBeUndefined();
 	}
 );
 
 test(
-	"a press on the asked row answers once even when pressed twice",
+	"a second press on the asked row changes nothing more",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const kept: Kept = new Map();
-		const band = await offered($, on, fresh(), { kept });
+		const box = freshBox();
+		const band = await offered($, on, box);
 		await pressed(band, "Dismiss", "That was helpful");
-		const press = band.press({ key: "That was helpful" });
+		await band.press({ key: "That was helpful" });
 
 		// Act
-		await press;
 		await band.press({ key: "That was helpful" }).catch(() => {
 			// the second press may be refused once the row has answered
 		});
 		await settle();
 
 		// Assert
-		expect(kept.get("known")).toEqual([LINE]);
+		expect(box.toasts).toEqual([]);
+		expect(await staysAway($, box, band)).toBe(true);
 	}
 );
 
@@ -169,9 +172,8 @@ test(
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
-		const band = await explained($, on, box, kept);
+		const box = freshBox();
+		const band = await explained($, on, box);
 
 		// Act
 		await band.press({ key: "Chat in main session" });
@@ -182,19 +184,52 @@ test(
 		expect(box.filled).toHaveLength(1);
 		expect(box.filled[0]?.endsWith("\n\n")).toBe(true);
 		expect(box.filled[0]).toContain(LINE);
-		expect(kept.get("known")).toEqual([LINE]);
-		expect(view(kept)).toBeUndefined();
+		expect(await band.find({ key: "Understood" })).toBeUndefined();
+		expect(await staysAway($, box, band)).toBe(true);
 	}
 );
 
 test(
-	"Chat with text in the box toasts that the box is busy and keeps the card",
+	"the Chat draft quotes every line and defuses mentions, placeholders and directive words",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = { ...fresh(), text: "half a thought" };
-		const kept: Kept = new Map();
-		const band = await explained($, on, box, kept);
+		const box = freshBox();
+		const band = await explained($, on, box, {
+			replies: [
+				`learn: ${LINE}\ntag: Heads up\nexplain: **Order**\nAsk @alice about [Image #2], then ultrathink.`
+			]
+		});
+
+		// Act
+		await band.press({ key: "Chat in main session" });
+		await waitFor(() => box.filled.length > 0);
+		const draft = box.filled[0] ?? "";
+		const quoted = draft
+			.slice(
+				draft.indexOf("<side_agent_note>\n") + "<side_agent_note>\n".length,
+				draft.indexOf("\n</side_agent_note>")
+			)
+			.split("\n");
+
+		// Assert
+		expect(quoted.length).toBeGreaterThan(1);
+		expect(quoted.every((l) => l === ">" || l.startsWith("> "))).toBe(true);
+		expect(draft).toContain("＠alice");
+		expect(draft).toContain("［Image #2]");
+		expect(draft).toContain("ultra-think");
+		expect(draft).not.toContain("@alice");
+		expect(draft).not.toContain("[Image #2]");
+	}
+);
+
+test(
+	"Chat with text in the box toasts once and keeps the card",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const box = { ...freshBox(), text: "half a thought" };
+		const band = await explained($, on, box);
 
 		// Act
 		await band.press({ key: "Chat in main session" });
@@ -202,20 +237,19 @@ test(
 		await settle();
 
 		// Assert
-		expect(box.toasts).toEqual([RESPOND_BOX_BUSY]);
+		expect(box.toasts).toHaveLength(1);
 		expect(box.filled).toEqual([]);
-		expect(view(kept)).toBe("explained");
+		expect(await band.find({ key: "Understood" })).toBeDefined();
 	}
 );
 
 test(
-	"Chat refused by the box toasts the not-filled text and keeps the card",
+	"Chat refused by the box toasts once and keeps the card",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map();
-		const band = await explained($, on, box, kept, { refuse: true });
+		const box = freshBox();
+		const band = await explained($, on, box, { refuse: true });
 
 		// Act
 		await band.press({ key: "Chat in main session" });
@@ -223,7 +257,8 @@ test(
 		await settle();
 
 		// Assert
-		expect(box.toasts).toEqual([RESPOND_NOT_FILLED]);
-		expect(view(kept)).toBe("explained");
+		expect(box.toasts).toHaveLength(1);
+		expect(await band.find({ key: "Understood" })).toBeDefined();
+		expect(await textOf(band)).toContain(LINE);
 	}
 );

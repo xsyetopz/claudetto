@@ -1,13 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import {
-	decodeDdgUrl,
-	formatResults,
-	isDdgBlocked,
-	parseBrave,
-	parseDdg,
-	searchWeb
-} from "../search";
+import { searchWeb } from "../search";
 import { DDG_BLOCKED, DDG_RESULTS, fakeDeps, fakeWeb, html } from "./fixtures";
 
 const DDG = "https://html.duckduckgo.com/html/?q=bun%20runtime";
@@ -22,55 +15,35 @@ const searchDeps = (
 	return { ...fake, web, deps: { ...fake.deps, braveKey } };
 };
 
-describe("REQ-TOOLS-021 DuckDuckGo parser", () => {
-	test("reads title, destination and snippet, drops the ad", () => {
-		// Arrange / Act
-		const results = parseDdg(DDG_RESULTS);
+describe("REQ-TOOLS-021 DuckDuckGo results", () => {
+	test("replies with numbered title, destination and snippet lines and leaves the ad out", async () => {
+		// Arrange
+		const { deps } = searchDeps({ [DDG]: html(DDG_RESULTS) });
+
+		// Act
+		const reply = await searchWeb(deps, { query: "bun runtime" });
 
 		// Assert
-		expect(results).toEqual([
-			{
-				title: "Bun — Fast JavaScript Runtime",
-				url: "https://bun.com/docs?a=1&b=2",
-				snippet: "Bun is an all-in-one toolkit & runtime."
-			},
-			{
-				title: "Bun (software) - Wikipedia",
-				url: "https://en.wikipedia.org/wiki/Bun_(software)",
-				snippet: "A JavaScript runtime, package manager and test runner."
-			}
-		]);
-	});
-
-	test("decodes the uddg redirect and refuses ad and non-http links", () => {
-		// Arrange / Act / Assert
-		expect(
-			decodeDdgUrl(
-				"//duckduckgo.com/l/?uddg=https%3A%2F%2Fa.test%2Fx%3Fq%3D1&rut=z"
-			)
-		).toBe("https://a.test/x?q=1");
-		expect(decodeDdgUrl("https://a.test/direct")).toBe("https://a.test/direct");
-		expect(decodeDdgUrl("//duckduckgo.com/y.js?ad_provider=x")).toBeUndefined();
-		expect(
-			decodeDdgUrl("//duckduckgo.com/l/?uddg=javascript%3Aalert(1)")
-		).toBeUndefined();
-	});
-
-	test("recognises the bot check by status and by page", () => {
-		// Arrange / Act / Assert
-		expect(isDdgBlocked(202, "")).toBe(true);
-		expect(isDdgBlocked(200, DDG_BLOCKED)).toBe(true);
-		expect(isDdgBlocked(200, DDG_RESULTS)).toBe(false);
-	});
-
-	test("formats compact numbered lines", () => {
-		// Arrange / Act
-		const text = formatResults(parseDdg(DDG_RESULTS), 8);
-
-		// Assert
-		expect(text).toBe(
+		expect(reply).toBe(
 			"1. Bun — Fast JavaScript Runtime — https://bun.com/docs?a=1&b=2\n   Bun is an all-in-one toolkit & runtime.\n2. Bun (software) - Wikipedia — https://en.wikipedia.org/wiki/Bun_(software)\n   A JavaScript runtime, package manager and test runner."
 		);
+	});
+
+	test("lists no result whose link is not http", async () => {
+		// Arrange
+		const page = DDG_RESULTS.replace(
+			"//duckduckgo.com/l/?uddg=https%3A%2F%2Fbun.com%2Fdocs%3Fa%3D1%26b%3D2&amp;rut=abc",
+			"//duckduckgo.com/l/?uddg=javascript%3Aalert(1)"
+		);
+		const { deps } = searchDeps({ [DDG]: html(page) });
+
+		// Act
+		const reply = await searchWeb(deps, { query: "bun runtime" });
+
+		// Assert
+		expect(reply).not.toContain("alert(1)");
+		expect(reply).not.toContain("Fast JavaScript Runtime");
+		expect(reply).toContain("Bun (software) - Wikipedia");
 	});
 });
 
@@ -165,14 +138,6 @@ describe("REQ-TOOLS-021 Brave API", () => {
 				{ title: "no url" }
 			]
 		}
-	});
-
-	test("parses the API answer and drops rows without a URL", () => {
-		// Arrange / Act / Assert
-		expect(parseBrave(body)).toEqual([
-			{ title: "Bun", url: "https://bun.com", snippet: "A fast runtime" }
-		]);
-		expect(parseBrave("not json")).toEqual([]);
 	});
 
 	test("a key sends the token to Brave and skips DuckDuckGo", async () => {

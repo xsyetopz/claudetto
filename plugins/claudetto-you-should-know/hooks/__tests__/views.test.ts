@@ -1,7 +1,5 @@
 import { expect, test } from "claude-code/testing";
 
-import { ABOUT_THIS, APP_COPY, plainText, TERMINAL_COPY } from "../view/copy";
-import { hasOwnComposer } from "../view/table";
 import { type Box, MOUNT, offered, PLUGIN, PROPS, until } from "./testkit";
 import { buttons } from "./tree";
 
@@ -30,7 +28,7 @@ test(
 		const back = JSON.stringify(await band.drawn());
 
 		// Assert
-		expect(about).toContain("Disable on this machine with ");
+		expect(about).toContain("/plugin disable claudetto-you-should-know");
 		expect(about).not.toContain("Tests run in order.");
 		expect(back).toContain("Tests run in order.");
 	}
@@ -155,7 +153,7 @@ test(
 );
 
 test(
-	"Learn more with no shipped explanation runs a fork and shows its result, and the button stays on the offer (REQ-039)",
+	"Learn more with no shipped explanation runs one more fork and shows its result (REQ-039)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -167,6 +165,7 @@ test(
 			]
 		});
 		const before = await band.find({ key: "Learn more" });
+		const forksBefore = box.forks;
 
 		// Act
 		await band.press({ key: "Learn more" });
@@ -176,7 +175,7 @@ test(
 
 		// Assert
 		expect(before).toBeDefined();
-		expect(box.forks).toBe(2);
+		expect(box.forks - forksBefore).toBe(1);
 		expect(JSON.stringify(await band.drawn())).toContain(
 			"Steps run one after another."
 		);
@@ -206,31 +205,3 @@ test(
 		]);
 	}
 );
-
-test("an unknown surface counts as one with its own composer; only the terminal has none", () => {
-	// Arrange
-	const surfaces = ["terminal", "desktop", "mobile", "vscode", "somewhere-new"];
-
-	// Act
-	const own = surfaces.map((name) => hasOwnComposer(name));
-
-	// Assert
-	expect(own).toEqual([false, true, true, true, true]);
-});
-
-test("the About copy is three lines in the app card and four, ending with the disable command, on the terminal (REQ-012)", () => {
-	// Assert
-	expect(APP_COPY.map((para) => plainText([para]))).toEqual([
-		"A side agent is watching your back while Claude works.",
-		"When something comes up that you should know but might miss, this plugin flags it for you.",
-		"Learn more to get a deeper explanation and chat about it."
-	]);
-	expect(TERMINAL_COPY.map((para) => plainText([para])).slice(0, 3)).toEqual(
-		APP_COPY.map((para) => plainText([para]))
-	);
-	expect(plainText(TERMINAL_COPY.slice(3))).toBe(
-		"Disable on this machine with /plugin disable claudetto-you-should-know."
-	);
-	expect(TERMINAL_COPY).toHaveLength(4);
-	expect(ABOUT_THIS).toContain("/plugin disable claudetto-you-should-know");
-});

@@ -11,9 +11,10 @@ import {
 } from "./testkit";
 
 test(
-	"the sixth step of a drawn band asks the fork once and stores its offer",
+	"a drawn band asks the fork once on a check step and draws the offer it answers with",
 	MOUNT,
 	async ($, on) => {
+		// Arrange
 		mock.clock(on, { now: 1000 });
 		mock.store(on);
 		on("session.id", () => ({ value: "s1" }));
@@ -36,12 +37,15 @@ test(
 			component: "AbovePrompt",
 			props: PROPS
 		});
+		const line = () => band.find({ type: "Text", text: /Tests run in order/u });
 
+		// Act
 		await runChecks($);
 		await until(() => asked.length > 0, 20);
-		expect(asked.length).toBe(1);
-		const line = () => band.find({ type: "Text", text: /Tests run in order/u });
 		await until(async () => (await line()) !== undefined, 400);
+
+		// Assert
+		expect(asked.length).toBe(1);
 		expect(await line()).toBeDefined();
 	}
 );

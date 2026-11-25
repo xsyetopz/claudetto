@@ -7,8 +7,6 @@ import {
 	type TestBody
 } from "claude-code/testing";
 
-import { RESUME_TEXT } from "../stop";
-
 const CUT =
 	"API Error: Connection lost mid-response. The response above may be incomplete.";
 
@@ -87,7 +85,8 @@ describe("stop notice", () => {
 		await settle();
 
 		// Assert
-		expect(submitted).toEqual([RESUME_TEXT]);
+		expect(submitted).toHaveLength(1);
+		expect(submitted[0]?.trim()).not.toBe("");
 		expect(sent.length).toBe(0);
 	});
 

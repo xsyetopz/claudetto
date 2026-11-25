@@ -1,8 +1,7 @@
 import type { On } from "claude-code";
-import { describe, expect, test } from "claude-code/testing";
+import { describe, type Engine, expect, test } from "claude-code/testing";
 
-import { guardCommand } from "../../guards/shell/shell";
-import { lacksTrailer, trailerLines } from "../trailer";
+import { inOrder } from "../../guards/__tests__/in-order";
 
 const LINE = "Co-Authored-By: Claude <noreply@anthropic.com>";
 
@@ -39,78 +38,105 @@ const engine = (
 	return ran;
 };
 
+/** Sends each command through the plugin and reports whether the Bash tool received it. */
+const reached = (
+	$: Engine,
+	ran: string[],
+	commands: readonly string[]
+): Promise<boolean[]> =>
+	inOrder(commands, async (command) => {
+		ran.length = 0;
+		await $.tool.call({ tool: "Bash", command }).catch(() => null);
+		return ran.some((seen) => seen.includes(command));
+	});
+
 describe("commit trailer check", () => {
-	test("a scripted commit pair that leaves the line out is caught, the dogfood case of issue #70", () => {
+	test("a scripted commit pair that leaves the line out is refused, the dogfood case of issue #70", async ($, on) => {
 		// Arrange
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
 		const command = `git switch -c side\nperl -pi -e 's/a/b/' README.md\ngit commit -q -am "Retitle on side"\ngit switch -q main\ngit commit -q -am "Retitle on main"`;
 
 		// Act
-		const lacks = lacksTrailer(command, [LINE]);
+		const outcomes = await reached($, ran, [command]);
 
 		// Assert
-		expect(lacks).toBe(true);
+		expect(outcomes).toEqual([false]);
 	});
 
-	test("each commit carrying the line in a last -m or a here-document passes", () => {
+	test("each commit carrying the line in a last -m or a here-document runs", async ($, on) => {
 		// Arrange
-		const commands = [
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
+
+		// Act
+		const outcomes = await reached($, ran, [
 			`git commit -m "Fix" -m "${LINE}"`,
 			`git commit -q -am "One\n\n${LINE}" && git commit -m "Two" -m "${LINE}"`,
 			`git commit -F - <<'EOF'\nFix\n\n${LINE}\nEOF`,
 			`git -C repo commit -m"Fix" -m "${LINE}"`
-		];
-
-		// Act
-		const lacks = commands.map((command) => lacksTrailer(command, [LINE]));
+		]);
 
 		// Assert
-		expect(lacks).toEqual([false, false, false, false]);
+		expect(outcomes).toEqual([true, true, true, true]);
 	});
 
-	test("one commit of two without the line is caught", () => {
-		// Act
-		const lacks = lacksTrailer(
-			`git commit -m "One" -m "${LINE}"; git commit -m "Two"`,
-			[LINE]
-		);
-
-		// Assert
-		expect(lacks).toBe(true);
-	});
-
-	test("a commit with no message in the command, or one reusing a message, is let through", () => {
+	test("one commit of two without the line is refused", async ($, on) => {
 		// Arrange
-		const commands = [
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
+
+		// Act
+		const outcomes = await reached($, ran, [
+			`git commit -m "One" -m "${LINE}"; git commit -m "Two"`
+		]);
+
+		// Assert
+		expect(outcomes).toEqual([false]);
+	});
+
+	test("a commit with no message in the command, or one reusing a message, runs", async ($, on) => {
+		// Arrange
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: LINE }
+		});
+
+		// Act
+		const outcomes = await reached($, ran, [
 			"git commit",
 			"git commit -F msg.txt",
 			"git commit --amend --no-edit",
 			"git commit --fixup HEAD~1",
 			"git commit-tree HEAD^{tree} -m x",
 			"git log --grep commit -m"
-		];
-
-		// Act
-		const lacks = commands.map((command) => lacksTrailer(command, [LINE]));
+		]);
 
 		// Assert
-		expect(lacks).toEqual([false, false, false, false, false, false]);
+		expect(outcomes).toEqual([true, true, true, true, true, true]);
 	});
 
-	test("every line of a multi-line attribution is required", () => {
+	test("every line of a multi-line attribution is required", async ($, on) => {
 		// Arrange
-		const lines = trailerLines({
-			commit: "Assisted-by: X\n\nSigned-off-by: Y"
+		const ran = engine(on, {
+			includeGitInstructions: false,
+			attribution: { commit: "Assisted-by: X\n\nSigned-off-by: Y" }
 		});
 
 		// Act
-		const lacks = lacksTrailer(
+		const outcomes = await reached($, ran, [
 			`git commit -m "Fix" -m "Assisted-by: X"`,
-			lines
-		);
+			`git commit -m "Fix" -m "Assisted-by: X\n\nSigned-off-by: Y"`
+		]);
 
 		// Assert
-		expect(lines).toEqual(["Assisted-by: X", "Signed-off-by: Y"]);
-		expect(lacks).toBe(true);
+		expect(outcomes).toEqual([false, true]);
 	});
 });
 
@@ -129,7 +155,7 @@ describe("commit trailer guard", () => {
 
 		// Assert
 		expect(ran).toEqual([]);
-		expect(JSON.stringify(result)).toContain(`-m \\"${LINE}\\"`);
+		expect(JSON.stringify(result)).toContain(LINE);
 	});
 
 	test("runs a commit that carries the line", async ($, on) => {
@@ -163,7 +189,9 @@ describe("commit trailer guard", () => {
 		await $.tool.call({ tool: "Bash", command });
 
 		// Assert
-		expect(ran).toEqual([guardCommand(command, 30)]);
+		expect(ran).toHaveLength(1);
+		expect(ran[0]).toContain(command);
+		expect(ran[0]).toContain("pipefail");
 	});
 
 	test("leaves commits alone when the builtin git block is on", async ($, on) => {

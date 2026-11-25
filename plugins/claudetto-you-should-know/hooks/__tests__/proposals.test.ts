@@ -1,93 +1,123 @@
 import { expect, test } from "claude-code/testing";
 
-import { type Box, MOUNT, offered, settle, viewKind } from "./testkit";
+import { typedTurns } from "./idling";
+import {
+	checkIn,
+	freshBox,
+	isOffered,
+	MOUNT,
+	offered,
+	settle,
+	untilShown
+} from "./testkit";
 
-type Kept = Map<string, unknown>;
-
-const LINE = "Tests run in order.";
-const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
-const view = viewKind;
+const lineReply = (line: string): string => `learn: ${line}\ntag: Heads up`;
 
 test(
 	"three ignored offers skip the next eligible check, and the skip is used up",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map<string, unknown>([["looksToSkip", 1]]);
+		const box = freshBox();
+		const band = await offered($, on, box, {
+			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map((reply) =>
+				lineReply(reply)
+			)
+		});
+		await typedTurns($, ["t2", "t3"]);
+		await checkIn($, "t4");
+		await untilShown(band, "Learn more");
+		await typedTurns($, ["t5", "t6"]);
+		await checkIn($, "t7");
+		await untilShown(band, "Learn more");
 
 		// Act
-		await offered($, on, box, { kept, isOffer: false });
+		await typedTurns($, ["t8", "t9"]);
+		const beforeSkip = box.forks;
+		await checkIn($, "t10");
+		const afterSkip = box.forks;
+		await checkIn($, "t11");
 
 		// Assert
-		expect(box.forks).toBe(0);
-		expect(kept.get("looksToSkip")).toBe(0);
-	}
-);
-
-test("an answer resets both backoff counters", MOUNT, async ($, on) => {
-	// Arrange
-	const kept: Kept = new Map<string, unknown>([["typedPastInARow", 4]]);
-	const band = await offered($, on, fresh(), { kept });
-
-	// Act
-	await band.press({ key: "Knew this already" });
-	await settle();
-
-	// Assert
-	expect(kept.get("typedPastInARow")).toBe(0);
-	expect(kept.get("looksToSkip")).toBe(0);
-});
-
-test(
-	"a proposed line equal to a seen line ignoring case and one full stop is not shown",
-	MOUNT,
-	async ($, on) => {
-		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map<string, unknown>([
-			["seen", [LINE.toUpperCase().slice(0, -1)]]
-		]);
-
-		// Act
-		await offered($, on, box, { kept, isOffer: false });
-
-		// Assert
-		expect(box.forks).toBe(1);
-		expect(view(kept)).toBeUndefined();
+		expect(beforeSkip).toBe(3);
+		expect(afterSkip).toBe(3);
+		expect(box.forks).toBe(4);
 	}
 );
 
 test(
-	"a proposed line equal to a known line is not shown",
+	"an answer in between restarts the count of ignored offers",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map<string, unknown>([
-			["known", [LINE.toLowerCase()]]
-		]);
+		const box = freshBox();
+		const band = await offered($, on, box, {
+			replies: ["One.", "Two.", "Three.", "Four.", "Five."].map((reply) =>
+				lineReply(reply)
+			)
+		});
+		await typedTurns($, ["t2", "t3"]);
+		await checkIn($, "t4");
+		await untilShown(band, "Learn more");
+		await typedTurns($, ["t5", "t6"]);
+		await checkIn($, "t7");
+		await untilShown(band, "Learn more");
+		await band.press({ key: "Knew this already" });
+		await settle();
+		await checkIn($, "t8");
+		await untilShown(band, "Learn more");
 
 		// Act
-		await offered($, on, box, { kept, isOffer: false });
+		await typedTurns($, ["t9", "t10"]);
+		await checkIn($, "t11");
 
 		// Assert
-		expect(box.forks).toBe(1);
-		expect(view(kept)).toBeUndefined();
+		expect(box.forks).toBe(5);
 	}
 );
 
+for (const again of [
+	"learn: Tests run in order.",
+	"learn: TESTS RUN IN ORDER"
+]) {
+	test(
+		`a line offered earlier is not offered again when proposed as "${again}"`,
+		MOUNT,
+		async ($, on) => {
+			// Arrange
+			const box = freshBox();
+			const band = await offered($, on, box, {
+				replies: ["learn: Tests run in order.", again]
+			});
+			await typedTurns($, ["t2", "t3"]);
+
+			// Act
+			await checkIn($, "t4");
+
+			// Assert
+			expect(box.forks).toBe(2);
+			expect(await isOffered(band)).toBe(false);
+		}
+	);
+}
+
 test(
-	"a shown line is kept as seen so it is not offered again",
+	"a line marked as known is not offered again in any case",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const kept: Kept = new Map();
+		const box = freshBox();
+		const band = await offered($, on, box, {
+			replies: ["learn: Tests run in order.", "learn: tests run in order."]
+		});
+		await band.press({ key: "Knew this already" });
+		await settle();
 
 		// Act
-		await offered($, on, fresh(), { kept });
+		await checkIn($, "t2");
 
 		// Assert
-		expect(kept.get("seen")).toEqual([LINE]);
+		expect(box.forks).toBe(2);
+		expect(await isOffered(band)).toBe(false);
 	}
 );

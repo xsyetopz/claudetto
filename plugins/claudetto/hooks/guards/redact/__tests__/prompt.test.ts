@@ -1,13 +1,10 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { HELD, holdsSecret } from "../prompt";
+import { inOrder } from "../../__tests__/in-order";
 
 const PASTE =
 	"Count the users on db.internal, user app, password Hk7#qL9vZ2pW.";
-
-/** A mask that finds nothing, so only the shapes and the prose rule decide. */
-const none = (t: string): string => t;
 
 const RUN = {
 	exitCode: 127,
@@ -37,24 +34,39 @@ const engine = (on: On) => {
 };
 
 describe("prompt secrets", () => {
-	test("finds a secret pasted in prose or as a key, and not a word that only names one", () => {
-		// Act
-		const found = [
+	test("a secret pasted in prose or as a key is held back, and a word that only names one goes through", async ($, on) => {
+		// Arrange
+		const { entered } = engine(on);
+		const secret = [
 			PASTE,
 			"the aws key is AKIAZ7QW3RTY5UOP2XKM",
 			"api key: 9f8e7d6c5b4a3210",
 			"the token is ab12cd34ef56"
-		].map((text) => holdsSecret(text, none));
-		const missed = [
+		];
+		const plain = [
 			"fix the token parser in lexer.ts",
 			"the secret is in config.yaml",
 			"reset the password field on the login form",
 			"bump the api key rotation to 90 days"
-		].map((text) => holdsSecret(text, none));
+		];
+
+		// Act
+		const results = await inOrder([...secret, ...plain], (text) =>
+			$.prompt.submit({ text, origin: { kind: "composer" }, wait: false })
+		);
 
 		// Assert
-		expect(found).toEqual([true, true, true, true]);
-		expect(missed).toEqual([false, false, false, false]);
+		expect(results.map((r) => "drop" in r && r.drop !== undefined)).toEqual([
+			true,
+			true,
+			true,
+			true,
+			false,
+			false,
+			false,
+			false
+		]);
+		expect(entered).toEqual(plain);
 	});
 
 	test("a typed prompt with a secret is held back, and the box is left to the engine", async ($, on) => {
@@ -69,7 +81,7 @@ describe("prompt secrets", () => {
 		});
 
 		// Assert
-		expect(result).toEqual({ drop: HELD });
+		expect(result).toHaveProperty("drop");
 		expect(entered).toEqual([]);
 		expect(filled).toEqual([]);
 	});
@@ -107,7 +119,7 @@ describe("prompt secrets", () => {
 		});
 
 		// Assert
-		expect(result).toEqual({ drop: HELD });
+		expect(result).toHaveProperty("drop");
 		expect(entered).toEqual([]);
 	});
 

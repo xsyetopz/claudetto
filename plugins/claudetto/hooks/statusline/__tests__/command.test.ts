@@ -1,23 +1,38 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { requestOf, statuslineEdit } from "../command";
-
-describe("statusline edit text", () => {
-	test("carries the user's request from the stock text", () => {
+describe("/statusline", () => {
+	test("the built-in prompt becomes an edit of the user's settings file carrying their request", async ($, on) => {
 		// Arrange
-		const stock =
-			'Create an Agent with subagent_type "statusline-setup" and the prompt "show git branch"';
+		on("env.get", (_$, e) => ({
+			value: e.name === "CLAUDE_CONFIG_DIR" ? "/cfg" : undefined
+		}));
 
-		// Act and Assert
-		expect(requestOf(stock)).toBe("show git branch");
-	});
-
-	test("names the settings file and carries the request", () => {
 		// Act
-		const text = statuslineEdit('the prompt "x"', "/cfg/settings.json");
+		const out = await $.skill.prompt({
+			skill: "statusline",
+			source: "built-in",
+			text: 'Create an Agent with subagent_type "statusline-setup" and the prompt "show git branch"'
+		});
 
 		// Assert
-		expect(text).toContain("@/cfg/settings.json");
-		expect(text.split("\n")[0]).toEndWith(": x");
+		expect(out.text).toContain("@/cfg/settings.json");
+		expect(out.text).toContain("show git branch");
+		expect(out.text).not.toContain("statusline-setup");
+	});
+
+	test("a skill of the same name from elsewhere keeps its own prompt", async ($, on) => {
+		// Arrange
+		on("env.get", () => ({ value: undefined }));
+		on("skill.prompt", (_$, e) => ({ text: e.text }));
+
+		// Act
+		const out = await $.skill.prompt({
+			skill: "statusline",
+			source: "user",
+			text: "my own"
+		});
+
+		// Assert
+		expect(out.text).toBe("my own");
 	});
 });

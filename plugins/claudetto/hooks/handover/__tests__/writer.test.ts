@@ -1,9 +1,6 @@
 import type { ModelForkResult, On, SessionMessage } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { VERBATIM_LIMIT } from "../text";
-import { PENDING } from "../writer";
-
 const FORKED: ModelForkResult = {
 	isAnswered: true,
 	text: "FORKED SUMMARY",
@@ -35,9 +32,8 @@ function world(on: On, rows: SessionMessage[]) {
 	on("ui.log", () => ({ value: undefined }));
 	on("command.run", () => ({ text: "" }));
 	on("store.set", (_$, e) => {
-		if (e.key === PENDING) {
-			state.text = String(e.value);
-		}
+		// The only value a clear stores is the handover waiting for the next request.
+		state.text = String(e.value);
 		return { value: undefined };
 	});
 	on("ui.status", () => ({ value: undefined }));
@@ -88,7 +84,7 @@ describe("handover after one request", () => {
 		expect(text).toContain(reply);
 	});
 	test("a one-request conversation over the cap forks", async ($, on) => {
-		const state = world(on, [user("q".repeat(VERBATIM_LIMIT)), assistant("a")]);
+		const state = world(on, [user("q".repeat(20_000)), assistant("a")]);
 		await $.command.run(RUN);
 		const { text } = state;
 		expect(state.forks).toBe(1);

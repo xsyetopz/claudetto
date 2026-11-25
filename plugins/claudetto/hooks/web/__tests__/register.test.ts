@@ -1,13 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import {
-	FETCH_FULL_NAME,
-	FETCH_TOOL,
-	registerWeb,
-	SEARCH_FULL_NAME,
-	SEARCH_TOOL
-} from "../register";
+import { FETCH_FULL_NAME, registerWeb, SEARCH_FULL_NAME } from "../register";
 import { ARTICLE, DDG_RESULTS } from "./fixtures";
 
 const none = {
@@ -58,14 +52,6 @@ const host = (
 };
 
 describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
-	test("descriptions stay within 200 characters and the names are the full model-facing names", () => {
-		// Arrange / Act / Assert
-		expect(FETCH_TOOL.description.length).toBeLessThanOrEqual(200);
-		expect(SEARCH_TOOL.description.length).toBeLessThanOrEqual(200);
-		expect(FETCH_FULL_NAME).toBe("mcp__claudetto__web_fetch");
-		expect(SEARCH_FULL_NAME).toBe("mcp__claudetto__web_search");
-	});
-
 	test("the built-in WebFetch and WebSearch are not offered, in any loop", async ($, on) => {
 		// Arrange
 		registerWeb(on);

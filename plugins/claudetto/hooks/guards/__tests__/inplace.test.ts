@@ -1,10 +1,34 @@
+import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { editsInPlace, REASON } from "../inplace";
+import { inOrder } from "./in-order";
+
+/** The Bash tool beneath the plugin's hooks; returns the commands that reached it. */
+const world = (on: On): string[] => {
+	const seen: string[] = [];
+	on("tool.check", () => ({ decision: "allow" }));
+	on("process.run", () => ({
+		value: {
+			exitCode: 0,
+			stdout: "System-wide memory free percentage: 50%\n",
+			stderr: "",
+			isStdoutTruncated: false,
+			isStderrTruncated: false
+		}
+	}));
+	on("tool.call", { tool: "Bash" }, (_$, e) => {
+		if (e.tool === "Bash") {
+			seen.push(e.command);
+		}
+		return { result: "ok" };
+	});
+	return seen;
+};
 
 describe("in-place edit guard", () => {
-	test("finds sed in-place edits direct, behind a wrapper, and with flags before the in-place flag", () => {
+	test("a sed in-place edit is refused direct, behind a wrapper, and with flags before the in-place flag", async ($, on) => {
 		// Arrange
+		const seen = world(on);
 		const edits = [
 			"sed -i 's/a/b/' f.txt",
 			"sed -i.bak 's/a/b/' f.txt",
@@ -26,14 +50,15 @@ describe("in-place edit guard", () => {
 		];
 
 		// Act
-		const missed = edits.filter((command) => !editsInPlace(command));
+		await inOrder(edits, (command) => $.tool.call({ tool: "Bash", command }));
 
 		// Assert
-		expect(missed).toEqual([]);
+		expect(seen).toEqual([]);
 	});
 
-	test("leaves perl edits (REQ-EDIT-001), read-only sed, and in-place flags named as text or in a heredoc alone", () => {
+	test("perl edits, read-only sed, and in-place flags named as text or in a heredoc run", async ($, on) => {
 		// Arrange
+		const seen = world(on);
 		const others = [
 			"echo hi",
 			"perl -pi -e 's/a/b/' f.txt",
@@ -57,31 +82,15 @@ describe("in-place edit guard", () => {
 		];
 
 		// Act
-		const flagged = others.filter((command) => editsInPlace(command));
+		await inOrder(others, (command) => $.tool.call({ tool: "Bash", command }));
 
 		// Assert
-		expect(flagged).toEqual([]);
+		expect(seen).toHaveLength(others.length);
 	});
 
-	test("a refused Bash call never reaches the tool, and the reason points to Edit", async ($, on) => {
-		// Arrange: the stub stands in for the tool and records what reaches it.
-		const seen: string[] = [];
-		on("tool.check", () => ({ decision: "allow" }));
-		on("process.run", () => ({
-			value: {
-				exitCode: 0,
-				stdout: "System-wide memory free percentage: 50%\n",
-				stderr: "",
-				isStdoutTruncated: false,
-				isStderrTruncated: false
-			}
-		}));
-		on("tool.call", { tool: "Bash" }, (_$, e) => {
-			if (e.tool === "Bash") {
-				seen.push(e.command);
-			}
-			return { result: "ok" };
-		});
+	test("a refused Bash call never reaches the tool, and the reason points to the patch tool", async ($, on) => {
+		// Arrange
+		const seen = world(on);
 
 		// Act
 		const refused = await $.tool.call({
@@ -91,8 +100,8 @@ describe("in-place edit guard", () => {
 		await $.tool.call({ tool: "Bash", command: "echo hi" });
 
 		// Assert
-		expect(refused).toEqual({ deny: REASON });
+		expect(refused.deny).toContain("patch");
 		expect(seen).toHaveLength(1);
-		expect(seen[0]).toContain("\necho hi");
+		expect(seen[0]).toContain("echo hi");
 	});
 });

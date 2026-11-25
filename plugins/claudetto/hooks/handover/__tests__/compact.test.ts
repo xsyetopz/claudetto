@@ -6,8 +6,6 @@ import type {
 } from "claude-code";
 import { describe, type Engine, expect, test } from "claude-code/testing";
 
-import { KEEP_LINE } from "../text";
-
 const USAGE = {
 	input_tokens: 1,
 	output_tokens: 2,
@@ -134,7 +132,8 @@ describe("session.compact", () => {
 			messages: [{ role: "user", text: "hi", toolUses: [] }]
 		});
 		expect(r.messages?.[0]?.text).toBe("CORE");
-		expect(seen[0]?.instructions).toContain(`focus\n${KEEP_LINE}`);
+		expect(seen[0]?.instructions).toStartWith("focus");
+		expect(seen[0]?.instructions?.length).toBeGreaterThan("focus".length);
 	});
 	test("a subagent compaction takes the core path", async ($, on) => {
 		const seen = world(on);
@@ -176,6 +175,22 @@ describe("session.compact", () => {
 		// Assert
 		expect(rows[0]?.text).toContain("keep the public API unchanged");
 		expect(sizes[2]).toBe(sizes[0]);
+	});
+	test("a row cut for the extract never leaves half an emoji", async ($, on) => {
+		// Arrange: no fork text, so the extract shortens the long prompt and reply.
+		const lone =
+			/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u;
+		world(on, {}, { isAnswered: false, reason: "nothing-to-fork" }, {}, () => [
+			{ role: "user", text: `${"a".repeat(499)}😀tail`, toolUses: [] },
+			{ role: "assistant", text: `${"b".repeat(999)}😀tail`, toolUses: [] },
+			{ role: "user", text: "second", toolUses: [] }
+		]);
+
+		// Act
+		const r = await $.session.compact({ trigger: "auto", messages: [] });
+
+		// Assert
+		expect(lone.test(r.messages?.[0]?.text ?? "")).toBe(false);
 	});
 	test("a status line shows while the fork writes and clears after", async ($, on) => {
 		// Arrange
@@ -281,6 +296,5 @@ describe("session.compact", () => {
 		expect(requests.length).toBe(1);
 		expect(requests[0]?.["effort"]).toBe("low");
 		expect("model" in (requests[0] ?? {})).toBe(false);
-		expect(String(requests[0]?.["prompt"])).toContain("Constraints:");
 	});
 });

@@ -159,4 +159,112 @@ describe("wall guard", () => {
 			expect(ran[i]).toContain(command);
 		}
 	});
+
+	test("a call that fills in the wall name from literals or substitutions is refused", async ($, on) => {
+		// Arrange
+		stubHome(on);
+		const ran = stubBash(on);
+
+		// Act
+		const results = await attemptEach($, [
+			"a=~ b='.claudetto-holdout'; cat $a/$b/t",
+			"ls ~/`printf .claudetto-holdout`",
+			"ls $HOME/$(pick)",
+			`ls \${HOME}/\`pick\``,
+			`ls /Users/u/\${x}y`,
+			"ls $d/.claudetto-holdout/t"
+		]);
+
+		// Assert
+		expect(ran).toEqual([]);
+		expect(results.every((r) => JSON.stringify(r).includes("walled off"))).toBe(
+			true
+		);
+	});
+
+	test("a path that cannot reach the wall's depth runs, however it is built", async ($, on) => {
+		// Arrange
+		stubHome(on);
+		const ran = stubBash(on);
+		const fine = [
+			"ls ~/.config/$x",
+			"ls $HOME/.cache/$(pick)",
+			"ls $PWD/src",
+			"cat $(git rev-parse --show-toplevel)/README.md",
+			"ls ~/work",
+			"ls $x/holdout"
+		];
+
+		// Act
+		await attemptEach($, fine);
+
+		// Assert
+		expect(ran).toHaveLength(fine.length);
+		for (const [i, command] of fine.entries()) {
+			expect(ran[i]).toContain(command);
+		}
+	});
+
+	test("a glob that spells no part of the wall name but matches it is refused", async ($, on) => {
+		// Arrange
+		stubHome(on);
+		const ran = stubBash(on);
+
+		// Act
+		const results = await attemptEach($, [
+			"ls $HOME/.[c]laudetto-*",
+			"ls /Users/u/.*-holdout/*",
+			'ls "~/.cl*"',
+			"ls /Users/*/.claudetto-holdout",
+			"ls ~/.*",
+			"ls ~/.{claudetto-holdout,x}",
+			"ls /Users/u/.claudetto-{holdout,y}"
+		]);
+
+		// Assert
+		expect(ran).toEqual([]);
+		expect(results.every((r) => JSON.stringify(r).includes("walled off"))).toBe(
+			true
+		);
+	});
+
+	test("a glob that cannot match the wall runs", async ($, on) => {
+		// Arrange
+		stubHome(on);
+		const ran = stubBash(on);
+		const fine = [
+			"ls ~/*",
+			"ls ~/**",
+			"ls ~/.claudetto*x",
+			"ls src/*.ts",
+			"ls ~/.aws*",
+			"ls ~/.{aws,ssh}",
+			"ls src/{a,b}.ts"
+		];
+
+		// Act
+		await attemptEach($, fine);
+
+		// Assert
+		expect(ran).toHaveLength(fine.length);
+	});
+
+	test(
+		"a protected path outside home is refused as written",
+		{ options: { protectedPaths: ["/srv/holdout"] } },
+		async ($, on) => {
+			// Arrange
+			stubHome(on);
+			const ran = stubBash(on);
+
+			// Act
+			const refused = await attempt($, "cat /srv/holdout/notes.md");
+			await attempt($, "cat /srv/other/notes.md");
+
+			// Assert
+			expect(JSON.stringify(refused)).toContain("walled off");
+			expect(ran).toHaveLength(1);
+			expect(ran[0]).toContain("/srv/other/notes.md");
+		}
+	);
 });

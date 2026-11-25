@@ -3,7 +3,6 @@
 import type { On, RenderPropsOf, RenderSurface } from "claude-code";
 import { type Engine, mock, type MockClock } from "claude-code/testing";
 
-import { rowOf } from "../session/rows";
 import { stepTurn } from "./turns";
 
 export { completeTurn, drain, stepTurn } from "./turns";
@@ -88,10 +87,6 @@ export const until = async (
 	}
 };
 
-/** The kind of the view the plugin kept for session s1, read from its store. */
-export const viewKind = (kept: Map<string, unknown>): string | undefined =>
-	rowOf(kept.get("sessions"), "s1")?.view?.kind;
-
 /**
  * Time limit for a test that mounts the band. `$.ui.mount` alone took 1785 ms
  * on claude 2.1.327, and a loaded machine pushed a mounting test past the
@@ -105,7 +100,7 @@ export interface Box {
 	toasts: string[];
 	forks: number;
 	/** The arguments of each fork, in order. */
-	args?: unknown[];
+	args?: { prompt?: unknown }[];
 	/** The mocked clock, set by `offered`. */
 	clock?: MockClock;
 	/** Prompt texts the plugin submitted itself. */
@@ -122,8 +117,6 @@ export interface Offer {
 	readonly env?: Record<string, string>;
 	/** Fork replies in order; the last one repeats. The first answers the check. */
 	readonly replies?: readonly string[];
-	/** When given, the plugin's store lives in this map so a test can read what the plugin kept. */
-	readonly kept?: Map<string, unknown>;
 	/** Held until the test releases it: the fork waits on it before it answers. */
 	readonly hold?: Promise<void>;
 	/** Held until the test releases it: every fork after the first (the check) waits on it. */
@@ -137,22 +130,6 @@ export interface Offer {
 	/** False when the test expects the check to show nothing. */
 	readonly isOffer?: boolean;
 }
-
-const wireStore = (on: On, kept: Map<string, unknown> | undefined): void => {
-	if (kept === undefined) {
-		mock.store(on);
-		return;
-	}
-	on("store.get", (_$, e) => ({ value: kept.get(e.key) }));
-	on("store.set", (_$, e) => {
-		kept.set(e.key, e.value);
-		return { value: undefined };
-	});
-	on("store.delete", (_$, e) => {
-		kept.delete(e.key);
-		return { value: undefined };
-	});
-};
 
 const wireSession = (
 	on: On,
@@ -249,7 +226,6 @@ export const offered = async (
 		props = PROPS,
 		env = {},
 		replies = [REPLY],
-		kept,
 		hold,
 		holdLater,
 		faults,
@@ -259,7 +235,7 @@ export const offered = async (
 	} = opts;
 	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	box.clock = mock.clock(on, { now: 1000 });
-	wireStore(on, kept);
+	mock.store(on);
 	wireSession(on, box, () => surfaces ?? [surface], refuse);
 	wireModel(on, box, replies, hold, faults, holdLater);
 	const band = await $.ui.mount({
@@ -290,3 +266,30 @@ export const untilShown = (
 /** Pauses until the band draws no element with `key`, for at most `tries` pauses. */
 export const untilGone = (band: Band, key: string, tries = 50): Promise<void> =>
 	until(async () => (await band.find({ key })) === undefined, tries);
+
+/** True while the band draws the offer's Learn more button. */
+export const isOffered = async (band: Band): Promise<boolean> =>
+	(await band.find({ key: "Learn more" })) !== undefined;
+
+/** The band drawn as text, for a check on what a person reads. */
+export const textOf = async (band: {
+	drawn: () => Promise<unknown>;
+}): Promise<string> => JSON.stringify(await band.drawn());
+
+/** Runs a check step in turn `turnId` and waits for its fork to finish. */
+export const checkIn = async ($: Engine, turnId: string): Promise<void> => {
+	await stepTurn($, turnId, 6);
+	await settle();
+};
+
+/** The request prompt of each fork the plugin made, in order. */
+export const promptsOf = (box: Box): string[] =>
+	(box.args ?? []).map((arg) => String(arg.prompt));
+
+/** A fresh box for a test that watches the engine calls. */
+export const freshBox = (): Box => ({
+	text: "",
+	filled: [],
+	toasts: [],
+	forks: 0
+});

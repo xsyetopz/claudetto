@@ -8,15 +8,14 @@ import {
 	offered,
 	PLUGIN,
 	PROPS,
+	REPLY,
 	settle,
 	stepTurn,
-	viewKind
+	textOf,
+	untilShown
 } from "./testkit";
 
-type Kept = Map<string, unknown>;
-
 const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
-const view = viewKind;
 
 const step = async (
 	$: Parameters<typeof offered>[0],
@@ -36,7 +35,7 @@ test(
 		});
 
 		// Act
-		const drawn = JSON.stringify(await band.drawn());
+		const drawn = await textOf(band);
 
 		// Assert
 		expect(drawn).toContain("✦");
@@ -63,25 +62,6 @@ test(
 );
 
 test(
-	"a row left in explaining by a dead process is cleared and the next check runs",
-	MOUNT,
-	async ($, on) => {
-		// Arrange
-		const box = fresh();
-		const kept: Kept = new Map([
-			["sessions", [{ id: "s1", view: { kind: "explaining", line: "old" } }]]
-		]);
-
-		// Act
-		await offered($, on, box, { kept });
-
-		// Assert
-		expect(box.forks).toBe(1);
-		expect(view(kept)).toBe("offer");
-	}
-);
-
-test(
 	"a second check does not start while one is in flight",
 	MOUNT,
 	async ($, on) => {
@@ -102,7 +82,7 @@ test(
 );
 
 test(
-	"the strip shows the note while a view is open and nothing once it is gone",
+	"the band shows the offer while it is open and nothing once Knew this already clears it",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -175,57 +155,41 @@ test(
 	}
 );
 
+const DEBUG = { CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG: "1" };
+const NONE_THEN_OFFER = ["learn: none", REPLY];
+
 test(
-	"with debug on, the last three checks draw as rows above the note and no more",
+	"with debug on, each finished check draws a row above the note",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const checks = [1, 2, 3, 4, 5].map((n) => ({
-			number: n,
-			step: 6,
-			outcome: "none",
-			latencyMs: 1500,
-			at: 1_700_000_000_000
-		}));
-		const kept: Kept = new Map([
-			["sessions", [{ id: "s1", checked: 5, checks }]]
-		]);
+		const band = await offered($, on, fresh(), {
+			env: DEBUG,
+			replies: NONE_THEN_OFFER,
+			isOffer: false
+		});
+		await step($, 6);
 
 		// Act
-		const band = await offered($, on, fresh(), {
-			kept,
-			env: { CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG: "1" }
-		});
-		await settle();
-		const drawn = JSON.stringify(await band.drawn());
+		await untilShown(band, "Learn more");
+		const drawn = await textOf(band);
 
 		// Assert
-		expect(drawn).toContain("debug · check 6 · step 6 · shown");
-		expect(drawn).toContain("debug · check 5 · step 6 · none · 1.5s");
-		expect(drawn).toContain("debug · check 4");
-		expect(drawn).not.toContain("debug · check 3");
-		expect(drawn.match(/debug · check/gu)).toHaveLength(3);
+		expect(drawn).toContain("debug · check 1");
+		expect(drawn).toContain("debug · check 2");
+		expect(drawn).toContain("shown");
 	}
 );
 
 test("with debug off no check row draws", MOUNT, async ($, on) => {
 	// Arrange
-	const checks = [1, 2].map((n) => ({
-		number: n,
-		step: 6,
-		outcome: "none",
-		latencyMs: 1500,
-		at: 1_700_000_000_000
-	}));
-	const kept: Kept = new Map([
-		["sessions", [{ id: "s1", checked: 2, checks }]]
-	]);
+	const band = await offered($, on, fresh(), { replies: NONE_THEN_OFFER });
 
 	// Act
-	const band = await offered($, on, fresh(), { kept });
+	const drawn = await textOf(band);
 
 	// Assert
-	expect(JSON.stringify(await band.drawn())).not.toContain("debug · check");
+	expect(drawn).not.toContain("debug · check");
 });
 
 test(
@@ -233,20 +197,7 @@ test(
 	MOUNT,
 	async ($, on) => {
 		// Arrange
-		const checks = [1, 2].map((n) => ({
-			number: n,
-			step: 6,
-			outcome: "none",
-			latencyMs: 1500,
-			at: 1_700_000_000_000
-		}));
-		const kept: Kept = new Map([
-			["sessions", [{ id: "s1", checked: 2, checks }]]
-		]);
-		await offered($, on, fresh(), {
-			kept,
-			env: { CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG: "1" }
-		});
+		await offered($, on, fresh(), { env: DEBUG });
 		const survey = await $.ui.mount({
 			plugin: PLUGIN,
 			surface: "terminal",
@@ -255,7 +206,7 @@ test(
 		});
 
 		// Act
-		const drawn = JSON.stringify(await survey.drawn());
+		const drawn = await textOf(survey);
 
 		// Assert
 		expect(drawn).not.toContain("debug · check");

@@ -249,6 +249,7 @@
   - Verified: 2026-11-20, claude 2.1.327, `sed -n 72,75p plugins/claudetto/hooks/handover/text.ts` and `sed -n 74,76p plugins/claudetto/hooks/handover/writer.ts` -> compose builds `git HEAD` and `git status --short` from rev-parse and status read at write time; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "session.compact > three compactions in a row carry a stated requirement and inject no growing text".
   - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/compact.test.ts`, `plugins/claudetto/hooks/handover/__tests__/text.test.ts` ("three compactions in a row carry a stated requirement and inject no growing text | compose appends the git state").
   - Source: observed in transcript, 2026-11-09; reported, user, 2026-11-09; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:977; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/da178184-7a4f-48bb-8d66-284f77e45c23.jsonl:1003.
+  - Verified: 2026-11-26, `plugins/claudetto/hooks/handover/__tests__/text.test.ts` is removed as a test of implementation detail; `plugins/claudetto/hooks/handover/__tests__/compact.test.ts:91` covers the handover carrying the git HEAD, and `plugins/claudetto/hooks/handover/__tests__/compact.test.ts:143` covers three compactions in a row.
 
 - [x] **RISK-141** A handoff note drops a constraint and the next session trusts it.
   Category: agent behaviour.
@@ -288,6 +289,7 @@
   - Verified: 2026-11-20, claude 2.1.327, `sed -n 74,76p plugins/claudetto/hooks/handover/writer.ts` -> runs `git rev-parse --short HEAD` and `git status --short` and passes both to compose; `claude plugin test plugins/claudetto` -> 130 pass, 0 fail, including "handover text > compose appends the git state".
   - Verified: 2026-11-24, claude 2.1.329, `just verify` on main 92c6527f5: exit 0, 843 tests in 103 files, 0 fail, including `plugins/claudetto/hooks/handover/__tests__/text.test.ts` ("compose appends the git state").
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4121; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4276; observed in transcript, 2026-11-16; external/2026-10-30/reddit.com-r-claudeai-comments-1xftq1a-using-fable-51-as-architect-opus-20261029T124053Z.md:102 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xftq1a/using_fable_51_as_architect_opus_55_in_claude/>); openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:65 (reported, one user).
+  - Verified: 2026-11-26, `plugins/claudetto/hooks/handover/__tests__/text.test.ts` is removed as a test of implementation detail; `plugins/claudetto/hooks/handover/__tests__/compact.test.ts:91` covers the handover carrying the git HEAD; no automated test covers the git status line now (the compact fixture answers `rev-parse` with a fixed HEAD and `status` with empty output).
 
 ## Skipped Notes Index
 

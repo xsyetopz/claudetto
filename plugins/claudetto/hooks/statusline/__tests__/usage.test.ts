@@ -1,8 +1,6 @@
 import type { On, SessionUsage } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { readState } from "../line/state";
-
 const NOW = Date.UTC(2026, 10, 25, 12, 0, 0);
 const RESET = new Date(NOW + 9_000_000).toISOString();
 
@@ -31,52 +29,110 @@ const PANE = {
 	view: {}
 };
 
-/** Serves the engine calls the usage hooks make; returns the opened panes and a reader of the state file. */
-const serve = (on: On, usage: SessionUsage) => {
-	const files = new Map<string, string>();
+/** Serves the engine calls the usage hooks make; returns the opened panes. */
+const serve = (on: On, usage: SessionUsage | (() => SessionUsage)) => {
 	const opened: string[] = [];
 	on("env.get", (_$, e) => ({
 		value: e.name === "CLAUDE_CONFIG_DIR" ? "/cfg" : undefined
 	}));
 	on("session.id", () => ({ value: "s1" }));
 	on("clock.now", () => ({ value: NOW }));
-	on("fs.write", (_$, e) => {
-		files.set(e.path, e.text);
-		return { value: undefined };
-	});
-	on("session.usage", () => ({ value: usage }));
+	on("fs.write", () => ({ value: undefined }));
+	on("session.usage", () => ({
+		value: typeof usage === "function" ? usage() : usage
+	}));
 	on("session.measure", (_$, e) => ({ changed: e.changed }));
 	on("ui.open", (_$, e) => {
 		opened.push(e.id);
 		return { value: { isPlaced: true } };
 	});
-	return {
-		opened,
-		state: () => readState(files.get("/cfg/claudetto/status/s1.json"))
-	};
+	return { opened };
 };
 
 describe("usage band and pane", () => {
-	test("a measure records the window baseline the band then splits its chip at", async ($, on) => {
+	test("the 5h pane shows the use since the session's first reading, not the window's whole use", async ($, on) => {
 		// Arrange
-		const { state } = serve(on, USAGE);
-
-		// Act
+		let usage = USAGE;
+		const { opened } = serve(on, () => usage);
 		await $.session.measure({
 			context: USAGE.context,
 			rateLimits: USAGE.rateLimits,
 			changed: ["rateLimits"]
 		});
+		usage = {
+			...USAGE,
+			rateLimits: [{ kind: "five_hour", percentUsed: 45, resetsAt: RESET }]
+		};
+
+		// Act
+		await $.command.run({
+			command: "breakdown",
+			args: "5h",
+			origin: { kind: "composer" },
+			presentation: { isFullscreen: false, columns: 80 }
+		});
+		const pane = await $.ui.mount({
+			plugin: "claudetto",
+			surface: "terminal",
+			component: "Pane",
+			requestId: "breakdown",
+			props: PANE
+		});
 
 		// Assert
-		expect(state()?.limits).toEqual([
-			{
-				kind: "five_hour",
-				before: 30,
-				since: NOW,
-				resetsAt: Date.parse(RESET) / 1000
+		expect(opened).toEqual(["breakdown"]);
+		expect(await pane.find({ text: /since then \+15%/u })).toBeDefined();
+	});
+
+	test("/breakdown ctx lists the context rows with their share", async ($, on) => {
+		// Arrange
+		serve(on, {
+			...USAGE,
+			context: {
+				...USAGE.context,
+				breakdown: {
+					categories: [
+						{
+							name: "Messages",
+							tokens: 60_000,
+							color: "purple_FOR_SUBAGENTS_ONLY",
+							isDeferred: false,
+							kind: "used"
+						}
+					],
+					totalTokens: 80_000,
+					maxTokens: 200_000,
+					rawMaxTokens: 200_000,
+					autocompactSource: "model-default",
+					percentage: 40,
+					gridRows: [],
+					model: "claude-opus-5-5",
+					memoryFiles: [],
+					mcpTools: [],
+					agents: [],
+					isAutoCompactEnabled: true,
+					apiUsage: null
+				}
 			}
-		]);
+		});
+
+		// Act
+		await $.command.run({
+			command: "breakdown",
+			args: "ctx",
+			origin: { kind: "composer" },
+			presentation: { isFullscreen: false, columns: 80 }
+		});
+		const pane = await $.ui.mount({
+			plugin: "claudetto",
+			surface: "terminal",
+			component: "Pane",
+			requestId: "breakdown",
+			props: PANE
+		});
+
+		// Assert
+		expect(await pane.find({ text: /Messages\s+60k\s+30\.0%/u })).toBeDefined();
 	});
 
 	test("the band draws a chip per reading, and pressing one opens the pane on that window", async ($, on) => {

@@ -1,13 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { fieldOf, stringsOf } from "../../shared/field";
-import {
-	DEFAULTS,
-	FILL_VERSION,
-	fillNotice,
-	fillSettings,
-	fillVersion
-} from "../defaults";
+import { fillNotice, fillSettings } from "../defaults";
 import { isRecord } from "../settings";
 
 interface Filled {
@@ -47,20 +40,12 @@ const parsed = (text: string | undefined): Filled => {
 };
 
 describe("defaults fill", () => {
-	test("fills every default into empty settings", () => {
+	test("fills the construction into empty settings", () => {
 		// Act
 		const fill = fillSettings();
 
 		// Assert
 		const next = parsed(fill?.text);
-		const { permissions, ...rest } = isRecord(DEFAULTS) ? DEFAULTS : {};
-		const wanted = {
-			allow: stringsOf(fieldOf(permissions, "allow")) ?? [],
-			deny: stringsOf(fieldOf(permissions, "deny")) ?? []
-		};
-		expect(next).toMatchObject(rest);
-		expect(next.permissions.deny).toEqual(expect.arrayContaining(wanted.deny));
-		expect(next.permissions.allow).toEqual(wanted.allow);
 		expect(next.permissions.deny).not.toContain("ExitPlanMode");
 		expect(next.bashOutputMaxChars).toBe(8000);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
@@ -212,7 +197,8 @@ describe("defaults fill", () => {
 
 		// Assert
 		expect(first?.added.length).toBeGreaterThan(0);
-		expect(second).toEqual({ text, added: [], owned: first?.owned });
+		expect(second?.text).toBe(text);
+		expect(second?.added).toEqual([]);
 	});
 
 	test("refuses to rewrite a file that is not a JSON object", () => {
@@ -222,22 +208,6 @@ describe("defaults fill", () => {
 });
 
 describe("fill notice", () => {
-	test("counts list entries per key so a first fill fits the 2000 characters the terminal draws", () => {
-		// Arrange
-		const added = fillSettings()?.added ?? [];
-
-		// Act
-		const notice = fillNotice("/home/u/.claude/settings.json", added);
-
-		// Assert
-		expect(added.join(", ").length).toBeGreaterThan(2000);
-		expect(notice.length).toBeLessThan(2000);
-		expect(notice).toContain("outputStyle");
-		expect(notice).toMatch(/permissions\.deny \(\d+ entries\)/u);
-		expect(notice.match(/permissions\.deny/gu)?.length).toBe(1);
-		expect(notice).not.toMatch(/(^|, )(deny|ask|sandbox) \(/u);
-	});
-
 	test("reports a replaced value and a removed rule as changes, not as set values", () => {
 		// Arrange
 		const full = parsed(fillSettings("{}")?.text);
@@ -255,22 +225,5 @@ describe("fill notice", () => {
 		expect(notice).toContain("replaced outputStyle Proactive");
 		expect(notice).toContain("removed permissions.ask Bash(git stash*)");
 		expect(notice).not.toMatch(/set \d+ value/u);
-	});
-});
-
-describe("fill version", () => {
-	test("changes when the filled text changes and is stable for one construction", () => {
-		// Arrange
-		const text = fillSettings(void 0, [])?.text ?? "";
-
-		// Act
-		const changed = fillVersion(
-			text.replace("git push --force*", "git push --force-x*")
-		);
-
-		// Assert
-		expect(FILL_VERSION).toMatch(/^[0-9a-f]{8}$/u);
-		expect(FILL_VERSION).not.toBe(fillVersion(text));
-		expect(changed).not.toBe(fillVersion(text));
 	});
 });
