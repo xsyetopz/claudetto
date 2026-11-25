@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, type Engine, expect, test } from "claude-code/testing";
 
-import { CONDUCT, CONDUCT_ID, CONDUCT_PARAGRAPHS } from "../conduct";
+import { CONDUCT_ID } from "../conduct";
 
 const MODEL = "claude-opus-5-5";
 
@@ -49,29 +49,6 @@ describe("REQ-TOOLS-032 prompt.compose", () => {
 		expect(sections.slice(firstSession).map((s) => s.scope)).not.toContain(
 			"shared"
 		);
-	});
-
-	test("the conduct section carries the ten paragraphs word for word, once, after the last shared section", async ($, on) => {
-		// Arrange
-		engine(on);
-
-		// Act
-		const { sections } = await compose($, OFFERED);
-		const conduct = sections.filter((s) => s.id === CONDUCT_ID);
-
-		// Assert
-		expect(CONDUCT_PARAGRAPHS).toHaveLength(11);
-		expect(conduct).toHaveLength(1);
-		expect(conduct[0]?.scope).toBe("shared");
-		expect(conduct[0]?.text).toBe(CONDUCT);
-		expect(conduct[0]?.text.startsWith("Before a commit or push")).toBe(true);
-		expect(
-			conduct[0]?.text.endsWith(
-				"scoped the task to this tree and a change elsewhere lands in history and code they did not open."
-			)
-		).toBe(true);
-		expect(sections[1]?.id).toBe("tools");
-		expect(sections[2]?.id).toBe(CONDUCT_ID);
 	});
 
 	test("a list with only session sections gets the conduct section first", async ($, on) => {

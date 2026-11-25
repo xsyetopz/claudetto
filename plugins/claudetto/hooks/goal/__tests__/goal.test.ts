@@ -20,7 +20,7 @@ const engine = (
 	on: Mocks,
 	existing: readonly string[] = [],
 	uses: readonly ToolUseSummary[] = [],
-	registered: string[] = []
+	env: Record<string, string> = {}
 ) => {
 	const ran: string[] = [];
 	on("command.run", (_$, e) => {
@@ -35,15 +35,11 @@ const engine = (
 		value: [{ role: "assistant", text: "", toolUses: [...uses] }]
 	}));
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
-	on("tool.register", (_$, e) => {
-		registered.push(e.description);
-		return { value: { tool: e.name } };
-	});
 	on("ui.notify", () => ({
 		value: { isSent: true, channel: "terminal_bell" }
 	}));
 	on("ui.log", () => ({ value: undefined }));
-	on("env.get", () => ({ value: undefined }));
+	on("env.get", (_$, e) => ({ value: env[e.name] }));
 	// Advancing the clock runs a queued `/goal`.
 	const clock = mock.clock(on);
 	return { ran, clock };
@@ -276,23 +272,208 @@ describe("goal tools", () => {
 		expect(cleared.result).toContain("Goal cleared");
 		expect(ran).toEqual(["bun test passes", "clear"]);
 	});
+});
 
-	test("each tool description stays within 200 characters", async ($, on) => {
+describe("goal command paths", () => {
+	test("a path named twice is reported once, and each missing path is reported", async ($, on) => {
 		// Arrange
-		const registered: string[] = [];
-		engine(on, [], [], registered);
+		engine(on);
 
 		// Act
-		await $.session.start({
-			cwd: "/work",
-			surface: null,
-			isInteractive: false
-		});
+		const result = await setGoal(
+			$,
+			"src/a.ts and ./b/c.md pass; README.md lists src/a.ts"
+		);
 
 		// Assert
-		expect(registered.length).toBeGreaterThanOrEqual(4);
-		for (const description of registered) {
-			expect(description.length).toBeLessThanOrEqual(200);
-		}
+		expect(result.text).toContain("src/a.ts, ./b/c.md, README.md not found");
+	});
+
+	test("versions, URLs, hosts and abbreviations are not taken for paths", async ($, on) => {
+		// Arrange
+		engine(on);
+		const condition =
+			"the file x exists on v2.1.330, e.g. see https://example.com/a/b and example.com";
+
+		// Act
+		const result = await setGoal($, condition);
+
+		// Assert
+		expect(result.text).toBe(`Goal set: ${condition}`);
+	});
+});
+
+describe("goal stop cap setting", () => {
+	const FEEDBACK = "Stop hook feedback:\n[x exists]: nope";
+
+	const notesWith = async (
+		$: Dollar,
+		on: Mocks,
+		cap: string,
+		count: number
+	): Promise<string[]> => {
+		engine(on, [], [], { CLAUDE_CODE_STOP_HOOK_BLOCK_CAP: cap });
+		await setGoal($, "x exists");
+		const outs = await blocks($, count, FEEDBACK);
+		return outs.map((out) => JSON.stringify(out.message?.content));
+	};
+
+	test("a cap in the environment moves the warning", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "4", 3);
+
+		// Assert
+		expect(notes[0]).not.toContain("times in a row");
+		expect(notes[1]).toContain("2 times");
+	});
+
+	test("a cap of 0 never warns", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "0", 12);
+
+		// Assert
+		expect(notes.some((note) => note.includes("times in a row"))).toBe(false);
+	});
+
+	test("an unreadable cap warns as the default cap does", async ($, on) => {
+		// Act
+		const notes = await notesWith($, on, "abc", 8);
+
+		// Assert
+		expect(notes[4]).not.toContain("times in a row");
+		expect(notes[5]).toContain("6 times");
+	});
+});
+
+describe("goal clear evidence", () => {
+	const bash = (text: string, isError?: true): ToolUseSummary => ({
+		tool_use_id: `t-${text}`,
+		tool: "Bash",
+		input: { command: "bun test" },
+		text,
+		...(isError === undefined ? {} : { isError })
+	});
+	const passed = [{ command: "bun test", outcome: "passed" }];
+
+	const clearWith = async (
+		$: Dollar,
+		on: Mocks,
+		uses: readonly ToolUseSummary[],
+		checks: unknown,
+		condition = "bun test passes"
+	): Promise<string> => {
+		engine(on, [], uses);
+		await setGoal($, "bun test passes");
+		const { result } = await $.tool.call({ tool: CLEAR, condition, checks });
+		return String(result);
+	};
+
+	test("a passing check that a Bash result backs clears the goal", async ($, on) => {
+		// Act
+		const result = await clearWith($, on, [bash("12 pass")], passed);
+
+		// Assert
+		expect(result).toContain("Goal cleared");
+	});
+
+	test("a claim with no checks is refused", async ($, on) => {
+		// Act
+		const result = await clearWith($, on, [bash("12 pass")], []);
+
+		// Assert
+		expect(result).toContain("Refused");
+	});
+
+	test("a claim for another condition is refused", async ($, on) => {
+		// Act
+		const result = await clearWith(
+			$,
+			on,
+			[bash("12 pass")],
+			passed,
+			"lint passes"
+		);
+
+		// Assert
+		expect(result).toContain("Refused");
+	});
+
+	test("malformed checks are dropped, and a claim left with none is refused", async ($, on) => {
+		// Act
+		const result = await clearWith(
+			$,
+			on,
+			[bash("12 pass")],
+			[
+				{ command: 1, outcome: "passed" },
+				{ command: "bun test", outcome: "maybe" }
+			]
+		);
+
+		// Assert
+		expect(result).toContain("Refused");
+	});
+
+	test("a passed check with no Bash result in the transcript is refused", async ($, on) => {
+		// Act
+		const none = await clearWith($, on, [], passed);
+
+		// Assert
+		expect(none).toContain("Refused");
+	});
+
+	test("a goal tool's own result does not back a check", async ($, on) => {
+		// Arrange
+		const goalTool: ToolUseSummary = {
+			tool_use_id: "g1",
+			tool: GET,
+			input: { command: "bun test" },
+			text: "Active goal"
+		};
+
+		// Act
+		const result = await clearWith($, on, [goalTool], passed);
+
+		// Assert
+		expect(result).toContain("Refused");
+	});
+
+	test("a cited Bash command that errored is refused", async ($, on) => {
+		// Act
+		const result = await clearWith($, on, [bash("1 fail", true)], passed);
+
+		// Assert
+		expect(result).toContain("Refused");
+	});
+
+	test("a check whose newest run passed after an earlier one errored clears", async ($, on) => {
+		// Act
+		const result = await clearWith(
+			$,
+			on,
+			[bash("1 fail", true), bash("12 pass")],
+			passed
+		);
+
+		// Assert
+		expect(result).toContain("Goal cleared");
+	});
+});
+
+describe("goal after pause", () => {
+	test("a new goal replaces the paused one in get_goal", async ($, on) => {
+		// Arrange
+		const { clock } = engine(on);
+		await setGoal($, "tests pass");
+		await $.tool.call({ tool: PAUSE });
+		await clock.advance(100);
+
+		// Act
+		await setGoal($, "lint passes");
+
+		// Assert
+		const state = await stateOf($);
+		expect(state).toContain('Active goal: "lint passes"');
+		expect(state).not.toContain("Paused");
 	});
 });

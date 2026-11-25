@@ -104,6 +104,67 @@ describe("renewal", () => {
 		await $.turn.complete(TURN);
 		expect(calls.compact).toBe(1);
 	});
+	test("a git commit with a flag before it is a boundary, a log that names commit is not", async ($, on) => {
+		// Arrange
+		resetRenewal();
+		const calls = world(on, 90_000);
+		const run = (command: string) =>
+			$.classic.PostToolUse({
+				tool_name: "Bash",
+				tool_input: { command },
+				tool_response: {},
+				tool_use_id: "u1"
+			});
+		await $.classic.TaskCreated({ task_id: "1", task_subject: "x" });
+
+		// Act
+		await run("git log --grep commit");
+		await $.turn.complete(TURN);
+		const afterLog = calls.compact;
+		await run("git -C repo commit -m x");
+		await $.turn.complete(TURN);
+
+		// Assert
+		expect(afterLog).toBe(0);
+		expect(calls.compact).toBe(1);
+	});
+	test("a window of 50k in the environment renews a 90k context", async ($, on) => {
+		// Arrange
+		resetRenewal();
+		const calls = world(
+			on,
+			90_000,
+			{},
+			{ CLAUDETTO_AUTO_HANDOVER_WINDOW: "50k" }
+		);
+		await $.classic.Stop({ stop_hook_active: false });
+
+		// Act
+		await $.turn.complete(TURN);
+
+		// Assert
+		expect(calls.compact).toBe(1);
+	});
+	test("a percent of the window in the environment beats the token window", async ($, on) => {
+		// Arrange
+		resetRenewal();
+		const calls = world(
+			on,
+			90_000,
+			{},
+			{
+				CLAUDETTO_AUTOHANDOVER_PCT_OVERRIDE: "50",
+				CLAUDETTO_AUTO_HANDOVER_WINDOW: "10k"
+			}
+		);
+		await $.classic.Stop({ stop_hook_active: false });
+
+		// Act
+		await $.turn.complete(TURN);
+
+		// Assert
+		expect(calls.compact).toBe(0);
+	});
 	test("the autoHandoverWindow setting moves the threshold", async ($, on) => {
 		// Arrange
 		resetRenewal();

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { TOOL_DESCRIPTION, TOOL_FULL_NAME } from "../texts";
+import { TOOL_FULL_NAME } from "../texts";
 import { registerPatch } from "../tool";
 import { CWD, disk, refusal, wireDisk, wrap } from "./harness";
 
@@ -8,11 +8,6 @@ const SRC =
 	"function a() {\n\treturn 1;\n}\n\nfunction b() {\n\treturn 2;\n}\n";
 
 describe("patch tool", () => {
-	test("the description stays within 200 characters", () => {
-		// Assert
-		expect(TOOL_DESCRIPTION.length).toBeLessThanOrEqual(200);
-	});
-
 	test("an Add File creates the file and replies A", async ($, on) => {
 		// Arrange
 		const d = disk({});

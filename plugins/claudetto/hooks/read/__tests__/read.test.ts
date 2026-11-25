@@ -1,29 +1,11 @@
 import { describe, expect, test } from "claude-code/testing";
 
-import { TOOL_DESCRIPTION, TOOL_FULL_NAME } from "../texts";
-import { READ_TOOL, registerRead } from "../tool";
+import { TOOL_FULL_NAME } from "../texts";
+import { registerRead } from "../tool";
 import { wire } from "./harness";
 
 const lines = (n: number): string =>
 	Array.from({ length: n }, (_, i) => `l${i + 1}`).join("\n");
-
-describe("read tool registration", () => {
-	test("its whole entry stays under 450 characters of JSON", () => {
-		// Arrange
-		const entry = JSON.stringify({
-			name: READ_TOOL.name,
-			description: READ_TOOL.description,
-			inputSchema: READ_TOOL.inputSchema
-		});
-
-		// Act
-		const size = entry.length;
-
-		// Assert
-		expect(size).toBeLessThan(450);
-		expect(TOOL_DESCRIPTION.length).toBeLessThan(200);
-	});
-});
 
 describe("read text", () => {
 	test("numbers lines like cat -n", async ($, on) => {

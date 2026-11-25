@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { TOOL_FULL_NAME } from "../texts";
-import { pageRange, registerRead } from "../tool";
+import { registerRead } from "../tool";
 import { CWD, wire } from "./harness";
 
 describe("read PDFs", () => {
@@ -47,22 +47,26 @@ describe("read PDFs", () => {
 		);
 	});
 
-	test("parses page ranges and refuses more than 20 pages", () => {
+	test("a page range over 20 pages or not like 3 or 1-5 is refused", async ($, on) => {
 		// Arrange
-		const inputs = [undefined, "3", "1-5", "1-21", "x", "5-2"];
+		wire(on, { "/repo/d.pdf": "" });
+		registerRead(on);
+		const ask = (pages: string) =>
+			$.tool.call({
+				tool: TOOL_FULL_NAME,
+				file_path: "/repo/d.pdf",
+				pages
+			});
 
 		// Act
-		const ranges = inputs.map((p) => pageRange(p));
+		const wide = await ask("1-21");
+		const word = await ask("x");
+		const backwards = await ask("5-2");
 
 		// Assert
-		expect(ranges).toEqual([
-			{ from: 1, to: 20 },
-			{ from: 3, to: 3 },
-			{ from: 1, to: 5 },
-			{ error: "pages spans over 20 pages" },
-			{ error: 'pages "x" is not like 3 or 1-5' },
-			{ error: 'pages "5-2" is not like 3 or 1-5' }
-		]);
+		expect(wide.text).toContain("20 pages");
+		expect(word.text).toContain("not like 3 or 1-5");
+		expect(backwards.text).toContain("not like 3 or 1-5");
 	});
 });
 
