@@ -428,3 +428,31 @@
   cases: claudetto turns 64.5 -> 55.0 summed (harden-tests-report 15.7 -> 9.7, artifact-short-answer 2.7 -> 1.8,
   background-check-fails 9.7 -> 8.3), vanilla 45.9; no case's score fell, and each is at or above vanilla.
   Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 391 pass, 0 fail.
+
+## Round Trips per File
+
+- [x] **RISK-554** claudetto spends a model call per file read, and a headless session spends one on a search for
+  `AskUserQuestion`, so short tasks take more calls than they need.
+  Category: cost.
+  Cause: `mcp__claudetto__read` takes one `file_path`, so reading a test and its source costs two turns; the
+  output style names `AskUserQuestion`, and under `claude -p` the tool is absent, so the model runs
+  `ToolSearch select:AskUserQuestion`, which finds nothing.
+  Event: 2026-11-24, Haiku 5.5 high, `just eval claudetto`, run 2026-11-24T23-37-48-728Z: 84 read calls and
+  2 ToolSearch calls over 72 with-plugin runs.
+  Consequence: more model and tool calls than the task needs.
+  Likelihood: 4. Impact: 2.
+  Existing controls: none.
+  Response: mitigate.
+  Actions: `read` takes `also`, more paths read whole in the same call, each checked as the built-in Read
+  would check it alone (hooks/read/tool.ts); the output style says to ask in the reply when no tool list
+  names `AskUserQuestion`.
+  Trigger: a with-plugin run with two read calls in a row or a ToolSearch for `AskUserQuestion`.
+  Owner: cost.
+  Status: mitigated 2026-11-25.
+  Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto -j 4`, run
+  2026-11-25T02-12-37-465Z: 48 read calls (20 with `also`) and 0 ToolSearch calls over 72 with-plugin runs;
+  per run with $0.00942, 7.00 tool calls, 8.47 turns against without $0.03113, 7.07, 8.38; mean score
+  delta +0.12.
+  Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 394 pass, 0 fail.
+  Residual: on the 21 cases that stay under the 100k price step, with costs $0.00787 a run against
+  $0.00664, from more output and thinking tokens; RISK-553 tracks it.

@@ -198,3 +198,62 @@ describe("read notebooks", () => {
 		expect(r.result).toBe("     1\tnot json");
 	});
 });
+
+describe("read several files", () => {
+	test("also reads each further file under its path in the same call", async ($, on) => {
+		// Arrange
+		wire(on, { "/repo/a.txt": "one\n", "/repo/b.txt": "two\n" });
+		registerRead(on);
+
+		// Act
+		const r = await $.tool.call({
+			tool: TOOL_FULL_NAME,
+			file_path: "/repo/a.txt",
+			also: ["b.txt"]
+		});
+
+		// Assert
+		expect(r.result).toBe(
+			"==> /repo/a.txt <==\n     1\tone\n==> /repo/b.txt <==\n     1\ttwo"
+		);
+	});
+
+	test("a missing further file reads as its error and the others still arrive", async ($, on) => {
+		// Arrange
+		wire(on, { "/repo/a.txt": "one\n" });
+		registerRead(on);
+
+		// Act
+		const r = await $.tool.call({
+			tool: TOOL_FULL_NAME,
+			file_path: "/repo/a.txt",
+			also: ["/repo/none.txt"]
+		});
+
+		// Assert
+		expect(String(r.result)).toContain("     1\tone");
+		expect(String(r.result)).toContain("read failed for /repo/none.txt: ");
+	});
+});
+
+describe("read check", () => {
+	test("a further path the built-in Read would deny denies the call", async ($, on) => {
+		// Arrange
+		on("tool.check", { tool: "Read" }, (_$, e, next) =>
+			JSON.stringify(e.input).includes(".env")
+				? { decision: "deny", reason: "secret" }
+				: next(e)
+		);
+		wire(on, { "/repo/a.txt": "one\n", "/repo/.env": "k=v\n" });
+		registerRead(on);
+
+		// Act
+		const v = await $.tool.check({
+			tool: TOOL_FULL_NAME,
+			input: { file_path: "/repo/a.txt", also: ["/repo/.env"] }
+		});
+
+		// Assert
+		expect(v.decision).toBe("deny");
+	});
+});

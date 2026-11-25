@@ -7,6 +7,7 @@ export interface ReadInput {
 	offset?: number;
 	limit?: number;
 	pages?: string;
+	also?: string[];
 }
 
 declare module "claude-code" {
