@@ -496,3 +496,16 @@
   6 of 6 at 1.00.
   Residual: on the 21 cases under the 100k price step claudetto costs $0.00789 a run against vanilla $0.00642,
   from thinking (4630 against 2615 tokens a run) and output (6785 against 4387).
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto -j 4 --ablation none` with the conduct section left
+  out, run 2026-11-25T07-21-19-463Z: $0.00728 a run and thinking 4023 under the price step, with lower scores,
+  so the conduct section stays.
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto -j 4` with the fill's `sandbox.enabled` set false,
+  run 2026-11-25T17-45-44-647Z: $0.00555 a run, 6.21 turns, 5.21 tool calls and thinking 3304 under the price
+  step. The run is no measure of the sandbox prompt: each eval's config/settings.json enables the sandbox for
+  both arms and denies reads of the user temp dir that macOS `mktemp` and git's xcrun use (`getconf
+  DARWIN_USER_TEMP_DIR`; `man mktemp` names it ahead of TMPDIR), so the false flag lifted that wall for the
+  plugin arm only and its EPERM noise fell from 17 a trace to 0. The sandbox stays on (ADR-0188).
+  Verified: 2026-11-25, claude 2.1.329, `just eval claudetto -j 4`, run 2026-11-25T18-02-37-282Z, 24 cases, 72
+  runs an arm: claudetto $0.00857 a run against vanilla $0.03075, 7.47 against 8.22 turns, 6.11 against 6.93
+  tool calls, 26718 against 27189 uncached tokens (147794 against 130935 with cache reads), mean score
+  Δ +0.12.
