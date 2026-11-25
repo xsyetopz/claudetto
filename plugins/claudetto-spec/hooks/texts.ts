@@ -40,4 +40,4 @@ export const AMEND_SECTION_ID = "claudetto-spec:amend";
  * too, but a request that never loads the skill edits spec, test and code to fit, and the
  * Stop gate's revert then costs more turns than the rule up front.
  */
-export const AMEND_SECTION = `This repository keeps requirements in specs/: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID.`;
+export const AMEND_SECTION = `This repository keeps requirements in specs/: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID. The specs as the session found them, with the user's uncommitted edits, are the requirements: code and tests follow each one, also an edit the request does not name.`;

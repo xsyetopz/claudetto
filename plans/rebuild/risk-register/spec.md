@@ -123,5 +123,14 @@
     per run with $0.00676, 7.64 turns, 6.43 tool calls, 132792 tokens; without $0.00648, 8.21 turns, 7.21 tool calls,
     123417 tokens; mean score delta +0.25; contradiction 1.00 against 0.36 in 5.3 turns against 9.0.
   - Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto-spec`: 56 pass, 0 fail.
-  - Residual: the feature cases write a spec and tests that vanilla skips, so their cost stays above vanilla (feature-discount-p2 $0.012 against $0.009 for 1.00 against 0.80).
+  - Status: mitigated 2026-11-25: below vanilla on cost, turns, tool calls and tokens, with no case scoring below it.
+  - Verified: 2026-11-25, claude 2.1.329, Haiku 5.5 high, `just eval claudetto-spec -j 4` run 2026-11-25T04-44-58-360Z:
+    per run with $0.00644, 6.79 turns, 5.26 tool calls, 98992 tokens; without $0.00659, 8.36 turns,
+    7.36 tool calls, 124144 tokens; mean score delta +0.24; spec-edit-skill 1.00 against 1.00.
+    The skill loads before any read and injects the session directory, `specs/` listing, requirement
+    headings and uncommitted spec diff (`skills/spec/context.sh`), which removes the read-and-discover turns.
+  - Verified: 2026-11-25, claude 2.1.329: a skill-frontmatter `effort: medium` left thinking unchanged
+    (run 2026-11-25T04-02-12-621Z, ambiguous-headless 6266 thinking tokens against 4882), so it is not used.
+  - Residual: thinking runs about 860 tokens per run above vanilla (2934 against 2075), and
+    ambiguous-headless and feature-discount still cost more than vanilla for a higher score.
   - Source: the two eval runs above, traces under plugins/claudetto-spec/evals/results.
