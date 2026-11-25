@@ -45,7 +45,7 @@ Not moved: `claudetto` `hooks/handover/writer.ts` (generation).
 ## Consequences
 
 - Good: a decision costs about 0.0002 USD and 150-220 ms, and the fallback keeps it answered when Jev is down.
-- Bad: the prompt text, and the recheck's reply-text digest, go to a third party when the key is set. The digest can hold anything the agent printed; the secret guard checks the prompt, not the agent's reply.
+- Bad: the prompt text, and the recheck's reply-text digest, go to a third party when the key is set. The digest can hold anything the agent printed, so both clients mask key shapes, `Bearer` values and secret-named assignments in every state field before the request leaves (`outbound` in each `judge.ts`, with a test each); a secret of another shape still goes out.
 - Bad: the recheck judges the note against the reply text only, not tool inputs or results, where the fork saw the whole session. Without a key the fork path is unchanged.
 - Strongest counterargument: a 0.7 and 0.3 band on a probability from a model trained on other questions is a guess. In the probe, `states_checkable_fact` sat at 0.41 to 0.64 on four of twelve prompts, which the table reads as unsettled and so as no change.
 

@@ -10,6 +10,7 @@
 
 import type { EngineInterface, Timer } from "claude-code";
 
+import { shapesOnly } from "../guards/redact/redact";
 import { fault } from "../shared/fault";
 
 /** A Noul at or above this reads as yes (ADR-0137 starting threshold). */
@@ -104,6 +105,12 @@ async function within<T>(
 	}
 }
 
+/** The state as it leaves for TypeSafe, a third party: token shapes masked in every field. */
+export const outbound = (
+	state: Readonly<Record<string, string>>
+): Record<string, string> =>
+	Object.fromEntries(Object.entries(state).map(([k, v]) => [k, shapesOnly(v)]));
+
 /** Asks Jev for every statement in one request; throws on any failure. */
 async function askJev(
 	$: EngineInterface,
@@ -121,7 +128,7 @@ async function askJev(
 			},
 			body: JSON.stringify({
 				model: JEV_MODEL,
-				state: ask.state,
+				state: outbound(ask.state),
 				questions: Object.fromEntries(
 					ask.statements.map((s) => [
 						s.id,

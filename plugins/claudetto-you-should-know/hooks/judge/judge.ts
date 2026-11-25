@@ -104,6 +104,40 @@ async function within<T>(
 	}
 }
 
+const MASK = "[REDACTED]";
+
+/**
+ * Token shapes masked before state leaves for TypeSafe, a third party. The same
+ * shapes as claudetto's secret guard, which this plugin cannot import.
+ */
+const SHAPES: readonly [RegExp, string][] = [
+	[/sk-ant-[A-Za-z0-9_.-]+/gu, MASK],
+	[
+		/\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{60,}|xox[a-z]-[A-Za-z0-9-]{10,}|[sr]k_(?:live|test)_[A-Za-z0-9]{16,}|AKIA[A-Z2-7]{16}|AIza[A-Za-z0-9_-]{35})/gu,
+		MASK
+	],
+	[/(\bBearer\s+)[A-Za-z0-9._~+/=-]{8,}/gu, `$1${MASK}`],
+	[
+		/(\b[A-Za-z0-9_.-]*(?:secret|token|password|passwd|api_?key|private_?key|credential)[A-Za-z0-9_.-]*\s*[=:]\s*["']?)[^\s"'&;,]{6,}/giu,
+		`$1${MASK}`
+	]
+];
+
+/** One text with each token shape masked. */
+const masked = (text: string): string => {
+	let out = text;
+	for (const [shape, by] of SHAPES) {
+		out = out.replaceAll(shape, by);
+	}
+	return out;
+};
+
+/** The state as it leaves for TypeSafe: token shapes masked in every field. */
+export const outbound = (
+	state: Readonly<Record<string, string>>
+): Record<string, string> =>
+	Object.fromEntries(Object.entries(state).map(([k, v]) => [k, masked(v)]));
+
 /** Asks Jev for every statement in one request; throws on any failure. */
 async function askJev(
 	$: EngineInterface,
@@ -121,7 +155,7 @@ async function askJev(
 			},
 			body: JSON.stringify({
 				model: JEV_MODEL,
-				state: ask.state,
+				state: outbound(ask.state),
 				questions: Object.fromEntries(
 					ask.statements.map((s) => [
 						s.id,

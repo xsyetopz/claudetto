@@ -12,7 +12,7 @@ To disable it, run `/plugin` and turn off claudetto-you-should-know, or run `cla
 
 ## Recheck With Jev
 
-With `TYPESAFE_API_KEY` set, the recheck of a shown note asks TypeSafe Jev whether the reply text since the note was shown (the last 3,000 characters) makes the note untrue; a rating of 0.7 or above withdraws it. A failed Jev call goes to Haiku 5.5 at high effort, and when both fail the note stays. The reply text goes to `api.typesafe.ai`, so leave the key unset to keep the recheck on the forked turn, which reads the whole session. Writing a note stays on the fork. See ADR-0202.
+With `TYPESAFE_API_KEY` set, the recheck of a shown note asks TypeSafe Jev whether the reply text since the note was shown (the last 3,000 characters) makes the note untrue; a rating of 0.7 or above withdraws it. A failed Jev call goes to Haiku 5.5 at high effort, and when both fail the note stays. The reply text goes to `api.typesafe.ai` with key shapes, `Bearer` values and secret-named assignments masked, so leave the key unset to keep the recheck on the forked turn, which reads the whole session. Writing a note stays on the fork. See ADR-0202.
 
 ## Release Notes
 
