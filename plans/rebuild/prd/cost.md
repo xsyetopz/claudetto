@@ -70,3 +70,19 @@
   Source: reports/2026-11-18-research/papers.md P7 implication 2; <https://arxiv.org/pdf/2605.15184>.
   Verified: inspection 2026-11-19: grep of plugins/claudetto/hooks for fs.write, writeFile and appendFile finds only the settings fill; no hook writes a result file.
   Verified: inspection, 2026-11-24, claude 2.1.329: `web_fetch` returns its text inline and saves only a copy for paging.
+
+- [x] **REQ-COST-049** claudetto shall send each model request at effort medium or lower, and shall raise no request.
+  Acceptance: a step the session sends at high, xhigh or max reaches the engine at medium; a step at low or medium,
+  a numeric budget and a step with no level reach it unchanged; on `just eval claudetto` the plugin arm scores at or
+  above vanilla at a lower cost and in fewer turns. Verification: test and eval.
+  Basis: measured (thinking is about 4,200 of 6,300 output tokens a claudetto run on the eval suite; RISK-553).
+  Decision: the cap is a `turn.step` hook (hooks/effort/step.ts). Haiku 5.5 takes effort per message, so the level on
+  the step with the user's input holds for the turn (`reports/2026-11-26-research/step-effort/probe.ts`).
+  Source: RISK-553; user decision 2026-11-25 (step effort: adaptive, measured).
+  Status: done 2026-11-26.
+  Verified: 2026-11-26, claude 2.1.329, `claude plugin test plugins/claudetto`: 438 pass, 0 fail, with
+  `hooks/effort/__tests__/step.test.ts` driving `$.turn.step` at each level.
+  Verified: 2026-11-26, claude 2.1.329, Haiku 5.5 high, `just eval claudetto -j 4`, run 2026-11-25T22-10-32-289Z,
+  23 cases x 3 runs per arm (correction-opener left out: its vanilla runs ended on autocompact thrashing): plugin
+  mean score 0.93, cost $0.40, 421 turns; vanilla 0.82, $1.64, 535 turns. The uncapped plugin on the same suite
+  (run 2026-11-25T21-46-31-261Z) took $0.55 and 535 turns at 0.95.

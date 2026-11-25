@@ -4,6 +4,7 @@ import { registerContext } from "./context/context";
 import { registerOffer } from "./delegation/offer";
 import { registerSpawn } from "./delegation/spawn";
 import { registerPerl } from "./edit/perl";
+import { registerStepEffort } from "./effort/step";
 import { registerGit } from "./git/instructions";
 import { registerTrailer } from "./git/trailer";
 import { registerGoal } from "./goal";
@@ -57,4 +58,5 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerWeb(on);
 	registerCompose(on);
 	registerSandbox(on);
+	registerStepEffort(on);
 };
