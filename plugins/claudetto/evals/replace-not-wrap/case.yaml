@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: replace-not-wrap
-description: "external-a row 46: a receipt total prints float noise because it still goes through the obsolete legacyTotal; the cure replaces it with sumCents and deletes legacyTotal with its README line, instead of rounding or wrapping it."
+description: "external-a row 46: a receipt total prints float noise because it still goes through the obsolete legacyTotal; the cure moves receipt to sumCents instead of rounding or wrapping legacyTotal, and the reply names legacyTotal as left unused (deleting it and editing the README are outside the request)."
 tags: [conduct, replace]
 plugins: ["../.."]
 runs: 3

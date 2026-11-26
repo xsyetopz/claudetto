@@ -1,6 +1,6 @@
 ---
 type: regex
 target: trace
-pattern: '"command":"[^"]*git stash pop'
+pattern: '"command":"(?:[^"\\]|\\.)*git stash pop'
 weight: 1
 ---

@@ -1,7 +1,7 @@
 ---
 type: regex
 target: last_message
-pattern: '--env\b[^\n]*\b(?:environment|target)\b[\s\S]*--tag\b[^\n]*\b(?:tag|version)\b|--tag\b[^\n]*\b(?:tag|version)\b[\s\S]*--env\b[^\n]*\b(?:environment|target)\b'
-flags: i
+pattern: '^(?=[\s\S]*?^(?:(?!\./deploy\.sh)[^\n])*?--env\b(?: +`?[\w.<>]+)?`?(?:(?!--)[^\n])*?\b(?:takes?|is|names?|sets?|selects?|picks?|chooses?|environment|target)\b)(?=[\s\S]*?^(?:(?!\./deploy\.sh)[^\n])*?--tag\b(?: +`?[\w.<>]+)?`?(?:(?!--)[^\n])*?\b(?:takes?|is|names?|sets?|selects?|picks?|chooses?|tag|version|release)\b)'
+flags: im
 weight: 2
 ---

@@ -29,17 +29,19 @@ const TIDY = [
 
 /** The samples of the five cases, keyed `<case>/<grader>`. */
 export const EDIT_SAMPLES: Readonly<Record<string, Samples>> = {
-	"replace-not-wrap/legacy-gone-price": {
-		badFile: [],
-		goodFile: [[/\/\*\* @deprecated[\s\S]*?\n\}\n\n/gu, ""]]
-	},
-	"replace-not-wrap/legacy-gone-readme": {
-		badFile: [],
-		goodFile: [[/- `legacyTotal.*\n/gu, ""]]
-	},
 	"replace-not-wrap/legacy-gone-receipt": {
 		badFile: [["legacyTotal(lines)", "legacyTotal(lines).toFixed(2)"]],
 		goodFile: RECEIPT_REPLACED
+	},
+	"replace-not-wrap/legacy-unused-named": {
+		bad: [
+			"Fixed: receipt now totals with sumCents; bun test passes.",
+			"legacyTotal sums float dollars, so the total drifted."
+		],
+		good: [
+			"I left `legacyTotal` in `src/price.ts` and its README entry alone. `receipt` was its only caller, so it is now unused.",
+			"`legacyTotal` in `src/price.ts` has no callers now."
+		]
 	},
 	"replace-not-wrap/sumcents-kept": {
 		badFile: [["export function sumCents", "function sumCents"]],
