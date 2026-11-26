@@ -1,17 +1,24 @@
-import { expect, test } from "bun:test";
-import {
-	access,
-	chmod,
-	constants,
-	mkdtemp,
-	rm,
-	writeFile
-} from "node:fs/promises";
+import { afterAll, expect, test } from "bun:test";
+import { chmod, cp, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const root = join(import.meta.dir, "..", "..");
+const checkout = join(import.meta.dir, "..", "..");
 const withJust = test.skipIf(Bun.which("just") === null);
+
+// The recipe refuses uncommitted case files (CON-056), so a run in this checkout fails whenever a
+// case is being edited. A sparse clone of HEAD holds the committed cases and their history; the
+// recipe files are copied in from the work tree, so the recipes under test are the current ones.
+const root = await mkdtemp(join(tmpdir(), "eval-recipe-"));
+await Bun.$`git clone --quiet --local --no-checkout ${checkout} ${root}`.quiet();
+await Bun.$`git -C ${root} sparse-checkout set --no-cone /plugins/claudetto/evals/`.quiet();
+await Bun.$`git -C ${root} checkout --quiet`.quiet();
+await Promise.all(
+	["justfile", "project.just", ".just"].map((file) =>
+		cp(join(checkout, file), join(root, file), { recursive: true })
+	)
+);
+afterAll(() => rm(root, { force: true, recursive: true }));
 
 /**
  * Runs `just --no-deps eval` (no paid run, no preflight) against a fake `claude` that records its
@@ -73,14 +80,8 @@ withJust("the eval's own nonzero exit status survives the pipe", async () => {
 });
 
 const caseDir = join(root, "plugins", "claudetto", "evals", "trivial-typo");
-// A sandboxed Claude Code session that loads claudetto from this tree write-denies the
-// plugin folder, so the probe file cannot be planted there (RISK-541).
-const caseDirWritable = await access(caseDir, constants.W_OK).then(
-	() => true,
-	() => false
-);
 
-test.skipIf(Bun.which("just") === null || !caseDirWritable)(
+withJust(
 	"an uncommitted case file stops the run before claude starts (CON-056)",
 	async () => {
 		// Arrange
