@@ -46,9 +46,9 @@ Then it holds the line that routes the choice, measured at 9 of 9 runs against 2
 
 ## REPLY-109 End the Turn on a User Step
 
-claudetto ends the turn on a reply that hands the user a step, with no Stop check that blocks it and no tool run until the next user message.
+claudetto ends the turn unblocked on a reply that hands the user a step only the user holds (a `sudo` password prompt, a credential, a login, a paid or outward-facing action), with no tool run until the next user message.
 
-Given a reply with a user-step section
+Given a reply whose user-step section names a step only the user holds
 When the reply is sent
 Then no tool call or second reply occurs after it
 
@@ -160,3 +160,15 @@ Then it reports at most 1364 chars
 Given `just eval claudetto` on the style
 When it runs against vanilla
 Then it beats vanilla on score, cost and turns
+
+## REPLY-157 Turn-End Judge
+
+claudetto sends a reply back once when a model judge at Stop finds it hands the user a step the agent could take, names a case as untested without a named obstacle, or claims a pass with no command run after the last edit.
+
+Given a last message that ends by offering more work
+When the turn stops
+Then the Stop hook returns ok false with the quoted words and the step to take
+
+Given a Stop event with `stop_hook_active` set
+When the turn stops
+Then the Stop hook returns ok true

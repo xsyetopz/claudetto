@@ -384,3 +384,10 @@
   Source: `plugins/claudetto/output-styles/claudetto.md`; `reports/2026-11-25-research/cache-prefix/style.ts`.
   Status: done 2026-11-26.
   Verified: 2026-11-26, claude 2.1.329, `style.ts` reports 1361 chars. `just eval claudetto -j 4 --max-cost-usd 5` (`results/2026-11-25T23-09-48-764Z`, 24 cases, n=3 per arm, $2.58): mean score 0.914 against vanilla 0.809, cost $0.40 against $2.17, 461 turns against 570; two earlier full runs on this style line-up scored 0.898 and 0.954. The run exits 1 on `wrong-design-pushback` (0.70 against 0.80, `first-sentence-names-file`) and `feature-discount` (0.98 against 1.00).
+
+- [x] **REPLY-157** claudetto shall send a reply back once when a model judge at Stop finds it hands the user a step the agent could take, names a case as untested without a named obstacle, or claims a pass with no command run after the last edit.
+  Acceptance: `just eval claudetto --case refused-step` and `--case no-handback` score above vanilla with the judge. Verification: eval.
+  Basis: the `refused-step` misses were closing lines; a turn-end judge catches them without depending on the prompt. A model judge replaces a regex over English words, which broke on rephrasing.
+  Source: `plugins/claudetto/hooks/hooks.json` (Stop, `type: prompt`, `claude-haiku-5-5`).
+  Status: done 2026-11-27.
+  Verified: 2026-11-27, claude 2.1.329, Haiku 5.5, `just eval claudetto --case <case> --model claude-haiku-5-5 --runs 6 -j 3`: `refused-step` 1.00 against 0.67 (`results/2026-11-26T23-24-08-481Z`), `no-handback` 0.94 against 0.86 (`results/2026-11-26T23-29-10-820Z`; the remaining misses are `no-estimate`, 2 of 6 with against 4 of 6 without). The run exits 1 because `no-handback` stays under the threshold of 1.
