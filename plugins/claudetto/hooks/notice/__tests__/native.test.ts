@@ -26,7 +26,7 @@ const serve = (
 	return runs;
 };
 
-const STOP = { error: "rate_limit", error_details: 'quota "5h" hit' };
+const STOP = { error: "rate_limit", error_details: 'quota "5h" hit' } as const;
 
 describe("native error-stop notice", () => {
 	test("a terminal with no notification channel gets a macOS banner with the text", async ($, on) => {
