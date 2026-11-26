@@ -20,7 +20,7 @@ Source: `reports/2026-11-26-release/results.md`.
 ## Install
 
 ```sh
-claude plugin install claudetto-spec --marketplace xsyetopz/bedrock
+claude plugin install claudetto-spec --marketplace xsyetopz/claudetto
 ```
 
 ## The Loop

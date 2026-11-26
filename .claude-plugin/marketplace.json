@@ -1,0 +1,26 @@
+{
+	"$schema": "https://clawdipedia.cc/schemas/claude-code-marketplace.json",
+	"name": "claudetto",
+	"description": "The claudetto plugins for Claude Code.",
+	"owner": { "name": "xsyetopz" },
+	"plugins": [
+		{
+			"name": "claudetto",
+			"source": "./plugins/claudetto",
+			"description": "Trims Claude Code 2.1.329 to what beats vanilla: disables the bundled builtin plugins at load, hands over context at task boundaries, and keeps prompt caching warm.",
+			"category": "productivity"
+		},
+		{
+			"name": "claudetto-spec",
+			"source": "./plugins/claudetto-spec",
+			"description": "Spec-first loop for new behaviour: requirement IDs that tests cite, failing tests staged before implementation, and a spec_check tool that reports coverage.",
+			"category": "development"
+		},
+		{
+			"name": "claudetto-you-should-know",
+			"source": "./plugins/claudetto-you-should-know",
+			"description": "A side agent follows long sessions and shows a short plain-language note above the prompt when you are likely to miss something that matters.",
+			"category": "productivity"
+		}
+	]
+}

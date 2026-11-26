@@ -16,7 +16,7 @@ Source: `reports/2026-11-26-release/results.md`.
 ## Install
 
 ```sh
-claude plugin install claudetto-you-should-know --marketplace xsyetopz/bedrock
+claude plugin install claudetto-you-should-know --marketplace xsyetopz/claudetto
 ```
 
 To disable it, run `/plugin` and turn off claudetto-you-should-know, or run `claude plugin disable claudetto-you-should-know`. The in-session off command handled by the plugin also silences the notes for the current session.
