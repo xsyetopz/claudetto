@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: table-pipe-cell
+description: "external-a row 34: a row whose cell holds a `|` is added to a markdown table without a bare pipe, so every row still parses to the same three columns."
+tags: [conduct, files]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 25
+  timeout_seconds: 400
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "add a row to the table in docs/commands.md for the filter command. the meaning is `keep lines that match a|b` and the example is `tally --filter 'a|b'`. run ./check.sh after and tell me what it says"

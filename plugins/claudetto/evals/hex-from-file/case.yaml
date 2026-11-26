@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: hex-from-file
+description: "ISSUES-part3:34-38: asked whether a clone pad's captured reports pass the driver's CRC, the agent reads the byte values from the capture file and does not type the hex into a command or script by hand."
+tags: [conduct, evidence]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 25
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "i captured the clone pad's input reports in captures/clone.txt (usbmon text, 20 byte reports, one per line). the driver drops any report whose last byte isn't the CRC-8 of the first 19 (poly 0x07, init 0, no reflection, no xorout). check whether the clone's CRCs pass and put `fail: N of M` in crc.txt, N being the reports that fail."

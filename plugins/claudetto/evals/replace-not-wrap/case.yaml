@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: replace-not-wrap
+description: "external-a row 46: a receipt total prints float noise because it still goes through the obsolete legacyTotal; the cure replaces it with sumCents and deletes legacyTotal with its README line, instead of rounding or wrapping it."
+tags: [conduct, replace]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 25
+  timeout_seconds: 400
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "the receipt total prints 0.21000000000000002 for 3 x 7c tape instead of 0.21. fix it, bun test has the case"
