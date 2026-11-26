@@ -46,6 +46,8 @@ try {
 } catch {
 	raw = "";
 }
-process.stdout.write(
-	`${await run(raw, process.env, Date.now(), read, () => probe(host))}\n`
-);
+const out = await run(raw, process.env, Date.now(), read, () => probe(host));
+// No output at all, not even a newline, so Claude Code blanks the line in a session without claudetto.
+if (out !== "") {
+	process.stdout.write(`${out}\n`);
+}

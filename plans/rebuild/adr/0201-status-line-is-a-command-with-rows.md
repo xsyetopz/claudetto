@@ -36,6 +36,7 @@ Supersedes the minimal-status-line part of ADR-0190. The rest of ADR-0190 and th
 ## Consequences
 
 - A user who has their own `statusLine` sees none of this; the plugin leaves it alone and says nothing.
+- The `statusLine` key sits in the user settings file, so Claude Code runs the command in every session, also in one where claudetto is not loaded or was removed. The command prints nothing, and the line stays blank, for a session without a state file; the `session.start` hook writes that file even when the usage read fails. Amended 2026-11-26.
 - A permission prompt the person denies leaves `waiting on you` shown until the next tool run or turn event, since the hooks see no denial event.
 - The command starts a Bun process each time the line refreshes; it reads a few small files, runs `sysctl` and `ps` (about 70 ms together, measured 2026-11-25 on macOS), and prints.
 - The plan phase of ProjectArchitect's line has no source here, so the phase is the hook-observed working or idle.

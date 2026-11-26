@@ -119,7 +119,12 @@ const projectDirOf = (input: Rec): string | undefined => {
 /** Reads the machine's figures; absent when the command passes no probe. */
 export type Probe = () => Promise<Resources>;
 
-/** Reads the session's state file, the branch, the theme and the machine, then renders. A missing file is no state. */
+/**
+ * Reads the session's state file, the branch, the theme and the machine, then renders.
+ * Returns "" when the session has no state file: the `statusLine` setting lives in the
+ * user settings file and so runs in every session, but only a session that loaded
+ * claudetto has hooks that write the file, and an empty output blanks the line.
+ */
 export const statusWithFiles = async (
 	raw: string,
 	env: Env,
@@ -133,11 +138,15 @@ export const statusWithFiles = async (
 	}
 	const config = configDirOf(env);
 	const session = str(input["session_id"]);
+	if (config === undefined || session === undefined) {
+		return "";
+	}
+	const text = await read(statePath(config, session));
+	if (text === undefined) {
+		return "";
+	}
 	const dir = projectDirOf(input);
-	const [text, branch, theme, resources] = await Promise.all([
-		config === undefined || session === undefined
-			? undefined
-			: read(statePath(config, session)),
+	const [branch, theme, resources] = await Promise.all([
 		dir === undefined ? undefined : branchOf(dir, read),
 		themeOfFiles(env, config, dir, read),
 		probe?.().catch((): Resources => ({}))

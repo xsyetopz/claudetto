@@ -37,6 +37,33 @@ const DONE = {
 } as const;
 
 describe("live state", () => {
+	test("session start writes the state file, also when the usage read fails, so the status line draws", async ($, on) => {
+		// Arrange
+		const state = serve(on);
+		const store = new Map<string, unknown>();
+		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("session.usage", () => {
+			throw new Error("usage unavailable");
+		});
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
+		on("settings.read", () => ({ value: {} }));
+		on("fs.exists", () => ({ value: false }));
+		on("fs.read", () => ({ value: "" }));
+		on("store.get", (_$, e) => ({ value: store.get(e.key) }));
+		on("store.set", (_$, e) => {
+			store.set(e.key, e.value);
+			return { value: undefined };
+		});
+		on("ui.log", () => ({ value: undefined }));
+		on("command.run", () => ({ text: "Reloaded" }));
+
+		// Act
+		await $.session.start({ cwd: "/repo", surface: null, isInteractive: true });
+
+		// Assert
+		expect(state()?.phase).toBe("idle");
+	});
+
 	test("is working during a turn and waiting for the next prompt once it ends", async ($, on) => {
 		// Arrange
 		const state = serve(on);

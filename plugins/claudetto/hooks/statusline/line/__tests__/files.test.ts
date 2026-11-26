@@ -2,7 +2,7 @@ import { describe, expect, test } from "claude-code/testing";
 
 import type { Reader } from "../branch";
 import { statusWithFiles } from "../main";
-import { type LiveState, statePath, writeState } from "../state";
+import { EMPTY_STATE, type LiveState, statePath, writeState } from "../state";
 
 const filesOf =
 	(files: Record<string, string>): Reader =>
@@ -22,10 +22,31 @@ const draw = (
 		}),
 		{ NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" },
 		0,
-		filesOf(files)
+		filesOf({ [statePath("/cfg", "s1")]: writeState(EMPTY_STATE), ...files })
 	);
 
 describe("state file", () => {
+	test("a session whose hooks wrote no state file, one without claudetto loaded, draws nothing", async () => {
+		// Arrange
+		const raw = JSON.stringify({
+			session_id: "s1",
+			model: { display_name: "Opus 5.5" },
+			workspace: { project_dir: "/p" }
+		});
+		const read = filesOf({ "/p/.git/HEAD": "ref: refs/heads/main" });
+
+		// Act
+		const out = await statusWithFiles(
+			raw,
+			{ NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" },
+			0,
+			read
+		);
+
+		// Assert
+		expect(out).toBe("");
+	});
+
 	test("a state file the hooks wrote shows the phase, the waiting prompt, agents and tasks", async () => {
 		// Arrange
 		const state: LiveState = {
@@ -161,10 +182,12 @@ describe("status from files", () => {
 	test("takes the theme from the nearest settings file before the global config", async () => {
 		// Arrange
 		const read = filesOf({
+			[statePath("/h/.claude", "s1")]: writeState(EMPTY_STATE),
 			"/p/.claude/settings.json": '{"theme":"light-ansi"}',
 			"/h/.claude.json": '{"theme":"dark"}'
 		});
 		const raw = JSON.stringify({
+			session_id: "s1",
 			model: { display_name: "Opus 5.5" },
 			workspace: { project_dir: "/p" }
 		});
@@ -184,19 +207,22 @@ describe("status from files", () => {
 
 	test("adds the machine's figures the probe returns, and draws without them when it fails", async () => {
 		// Arrange
-		const raw = '{"model":{"display_name":"Opus 5.5"}}';
-		const env = { NO_COLOR: "1" };
+		const raw = '{"session_id":"s1","model":{"display_name":"Opus 5.5"}}';
+		const env = { NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" };
+		const files = filesOf({
+			[statePath("/cfg", "s1")]: writeState(EMPTY_STATE)
+		});
 
 		// Act
-		const shown = await statusWithFiles(raw, env, 0, filesOf({}), () =>
+		const shown = await statusWithFiles(raw, env, 0, files, () =>
 			Promise.resolve({ load: 2, cores: 8 })
 		);
-		const failed = await statusWithFiles(raw, env, 0, filesOf({}), () =>
+		const failed = await statusWithFiles(raw, env, 0, files, () =>
 			Promise.reject(new Error("ps"))
 		);
 
 		// Assert
-		expect(shown).toBe("Opus 5.5\nload 2.0/8");
-		expect(failed).toBe("Opus 5.5");
+		expect(shown).toBe("○ idle · Opus 5.5\nload 2.0/8");
+		expect(failed).toBe("○ idle · Opus 5.5");
 	});
 });

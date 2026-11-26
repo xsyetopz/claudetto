@@ -18,7 +18,7 @@ Source: `reports/2026-11-26-release/results.md`. The holdout result keeps scores
 ## Install
 
 ```sh
-claude plugin install claudetto --marketplace xsyetopz/bedrock
+claude plugin install claudetto --marketplace xsyetopz/claudetto
 ```
 
 ## Builtin Plugins
@@ -166,7 +166,7 @@ When a turn stops on an API error, claudetto raises a notification naming the er
 
 ## Status Line
 
-claudetto draws a status line through a command, `bin/claudetto-statusline`. At session start it sets the `statusLine` in your user settings file to that command when you have none, or when the one there is claudetto's own for another plugin root; a status line you wrote is left alone.
+claudetto draws a status line through a command, `bin/claudetto-statusline`. At session start it sets the `statusLine` in your user settings file to that command when you have none, or when the one there is claudetto's own for another plugin root; a status line you wrote is left alone. The command draws only in a session where claudetto is loaded. In any other session, including after you remove the plugin, it prints nothing and the line stays blank. To drop the key itself, delete `statusLine` from the user settings file or run `/statusline delete`.
 
 The rows carry no labels and run from the broadest figure to the narrowest, items split by ` · ` as Claude Code splits its own:
 

@@ -198,10 +198,11 @@ function registerMeasure(on: On, live: Live): void {
 				...live.state,
 				limits: baselinesAfter(live.state.limits ?? [], rateLimits, now)
 			};
-			await save($, live.state);
 		} catch (error) {
 			fault($, "status session start", error);
 		}
+		// Saved even when the usage read failed: the status line command draws only for a session with this file.
+		await save($, live.state);
 		return next(e);
 	});
 	on("session.measure", async ($, e, next) => {
