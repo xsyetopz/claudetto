@@ -492,3 +492,83 @@
   - Verified: 2026-11-26, claude 2.1.329, Haiku 5.5, the same prompt 6 times with both plugins: the
     skill loaded in 4 of 6, all 6 runs' tests pass; `claude plugin test plugins/claudetto` 362 pass.
   - Source: ADR-0023; user decision through AskUserQuestion, 2026-11-26 (200 characters).
+
+- [x] **RISK-579** The status line shows "waiting on you: permission" for a call that opened no dialog.
+  - Category: workflow.
+  - Cause: the row was set when a tool check returned ask, and a check's ask that auto mode settles opens no dialog.
+  - Event: ISSUES-part9.md:261, "Ambiguous `⚑ waiting on you: permission for mcp__claudet…`".
+  - Consequence: the user looks for a dialog that is not there.
+  - Likelihood: 4
+  - Impact: 2
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the row is set only at `classic.PermissionRequest`, which fires when a dialog opens, and clears when a tool runs.
+  - Trigger: a permission row with no dialog on screen.
+  - Owner: setup
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including live.test.ts "records the permission dialog a call opens, then clears it when a tool runs".
+  - Source: ISSUES-part9.md:261.
+
+- [x] **RISK-580** The ctx bar fills against the model's 1M limit while compaction runs at the user's smaller window, and an idle row reads as a step the user owes.
+  - Category: workflow.
+  - Cause: the bar divided by the stdin context limit, not `/context`'s `rawMaxTokens` (the user's `autoCompactWindow` is 300000); the "waiting on you: your next prompt" row showed whenever the phase was idle, also while a shell or subagent worked.
+  - Event: ISSUES-part9.md:11,264,289 and ISSUES-part10.md:167-176 ("ctx ░░ 2% 20k/1M"; "yet another \"waiting for you\" garbage").
+  - Consequence: compaction arrives at a bar that reads under a third full; the user is told to act when nothing is theirs.
+  - Likelihood: 5
+  - Impact: 2
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the live hook records `rawMaxTokens` and the bar fills against it when smaller; the idle row is removed, since the phase already reads idle.
+  - Trigger: a ctx reading above 100% before compaction, or any "your next prompt" row.
+  - Owner: setup
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including files.test.ts "a compaction window below the model's limit is the window the context bar fills" and "an idle session flags no wait on the next prompt, with or without a subagent running".
+  - Source: ISSUES-part9.md:11,264,289; ISSUES-part10.md:167-176.
+
+- [x] **RISK-581** A chip band above the prompt repeats the status line's ctx, 5h and 7d readings.
+  - Category: workflow.
+  - Cause: the usage hook drew its own panel under the spinner on each view.
+  - Event: ISSUES-part9.md:6,19, "Duplicate status under the \"Gusting...\" part when the same thing exists in statusline".
+  - Consequence: two readings of the same figure on screen.
+  - Likelihood: 5
+  - Impact: 1
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: `hooks/statusline/usage/chip.ts` is deleted; `/breakdown` still opens the pane.
+  - Trigger: any panel above the prompt that repeats a status line row.
+  - Owner: setup
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including usage.test.ts "nothing is drawn above the prompt, since the status line shows the same readings".
+  - Source: ISSUES-part9.md:6,19.
+
+- [x] **RISK-582** The status line gives each subagent a row that core's agent panel already shows.
+  - Category: workflow.
+  - Cause: the per-agent rows predate core's agent panel.
+  - Event: ISSUES-part9.md:261, "duplicate agent statusline and main statusline entries for workers".
+  - Consequence: the same worker listed twice, crowding the prompt.
+  - Likelihood: 5
+  - Impact: 1
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the per-agent rows are removed; the `⏵ N agents` count on the activity row stays (ADR-0201 amendment 2026-11-27).
+  - Trigger: a status line row naming one subagent.
+  - Owner: setup
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including render.test.ts "counts every agent on the activity row and gives none a row of its own, which core's agent panel shows".
+  - Source: ISSUES-part9.md:261.
+
+- [x] **RISK-583** A status line the user removed comes back at the next session start.
+  - Category: workflow.
+  - Cause: the session-start fill wrote `statusLine` whenever the key was absent, so it could not tell a first install from a removal.
+  - Event: ISSUES-part8.txt:151, "the next session that loads claudetto will put the key back".
+  - Consequence: the user's removal is undone each session.
+  - Likelihood: 4
+  - Impact: 2
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the fill records `statusLineWired` in the plugin store the first time it writes the key and writes it no more after that.
+  - Trigger: a `statusLine` key that reappears after the user deleted it.
+  - Owner: setup
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including start.test.ts "a status line the user removed after claudetto set it stays removed on later starts".
+  - Source: ISSUES-part8.txt:151.

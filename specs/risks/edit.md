@@ -62,3 +62,51 @@
   - Status: mitigated 2026-11-26: the same dogfood task, rerun with the fix, applied its `patch` with "Allowed by auto mode" and no dialog.
   - Verified: 2026-11-26, claude 2.1.329, `claude plugin test plugins/claudetto`: 362 pass, 0 fail, including guards.test.ts "an edit that only the permission mode asks about leaves patch to the mode, not a dialog" (fails on c6787c285) and "an ask rule on Edit for a path still opens the dialog through patch where the mode also asks".
   - Source: dogfood session 2026-11-26 (measured).
+
+- [x] **RISK-576** A `patch` hunk with an `@@` anchor whose context repeats after the anchor is refused as ambiguous.
+  - Category: workflow.
+  - Cause: the hunk search counted every match of the context lines in the file, the anchor only narrowed the search start, and two matches after it refused the whole patch.
+  - Event: ISSUES-part9.md:311, "patch refused, nothing written: …/missing.ts: hunk 3: context matches 2 places (lines 89, 157)".
+  - Consequence: the model retries with wider context or falls back to a shell edit.
+  - Likelihood: 3
+  - Impact: 2
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: a hunk with an anchor edits the first match after the anchor; a hunk with no anchor and two matches is still refused.
+  - Trigger: a hunk whose context lines repeat below its anchor.
+  - Owner: edit
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including place.test.ts "context repeated after the anchor edits the copy nearest the anchor" and "an anchor narrows an otherwise ambiguous hunk".
+  - Source: ISSUES-part9.md:311.
+
+- [x] **RISK-577** After a shell `cd` into a subfolder, `patch` refuses every file elsewhere in the project as outside the session directory.
+  - Category: workflow.
+  - Cause: the write wall and path-scoped rules read `$.session.cwd()`, which follows the shell's `cd`, instead of the project root.
+  - Event: ISSUES-part9.md:404, "patch refused, nothing written: … outside the session directory".
+  - Consequence: edits inside the user's project fail until the model `cd`s back, or the model hands the change to the user.
+  - Likelihood: 4
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the wall and path-scoped rules use `$.session.root()`; relative paths still resolve from the shell's cwd. The refusal for a real outside path no longer tells the model to hand the change back.
+  - Trigger: a `patch` refusal naming a path inside the project root.
+  - Owner: edit
+  - Status: mitigated 2026-11-27; the installed plugin keeps the fault until the next release.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including place.test.ts "after a shell cd into a subfolder, the rest of the project stays writable".
+  - Source: ISSUES-part9.md:404.
+
+- [x] **RISK-578** In auto mode a claudetto `read` call opens a permission dialog where vanilla `Read` runs unasked.
+  - Category: workflow.
+  - Cause: the RISK-559 fault in `read`: the hook returned the mode's own Read ask, which no rule made, as the plugin's ask, and a plugin's ask skips auto mode and opens a dialog.
+  - Event: ISSUES-part9.md:261 ("waiting on you: permission for mcp__claudetto__read") and ISSUES-part10.md:178-197 (a dialog for a `tool-results` file).
+  - Consequence: a person approves each read by hand in auto mode.
+  - Likelihood: 4
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: `hooks/read/check.ts` hands the engine's verdict up unchanged when the Read ask carries no rule, setting or hook (`hooks/shared/verdict.ts`, shared with `patch`); an ask rule on Read still opens the dialog.
+  - Trigger: a `read` dialog in auto mode with no ask rule on Read.
+  - Owner: edit
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including read.test.ts "a read only the permission mode asks about is left to the mode, not a dialog" and "an ask rule on Read still opens the dialog through read".
+  - Source: ISSUES-part9.md:261; ISSUES-part10.md:178-197.

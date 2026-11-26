@@ -556,3 +556,19 @@
   - Verified: 2026-11-20, zsh 5.9, `bash reports/2026-11-20-research/pipestatus/probe.sh <user's shell snapshot>`, run twice with the same output: 8 of 8 `PIPESTATUS` cases fixed (vanilla prints empty), 8 of 8 controls unchanged, including `${pipestatus[1]}`, `$?`, `set -e`, `set -u` and the command's own exit code. Transcript scan: 369 Bash commands in 198 of 2,101 sessions use `PIPESTATUS`; subscripts `[0]` 378, bare 7, `[1]` 1, `[2]` 1, `[@]` 1. Under bash and sh the env file parses, and bash's own `PIPESTATUS` is untouched.
   - Verified: 2026-11-24, claude 2.1.329, bash reports/2026-11-20-research/pipestatus/probe.sh under zsh 5.9: 8 of 8 PIPESTATUS cases print the value with the shim (vanilla prints empty) and 8 of 8 controls, including ${pipestatus[1]}, $? and set -e, are unchanged, so the fault no longer occurs.
   - Source: issue #82; reports/2026-11-20-research/pipestatus/README.md.
+
+- [x] **RISK-584** An API-error stop raises no visible notice in a terminal that has no notification channel.
+  - Category: host behaviour.
+  - Cause: Claude Code's notification channels are terminal escape sequences; in Terminal.app, tmux or a plain Linux terminal `$.ui.notify` returns `no-channel`, and `terminal_bell` rings with no text.
+  - Event: the user's goal, 2026-11-27: "missing macOS/Linux-native notification system".
+  - Consequence: a stopped turn waits unseen.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: `$.ui.notify` where the terminal has a channel.
+  - Response: mitigate.
+  - Actions: on `no-channel` or `terminal_bell` the API-error notice falls back to `osascript` (macOS Notification Center), then `notify-send` (libnotify); `notifications_disabled` gets nothing. Idle and permission waits get no native notice, because KERNEL-003 registers none.
+  - Trigger: an error stop the user did not see.
+  - Owner: kernel
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including native.test.ts "a terminal with no notification channel gets a macOS banner with the text", "without osascript the Linux desktop gets it through notify-send", "a bell-only channel also gets the banner" and "notifications_disabled gets no native notice".
+  - Source: user goal 2026-11-27.

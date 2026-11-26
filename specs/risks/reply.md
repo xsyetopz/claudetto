@@ -2433,3 +2433,18 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: accepted 2026-11-26: the style already labels the controls a user operates; the eval case guards it in every suite run.
   Verified: 2026-11-26, claude 2.1.329, Haiku 5.5, `just eval claudetto --case bare-command-flags` (plugins/claudetto/evals/results/2026-11-26T20-57-00-118Z): 1.00 with claudetto and 0.89 without, 3 runs each, after flags-explained accepted "`--env` takes staging or prod".
   Source: external/2026-11-21/reddit.com-r-claudecode-comments-1y04973-is-claude-just-not-as-good-at-20261120T105238Z.md:32,66,78,88.
+
+- [x] **RISK-585** The agent hands its own leftovers and routine calls back to the user as decisions.
+  Category: conduct.
+  Cause: a step the agent could run, or a state it could report, is phrased as a choice ("waiting on your two decisions", "Left for you", "if you want").
+  Event: ISSUES-part8.txt:38-42; ISSUES-part7.txt:176-190; ISSUES-part3.txt:60-68.
+  Consequence: the user returns to make a call that was the agent's, and a goal loop stalls on it.
+  Likelihood: 4. Impact: 3.
+  Existing controls: the style's "offer no more work" line.
+  Response: mitigate.
+  Actions: KERNEL-032: the conduct text has the agent run a step a worker was refused, make routine calls, and state leftovers as the state of the work.
+  Trigger: a last message that offers a choice the agent could settle.
+  Owner: reply.
+  Status: mitigated 2026-11-27 on Opus 5.5; Haiku 5.5 ties vanilla, its misses being closing offers.
+  Verified: 2026-11-27, claude 2.1.329, Opus 5.5, `just eval claudetto --case refused-step --runs 6 --model claude-opus-5-5` (plugins/claudetto/evals/results/2026-11-26T22-43-03-446Z): 1.00 with claudetto and 0.83 without, 6 runs each.
+  Source: ISSUES-part8.txt:42; ISSUES-part7.txt:176; ISSUES-part3.txt:68.

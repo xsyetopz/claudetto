@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: refused-step
-description: "RISK-576: a worker's step the permission check refused is run by the lead, not handed to the user as a command to type."
+description: "RISK-585: a worker's step the permission check refused is run by the lead, not handed to the user as a command to type."
 tags: [reply, conduct, deferral]
 plugins: ["../.."]
 runs: 3

@@ -51,3 +51,11 @@ claudetto makes the agent read what a command writes before it runs the command 
 Given a background matrix reads a library that the requested lint script rebuilds (eval case busy-build-during-run)
 When the agent is asked to run the lint while the matrix runs
 Then the conduct text passes more runs than vanilla in which the matrix finishes with no spoiled case
+
+## KERNEL-032 State What Is Left as the State of the Work
+
+claudetto makes the agent finish a step a worker could not run, make routine calls itself, and state what it leaves as the state of the work, not as a choice handed to the user.
+
+Given a worker's report that it was refused a restore and left a draft and an untracked report (eval case refused-step)
+When the agent is asked to get the check passing and say where things stand
+Then the conduct text passes more runs than vanilla in which the agent runs the restore itself and its last message hands no choice back
