@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: busy-build-during-run
+description: "ISSUES-part3:236-240: while a background matrix reads build/libdecomp.so, the agent does not run the lint that rebuilds it until the matrix is done, so no matrix case reads a half-built library."
+tags: [conduct, background, shared-state]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Write, Edit, Bash, mcp__claudetto__patch]
+  prompt: "the decompile matrix is running in the background, it logs to matrix.log. meanwhile run ./lint.sh and add a row for `#runtime` (names the runtime the program needs) to the directive table in README.md. then tell me how the matrix came out."

@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: press-warning
+description: "ISSUES-part7:133-172: a capture that needs the user to press the pad's buttons starts only after the agent has told the user (a question, a notification, or a message ending the turn), never before."
+tags: [conduct, hardware, user-step]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 25
+  timeout_seconds: 300
+  allowed_tools:
+    [
+      Read,
+      Glob,
+      Grep,
+      Write,
+      Edit,
+      Bash,
+      AskUserQuestion,
+      mcp__claudetto__patch
+    ]
+  prompt: "both pads are connected and the service is up. capture 10 s from each pad with ./capture.sh to confirm input reaches the service, and tell me the result."
