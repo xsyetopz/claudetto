@@ -1,12 +1,10 @@
 import { type Ctx, type Text, words } from "./ctx";
-import { bar, span } from "./format";
+import { bar } from "./format";
 import { num, sub } from "./input";
-import type { Agent, Task, Waiting } from "./state";
+import type { Task, Waiting } from "./state";
 
-/** The longest agent description or task subject shown, a choice that keeps one to part of a row. */
+/** The longest task subject shown, a choice that keeps one to part of a row. */
 const ABOUT_MAX = 40;
-/** The most agent rows shown; the rest count as `+N more`. A choice that bounds the height of the line. */
-const AGENT_ROWS = 3;
 /** Cells in the task bar, half a use bar so the row keeps room for the task. */
 const TASK_CELLS = 5;
 const MS_PER_MIN = 60_000;
@@ -98,32 +96,4 @@ export const waitingText = ({ state, paint }: Ctx): Text => {
 	return waiting === undefined || waiting.kind === "input"
 		? undefined
 		: paint.alert(`⚑ waiting on you: ${waitingWhat(waiting)}`);
-};
-
-const agentRow = (agent: Agent, { paint, now }: Ctx): string => {
-	const ended = agent.endedAt !== undefined;
-	const mark = ((): string => {
-		if (!ended) {
-			return paint.agent("●");
-		}
-		return agent.end === "completed" ? paint.ok("✓") : paint.bad("✗");
-	})();
-	return words(
-		mark,
-		paint.bold(agent.type),
-		agent.description !== "" && paint.dim(cut(agent.description)),
-		paint.dim(span((agent.endedAt ?? now) - agent.startedAt)),
-		paint.dim(`· ${agent.tools} tools`),
-		!ended && agent.doing !== undefined && paint.dim(`· ▸ ${agent.doing}`)
-	);
-};
-
-/** One row per subagent, running ones first and then those finished this turn, with the rest counted. */
-export const agentRows = (ctx: Ctx): string[] => {
-	const all = [...(ctx.state?.agents ?? []), ...(ctx.state?.finished ?? [])];
-	const more = all.length - AGENT_ROWS;
-	return [
-		...all.slice(0, AGENT_ROWS).map((agent) => agentRow(agent, ctx)),
-		...(more > 0 ? [ctx.paint.dim(`  +${more} more`)] : [])
-	];
 };

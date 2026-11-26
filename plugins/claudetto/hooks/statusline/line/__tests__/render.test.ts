@@ -114,7 +114,7 @@ describe("status line rows", () => {
 		}).split("\n");
 
 		// Assert
-		expect(rows).toHaveLength(9);
+		expect(rows).toHaveLength(7);
 		expect(rows[0]).toBe(
 			"● working · Opus 4.1 high · ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m"
 		);
@@ -131,8 +131,6 @@ describe("status line rows", () => {
 			"mem ████░ 70% 32.0G · swap 1.0G/2.0G · load 1.9/10 · claude 812M · tree 2.5G 14 procs · top node 1.1G"
 		);
 		expect(rows[6]).toBe("⚑ waiting on you: permission for Bash");
-		expect(rows[7]).toBe("● Explore find login 3m · 5 tools · ▸ Grep foo");
-		expect(rows[8]).toBe("✓ Plan 5m · 9 tools");
 	});
 
 	test("never prints a row label or the thinking flag", () => {
@@ -243,7 +241,7 @@ describe("status line rows", () => {
 		expect(statusOf("not json", PLAIN, NOW)).toBe("claudetto: no status");
 	});
 
-	test("counts every agent and folds those past three rows into a count", () => {
+	test("counts every agent on the activity row and gives none a row of its own, which core's agent panel shows", () => {
 		// Arrange
 		const agents = Array.from({ length: 5 }, (_, i) => ({
 			id: String(i),
@@ -258,10 +256,8 @@ describe("status line rows", () => {
 
 		// Assert
 		expect(out).toContain("⏵ 5 agents");
-		expect(
-			out.split("\n").filter((row) => row.startsWith("● Explore"))
-		).toHaveLength(3);
-		expect(out).toContain("+2 more");
+		expect(out).not.toContain("● Explore");
+		expect(out).not.toContain("more");
 	});
 });
 

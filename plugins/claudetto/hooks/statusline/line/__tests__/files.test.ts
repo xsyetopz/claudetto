@@ -74,7 +74,7 @@ describe("state file", () => {
 		// Assert
 		expect(out).toContain("● working");
 		expect(out).toContain("waiting on you: an answer");
-		expect(out).toContain("Explore scan");
+		expect(out).toContain("⏵ 1 agent");
 		expect(out).toContain("Doing s");
 	});
 
@@ -124,7 +124,7 @@ describe("state file", () => {
 
 		// Assert
 		expect(whileBusy).not.toContain("waiting on you");
-		expect(whileBusy).toContain("Explore scan");
+		expect(whileBusy).toContain("⏵ 1 agent");
 		expect(afterDone).not.toContain("waiting on you");
 		expect(afterDone).toContain("○ idle");
 	});

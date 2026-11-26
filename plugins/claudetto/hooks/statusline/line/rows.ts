@@ -15,7 +15,7 @@ import {
 	prText
 } from "./segments";
 import { truncate, width } from "./width";
-import { activityTexts, agentRows, tasksText, waitingText } from "./work";
+import { activityTexts, tasksText, waitingText } from "./work";
 
 /** The gap between two items of a row, as Claude Code separates its own: a space, a middle dot, a space. */
 const SEP = " · ";
@@ -46,8 +46,7 @@ const rowsOf = (ctx: Ctx): string[] => [
 	...row(activityTexts(ctx)),
 	...row([tasksText(ctx)]),
 	...row(machineTexts(ctx)),
-	...row([waitingText(ctx)]),
-	...agentRows(ctx)
+	...row([waitingText(ctx)])
 ];
 
 /**
