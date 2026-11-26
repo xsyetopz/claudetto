@@ -160,3 +160,6 @@
     (`results/2026-11-26T09-07-57-508Z`): `ambiguous-headless` 1.00 against 0.67; suite 0.985 against
     0.708, cost $0.299 against $0.296; holdout aggregate 1 against 0.579, $0.13 against $0.11.
   - Source: the eval runs above; traces under plugins/claudetto-spec/evals/results.
+  - Response: accepted 2026-11-26 by user decision through AskUserQuestion: claudetto-spec ships with
+    the higher score (suite 0.985 against 0.708) and the small cost gap ($0.299 against $0.296; holdout
+    $0.13 against $0.11).
