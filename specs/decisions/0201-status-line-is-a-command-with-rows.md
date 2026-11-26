@@ -41,4 +41,15 @@ Supersedes the minimal-status-line part of ADR-0190. The rest of ADR-0190 and th
 - The command starts a Bun process each time the line refreshes; it reads a few small files, runs `sysctl` and `ps` (about 70 ms together, measured 2026-11-25 on macOS), and prints.
 - The plan phase of ProjectArchitect's line has no source here, so the phase is the hook-observed working or idle.
 
+## Amendment 2026-11-27: Rows Core Already Draws
+
+ISSUES-part9.md and ISSUES-part10.md showed three rows that repeated what the screen already held, and a wait flag nobody could answer.
+
+- The `⚑ waiting on you` row is recorded at `classic.PermissionRequest`, which fires only when a dialog opens. An `ask` verdict at `tool.check` goes to the mode's decider first, and auto mode's classifier settles most of them unasked, so the row named prompts that never reached the person.
+- The row has no entry for the next prompt. The phase already reads `○ idle`, and the flag read as a step the user owed while a background shell or subagent was still working.
+- Subagents get no row of their own; core's agent panel below the prompt lists them. The activity row keeps the running and finished counts.
+- The chip band above the prompt is gone; it repeated the context and 7d rows. `/breakdown` still opens the pane.
+- The context bar fills against the window /context measures (`rawMaxTokens`), which is the user's `autoCompactWindow` when that is below the model's limit. A 300k compaction window on a 1M model drew 2% of 1M where compaction runs at 300k.
+- `wireStatusLine` writes the key when the user has none only until claudetto's command has been in the file once (the `statusLineWired` store key). After that a missing key means the user removed it (`/statusline delete`, ISSUES-part8.txt:150), and it stays removed.
+
 Source: ADR-0190; ADR-0177; COST-004.
