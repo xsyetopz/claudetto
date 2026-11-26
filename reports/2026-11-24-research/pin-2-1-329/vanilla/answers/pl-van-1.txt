@@ -1,3 +1,0 @@
-I shortened `plan.md` from 73 lines to 8. The original had 12 phases with the same three steps each (draft the schema, review it, ship it). I replaced them with one description of those steps, plus a note that steps are numbered `<phase>.<step>`.
-
-If any phase was meant to differ from the others, I can add it back. The old version is in git (`b82f6bb`).

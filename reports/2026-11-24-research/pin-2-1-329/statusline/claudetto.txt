@@ -1,2 +1,0 @@
-2026-11-24T04:48:37.155Z listening 47402
-2026-11-24T04:48:55.456Z request tools=10 bytes=55176 last=[{"type":"text","text":"## Bash command sandbox\nBy default, Bash commands run inside an OS-level sandbox (macOS Seatbelt) applied to each command separately, n

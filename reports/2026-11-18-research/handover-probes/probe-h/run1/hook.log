@@ -1,4 +1,0 @@
-turn.complete #1 keys=answer,durationMs,isAborted,turnId,reason,usage
-session.compact keys=trigger,instructions,messages trigger=plugin agentId=undefined instructions=probe nmsgs=2
-compact -> {"messages":[{"role":"user","text":"This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary></tools-used-before-summary>\n</system-reminder>\nOK\n\nIf you 
-turn.complete #2 keys=answer,durationMs,isAborted,turnId,reason,usage

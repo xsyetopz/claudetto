@@ -1,1 +1,0 @@
-Each function now returns its old value plus 10. I ran the three functions, and they return 11, 12 and 13 (they returned 1, 2 and 3 before). The only files changed are `a.js`, `b.js` and `c.js`, one line each.

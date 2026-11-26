@@ -1,8 +1,0 @@
-Output of `sh check.sh`:
-
-```
-missing
-exit=1
-```
-
-The check failed. It needs the `API_TOKEN` environment variable, and that variable isn't set in this session. The repo has no `.env` file, and the README (`# app`) doesn't mention a value. I didn't make up a token. Rerun it with `API_TOKEN=<your token> sh check.sh`, or give me the token and I'll rerun it.

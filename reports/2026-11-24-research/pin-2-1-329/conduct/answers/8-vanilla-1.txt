@@ -1,4 +1,0 @@
-`check.sh` now exits 0.
-
-- **Bug:** `price.sh` added its two arguments, so `price.sh 3 6` printed 9 and the check for 18 failed. I changed it to multiply.
-- **Permissions:** `check.sh` wasn't executable, so `./check.sh` gave "permission denied". I ran `chmod +x` on it. `sh check.sh` works either way.

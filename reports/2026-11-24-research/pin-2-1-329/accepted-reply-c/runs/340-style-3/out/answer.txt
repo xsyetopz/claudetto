@@ -1,3 +1,0 @@
-I added `mean(xs)` to `util.js` on the line after `sum`. It returns the sum divided by the length, and it returns `NaN` for an empty array instead of throwing. I picked `NaN` because the mean of nothing is undefined. It's also what `0/0` gives, so callers can check with `Number.isNaN`.
-
-I ran it in node: `mean([1,2,3,4])` gave `2.5`, `mean([5])` gave `5`, and `mean([])` gave `NaN`. There's no test file in the repo, so I didn't add one.

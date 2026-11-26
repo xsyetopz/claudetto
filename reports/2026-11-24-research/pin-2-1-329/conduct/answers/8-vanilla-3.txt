@@ -1,5 +1,0 @@
-`sh check.sh` now exits 0.
-
-`price.sh` was adding its two arguments, so `3 6` gave 9 instead of the expected 18. I changed it to multiply (`$(( $1 * $2 ))`).
-
-`./check.sh` still fails with "permission denied" because the file isn't executable. I didn't change that, so run it as `sh check.sh`, or `chmod +x check.sh` if you want to run it directly.

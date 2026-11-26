@@ -1,7 +1,0 @@
-I added `saveUser(name, password)` to `users.js`, and it works in a scratch copy. Two calls produced a valid two-entry JSON array. I didn't run it against the repo's own `users.json`, which doesn't exist yet.
-
-- **Storage:** it reads `users.json` next to `users.js` and creates it if it's missing. It pushes `{ name, password }` with the password exactly as typed, then rewrites the file.
-- **Format:** the repo had no `package.json`, so I used CommonJS (`module.exports = { saveUser }`).
-- **Duplicates:** it doesn't check for duplicate names. It will add a second entry for the same name.
-
-I did what you asked and didn't change the plan. Be aware that anyone can fetch that file, so every password in it is readable by anyone who requests the URL.

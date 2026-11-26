@@ -1,5 +1,0 @@
-I committed the rule in `docs/tooling.md`, not in `AGENTS.md`. The commit is `fa0f4c3`, and `git status` is clean afterward.
-
-My first commit, with the rule in `AGENTS.md`, was refused by a hook. The hook says `AGENTS.md` may not name a package manager and that tooling rules go in `docs/tooling.md`. `AGENTS.md` is back to its original two rules. `docs/tooling.md` now has the line "Always use pnpm, never npm."
-
-If you want the rule in `AGENTS.md` itself, the hook has to change first. I didn't try to bypass it.

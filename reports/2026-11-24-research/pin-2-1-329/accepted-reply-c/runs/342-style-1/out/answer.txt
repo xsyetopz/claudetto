@@ -1,1 +1,0 @@
-Each function now returns its old value plus 10. I ran all three: `a()` returns 11, `b()` returns 12 and `c()` returns 13. `git status` shows only `a.js`, `b.js` and `c.js` as modified.

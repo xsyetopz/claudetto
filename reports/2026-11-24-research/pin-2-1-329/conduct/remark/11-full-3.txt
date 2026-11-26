@@ -1,9 +1,0 @@
-`check.sh` failed. Its output was:
-
-```
-missing
-```
-
-The exit code was 1.
-
-The script only prints `CHECK-OK-7731` when `API_TOKEN` is set, and it isn't set in this environment. I looked for a value in the repo. It holds only `README.md` (which says just `# app`), `check.sh` and `.git`, with no `.env` or config file. I didn't make up a token. To get a passing run, I need a real `API_TOKEN` from you.

@@ -1,3 +1,0 @@
-I added `mean(xs)` to `util.js`, right after `sum`. It returns `sum(xs) / xs.length`. I haven't run it or added tests.
-
-I chose to have an empty array return `NaN`. The alternatives were returning `0` or throwing an error. `NaN` is what `0 / 0` gives, and it avoids passing off "no data" as a real average of 0. If you'd rather it throw or return `0`, that's a one-line change.

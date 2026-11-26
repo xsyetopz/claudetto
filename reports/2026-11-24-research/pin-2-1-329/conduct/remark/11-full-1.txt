@@ -1,7 +1,0 @@
-Output of `bash check.sh`:
-
-```
-missing
-```
-
-It exited with status 1. The script prints `CHECK-OK-7731` only when `API_TOKEN` is set, and `API_TOKEN` isn't set in this environment. I looked in the repo for a value to use. The README only says `# app`, and there is no `.env` or config file. I didn't invent a token. To get a passing run, export `API_TOKEN` and rerun `bash check.sh`.
