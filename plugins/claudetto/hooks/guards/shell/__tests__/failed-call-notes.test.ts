@@ -98,6 +98,51 @@ describe("notes on a failed call", () => {
 		expect(ordinary).toEqual([]);
 	});
 
+	test("a successful call whose output only prints 'command not found' gets no install note", async ($, on) => {
+		// Arrange
+		const world = bashWorld(on);
+		world.answer = {
+			result: {
+				stdout:
+					"ISSUES-part4.txt:95: zsh: echo: command not found\nlog.txt:3: bash: line 1: jscpd: command not found\n",
+				stderr: ""
+			}
+		};
+
+		// Act
+		const r = await $.tool.call({
+			tool: "Bash",
+			command: "grep -n 'command not found' ISSUES-part4.txt log.txt; echo ---"
+		});
+
+		// Assert
+		expect(
+			contextOf(r).filter((note) => note.includes("not installed"))
+		).toEqual([]);
+	});
+
+	test("a missing command hidden behind a later `; echo` still gets the install note", async ($, on) => {
+		// Arrange
+		const world = bashWorld(on);
+		world.answer = {
+			result: {
+				stdout: "done\n",
+				stderr: "bash: line 1: jscpd: command not found\n"
+			}
+		};
+
+		// Act
+		const r = await $.tool.call({
+			tool: "Bash",
+			command: "jscpd src; echo done"
+		});
+
+		// Assert
+		expect(
+			contextOf(r).some((note) => note.includes("jscpd is not installed"))
+		).toBe(true);
+	});
+
 	test("a grep -c that counts zero gets a note that zero matches is not a failure", async ($, on) => {
 		// Arrange
 		const world = bashWorld(on);
