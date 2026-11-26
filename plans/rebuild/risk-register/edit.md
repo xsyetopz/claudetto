@@ -46,3 +46,19 @@
 
 - [x] **RISK-480** Moved Out as OUT-2348: the item describes a part that plugins/ does not ship.
   Verified: 2026-11-24, claude 2.1.329 (the build target), `git grep -n -E 'tool\.register' -- plugins/claudetto/hooks/edit` -> no match (exit 1): no perl edit tool ships; edit/perl.ts only adds the diff stat.
+
+- [x] **RISK-559** In auto mode every `patch` call opened a permission dialog where vanilla `Edit` runs unasked.
+  - Category: workflow.
+  - Cause: `patch`'s `tool.check` hook folds the Edit and Write verdicts for each path. In auto mode the Edit verdict for a file in the working folder is the mode's own ask, which no rule made. The hook returned that ask as its own answer, and an ask a hook makes belongs to the person, so it skipped auto mode and opened a dialog (`ToolCheckResult.plugin` in the 2.1.329 types).
+  - Event: dogfood on main c6787c285, 2026-11-26, claude 2.1.329, Haiku 5.5, auto mode: the edit stopped twice on a "Do you want to proceed?" dialog for `patch` before it applied, and the status line read "waiting on you: permission for mcp__claudetto__patch".
+  - Consequence: a person has to approve each file edit by hand in auto mode, the user's default mode.
+  - Likelihood: 5
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: `hooks/patch/tool.ts` hands the engine's own verdict for `patch` up unchanged when the Edit or Write ask carries no rule, setting or hook and the engine also asks about `patch`. The mode then settles the call. An ask or deny rule on Edit or Write still decides through `patch`.
+  - Trigger: a `patch` call in auto mode with no allow rule for `patch`.
+  - Owner: edit
+  - Status: mitigated 2026-11-26: the same dogfood task, rerun with the fix, applied its `patch` with "Allowed by auto mode" and no dialog.
+  - Verified: 2026-11-26, claude 2.1.329, `claude plugin test plugins/claudetto`: 362 pass, 0 fail, including guards.test.ts "an edit that only the permission mode asks about leaves patch to the mode, not a dialog" (fails on c6787c285) and "an ask rule on Edit for a path still opens the dialog through patch where the mode also asks".
+  - Source: dogfood session 2026-11-26 (measured).

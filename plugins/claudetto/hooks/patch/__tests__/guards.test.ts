@@ -59,4 +59,39 @@ describe("patch guard parity", () => {
 		// Assert
 		expect(v.decision).toBe("allow");
 	});
+
+	test("an edit that only the permission mode asks about leaves patch to the mode, not a dialog", async ($, on) => {
+		// Arrange
+		wireDisk(on, disk({ [`${CWD}/.env`]: "A=1\n" }), { isAllowing: false });
+		registerPatch(on);
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Edit" }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Write" }, () => ({ decision: "ask" }));
+
+		// Act
+		const v = await $.tool.check({ tool: TOOL_FULL_NAME, input });
+
+		// Assert
+		expect(v.decision).toBe("ask");
+		expect(v.plugin).toBeUndefined();
+	});
+
+	test("an ask rule on Edit for a path still opens the dialog through patch where the mode also asks", async ($, on) => {
+		// Arrange
+		wireDisk(on, disk({ [`${CWD}/.env`]: "A=1\n" }), { isAllowing: false });
+		registerPatch(on);
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Edit" }, () => ({
+			decision: "ask",
+			rule: "Edit(**/.env)"
+		}));
+		on("tool.check", { tool: "Write" }, () => ({ decision: "allow" }));
+
+		// Act
+		const v = await $.tool.check({ tool: TOOL_FULL_NAME, input });
+
+		// Assert
+		expect(v.decision).toBe("ask");
+		expect(v.plugin).toBe("claudetto");
+	});
 });
