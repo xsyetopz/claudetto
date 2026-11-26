@@ -2050,6 +2050,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: narrowed 2026-11-25: the rule acts before a flag is passed, so a call with no flag runs without a docs read first (`plugins/claudetto/output-styles/claudetto.md:21`).
   Verified: 2026-11-25, claude 2.1.329, Haiku 5.5, `R521_OUT=<dir> zsh reports/2026-11-24-research/r521/run.sh claudetto 1..3 haiku`: 0 of 3 runs passed a guessed `--` flag (each used `-help` or `-batch`).
   Verified: 2026-11-25, claude 2.1.329, `just eval claudetto --case <c>` for run-once, watch-run, stash-cleanup x3: claudetto turns 16.6 -> 12.6 (vanilla 10.3), scores 1.00.
+  Status: mitigated 2026-11-26: the flag rule is the second sentence of `plugins/claudetto/output-styles/claudetto.md:17`.
+  Verified: 2026-11-26, claude 2.1.329, Haiku 5.5, `R521_OUT=<dir> zsh reports/2026-11-24-research/r521/run.sh claudetto 1..6 haiku` on the 1361-char style: 1 of 6 runs passed a guessed `--` flag, against vanilla 5 of 6 (2026-11-24) and the previous main 5 of 9.
 
 - [x] **RISK-522** The agent names its own breach of a user rule and defers the fix.
   Category: agent conduct.
@@ -2068,6 +2070,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: mitigated 2026-11-24: the Claudetto output style says a breach of a CLAUDE.md or user rule by this session's work is repaired in the same turn and reported as repaired (`plugins/claudetto/output-styles/claudetto.md:17`). It acts only with that style selected.
   Verified: 2026-11-24, `run.sh claudetto 1..6 haiku` and `1..3 sonnet`: 0 of 9 runs left the probe outside the repo, and each test the agent wrote exits 0 (`reports/2026-11-24-research/r522/README.md`).
   Verified: 2026-11-24, claude 2.1.329, Haiku 5.5, `R522_OUT=<dir> zsh reports/2026-11-24-research/r522/run.sh <arm> 1..3 haiku` with the style on: claudetto left the probe outside the repo in 0 of 3 runs, vanilla in 2 of 3.
+  Status: mitigated 2026-11-26: the style line "Before you use a file this session made, bring it in line with CLAUDE.md." (`plugins/claudetto/output-styles/claudetto.md:23`) replaces the breach paragraph; `r522/run.sh` gained the `app.log` fixture its prompt names.
+  Verified: 2026-11-26, claude 2.1.329, Haiku 5.5, `R522_OUT=<dir> zsh reports/2026-11-24-research/r522/run.sh <arm> 1..6 haiku` on the fixed fixture: claudetto moved the probe into the repo in 3 of 6 runs, the previous main in 1 of 3, vanilla in 0 of 3.
 
 - [x] **RISK-535** A shipped line moves to another prompt surface without a measured case and loses its effect.
   Category: prompt surface.
@@ -2085,6 +2089,8 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Verified: 2026-11-24, claude 2.1.331, Sonnet 5.5, `reply.sh` test-runner prompt: 6 of 6 runs on a plugin copy with the line in the style and 3 of 3 on the committed plugin called `AskUserQuestion`.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-24-research/reverify/reply.sh` on the committed plugin with the line in `output-styles/claudetto.md`: claudetto called `AskUserQuestion` in 6 of 6 runs, vanilla 0 of 6, and 6 of 6 again on the RISK-293 prompts (pin-2-1-329/README.md, reply.sh rows).
   Source: `reports/2026-11-24-research/reverify/README.md`; commit 33f725c3a.
+  Status: mitigated 2026-11-26: the line is `plugins/claudetto/output-styles/claudetto.md:25`; the subagent consent rule moved from the style to the Agent tool description, measured on its own case (RISK-171).
+  Verified: 2026-11-26, claude 2.1.329, Sonnet 5.5, `ONLY=lic-cl bash reports/2026-11-24-research/reverify/reply.sh` on the 1361-char style: claudetto called `AskUserQuestion` in 3 of 3 runs.
 
 - [x] **RISK-539** The missing-input paragraph of the conduct section ships though it ties vanilla, against ADR-0177.
   Category: reply, component without a measured gain.
