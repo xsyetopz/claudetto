@@ -1,5 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
+import { registerReadCheck } from "../check";
 import { TOOL_FULL_NAME } from "../texts";
 import { registerRead } from "../tool";
 import { wire } from "./harness";
@@ -228,6 +229,7 @@ describe("read check", () => {
 		);
 		wire(on, { "/repo/a.txt": "one\n", "/repo/.env": "k=v\n" });
 		registerRead(on);
+		registerReadCheck(on);
 
 		// Act
 		const v = await $.tool.check({
@@ -237,5 +239,46 @@ describe("read check", () => {
 
 		// Assert
 		expect(v.decision).toBe("deny");
+	});
+
+	test("a read only the permission mode asks about is left to the mode, not a dialog", async ($, on) => {
+		// Arrange
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Read" }, () => ({ decision: "ask" }));
+		wire(on, { "/tmp/x.txt": "one\n" });
+		registerRead(on);
+		registerReadCheck(on);
+
+		// Act
+		const v = await $.tool.check({
+			tool: TOOL_FULL_NAME,
+			input: { file_path: "/tmp/x.txt" }
+		});
+
+		// Assert
+		expect(v.decision).toBe("ask");
+		expect(v.plugin).toBeUndefined();
+	});
+
+	test("an ask rule on Read still opens the dialog through read", async ($, on) => {
+		// Arrange
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Read" }, () => ({
+			decision: "ask",
+			rule: "Read(/tmp/**)"
+		}));
+		wire(on, { "/tmp/x.txt": "one\n" });
+		registerRead(on);
+		registerReadCheck(on);
+
+		// Act
+		const v = await $.tool.check({
+			tool: TOOL_FULL_NAME,
+			input: { file_path: "/tmp/x.txt" }
+		});
+
+		// Assert
+		expect(v.decision).toBe("ask");
+		expect(v.plugin).toBe("claudetto");
 	});
 });

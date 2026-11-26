@@ -3,6 +3,7 @@ import type { EngineInterface, On } from "claude-code";
 import { memoryFolder } from "../prompt/memory";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { isModesAsk } from "../shared/verdict";
 import { applyOps } from "./apply";
 import { instructionsFor, resetShown } from "./instructions";
 import { parsePatch } from "./parse";
@@ -63,11 +64,7 @@ async function editVerdict(
 			worst = {
 				decision: a.decision,
 				reason: a.reason ?? `Edit and Write rules cover ${file_path}`,
-				isModes:
-					a.rule === undefined &&
-					a.setting === undefined &&
-					a.hook === undefined &&
-					a.plugin === undefined
+				isModes: isModesAsk({ ...a, decision: "ask" })
 			};
 		}
 	}

@@ -20,6 +20,7 @@ import { registerToolOffer } from "./pool/offer";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
 import { registerSandbox } from "./prompt/sandbox";
+import { registerReadCheck } from "./read/check";
 import { registerRead } from "./read/tool";
 import { registerBaseUrl } from "./settings/base-url";
 import { registerStart } from "./settings/start";
@@ -39,6 +40,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerContext(on);
 	registerPatch(on);
 	registerRead(on);
+	registerReadCheck(on);
 	registerToolOffer(on);
 	// ENGINE(v2.1.330): the hook registered first runs first and reaches this one through next, so this
 	// stays after registerGit and the git block lands on the short Bash text.
