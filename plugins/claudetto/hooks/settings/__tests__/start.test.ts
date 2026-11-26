@@ -204,4 +204,22 @@ describe("settings fill at session start", () => {
 		// Assert
 		expect(writes.slice(first)).toEqual([]);
 	});
+
+	test("a status line the user removed after claudetto set it stays removed on later starts", async ($, on) => {
+		// Arrange
+		const { writes, edit } = serve(on, "{}");
+		const start = () =>
+			$.session.start({ cwd: "/home/u/p", surface: null, isInteractive: true });
+		await start();
+		edit("{}\n");
+		const removed = writes.length;
+
+		// Act
+		await start();
+
+		// Assert
+		expect(
+			writes.slice(removed).some((text) => text.includes("statusLine"))
+		).toBe(false);
+	});
 });

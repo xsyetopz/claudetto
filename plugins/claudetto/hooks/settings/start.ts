@@ -8,7 +8,7 @@ import { fieldOf, stringsOf } from "../shared/field";
 import { startWeb } from "../web/register";
 import { logChanges, record, settle } from "./fill";
 import { userSettingsPath } from "./settings";
-import { wireStatusLine } from "./status-line";
+import { namesOwnStatusLine, wireStatusLine } from "./status-line";
 
 /** The text of the user settings file, or undefined when it does not exist. */
 async function readSettings(
@@ -23,6 +23,24 @@ const LOAD_WAIT_MS = 3000;
 
 /** Gap between two reads of the engine's settings while waiting, in ms. */
 const POLL_MS = 50;
+
+/** The store key set once claudetto's status line command was in the user's settings. */
+const WIRED = "statusLineWired";
+
+/**
+ * The settings text with claudetto's status line wired in. Run on every start,
+ * not once per fill version, because a plugin upgrade moves the root the
+ * command names; once claudetto's line was in the file, its absence means the
+ * user removed it (`/statusline delete`), so it is not put back.
+ */
+async function wired($: EngineInterface, text: string): Promise<string> {
+	const wasWired = (await $.store.get(WIRED)) === true;
+	const next = wireStatusLine(text, $.plugin.root, wasWired);
+	if (!wasWired && namesOwnStatusLine(next)) {
+		await $.store.set(WIRED, true);
+	}
+	return next;
+}
 
 /** Reads `outputStyle` until it equals `want` or `left` ms have passed. */
 async function poll(
@@ -85,15 +103,14 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 			return result;
 		}
 		const settled = await settle($, repair.text, walls);
-		// Wired on every start, not once per fill version: a plugin upgrade moves the root the command names.
-		const text = wireStatusLine(settled.text, $.plugin.root);
-		const wired = text !== settled.text;
+		const text = await wired($, settled.text);
+		const isWired = text !== settled.text;
 		const changed =
-			repair.drifted.length > 0 || settled.added.length > 0 || wired;
+			repair.drifted.length > 0 || settled.added.length > 0 || isWired;
 		if (changed) {
 			await $.fs.write(path, text);
 		}
-		if (wired) {
+		if (isWired) {
 			$.ui.log(`claudetto set the status line in ${path} to its own script.`);
 		}
 		await logChanges($, path, repair.drifted, settled.added, e.isInteractive);
