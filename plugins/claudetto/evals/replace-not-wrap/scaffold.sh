@@ -22,7 +22,7 @@ export interface Line {
 	qty: number;
 }
 
-/** @deprecated Float dollars; replaced by sumCents. Kept for the old report. */
+/** @deprecated Float dollars; replaced by sumCents. */
 export function legacyTotal(lines: Line[]): number {
 	return lines.reduce((sum, line) => sum + (line.cents / 100) * line.qty, 0);
 }
@@ -62,7 +62,7 @@ cat > README.md <<'MD'
 Prints a receipt for a list of lines.
 
 - `sumCents(lines)` totals a receipt in integer cents.
-- `legacyTotal(lines)` totals in float dollars. Deprecated, still used by `receipt`.
+- `legacyTotal(lines)` totals in float dollars. Deprecated; `receipt` is its last caller.
 
 Run `bun test`.
 MD

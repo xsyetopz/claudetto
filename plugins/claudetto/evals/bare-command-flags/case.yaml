@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: bare-command-flags
+description: "external-a row 41: asked how to run a script they have never used, the user gets the command with each flag in it explained, not a bare command line."
+tags: [reply, explanation]
+plugins: ["../.."]
+runs: 3
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 15
+  timeout_seconds: 240
+  allowed_tools: [Read, Glob, Grep, Bash]
+  prompt: "how do i run ./deploy.sh to push v2.3 to staging? never used it before. don't run it."
