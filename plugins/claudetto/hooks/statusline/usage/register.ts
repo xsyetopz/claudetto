@@ -7,7 +7,6 @@ import type {
 
 import { fault } from "../../shared/fault";
 import type { Live } from "../live";
-import { chipRuns } from "./chip";
 import { contextLines } from "./context";
 import { limitLines } from "./limit";
 import { type Line, type Run, type Tab, TABS } from "./runs";
@@ -15,8 +14,6 @@ import { type Line, type Run, type Tab, TABS } from "./runs";
 /** The pane's id, and the slash command that opens it (`/usage` is a built-in name, which registration refuses). */
 const PANE = "breakdown";
 const TITLE = "Usage breakdown";
-/** Cells in a band chip's bar. */
-const CHIP_CELLS = 8;
 /** The most cells a pane bar takes, so a wide terminal keeps it readable. */
 const PANE_CELLS = 60;
 
@@ -115,49 +112,6 @@ function registerCommand(on: On, view: View): void {
 	});
 }
 
-/** The band above the prompt: one chip per view with a reading, each opening the pane on it. */
-function registerBand(on: On, live: Live, view: View): void {
-	on("ui.render", { component: "AbovePrompt" }, async ($, e, next) => {
-		if (e.component !== "AbovePrompt" || e.props.hasSurvey) {
-			return next(e);
-		}
-		const usage = await $.session.usage();
-		const chips = TABS.flatMap(({ tab, label, hotkey }) => {
-			const runs = chipRuns(
-				tab,
-				usage,
-				live.state.context,
-				live.state.limits,
-				CHIP_CELLS
-			);
-			return runs === undefined ? [] : [{ tab, label, hotkey, runs }];
-		});
-		if (chips.length === 0) {
-			return next(e);
-		}
-		const surface = $.ui.resolve(e);
-		const { Box, Button, Text } = surface;
-		return Box({
-			gap: 1,
-			children: chips.map(({ tab, label, hotkey, runs }) =>
-				Button({
-					key: tab,
-					hotkey,
-					onPress: () => {
-						show($, view, tab).catch((error: unknown) => {
-							fault($, "usage open", error);
-						});
-					},
-					children: [
-						Text({ dimColor: true, children: `${label} ` }),
-						...runs.map((item) => textOf(surface, item))
-					]
-				})
-			)
-		});
-	});
-}
-
 /** The pane: a tab row, then the chosen view's lines. */
 function registerPane(on: On, live: Live, view: View): void {
 	on(
@@ -196,15 +150,13 @@ function registerPane(on: On, live: Live, view: View): void {
 }
 
 /**
- * The usage band and pane (ADR-0201): above the prompt one chip each for the
- * context window and the 5h and 7d windows the engine reports, each bar split
- * by what takes it; a press, its hotkey, or `/breakdown` opens the pane on
- * that view, with /context's rows in /context's colours, or the window's use
+ * The usage pane (ADR-0201), opened by `/breakdown` on the context window or
+ * the 5h or 7d window. It draws no band above the prompt, since the status
+ * line already shows those readings. The pane shows with /context's rows in /context's colours, or the window's use
  * before and since the session's first reading and CodexBar's pace.
  */
 export function registerUsage(on: On, live: Live): void {
 	const view: View = { tab: "ctx" };
 	registerCommand(on, view);
-	registerBand(on, live, view);
 	registerPane(on, live, view);
 }
