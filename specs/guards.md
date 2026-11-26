@@ -240,3 +240,29 @@ Then the request leaves without its `Authorization` and `x-api-key` headers
 Given a request to an Anthropic host, or one whose credential comes from `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY` or `apiKeyHelper`
 When the request is sent
 Then it keeps its headers
+
+## GUARDS-086 Deny a Large Heredoc File Write
+
+claudetto refuses a Bash command that writes a file through a heredoc body of more than 40 lines and points to the patch tool, because a long body is mangled by the shell and resent whole.
+
+Given a Bash call such as `cat > app.ts <<'EOF'` with a body of 60 lines, also as `cat >>`, `cat <<EOF > f` or `tee f <<EOF`
+When the call is made
+Then it is refused with a reason naming `mcp__claudetto__patch` and its Add File form
+And the command never reaches the Bash tool
+
+Given a heredoc file write of 10 lines, or a large heredoc fed to a program's stdin (`python3 - <<EOF`, `psql <<SQL`, `cat <<EOF | grep`)
+When the call is made
+Then the command runs
+
+## GUARDS-087 Tell the Model to Save a Pasted Log to a File
+
+claudetto adds context to a typed prompt that holds a long pasted log, telling the model to save it under `$TMPDIR` and grep it rather than quote it back, and never holds or rewrites the prompt.
+
+Given a typed prompt of 200 lines in which most lines start like log output
+When the prompt is submitted
+Then it enters with its text unchanged
+And the model's context holds a note naming `$TMPDIR` and `grep`
+
+Given a short log, a long prose prompt, or a long code listing
+When the prompt is submitted
+Then it enters with no note

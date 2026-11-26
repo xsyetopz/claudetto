@@ -212,3 +212,13 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test plugins/claudetto`: 351 pass, 0 fail, including the 4 tests of `hooks/settings/__tests__/base-url.test.ts`.
   Verified: 2026-11-24, claude 2.1.329, `reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run405.sh` vanilla reps 21-23 sent the login on 3 of 4 requests in each run, claudetto reps 21-26 on 0 of 2; the dummy-token, API-key and `apiKeyHelper` controls kept their credential (`reports/2026-11-24-research/pin-2-1-329/r405/README.md`).
   Verified: 2026-11-26, `plugins/claudetto/hooks/settings/__tests__/base-url.test.ts` is removed as a test of implementation detail; no automated test covers the header strip now (the hook acts only on an engine-origin `http.fetch` under a claude.ai login, and the hook harness cannot produce either); the demonstration above stays the check.
+
+- [x] **GUARDS-086** claudetto shall refuse a Bash command that writes a file through a heredoc body of more than 40 lines and point to the patch tool, so a long body is not mangled and resent (RISK-590).
+  Status: added 2026-11-27 for RISK-590. The hook is `hooks/guards/heredoc.ts`, registered by `registerInplace`.
+  Acceptance: `cat >`, `cat >>`, `cat <<EOF >` and `tee f` with a 60-line body are refused with a reason naming `mcp__claudetto__patch` and Add File; a 10-line body, and a large heredoc fed to `python3`, `psql`, a pipe or a program whose stdout is redirected, run. Verification: test.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including the 3 tests of `hooks/guards/__tests__/heredoc.test.ts` (2 of them failed with the hook unregistered).
+
+- [x] **GUARDS-087** claudetto shall add context to a typed prompt that holds a long pasted log, telling the model to save it under `$TMPDIR` and grep it, and never hold or rewrite the prompt (RISK-591).
+  Status: added 2026-11-27 for RISK-591. The hook is `hooks/guards/log-paste.ts`, registered by `registerPromptSecrets`. The size is 40 non-empty lines and 4,000 characters, with 60 percent of the lines starting like log output (a timestamp, a level, a logcat tag, a stack frame).
+  Acceptance: a 200-line pasted log enters with its text unchanged and a note naming `$TMPDIR` and `grep`; a 10-line log, prose and a code listing of 200 lines get none; context already on the prompt is kept. Verification: test.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including the 3 tests of `hooks/guards/__tests__/log-paste.test.ts` (2 of them failed with the hook unregistered).

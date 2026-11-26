@@ -1648,3 +1648,33 @@
   Status: accepted 2026-11-27: the protection is core's and guards code execution; the retry already completes setup.
   Verified: 2026-11-27, claude 2.1.329, sandboxed Bash: `echo x > .git/hooks/probe` in this repo failed with "operation not permitted", while the same write and `git config` in a fresh repo under `$TMPDIR` exited 0.
   Source: ISSUES-part5.txt:1.
+
+- [x] **RISK-590** A large heredoc file write is mangled by the shell and resent whole at a large token cost.
+  Category: guards.
+  Cause: a long heredoc body carries quotes, `$` and backticks the shell rewrites, and the model resends the whole file after each failure.
+  Event: external/2026-11-24/reddit.com-r-buildwithclaude-comments-1y3rkym-heredocs-keep-getting-man-20261124T024432Z.md:25, "heredocs keep getting mangled" and resent in thousands of tokens.
+  Consequence: tokens and turns spent resending one file.
+  Likelihood: 3. Impact: 2.
+  Existing controls: TOOLS-010 and GUARDS-079 cover file writes and in-place sed only.
+  Response: mitigate.
+  Actions: `hooks/guards/heredoc.ts` refuses `cat`/`tee` writing a file through a heredoc body over 40 lines, with a reason naming `mcp__claudetto__patch` (Add File); small heredocs and heredocs fed to a program pass.
+  Trigger: a Bash call of 40 or more heredoc lines writing a file.
+  Owner: guards.
+  Status: mitigated 2026-11-27.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including heredoc.test.ts "a file written through a large heredoc is refused, whichever way it is redirected" (failed before the hook was registered) and "a small heredoc file write and a large heredoc fed to a program run".
+  Source: external/2026-11-24/reddit.com-r-buildwithclaude-comments-1y3rkym-heredocs-keep-getting-man-20261124T024432Z.md:25.
+
+- [x] **RISK-591** A raw log pasted into a prompt rides in every later request.
+  Category: guards.
+  Cause: a pasted prompt stays in the conversation, so each later request carries it; a flutter run's output was 72 percent of a session's pasted tokens and 1.6 percent of it error lines.
+  Event: external/2026-11-25/reddit.com-r-claudecode-comments-1y218zs-i-counted-every-big-paste-i-ma-20261125T020118Z.md:25, :49 and :63.
+  Consequence: tokens paid on every turn for text the model needs a few lines of.
+  Likelihood: 3. Impact: 2.
+  Existing controls: COST-048 covers tool results only.
+  Response: mitigate.
+  Actions: `hooks/guards/log-paste.ts` adds context to a typed prompt of 40 or more non-empty lines and 4,000 characters in which 60 percent of lines start like log output, telling the model to save it under `$TMPDIR` and grep it; the prompt is never held or rewritten. The paste itself has already entered, so the note limits quoting and later copies, not the first request.
+  Trigger: a pasted log of a few thousand tokens.
+  Owner: guards.
+  Status: mitigated 2026-11-27.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including log-paste.test.ts "a long pasted log goes through unchanged with a note to save it under TMPDIR and grep it" (failed before the hook was registered) and "a short log, a long prose prompt and a long code listing get no note".
+  Source: external/2026-11-25/reddit.com-r-claudecode-comments-1y218zs-i-counted-every-big-paste-i-ma-20261125T020118Z.md:25.

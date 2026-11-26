@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 
 import { fault } from "../../shared/fault";
+import { registerPromptLog } from "../log-paste";
 import { maskFor, shapesOnly } from "./redact";
 
 /** The origins a person types or pastes into: the terminal, Remote Control, and an SDK host's `-p`. */
@@ -47,6 +48,7 @@ export const holdsSecret = (
  * pasted them.
  */
 export function registerPromptSecrets(on: On): void {
+	registerPromptLog(on);
 	let held: string | undefined;
 	on("prompt.submit", async ($, e, next) => {
 		if (!TYPED.has(e.origin.kind)) {

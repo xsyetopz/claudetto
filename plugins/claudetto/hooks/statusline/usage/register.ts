@@ -9,6 +9,7 @@ import { fault } from "../../shared/fault";
 import type { Live } from "../live";
 import { contextLines } from "./context";
 import { limitLines } from "./limit";
+import { registerLimitNote } from "./note";
 import { type Line, type Run, type Tab, TABS } from "./runs";
 
 /** The pane's id, and the slash command that opens it (`/usage` is a built-in name, which registration refuses). */
@@ -159,4 +160,5 @@ export function registerUsage(on: On, live: Live): void {
 	const view: View = { tab: "ctx" };
 	registerCommand(on, view);
 	registerPane(on, live, view);
+	registerLimitNote(on);
 }

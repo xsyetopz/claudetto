@@ -64,3 +64,19 @@ claudetto makes the agent finish a step a worker could not run, make routine cal
 Given a worker's report that it was refused a restore and left a draft and an untracked report (eval case refused-step)
 When the agent is asked to get the check passing and say where things stand
 Then the conduct text passes more runs than vanilla in which the agent runs the restore itself and its last message hands no choice back
+
+## KERNEL-034 Tell the Model When a Usage Limit Is Near
+
+claudetto tells the model once when the 5-hour or 7-day use passes 85 percent, so it commits and writes a handover before the limit stops the session.
+
+Given a session whose 5-hour use reads 50 percent
+When the use reads 86 percent at the next prompt
+Then that prompt's context holds one line naming the 5-hour window, 86 percent and the checkpoint to make
+
+Given the use stays above 85 percent
+When later prompts are submitted
+Then they carry no such line until the window falls below 85 percent and crosses again
+
+Given the 7-day window crosses 85 percent while the 5-hour one stays below
+When the prompt is submitted
+Then the line names the 7-day window only

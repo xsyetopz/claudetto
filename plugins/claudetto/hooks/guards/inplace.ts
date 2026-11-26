@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
+import { registerHeredoc } from "./heredoc";
 
 /**
  * What the model reads when an in-place edit is refused (GUARDS-079). It names `patch`, the
@@ -46,6 +47,7 @@ export const editsInPlace = (command: string): boolean =>
  * command that Claude Code cannot split is judged like any other.
  */
 export function registerInplace(on: On): void {
+	registerHeredoc(on);
 	on("tool.call", { tool: "Bash" }, (_$, e, next) =>
 		e.tool === "Bash" && editsInPlace(e.command) ? { deny: REASON } : next(e)
 	).catch(($, e, next) => {

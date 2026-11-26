@@ -588,3 +588,19 @@
   - Status: mitigated 2026-11-27; residual Likelihood 2 × Impact 1.
   - Verified: 2026-11-27, claude 2.1.329, `claude plugin test` on a clean HEAD copy of plugins/claudetto with hooks/notice only: 17 pass, 0 fail, including wait.test.ts "a permission dialog on a terminal with no channel raises a banner naming the permission", "the idle wait reaches Linux through notify-send when osascript is missing", "a terminal that shows the text itself gets no second notice" and "notifications_disabled gets nothing". Not run against a live terminal.
   - Source: user goal 2026-11-27; ISSUES-part11.md.
+
+- [x] **RISK-592** The model cannot see the 5-hour or 7-day usage, so it runs into the limit with work uncommitted.
+  - Category: kernel.
+  - Cause: the status line shows the usage to the person only (ADR-0201); the model reads no reading of it.
+  - Event: external/2026-11-25/reddit.com-r-claudecode-comments-1y33xyk-i-made-a-claude-code-skill-tha-20261125T020040Z.md:25, a skill that exposes the usage so the session checkpoints before the limit.
+  - Consequence: a session stops mid-change with no commit or handover.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: the status line and the usage pane, which the person reads.
+  - Response: mitigate.
+  - Actions: `hooks/statusline/usage/note.ts` adds one line to the context of the next prompt when a window passes 85 percent, from `$.session.usage()`, once per crossing; the window is armed again when it falls below 85. A long turn that runs on without a new prompt gets the line at the next one.
+  - Trigger: a session that stops at a limit with uncommitted work.
+  - Owner: kernel
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including limit-note.test.ts "crossing 85 percent adds one checkpoint line, and the next turns add none until the window drops and crosses again" (failed before the hook was registered).
+  - Source: external/2026-11-25/reddit.com-r-claudecode-comments-1y33xyk-i-made-a-claude-code-skill-tha-20261125T020040Z.md:25.

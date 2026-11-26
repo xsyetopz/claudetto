@@ -91,3 +91,8 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Evidence: on Haiku 5.5 the case ties (results/2026-11-26T22-34-37-608Z, 0.75 and 0.75, 6 runs each): every run on both arms ran the restore, and the misses are closing offers ("Do you want me to finish…"). The 3-run +0.50 before it (results/2026-11-26T22-23-49-686Z) was noise.
   Acceptance: on refused-step the conduct text passes more runs than vanilla. Verification: demonstration.
   Verified: claude 2.1.329, 2026-11-27, demonstration (`just eval claudetto --case refused-step --runs 6 --model claude-opus-5-5`, effort medium, $1.86, plugins/claudetto/evals/results/2026-11-26T22-43-03-446Z): the last message handed no choice back in 6 of 6 runs with claudetto and 4 of 6 without (1.00 and 0.83); `restored` passed in every run on both arms.
+
+- [x] **KERNEL-034** claudetto shall tell the model once when the 5-hour or 7-day use passes 85 percent, so it checkpoints before the limit (RISK-592).
+  Status: added 2026-11-27 for RISK-592. The hook is `hooks/statusline/usage/note.ts`, registered by `registerUsage`; it reads `$.session.usage()`, the source the status line uses. 85 percent leaves 15 points of a window for a commit and a handover.
+  Acceptance: the prompt after a window reads 85 or more carries one line naming the window and its use; later prompts carry none until the window falls below 85 and crosses again; the 7-day window is named alone when only it crosses. Verification: test.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 392 pass, 0 fail, including the 2 tests of `hooks/statusline/__tests__/limit-note.test.ts` (both failed with the hook unregistered).
