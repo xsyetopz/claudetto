@@ -78,7 +78,26 @@ describe("state file", () => {
 		expect(out).toContain("Doing s");
 	});
 
-	test("an idle lead with a subagent still running shows no wait on the next prompt", async () => {
+	test("a compaction window below the model's limit is the window the context bar fills", async () => {
+		// Arrange
+		const state: LiveState = { ...EMPTY_STATE, window: 300_000 };
+		const usage = {
+			context_window: { used_percentage: 6, context_window_size: 1_000_000 }
+		};
+
+		// Act
+		const capped = await draw(
+			{ [statePath("/cfg", "s1")]: writeState(state) },
+			usage
+		);
+		const plain = await draw({}, usage);
+
+		// Assert
+		expect(capped).toContain("20% 60k/300k");
+		expect(plain).toContain("6% 60k/1M");
+	});
+
+	test("an idle session flags no wait on the next prompt, with or without a subagent running", async () => {
 		// Arrange
 		const agent = {
 			id: "a",
@@ -106,7 +125,8 @@ describe("state file", () => {
 		// Assert
 		expect(whileBusy).not.toContain("waiting on you");
 		expect(whileBusy).toContain("Explore scan");
-		expect(afterDone).toContain("waiting on you: your next prompt");
+		expect(afterDone).not.toContain("waiting on you");
+		expect(afterDone).toContain("○ idle");
 	});
 
 	test("a broken or foreign state file draws as no state", async () => {

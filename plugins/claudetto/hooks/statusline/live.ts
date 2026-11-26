@@ -228,12 +228,14 @@ function registerMeasure(on: On, live: Live): void {
 	on("session.measure", async ($, e, next) => {
 		try {
 			const usage = await $.session.usage({ breakdown: "summary" });
-			const categories = usage.context.breakdown?.categories;
+			const breakdown = usage.context.breakdown;
+			const categories = breakdown?.categories;
 			const now = await $.clock.now();
 			live.state = {
 				...live.state,
 				limits: baselinesAfter(live.state.limits ?? [], e.rateLimits, now),
-				...(categories === undefined ? {} : { context: partsOf(categories) })
+				...(categories === undefined ? {} : { context: partsOf(categories) }),
+				...(breakdown === undefined ? {} : { window: breakdown.rawMaxTokens })
 			};
 			await save($, live.state);
 			$.ui.invalidate("ui.render");

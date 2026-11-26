@@ -48,14 +48,24 @@ export const modelText = ({ input, paint }: Ctx): Text => {
 	);
 };
 
-/** `ctx ████░░░░░░ 40% 80k/200k` from `context_window`, its filled cells split by /context's rows in their colours once a hook recorded them. */
+/**
+ * `ctx ████░░░░░░ 40% 80k/200k` from `context_window`, its filled cells split
+ * by /context's rows in their colours once a hook recorded them. Where a hook
+ * recorded a smaller window /context measures against (an `autoCompactWindow`
+ * of 300k on a 1M model), the share and the total are of that window, because
+ * compaction runs there and the model's limit is never reached.
+ */
 export const contextText = ({ input, paint, state }: Ctx): Text => {
 	const context = sub(input, "context_window");
-	const used = num(context?.["used_percentage"]);
-	if (used === undefined) {
+	const reported = num(context?.["used_percentage"]);
+	if (reported === undefined) {
 		return undefined;
 	}
-	const size = num(context?.["context_window_size"]);
+	const model = num(context?.["context_window_size"]);
+	const limit = state?.window;
+	const isSmaller = model !== undefined && limit !== undefined && limit < model;
+	const size = isSmaller ? limit : model;
+	const used = isSmaller ? (reported * model) / limit : reported;
 	return words(
 		paint.dim("ctx"),
 		bar(

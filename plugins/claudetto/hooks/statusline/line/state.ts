@@ -75,6 +75,8 @@ export interface LiveState {
 	readonly tasks: readonly Task[];
 	/** The rows of the context window by /context's local estimate at the last measure, `used` rows only. */
 	readonly context?: readonly ContextPart[];
+	/** The window /context measures against at the last measure: the model's, or a smaller compaction window (`autoCompactWindow`). */
+	readonly window?: number;
 	/** The rate-limit windows as the session first saw them. */
 	readonly limits?: readonly Baseline[];
 }
@@ -184,6 +186,7 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 		return undefined;
 	}
 	const doing = str(found["doing"]);
+	const window = num(found["window"]);
 	return {
 		phase: found["phase"] === "working" ? "working" : "idle",
 		agents: listOf(found["agents"]).flatMap((item) => agentOf(item) ?? []),
@@ -191,6 +194,7 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 		tools: num(found["tools"]) ?? 0,
 		tasks: listOf(found["tasks"]).flatMap((item) => taskOf(item) ?? []),
 		...(doing === undefined ? {} : { doing }),
+		...(window === undefined || window <= 0 ? {} : { window }),
 		...(Array.isArray(found["context"])
 			? {
 					context: listOf(found["context"]).flatMap(
@@ -221,5 +225,6 @@ export const writeState = (state: LiveState): string =>
 		doing: state.doing,
 		tasks: state.tasks,
 		context: state.context,
+		window: state.window,
 		limits: state.limits
 	});

@@ -81,9 +81,6 @@ export const tasksText = ({ state, paint }: Ctx): Text => {
 };
 
 const waitingWhat = ({ kind, tool }: Waiting): string => {
-	if (kind === "input") {
-		return "your next prompt";
-	}
 	if (kind === "question") {
 		return "an answer";
 	}
@@ -91,14 +88,14 @@ const waitingWhat = ({ kind, tool }: Waiting): string => {
 };
 
 /**
- * `⚑ waiting on you: permission for Bash`, from the prompt a hook saw the
- * engine raise. The next prompt is left out while a subagent runs, because the
- * session is still working and the lead's turn resumes on the subagent's report.
+ * `⚑ waiting on you: permission for Bash`, from the dialog or question a hook
+ * saw the engine raise. The next prompt gets no row: the phase already reads
+ * `○ idle`, and a flag on it reads as a step the user owes while a background
+ * shell or subagent is still working.
  */
 export const waitingText = ({ state, paint }: Ctx): Text => {
 	const waiting = state?.waiting;
-	const isBusy = (state?.agents.length ?? 0) > 0;
-	return waiting === undefined || (waiting.kind === "input" && isBusy)
+	return waiting === undefined || waiting.kind === "input"
 		? undefined
 		: paint.alert(`⚑ waiting on you: ${waitingWhat(waiting)}`);
 };
