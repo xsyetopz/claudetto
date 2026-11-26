@@ -1,6 +1,8 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
+import { notifyNative } from "./native";
+import { registerWaitNotice } from "./wait";
 
 /**
  * The tail core gives every API-error text for a stream cut after output
@@ -17,41 +19,6 @@ export const RESUME_TEXT =
 /** Resumes per window: a second cut gets a second try, a third means the link is down and the person decides. */
 const MAX_RESUMES = 2;
 const WINDOW_MS = 10 * 60_000;
-
-/** An AppleScript string literal of `text`. */
-const appleString = (text: string): string =>
-	`"${text.replaceAll("\\", String.raw`\\`).replaceAll('"', String.raw`\"`)}"`;
-
-/** Whether `argv` ran and exited 0; a missing program reads as false. */
-async function ran($: EngineInterface, argv: string[]): Promise<boolean> {
-	try {
-		const result = await $.process.run(argv);
-		return result.exitCode === 0;
-	} catch {
-		return false;
-	}
-}
-
-/**
- * Raises the notice through the operating system: Notification Center on
- * macOS (`osascript`), the desktop's notification daemon on Linux
- * (`notify-send`, libnotify). Used where the person's terminal channel shows
- * no text, since Claude Code's channels are terminal escape sequences only.
- */
-async function notifyNative(
-	$: EngineInterface,
-	title: string,
-	text: string
-): Promise<void> {
-	const isShown = await ran($, [
-		"osascript",
-		"-e",
-		`display notification ${appleString(text)} with title ${appleString(title)}`
-	]);
-	if (!isShown) {
-		await ran($, ["notify-send", title, text]);
-	}
-}
 
 /**
  * Raises the error-stop notice on the person's `preferredNotifChannel`, and
@@ -86,6 +53,7 @@ async function notify(
  * `preferredNotifChannel` decides the channel.
  */
 export function registerStopNotice(on: On): void {
+	registerWaitNotice(on);
 	const resumed: number[] = [];
 	let cut = false;
 	on("classic.StopFailure", async ($, e, next) => {

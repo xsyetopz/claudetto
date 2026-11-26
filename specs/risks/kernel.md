@@ -566,9 +566,25 @@
   - Impact: 3
   - Existing controls: `$.ui.notify` where the terminal has a channel.
   - Response: mitigate.
-  - Actions: on `no-channel` or `terminal_bell` the API-error notice falls back to `osascript` (macOS Notification Center), then `notify-send` (libnotify); `notifications_disabled` gets nothing. Idle and permission waits get no native notice, because KERNEL-003 registers none.
+  - Actions: on `no-channel` or `terminal_bell` the API-error notice falls back to `osascript` (macOS Notification Center), then `notify-send` (libnotify); `notifications_disabled` gets nothing. Idle, permission and elicitation waits get the same fallback under RISK-589.
   - Trigger: an error stop the user did not see.
   - Owner: kernel
   - Status: mitigated 2026-11-27.
   - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including native.test.ts "a terminal with no notification channel gets a macOS banner with the text", "without osascript the Linux desktop gets it through notify-send", "a bell-only channel also gets the banner" and "notifications_disabled gets no native notice".
   - Source: user goal 2026-11-27.
+
+- [x] **RISK-589** A permission dialog or the idle prompt raises no visible notice in a terminal that has no notification channel.
+  - Category: host behaviour.
+  - Cause: Claude Code sends the wait notices through the terminal's own channel only; Terminal.app, tmux and a plain Linux terminal show no text, and a `Notification` hook learns no channel outcome, so a `$.ui.notify` from it would double a notice a capable terminal already showed.
+  - Event: the user's goal, 2026-11-27: "missing macOS/Linux-native notification system", resolved against KERNEL-003.
+  - Consequence: a session waits on a permission or an answer unseen.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: core's channel notice where the terminal has one.
+  - Response: mitigate.
+  - Actions: a `classic.Notification` hook raises `osascript`, then `notify-send`, for `permission_prompt`, `idle_prompt`, `elicitation_dialog` and `elicitation_url_dialog`, only when the `preferredNotifChannel` setting is `terminal_bell` or, under `auto`, the environment (`TMUX`, `TERM_PROGRAM`, `TERM`) names no iTerm2, Ghostty or kitty; `notifications_disabled` gets nothing. A guess from the environment can differ from core's own pick (a terminal core resolves differently shows a banner or none).
+  - Trigger: a user reports a doubled wait notice, or a missed one in a terminal with a channel.
+  - Owner: kernel
+  - Status: mitigated 2026-11-27; residual Likelihood 2 × Impact 1.
+  - Verified: 2026-11-27, claude 2.1.329, `claude plugin test` on a clean HEAD copy of plugins/claudetto with hooks/notice only: 17 pass, 0 fail, including wait.test.ts "a permission dialog on a terminal with no channel raises a banner naming the permission", "the idle wait reaches Linux through notify-send when osascript is missing", "a terminal that shows the text itself gets no second notice" and "notifications_disabled gets nothing". Not run against a live terminal.
+  - Source: user goal 2026-11-27; ISSUES-part11.md.

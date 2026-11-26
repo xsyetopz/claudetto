@@ -6,14 +6,16 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 ## Hook Logging and Notice
 
-- [x] **KERNEL-003** claudetto shall register one `classic.StopFailure` hook that calls `$.ui.notify` on the user's `preferredNotifChannel`, only on an API-error stop, behind the option `notificationsEnabled` (default true), with none for permission, idle, or elicitation (native handles those).
+- [x] **KERNEL-003** claudetto shall register one `classic.StopFailure` hook that calls `$.ui.notify` on the user's `preferredNotifChannel`, on an API-error stop, and one `classic.Notification` hook that raises a native notice (`osascript`, then `notify-send`) for a permission, idle or elicitation wait only where the terminal shows no text, and none under `notifications_disabled`.
   Decision: ADR-0190, StopFailure notice stays in kernel after a code search confirms vanilla lacks it.
-  Acceptance: An API-error stop notifies once; a normal stop notifies nothing; claudetto registers no permission, idle or elicitation notice. Verification: test.
+  Acceptance: An API-error stop notifies once; a normal stop notifies nothing; a permission, idle or elicitation wait raises one native notice on a terminal with no text channel, none where the terminal shows it or under `notifications_disabled`. Verification: test.
+  Amended 2026-11-27 at the user's direction (ISSUES-part11.md)
   Decision: no `notificationsEnabled` option, because the user's `preferredNotifChannel: notifications_disabled` already turns `$.ui.notify` off.
   Basis: read. Status: have at 088a227c. claude 2.1.327: `classic.StopFailure` (chunk-m14bt1pz.js@4444295), `ui.notify` (chunk-dafpvz32.js@3391) and `preferredNotifChannel` (chunk-ja5z738t.js@294945) present (code search).
   Source: openspec/changes/2-1-325-rearchitecture/design.md:150; plugins/claudetto/hooks/features/stop-notice/stop-notice.ts@088a227c. Idea only: external/2026-10-14/export-attention-sound- A Claude Code mod that plays a sound when Claude needs you, so you (Notification event present).
   Verified: test, claude 2.1.327, 2026-11-18, `claude plugin test plugins/claudetto` (hooks/notice/**tests**/stop.test.ts): a StopFailure notifies once with the error, a normal Stop notifies nothing. Code search: vanilla sends only the generic idle notice after the idle threshold (chunk-cfxefa64.js@56794). Revised: no `notificationsEnabled` option; the user's `preferredNotifChannel: notifications_disabled` already turns `$.ui.notify` off.
   Verified: re-run 2026-11-19, claude 2.1.327 plugin test plugins/claudetto: 105 pass, 0 fail: stop.test.ts 'an API-error stop notifies once with the error' and 'a normal stop notifies nothing' pass; the registered hook list the test run prints holds classic.StopFailure and no Notification, PermissionRequest or Elicitation hook.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test` on a clean HEAD copy of plugins/claudetto holding only hooks/notice and its tests: 17 pass, 0 fail, wait.test.ts 7 of 7 (4 failed before the code change): a permission, idle or elicitation wait on a terminal with no text channel runs osascript, then notify-send; a terminal that shows the text and notifications_disabled get nothing.
 
 ## Agent Conduct Rules
 

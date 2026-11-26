@@ -2,18 +2,23 @@
 
 History, checks and sources: [evidence/kernel.md](evidence/kernel.md).
 
-## KERNEL-003 Notify on API-Error Stop Only
+## KERNEL-003 Notify on API-Error Stop and on Waits for the User
 
-claudetto registers one `classic.StopFailure` hook that calls `$.ui.notify` on the user's `preferredNotifChannel` and registers no notice for permission, idle or elicitation.
+claudetto notifies on an API-error stop, and on a permission, idle or elicitation wait where the terminal shows no text, natively through `osascript` or `notify-send`.
 
 Given an API-error stop
 When the hook runs
 Then it notifies once
 
-Given a normal stop
-When the hook runs
-Then it notifies nothing
-And claudetto registers no permission, idle or elicitation notice
+Given a permission, idle or elicitation wait on a terminal with no text channel
+When the `Notification` hook runs
+Then it raises one native notice with the wait's text
+
+Given a terminal that shows the text itself, or `notifications_disabled`
+When the `Notification` hook runs
+Then it raises no notice
+
+Amended 2026-11-27 at the user's direction (ISSUES-part11.md)
 
 ## KERNEL-013 Look up Missing Command Values
 
