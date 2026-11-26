@@ -97,7 +97,9 @@ const atEnd = (
  * Finds a hunk's old lines (context and removed) in the file's lines, at or
  * after `cursor` and after the hunk's anchor line. Exact comparison runs
  * first, then trailing-whitespace-folded, then trimmed; the first level with a
- * hit decides, and more than one hit there is ambiguous.
+ * hit decides. With an anchor the first hit after it is the hunk, because the
+ * anchor names the block the hunk edits and a later copy of the same lines lies
+ * in another block; without one, more than one hit is ambiguous.
  *
  * @param lines The file's lines without terminators.
  * @param hunk The hunk to place.
@@ -125,7 +127,7 @@ export function locate(
 	}
 	for (const fold of LEVELS) {
 		const hits = positions(lines, old, start, fold);
-		if (hits.length === 1) {
+		if (hits.length === 1 || (hits.length > 1 && hunk.anchor !== undefined)) {
 			return { at: hits[0] ?? 0, length: old.length };
 		}
 		if (hits.length > 1) {
