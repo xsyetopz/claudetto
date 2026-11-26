@@ -10,7 +10,6 @@ import {
 	linesText,
 	modelText,
 	nameText,
-	phaseText,
 	projectText,
 	prText
 } from "./segments";
@@ -27,12 +26,12 @@ const row = (items: readonly Text[]): string[] => {
 };
 
 /**
- * Every row, the broadest first: the turn and the model, where the work
- * happens, the plan limits, the activity, the tasks, the machine, what waits
- * on the person, and one row per subagent.
+ * Every row, the broadest first: the model and its context, where the work
+ * happens, the plan limits, the activity, the tasks, the machine, and what
+ * waits on the person. The turn's own phase is core's spinner, so no row repeats it.
  */
 const rowsOf = (ctx: Ctx): string[] => [
-	...row([phaseText(ctx), modelText(ctx), contextText(ctx), cacheText(ctx)]),
+	...row([modelText(ctx), contextText(ctx), cacheText(ctx)]),
 	...row([
 		projectText(ctx),
 		branchText(ctx),

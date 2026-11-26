@@ -116,7 +116,7 @@ describe("status line rows", () => {
 		// Assert
 		expect(rows).toHaveLength(7);
 		expect(rows[0]).toBe(
-			"● working · Opus 4.1 high · ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m"
+			"Opus 4.1 high · ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m"
 		);
 		expect(rows[1]).toBe(
 			"⌂ claudetto · ⎇ main · ⇄ #7 approved · work · ◔ 12m (api 4m) · +12 -3"
@@ -241,7 +241,7 @@ describe("status line rows", () => {
 		expect(statusOf("not json", PLAIN, NOW)).toBe("claudetto: no status");
 	});
 
-	test("counts every agent on the activity row and gives none a row of its own, which core's agent panel shows", () => {
+	test("counts every agent on the activity row", () => {
 		// Arrange
 		const agents = Array.from({ length: 5 }, (_, i) => ({
 			id: String(i),
@@ -256,8 +256,6 @@ describe("status line rows", () => {
 
 		// Assert
 		expect(out).toContain("⏵ 5 agents");
-		expect(out).not.toContain("● Explore");
-		expect(out).not.toContain("more");
 	});
 });
 

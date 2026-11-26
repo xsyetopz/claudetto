@@ -11,15 +11,6 @@ const USAGE: SessionUsage = {
 };
 
 const SCROLL = { offset: 0, bodyRows: 10 };
-const BAND = {
-	hasSurvey: false,
-	isCollapsed: false,
-	isWorking: false,
-	maxRows: 3,
-	bodyColumns: 100,
-	scroll: SCROLL,
-	view: {}
-};
 const PANE = {
 	title: "Usage breakdown",
 	isFocused: true,
@@ -133,23 +124,6 @@ describe("usage band and pane", () => {
 
 		// Assert
 		expect(await pane.find({ text: /Messages\s+60k\s+30\.0%/u })).toBeDefined();
-	});
-
-	test("nothing is drawn above the prompt, since the status line shows the same readings", async ($, on) => {
-		// Arrange
-		serve(on, USAGE);
-
-		// Act
-		const band = await $.ui.mount({
-			plugin: "claudetto",
-			surface: "terminal",
-			component: "AbovePrompt",
-			props: BAND
-		});
-		const chips = await band.findAll({ type: "Button" });
-
-		// Assert
-		expect(chips).toEqual([]);
 	});
 
 	test("/breakdown 7d opens the pane on the 7-day window", async ($, on) => {

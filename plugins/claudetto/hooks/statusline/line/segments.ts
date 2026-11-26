@@ -11,16 +11,6 @@ import {
 import { num, type Rec, str, sub } from "./input";
 import { windowsOf } from "./limits";
 
-/** `● working` while a turn runs and `○ idle` after it; absent until a hook has written state. */
-export const phaseText = ({ state, paint }: Ctx): Text => {
-	if (state === undefined) {
-		return undefined;
-	}
-	return state.phase === "working"
-		? paint.ok("● working")
-		: paint.dim("○ idle");
-};
-
 /** The output style when it is not the default one. */
 const styleName = (input: Rec): string | undefined => {
 	const name = str(sub(input, "output_style")?.["name"]);

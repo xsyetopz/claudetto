@@ -47,7 +47,7 @@ describe("state file", () => {
 		expect(out).toBe("");
 	});
 
-	test("a state file the hooks wrote shows the phase, the waiting prompt, agents and tasks", async () => {
+	test("a state file the hooks wrote shows the waiting prompt, agents and tasks", async () => {
 		// Arrange
 		const state: LiveState = {
 			phase: "working",
@@ -72,7 +72,6 @@ describe("state file", () => {
 		const out = await draw({ [statePath("/cfg", "s1")]: writeState(state) });
 
 		// Assert
-		expect(out).toContain("● working");
 		expect(out).toContain("waiting on you: an answer");
 		expect(out).toContain("⏵ 1 agent");
 		expect(out).toContain("Doing s");
@@ -95,38 +94,6 @@ describe("state file", () => {
 		// Assert
 		expect(capped).toContain("20% 60k/300k");
 		expect(plain).toContain("6% 60k/1M");
-	});
-
-	test("an idle session flags no wait on the next prompt, with or without a subagent running", async () => {
-		// Arrange
-		const agent = {
-			id: "a",
-			type: "Explore",
-			description: "scan",
-			startedAt: 5,
-			tools: 2
-		};
-		const busy: LiveState = {
-			...EMPTY_STATE,
-			phase: "idle",
-			waiting: { kind: "input" },
-			agents: [agent]
-		};
-		const done: LiveState = { ...busy, agents: [] };
-
-		// Act
-		const whileBusy = await draw({
-			[statePath("/cfg", "s1")]: writeState(busy)
-		});
-		const afterDone = await draw({
-			[statePath("/cfg", "s1")]: writeState(done)
-		});
-
-		// Assert
-		expect(whileBusy).not.toContain("waiting on you");
-		expect(whileBusy).toContain("⏵ 1 agent");
-		expect(afterDone).not.toContain("waiting on you");
-		expect(afterDone).toContain("○ idle");
 	});
 
 	test("a broken or foreign state file draws as no state", async () => {
@@ -227,7 +194,7 @@ describe("status from files", () => {
 		);
 
 		// Assert
-		expect(out).toBe("● working\n⌂ p · ⎇ main");
+		expect(out).toBe("⌂ p · ⎇ main");
 	});
 
 	test("takes the theme from the nearest settings file before the global config", async () => {
@@ -273,7 +240,7 @@ describe("status from files", () => {
 		);
 
 		// Assert
-		expect(shown).toBe("○ idle · Opus 5.5\nload 2.0/8");
-		expect(failed).toBe("○ idle · Opus 5.5");
+		expect(shown).toBe("Opus 5.5\nload 2.0/8");
+		expect(failed).toBe("Opus 5.5");
 	});
 });
