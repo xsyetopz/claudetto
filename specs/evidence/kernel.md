@@ -71,3 +71,15 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 
 - [x] **KERNEL-029** Moved Out as OUT-2831: ADR-0177 and ADR-0190: on a `deploy.sh` that always fails (license server unreachable) vanilla 2.1.327 stopped after one failing try in 5 of 5 Sonnet 5.5 runs, the same as the candidate line (4 of 5 after one try, 1 of 5 after two), so the median is not lower and no line ships (reports/2026-11-19-research/risks-reply-reqs, batch-act.sh, seed k).
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, vanilla rerun of the 2026-11-19 seeds (`reports/2026-11-24-research/pin-2-1-329/vanilla/results.txt`, about $1.9 with the controls): seed k stopped after one failing `./deploy.sh` in 5 of 5 and named the license server, so the median is one try and the Out holds.
+
+- [x] **KERNEL-030** claudetto shall make the agent tell the user what to do before it starts a step whose result depends on the user acting while it runs.
+  Status: added 2026-11-26 for RISK-566 (ISSUES-part7.txt:133-172). The line ships as the paragraph after the permission-prompt paragraph in plugins/claudetto/hooks/prompt/conduct.ts.
+  Evidence: plugins/claudetto/evals/press-warning before the line: 0 of 3 runs on each arm told the user before the capture (results/2026-11-26T20-35-55-614Z); the case's first `capture.sh` printed a fixed line, so runs that held back did so for the stub, and the scaffold now reads a device file during its window.
+  Acceptance: on press-warning the conduct text passes more runs than vanilla. Verification: demonstration.
+  Verified: claude 2.1.329, 2026-11-26, demonstration (`just eval claudetto --case press-warning --runs 6`, Haiku 5.5, plugins/claudetto/evals/results/2026-11-26T21-30-11-328Z): 5 of 6 runs with claudetto told the user before any capture, against 0 of 6 without (0.88 and 0.25).
+
+- [x] **KERNEL-031** claudetto shall make the agent read what a command writes before it runs the command while a background run it depends on is still going.
+  Status: added 2026-11-26 for RISK-565 (ISSUES-part3.txt:236-240). The line ships as the paragraph after KERNEL-030's in plugins/claudetto/hooks/prompt/conduct.ts.
+  Evidence: plugins/claudetto/evals/busy-build-during-run before the line: the matrix finished unspoiled in 1 of 3 runs on each arm on the escape-aware graders (results/2026-11-26T20-58-06-479Z, 0.61 and 0.67); the spoiled claudetto run read in full (results/2026-11-26T20-32-07-091Z, run 3) started `./lint.sh` before reading its header.
+  Acceptance: on busy-build-during-run the conduct text passes more runs than vanilla. Verification: demonstration.
+  Verified: claude 2.1.329, 2026-11-26, demonstration (`just eval claudetto --case busy-build-during-run --runs 6`, Haiku 5.5, plugins/claudetto/evals/results/2026-11-26T21-24-46-494Z): the matrix finished unspoiled in 6 of 6 runs with claudetto and 4 of 6 without (1.00 and 0.83).
