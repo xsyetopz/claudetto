@@ -6,7 +6,7 @@ import { join } from "node:path";
 // and reject the second (rule 3), no case is graded by an `llm` grader alone (rule 2), each suite
 // has one canary (rule 5), and no case name carries a version suffix (rule 6).
 import { CLAUDETTO_SAMPLES } from "./claudetto-eval-samples";
-import { type Samples, verdicts } from "./eval-case-samples";
+import { type Samples, scaffoldFileCases, verdicts } from "./eval-case-samples";
 import { loadGraders } from "./spec-eval-graders";
 import { SPEC_SAMPLES } from "./spec-eval-samples";
 
@@ -51,11 +51,14 @@ async function caseTags(dir: string): Promise<Map<string, string[]>> {
 }
 
 const loaded = await Promise.all(
-	SUITES.map(async (suite) => ({
-		graders: await loadGraders(suite.dir),
-		suite,
-		tags: await caseTags(suite.dir)
-	}))
+	SUITES.map(async (suite) => {
+		await scaffoldFileCases(suite.dir, suite.samples);
+		return {
+			graders: await loadGraders(suite.dir),
+			suite,
+			tags: await caseTags(suite.dir)
+		};
+	})
 );
 
 for (const { graders, suite, tags } of loaded) {
