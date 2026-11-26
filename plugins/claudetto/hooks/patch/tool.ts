@@ -32,12 +32,15 @@ const RANK: Record<Verdict, number> = { allow: 0, ask: 1, deny: 2 };
 /**
  * The strictest verdict the engine gives the Edit and Write tools for each
  * path, so a deny or ask rule written for them (`Edit(**\/.env)`,
- * `Edit(~/.claude/settings.json)`) holds through `patch` too.
+ * `Edit(~/.claude/settings.json)`) holds through `patch` too. `isModes` is
+ * true when that verdict is an ask no rule, setting or hook made: the
+ * permission mode's own, which the mode settles (auto mode's classifier, the
+ * default mode's dialog).
  */
 async function editVerdict(
 	$: EngineInterface,
 	paths: readonly string[]
-): Promise<{ decision: Verdict; reason?: string }> {
+): Promise<{ decision: Verdict; reason?: string; isModes: boolean }> {
 	const answers = await Promise.all(
 		paths.flatMap((file_path) => [
 			$.tool
@@ -51,12 +54,20 @@ async function editVerdict(
 				.then((a) => ({ file_path, a }))
 		])
 	);
-	let worst: { decision: Verdict; reason?: string } = { decision: "allow" };
+	let worst: { decision: Verdict; reason?: string; isModes: boolean } = {
+		decision: "allow",
+		isModes: false
+	};
 	for (const { file_path, a } of answers) {
 		if (RANK[a.decision] > RANK[worst.decision]) {
 			worst = {
 				decision: a.decision,
-				reason: a.reason ?? `Edit and Write rules cover ${file_path}`
+				reason: a.reason ?? `Edit and Write rules cover ${file_path}`,
+				isModes:
+					a.rule === undefined &&
+					a.setting === undefined &&
+					a.hook === undefined &&
+					a.plugin === undefined
 			};
 		}
 	}
@@ -164,7 +175,13 @@ export function registerPatch(on: On): void {
 		if (verdict.decision === "deny" || files === undefined) {
 			return verdict;
 		}
-		const edit = await editVerdict($, files.paths);
+		const { isModes, ...edit } = await editVerdict($, files.paths);
+		// The mode's own ask on Edit or Write is the mode's to settle, as is its ask for `patch`:
+		// handed up as heard, it goes to auto mode's classifier, where an ask a hook makes would
+		// open a dialog on every patch.
+		if (isModes && edit.decision === "ask" && verdict.decision === "ask") {
+			return verdict;
+		}
 		if (edit.decision !== "allow") {
 			return edit;
 		}
