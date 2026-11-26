@@ -213,6 +213,7 @@
   Status: fixed 2.1.331, 2026-11-24: the line is back in the claudetto output style word for word, and `hooks/pool/question.ts` with `question-rule.ts` and its test is removed, because the style placement measured 9 of 9 and the description 3 of 6 on the same prompt.
   Verified: 2.1.331, 2026-11-24, `reply.sh` test-runner prompt with the line in the style: 6 of 6 runs on a plugin copy (`PLUGIN=` arm) and 3 of 3 on the committed plugin called `AskUserQuestion`; `claude plugin test plugins/claudetto` 331 pass -> PASS.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `bash reports/2026-11-24-research/reverify/reply.sh` (about $1.3): claudetto called AskUserQuestion in 6 of 6 runs on the license and test-runner prompts, vanilla in 0 of 6.
+  Verified: 2026-11-26, claude 2.1.329, Sonnet 5.5, `ONLY=lic-cl bash reports/2026-11-24-research/reverify/reply.sh` on the 1361-char style: `AskUserQuestion` in 3 of 3 runs (`output-styles/claudetto.md:25`).
 
 ## Conduct
 
@@ -233,7 +234,8 @@
   Basis: reported, user. Status: done 2026-11-19; the line ships in output-styles/claudetto.md. Sonnet 5.5, reports/2026-11-19-research/risks-reply-reqs: on three toggles whose order does not matter, every name came in backticks with no numbers in 3 of 3 runs with the line alone and 3 of 3 in the full style, vanilla 0 of 3; on the control of four ordered router steps, all three arms numbered the list 3 of 3.
   Source: reported, user, 2026-11-13 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352); reported, user, 2026-11-13 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/b429b5a4-7451-4120-a44f-bf650135d73f.jsonl:27352`).
   Verified: inspection 2026-11-19: plugins/claudetto/output-styles/claudetto.md:14 lists controls in backticks as a bulleted list with no numbers.
-  Verified: inspection, claude 2.1.329, 2026-11-24: the captured request of the REQ-GUARDS-079 probe carries the style paragraph "Write a list of controls, buttons, or steps the user performs with each literal name in backticks, as a bulleted list with no numbers when the order does not matter"; `tools/__tests__/style-recipes.test.ts` keeps it.
+  Verified: inspection, claude 2.1.329, 2026-11-24: the captured request of the REQ-GUARDS-079 probe carries the style paragraph "Write a list of controls, buttons, or steps the user performs with each literal name in backticks, as a bulleted list with no numbers when the order does not matter". The pin test was removed 2026-11-26 (REQ-REPLY-156: behavior tests only); the probe checks the line.
+  Verified: 2026-11-26, claude 2.1.329, `reports/2026-11-19-research/risks-reply-reqs` probe on the 1361-char style: unordered toggles in backticks with no numbers 3 of 3, ordered control numbered 3 of 3.
 
 ## No Padding
 
@@ -371,6 +373,14 @@
 - [x] **REQ-REPLY-155** claudetto shall have the agent write a code comment only for what the code cannot say (a reason, a constraint, a workaround, a source), and not copy a neighbouring comment that restates its line.
   Acceptance: on `reports/2026-11-24-research/pin-2-1-329/r258/run.sh`, case `main` (math.js whose lines carry restating trailing comments; add two functions) has no copied trailing comment in more runs than vanilla, and case `control` (a rate-limit workaround whose reason is not in the code) keeps a reason comment in as many runs as vanilla. Verification: probe.
   Basis: RISK-258 (reopened 2026-11-24: the fault reproduces on vanilla 2.1.329).
-  Source: RISK-258; `plugins/claudetto/output-styles/claudetto.md` (the line that starts "Write a code comment only").
+  Source: RISK-258; `plugins/claudetto/output-styles/claudetto.md:17` (the sentence that starts "Comment only what code cannot say").
   Status: done 2026-11-24.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `TMPDIR=/tmp/claude-501 CURE_PLUGIN=<plugin copy with the line> bash reports/2026-11-24-research/pin-2-1-329/r258/run.sh <case> <vanilla|style|cure> <rep>`: `main` no copied trailing comment, line 3 of 3 (and 6 of 6 through the accepted-reply-a harness), shipped style without it 0 of 3, vanilla 0 of 3; `control` reason comment kept 3 of 3 in all three arms; cost $0.75.
+  Verified: 2026-11-26, claude 2.1.329, Sonnet 5.5, `TMPDIR=/tmp/claude-501 bash reports/2026-11-24-research/pin-2-1-329/r258/run.sh main style 1..3` on the 1361-char style: no copied trailing comment in 3 of 3 runs.
+
+- [x] **REQ-REPLY-156** claudetto shall keep the Claudetto output style at or under 1364 rendered characters, each line measured by a run against vanilla, with no test that pins its wording.
+  Acceptance: `bun reports/2026-11-25-research/cache-prefix/style.ts claudetto:Claudetto plugins/claudetto` reports at most 1364 chars, and `just eval claudetto` on the style beats vanilla on score, cost and turns. Verification: probe and eval.
+  Basis: the style rides in every request's cached prefix; 1364 is the hybrid median cap. A wording pin tests text, not behavior (`.claude/rules/behavior-tests.md`), so `tools/__tests__/style-recipes.test.ts` is removed and each line's effect is checked by its probe (REQ-REPLY-108, -111, -155, RISK-521, -522).
+  Source: `plugins/claudetto/output-styles/claudetto.md`; `reports/2026-11-25-research/cache-prefix/style.ts`.
+  Status: done 2026-11-26.
+  Verified: 2026-11-26, claude 2.1.329, `style.ts` reports 1361 chars. `just eval claudetto -j 4 --max-cost-usd 5` (`results/2026-11-25T23-09-48-764Z`, 24 cases, n=3 per arm, $2.58): mean score 0.914 against vanilla 0.809, cost $0.40 against $2.17, 461 turns against 570; two earlier full runs on this style line-up scored 0.898 and 0.954. The run exits 1 on `wrong-design-pushback` (0.70 against 0.80, `first-sentence-names-file`) and `feature-discount` (0.98 against 1.00).

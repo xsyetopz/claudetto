@@ -12,11 +12,11 @@ export const MAX_DESCRIPTION = 200;
  * Glob and Grep are absent in Claude Code 2.1.330, so they have no entry.
  */
 export const TOOL_DESCRIPTIONS: Readonly<Record<string, string>> = {
-	Bash: "Run a shell command. cd persists only inside the working directories, so use absolute paths. timeout is in ms (default 120000, max 600000). run_in_background detaches it; foreground sleep is blocked.",
+	Bash: "Run a shell command. cd persists only inside the working directories: use absolute paths. Independent commands go in parallel calls, dependent ones in one call joined by &&. timeout ms, max 600000.",
 	Read: "Read a file by absolute file_path: 2000 lines by default, offset and limit for part, cat -n format. Also reads images, PDFs (pages, max 20 per request) and .ipynb notebooks.",
 	// An untyped call falls to general-purpose, which agent.offer hides (ADR-0099), and fails (RISK-532).
 	Agent:
-		"Launch a subagent for independent or multi-file work; it knows only your prompt and returns a summary. Set subagent_type to a listed agent: an untyped call fails. Runs in the background by default.",
+		'Launch a subagent for independent or multi-file work; it knows only your prompt and returns a summary. Set subagent_type to a listed agent: an untyped call fails. Runs in the background by default. A brief calls a permission prompt approved only when the user\'s own words answer it ("approve it"); a request for the job, even naming its command, is no approval: the subagent leaves the prompt unanswered and reports it.',
 	Skill:
 		"Invoke a listed skill by exact name (plugin:skill for plugin skills) with optional args, when a listed skill covers the task. Built-in CLI commands such as /help are not skills.",
 	ToolSearch:
