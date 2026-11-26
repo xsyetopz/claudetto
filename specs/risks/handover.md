@@ -44,7 +44,7 @@
   - Impact: 3
   - Existing controls: baseline features/compaction/handoff.ts (partial).
   - Response: mitigate.
-  - Actions: [REQ-HANDOVER-063](../prd/handover.md) (handover is current and never interrupts work).
+  - Actions: [HANDOVER-063](../evidence/handover.md) (handover is current and never interrupts work).
   - Trigger: a handoff older than the working tree state.
   - Owner: handover
   - Status: closed; renewal runs only at a task boundary, never mid-task, and every handover ends with git state read at that moment (test: plugins/claudetto/hooks/handover/renewal.test.ts "an open task is no boundary"; plugins/claudetto/hooks/handover/compact.test.ts "auto compaction gets the handover" checks `git HEAD: abc1234`; claudetto plugin test 59 pass, 2026-11-19).
@@ -187,7 +187,7 @@
   - Impact: 3
   - Existing controls: grader `doable_step_left` (read, not run).
   - Response: mitigate
-  - Actions: stop and wait for the user's step; [REQ-REPLY-109](../prd/reply.md) (a reply that hands the user a step ends the turn; no Stop check blocks it).
+  - Actions: stop and wait for the user's step; [REPLY-109](../evidence/reply.md) (a reply that hands the user a step ends the turn; no Stop check blocks it).
   - Trigger: a tool call after a request for a user step; a tool call or reply after a user-step section.
   - Owner: handover
   - Status: closed; claude 2.1.327, 2026-11-18, grep of plugins/claudetto: the only Stop handler (renewal.ts:41) returns next(e); no Stop check blocks a stop that hands the user a step.
@@ -397,7 +397,7 @@
   - Impact: 3
   - Existing controls: none at 088a227c.
   - Response: mitigate.
-  - Actions: [ADR-0184](../adr/0184-headless-renewal-by-driver.md): the mod catches both rejections; the driver sends `/clear` or `/compact <instructions>`.
+  - Actions: [ADR-0184](../decisions/0184-headless-renewal-by-driver.md): the mod catches both rejections; the driver sends `/clear` or `/compact <instructions>`.
   - Trigger: a caught rejection in the mod log.
   - Owner: handover
   - Status: closed; under `-p` automatic compaction still gets the handover (RISK-489 probe), and the driver lowers core's threshold with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=35` (threshold = min(floor(window x pct/100), window - 13000), read in `L7`, chunk-m14bt1pz.js@1992285, 2.1.327) or sends `/clear` between tasks; probe (cc-inspect `code cli`, fake API, 2.1.327, 2026-11-19): prompts `fix the parser`, `/clear`, `what was the task?` with `--plugin-dir plugins/claudetto`, and request 3 holds "Handover from Previous Session"; documented in plugins/claudetto/README.md Headless Runs.
@@ -414,7 +414,7 @@
   - Impact: 3
   - Existing controls: the hook returns `{messages, tokensBefore, tokensAfter, usage}` with the accepted message shape; compact.test.ts runs it through the test kit check.
   - Response: mitigate.
-  - Actions: a unit test runs the hook's return value through the same shape check; REQ-HANDOVER-023 acceptance checks the first message after a dogfood compaction.
+  - Actions: a unit test runs the hook's return value through the same shape check; HANDOVER-023 acceptance checks the first message after a dogfood compaction.
   - Trigger: the log line "session.compact hook skipped" in a debug log.
   - Owner: handover
   - Status: closed; probe, `claude` 2.1.327, 2026-11-18, fake API stub (reports/2026-11-18-research/handover-probes/probe-h/stub.ts), `claude -p --input-format stream-json --output-format stream-json --verbose --plugin-dir plugins/claudetto`, auto trigger: the debug log reads "session.compact (auto): a hook's 2 messages stand (hooked by claudetto); core never ran".

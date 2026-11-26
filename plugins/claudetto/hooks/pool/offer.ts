@@ -6,9 +6,9 @@ import { fault } from "../shared/fault";
  * The tools every loop loses. `patch` and `mcp__claudetto__read` replace the
  * file tools (Read costs 1,292 characters of schema; the claudetto tool is
  * about a third of that and covers images, notebooks and PDFs), and Bash runs
- * `git worktree` in place of the worktree tools (REQ-TOOLS-001). The user
+ * `git worktree` in place of the worktree tools (TOOLS-001). The user
  * turned off DesignSync and RemoteTrigger, which serve claude.ai design
- * projects and cloud routines (REQ-TOOLS-004), and Workflow, ScheduleWakeup
+ * projects and cloud routines (TOOLS-004), and Workflow, ScheduleWakeup
  * and ReportFindings, whose schemas (5,688, 4,886 and 2,418 characters) ride
  * every request for features the user does not use.
  */
@@ -30,14 +30,14 @@ export const HIDDEN_TOOLS: readonly string[] = [
  * The cross-session messaging tools, offered to the main conversation only:
  * the user asks for another session there, while a subagent's send goes out
  * under its parent's address and its reply reaches the parent, so a subagent
- * gains nothing but the tool bytes (REQ-TOOLS-001, REQ-TOOLS-002).
+ * gains nothing but the tool bytes (TOOLS-001, TOOLS-002).
  */
 export const MAIN_ONLY_TOOLS: readonly string[] = ["SendMessage", "ListAgents"];
 
 /**
  * The tools a subagent loses: Monitor, TaskStop and the goal tools. A goal
  * belongs to the main session, so a worker that sets or clears it acts on the
- * lead's state (REQ-TOOLS-005). The main loop keeps all of them.
+ * lead's state (TOOLS-005). The main loop keeps all of them.
  */
 export const SUBAGENT_HIDDEN_TOOLS: readonly string[] = [
 	"Monitor",

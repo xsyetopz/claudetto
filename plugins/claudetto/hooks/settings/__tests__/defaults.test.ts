@@ -50,7 +50,7 @@ describe("defaults fill", () => {
 		expect(next.bashOutputMaxChars).toBe(8000);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER).toBe("0");
-		// REQ-SETUP-063: the reminder is silenced by the flag alone; no `_TEXT` key is written.
+		// SETUP-063: the reminder is silenced by the flag alone; no `_TEXT` key is written.
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBeUndefined();
 		expect(
 			Object.keys(next.env).filter((key) => key.endsWith("_TEXT"))
@@ -91,7 +91,7 @@ describe("defaults fill", () => {
 		// Act
 		const next = parsed(fillSettings()?.text);
 
-		// Assert: on 2.1.327 a ToolSearch deny adds 28,025 bytes to the first request and a Skill deny 8,855 (REQ-SETUP-022).
+		// Assert: on 2.1.327 a ToolSearch deny adds 28,025 bytes to the first request and a Skill deny 8,855 (SETUP-022).
 		for (const key of [
 			"disableAllHooks",
 			"disableSkillShellExecution",
@@ -109,7 +109,7 @@ describe("defaults fill", () => {
 		// Act
 		const next = parsed(fillSettings()?.text);
 
-		// Assert: the stall timeout counts silence, and script caps would force the default permission mode (REQ-SETUP-056).
+		// Assert: the stall timeout counts silence, and script caps would force the default permission mode (SETUP-056).
 		expect(next.env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS).toBe("900000");
 		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
 		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB");

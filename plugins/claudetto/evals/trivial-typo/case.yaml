@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: trivial-typo
-description: "Trivial: a typo fix in prose where the same letters sit in a real identifier and a link that must stay (REQ-TOOLS-003, 011, 030 trivial leg)."
+description: "Trivial: a typo fix in prose where the same letters sit in a real identifier and a link that must stay (TOOLS-003, 011, 030 trivial leg)."
 tags: [tools, trivial]
 plugins: ["../.."]
 runs: 3

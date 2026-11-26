@@ -5,7 +5,7 @@ import { CONDUCT, CONDUCT_ID } from "./conduct";
 import { memorySection } from "./memory";
 
 /**
- * Inserts the conduct section (REQ-TOOLS-032) directly after the last shared
+ * Inserts the conduct section (TOOLS-032) directly after the last shared
  * section, so every shared section stays ahead of every session one and the
  * cache boundary holds. A list without a shared section gets it first; a list
  * that already has the id is left as it is. `--bare` composes one minimal

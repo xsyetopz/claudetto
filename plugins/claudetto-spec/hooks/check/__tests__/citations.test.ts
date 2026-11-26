@@ -5,7 +5,7 @@ import { citedUnasserted } from "../citations";
 const IDS = new Set(["AUTH-1", "AUTH-2"]);
 const FILE = "tests/auth.test.ts";
 
-describe("REQ-SPEC-013 citation-only tests", () => {
+describe("SPEC-013 citation-only tests", () => {
 	test("a test block that cites an ID and asserts nothing is listed with its line", () => {
 		// Arrange
 		const text = `test("AUTH-1 logs in", () => {

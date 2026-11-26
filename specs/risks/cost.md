@@ -13,7 +13,7 @@
   Actions: add the decision-log `costUSD` to the budget when auto mode is on (`AUTOMODE_DECISION_LOG=1`).
   Trigger: auto mode on with a budget line.
   Owner: cost.
-  Status: closed 2026-11-18. The budget line that read total_cost_usd is out (REQ-COST-002, REQ-COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (REQ-COST-046).
+  Status: closed 2026-11-18. The budget line that read total_cost_usd is out (COST-002, COST-011), so the cause left with the removed part; the status line shows plan percentages, not dollars, under a subscription (COST-046).
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -F total_cost_usd -- plugins/` -> no match (exit 1).
   Verified: 2026-11-24, claude 2.1.329, `git grep -n -F total_cost_usd -- plugins/`: no match.
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1958; plugins/claudetto/statusline/segments.ts@088a227c.
@@ -65,7 +65,7 @@
   Actions: drop the log from the catch; test with a wait over 100 ms.
   Trigger: an "usage wait ended early" line in the hook log on a successful run.
   Owner: cost.
-  Status: closed 2026-11-18. The price-step hook is out (REQ-COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
+  Status: closed 2026-11-18. The price-step hook is out (COST-010, ADR-0131), so the abort log cannot occur; grep of plugins/claudetto/hooks finds no price-step or usage wait.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -F -e price-step -e 'usage wait' -- plugins/` -> no match (exit 1).
   Verified: 2026-11-24, claude 2.1.329, `git grep -n -F -e price-step -e 'usage wait' -- plugins/`: no match.
   Source: openspec/changes/archive/2026-11-16-2-1-323/tasks.md:71; openspec/changes/archive/2026-11-16-2-1-323/research/defects.md:595-597.
@@ -87,7 +87,7 @@
   Response: mitigate.
   Actions: Map an unknown or failed check to "unknown since `<time>`"; a Stop hook per session writes a status comment to a task board; a completion ledger tracks running, done-but-not-processed (alert past threshold), and processed.
   Trigger: A status check fails or times out.
-  Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (REQ-COST-017); the rebuild has no status check to misread.
+  Owner: cost. Status: closed 2026-11-18. The session-state view and task-board checks are out (COST-017); the rebuild has no status check to misread.
   Verified: 2026-11-19, claude 2.1.327, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/` -> no match (exit 1).
   Verified: 2026-11-24, claude 2.1.329, `git grep -n -i -e 'task board' -e 'session-state' -- plugins/`: no match.
   Source: not located: the commenter's post in the old plan; unresolved.
@@ -177,7 +177,7 @@
   Likelihood: 3 (raised 2026-11-23: hour-long subagents in the user's session; earlier 1). Impact: 3.
   Existing controls: None known at 088a227c.
   Response: accept; planned before settlement: mitigate.
-  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (REQ-DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
+  Actions: Flip the setting to 1h. Counter (a commenter's suggestion). The main context's cache lasts 1 hour on subscription auth (measured on 2.1.327, CTX-163), so the ping applies only to a subagent at the documented 5-minute `subagentPromptCacheTtl` default (DELEGATION-050): slice work so expensive long tasks, such as full e2e suites, run in the main context after the subagent returns; run background tasks with tailed output written to a file; a mod that pings the main context every 4:50 minutes keeps its cache warm.
   Trigger: A subagent turn that waits more than 5 minutes.
   Owner: cost.
   Basis: reported, one user.
@@ -428,7 +428,7 @@
   cases: claudetto turns 64.5 -> 55.0 summed (harden-tests-report 15.7 -> 9.7, artifact-short-answer 2.7 -> 1.8,
   background-check-fails 9.7 -> 8.3), vanilla 45.9; no case's score fell, and each is at or above vanilla.
   Verified: 2026-11-25, claude 2.1.329, `claude plugin test plugins/claudetto`: 391 pass, 0 fail.
-  Status: mitigated 2026-11-26: each request goes out at effort medium or lower (REQ-COST-049); turns fall below vanilla.
+  Status: mitigated 2026-11-26: each request goes out at effort medium or lower (COST-049); turns fall below vanilla.
   Verified: 2026-11-26, claude 2.1.329, `just eval claudetto -j 4`, run 2026-11-25T22-10-32-289Z: claudetto 421
   turns and $0.40 on 23 cases x 3, vanilla 535 turns and $1.64; mean score 0.93 against 0.82.
 

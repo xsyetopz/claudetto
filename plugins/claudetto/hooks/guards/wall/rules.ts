@@ -72,7 +72,7 @@ export const ASK: readonly string[] = [
 	"Bash(git push --tags*)",
 	"Bash(git push * --tags*)",
 	"Bash(git push * refs/tags/*)",
-	// A sandboxed `gh release` runs with no prompt, so a release would publish unasked (REQ-VERIFICATION-090).
+	// A sandboxed `gh release` runs with no prompt, so a release would publish unasked (VERIFICATION-090).
 	"Bash(gh release create*)",
 	"Bash(gh release upload*)",
 	"Bash(gh release edit*)",
@@ -238,7 +238,7 @@ export const EXCLUDED: readonly string[] = [
 	"claude *"
 ];
 
-/** The walls a user keeps from every session; `~/.claudetto-holdout` holds the held-out eval set (REQ-GUARDS-058). */
+/** The walls a user keeps from every session; `~/.claudetto-holdout` holds the held-out eval set (GUARDS-058). */
 export const WALLS: readonly string[] = ["~/.claudetto-holdout"];
 
 /** The `Read` rule path of a wall: `~/` stays, `$HOME` folds to `~`, any other absolute path takes `//`. */

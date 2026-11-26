@@ -15,7 +15,7 @@ const run = (now: string, head?: string, extra = {}) =>
 		...extra
 	});
 
-describe("REQ-SPEC-011 spec drift against HEAD", () => {
+describe("SPEC-011 spec drift against HEAD", () => {
 	test("an ID in HEAD that the work tree dropped is a removed ID", () => {
 		// Arrange
 		const head = spec(LOGIN, LOCK);

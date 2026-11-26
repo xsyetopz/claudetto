@@ -1,0 +1,142 @@
+# Tools
+
+History, checks and sources: [evidence/tools.md](evidence/tools.md).
+
+## TOOLS-001 Hide File and Messaging Tools
+
+claudetto keeps Write, Edit and NotebookEdit from every model loop and SendMessage and ListAgents from every subagent's loop through `tool.offer` `{ isOffered: false }`.
+
+Given a `-p` request with claudetto loaded
+When the request's tool list is read
+Then it lists none of the file tools
+
+Given a subagent's request
+When its tool list is read
+Then it lists none of the five
+And the request's tool bytes are measured before and after
+
+## TOOLS-002 Decide Worktree and Agent Tools
+
+claudetto turns ListAgents off for subagents and keeps EnterWorktree and ExitWorktree with descriptions of at most 200 characters, on measured cost.
+
+Given the tool bytes each tool adds per request and the calls and bytes the Bash or Agent-isolation path takes for the same job
+When a report is written for ListAgents, EnterWorktree and ExitWorktree
+Then it gives both numbers per tool and the decision (off, or kept with a description of at most 200 characters)
+
+## TOOLS-003 Short Built-In Tool Descriptions
+
+claudetto describes each kept built-in tool in at most 200 characters through `tool.describe`, and SendMessage in at most 400.
+
+Given a test that renders each description
+When it asserts the length
+Then each description is at most 200 characters
+And the request's tool bytes are measured before and after
+
+Given a trivial eval and a feature eval
+When they run with the short descriptions
+Then they show no lower score
+
+## TOOLS-004 Hide DesignSync and RemoteTrigger
+
+claudetto keeps DesignSync and RemoteTrigger from every model loop through `tool.offer`.
+
+Given a plugin request, main or subagent
+When its tool list is read
+Then it lists neither tool, inline or deferred
+
+## TOOLS-005 Subagent Tool Limits
+
+claudetto keeps the goal tools (`set_goal`, `get_goal`, `pause_goal`, `clear_goal`), Monitor and TaskStop from every subagent's loop and offers `web_fetch` and `web_search` in a subagent's loop only to the `Hermes` agent, through `tool.offer` on `subagentType`.
+
+Given a plugin subagent request (Heracles)
+When its tool list is read
+Then it lists none of the goal tools, Monitor, TaskStop, `web_fetch` or `web_search`, inline or deferred
+
+Given a Hermes request
+When its tool list is read
+Then it lists `web_fetch` and `web_search`
+And the main request's tool list is unchanged
+
+## TOOLS-010 One Patch Tool for File Changes
+
+claudetto registers one `patch` tool that creates, replaces, edits and deletes files, many files and hunks per call, in a context-anchored format with no line numbers.
+
+Given a patch with an add, an update with several hunks, a delete or a move
+When the tool runs it
+Then the reply names each file changed
+And a hunk whose context matches only after trailing-whitespace folding applies
+
+Given a hunk whose context is missing or ambiguous, or a path outside the session directory
+When the tool runs
+Then the whole patch is refused
+And nothing is written
+
+Given a patched file that matches a path-scoped rule (`paths` globs, project rules relative to the directory holding `.claude`, user rules relative to the primary cwd) or a nested CLAUDE.md or CLAUDE.local.md
+When a patch to `src/api/x.ts` runs
+Then the reply appends the matching rule text once with frontmatter and block comments stripped
+And it does not append it again or append a non-matching rule
+
+## TOOLS-011 Output Style Names Patch
+
+claudetto's output style tells the model to change files with `patch` and keeps the perl note but not the tab strip.
+
+Given a feature eval and a trivial eval
+When they run with `patch` instead of Edit and Write
+Then they score no lower
+And the turns and output tokens per run are reported
+
+## TOOLS-012 Patch Refuses Add File over Existing
+
+The `patch` tool refuses an `*** Add File` whose path exists on disk or was deleted earlier in the same patch, writing nothing, with an error that names the path and tells the model to use `*** Update File` hunks.
+
+Given Add File over an existing file, or Delete and Add of one path in one patch
+When the tool runs
+Then both refuse and write nothing
+
+Given Add File of a new path
+When the tool runs
+Then it creates the file
+And `count-after-change` scores no lower with claudetto than vanilla
+
+## TOOLS-020 Register `web_fetch`
+
+claudetto registers `web_fetch`, which fetches a URL directly, turns HTML into compact Markdown, falls back to a headless Chrome render, and opens a visible Chrome when a captcha blocks, saving the cookies for later fetches.
+
+Given local fixture pages
+When tests run
+Then they cover the direct path, the size cap with a saved full copy, the fallback, and the cookie reuse
+And WebFetch is not offered
+
+## TOOLS-021 Register `web_search`
+
+claudetto registers `web_search`, which returns titles, URLs and snippets for a query without an API key and uses a configured search API when one is set.
+
+Given a saved results page
+When the parser test runs
+Then it returns the titles, URLs and snippets
+And WebSearch is not offered
+
+## TOOLS-031 Lean Output Style
+
+claudetto's output style holds only voice, length, format and the claudetto reporting rules, sized at or under the stock Proactive style plus those rules.
+
+Given the stock Proactive and Concise texts saved with their sizes
+When the new style is built from them
+Then its size is reported against them
+And `keep-coding-instructions` is set only if a full-prompt model needs it
+
+Given the feature and trivial evals
+When they run with the new style
+Then they score no lower
+
+Given the AskUserQuestion, background exit-status and background-read paragraphs
+When they measure higher on the style than on a tool description
+Then they stay on the style
+
+## TOOLS-032 Place Instructions on Their Surface
+
+claudetto places each instruction it ships on the surface the table names, and a line on the wrong surface moves.
+
+Given every line in the output style, agents, skills and hook texts
+When each is checked against the table
+Then a report lists each moved line with its old and new surface

@@ -4,7 +4,7 @@ import { fault } from "../shared/fault";
 
 /**
  * Hides the engine's built-in agent types from the model, except `fork`
- * (REQ-DELEGATION-044, ADR-0099). Artemis, Hermes, Athena and Heracles replace them,
+ * (DELEGATION-044, ADR-0099). Artemis, Hermes, Athena and Heracles replace them,
  * and each hidden type drops its line from the agent listing every request
  * carries.
  */

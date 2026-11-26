@@ -2,7 +2,7 @@ import { TOOL_FULL_NAME as PATCH } from "../patch/texts";
 
 /**
  * ENGINE(v2.1.330): the stock `memory` section sends memory writes to the
- * Write tool, which claudetto turns off (REQ-TOOLS-001), and names the folder
+ * Write tool, which claudetto turns off (TOOLS-001), and names the folder
  * in backticks after "memory at" (lean) or "memory system at" (full).
  */
 export const STOCK_MEMORY_WRITE = "write to it directly with the Write tool";

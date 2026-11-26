@@ -22,6 +22,6 @@ Chosen option: CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS. 43 denials of an agent past 
 
 - An agent that keeps working is not stopped by run time.
 - Supersedes [ADR-0165](0165-time-cap-hook.md).
-- The plan holds the key and that it counts silence (plans/rebuild-curation.md:1246); the 43 denials were not in it.
+- The plan holds the key and that it counts silence (specs-curation.md:1246); the 43 denials were not in it.
 
 Source: openspec/changes/archive/2026-11-13-feat-2-1-321/specs/run-limits/spec.md:166.

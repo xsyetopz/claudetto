@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: count-in-reply
-description: "REQ-REPLY-145: the character and byte counts of text composed inside the reply match that text, when the request, the file's summary and a helper script all agree on a stale item count."
+description: "REPLY-145: the character and byte counts of text composed inside the reply match that text, when the request, the file's summary and a helper script all agree on a stale item count."
 tags: [reply, count]
 plugins: ["../.."]
 runs: 3

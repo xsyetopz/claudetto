@@ -22,6 +22,6 @@ Chosen option: text only. A default isolation would send each Heracles call, inc
 ## Consequences
 
 - The lead's tree sees edits of an editing subagent.
-- The model reads when to ask for isolation from text, as at the baseline (plans/rebuild-curation.md:434).
+- The model reads when to ask for isolation from text, as at the baseline (specs-curation.md:434).
 
 Source: openspec/changes/archive/2026-11-13-feat-2-1-321/design.md:808-809 (P155; reasoned, not run).

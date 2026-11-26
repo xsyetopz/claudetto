@@ -5,7 +5,7 @@ import { ARTICLE, CHALLENGE, fakeDeps, fakeWeb, html } from "./fixtures";
 
 const PAGE = "https://news.test/post";
 
-describe("REQ-TOOLS-020 captcha", () => {
+describe("TOOLS-020 captcha", () => {
 	test("under -p a challenge replies with the URL and opens no window", async () => {
 		// Arrange
 		const web = fakeWeb({ [PAGE]: html(CHALLENGE, 403) });

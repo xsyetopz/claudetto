@@ -3,7 +3,7 @@
 ## Setup
 
 - [x] **RISK-394** A name-keyed `skillOverrides` Mod takes a user's own skill out of the listing.
-  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 0 hits; the `skillOverrides` hook went out with REQ-SETUP-002.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 0 hits; the `skillOverrides` hook went out with SETUP-002.
   Evidence: 2026-11-24, claude 2.1.329, `grep -rnE "skillOverrides|settings.read|OFF_SKILLS" plugins/claudetto --exclude-dir=types`: 14 hits, not 0. 0 are `skillOverrides` or `OFF_SKILLS`; all 14 are `settings.read` in hooks/git/{instructions,trailer}.ts, hooks/handover/writer.ts and 9 tests, none a skill hook.
   Verified: 2026-11-24, claude 2.1.329, `grep -rnE "skillOverrides|OFF_SKILLS" plugins/claudetto --exclude-dir=types` -> 0 hits; no claudetto code filters the skill listing by name, so no user skill is taken out.
   Category: product.
@@ -20,7 +20,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3162; plugins/claudetto/hooks/features/surface/surface.ts:26@088a227c.
 
 - [x] **RISK-395** A `settings.read` Mod hook that settles slowly lets a skill into the first request.
-  Verified: grep, claude 2.1.327, 2026-11-18, same grep as RISK-394: 0 hits; the slow `settings.read` hook is gone (REQ-SETUP-002 out), so the race cannot occur.
+  Verified: grep, claude 2.1.327, 2026-11-18, same grep as RISK-394: 0 hits; the slow `settings.read` hook is gone (SETUP-002 out), so the race cannot occur.
   Evidence: 2026-11-24, claude 2.1.329, same grep as RISK-394: 14 hits, not 0, all `settings.read` calls or test stubs in hooks/git, hooks/handover, hooks/guards/shell, hooks/pool and hooks/settings; no `skillOverrides` or `OFF_SKILLS` hit, so no skill is gated on a slow read.
   Verified: 2026-11-24, claude 2.1.329, the RISK-394 grep -> 0 `skillOverrides` or `OFF_SKILLS` hits; the `settings.read` calls left read git, handover, shell and pool settings and gate no skill, so no slow hook races the first request.
   Category: product.
@@ -37,7 +37,7 @@
   Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:3340.
 
 - [x] **RISK-396** Setup writes `CLAUDE_CODE_SCRIPT_CAPS`.
-  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "SCRIPT_CAPS" plugins/claudetto --exclude-dir=types`: 0 hits. REQ-SETUP-043 keeps it out of the FILL table.
+  Verified: grep, claude 2.1.327, 2026-11-18, `grep -rnE "SCRIPT_CAPS" plugins/claudetto --exclude-dir=types`: 0 hits. SETUP-043 keeps it out of the FILL table.
   Category: Technical.
   Cause: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of Bash commands and acts only while `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set, which forces default permission mode.
   Event: Setup writes `CLAUDE_CODE_SCRIPT_CAPS`.
@@ -54,7 +54,7 @@
   Source: plugins/claudetto/hooks/features/setup/settings.ts@088a227c; claude 2.1.326: `CLAUDE_CODE_SCRIPT_CAPS` counts substrings of the command and acts only when the scrub check `cp()` passes, chunk-57bg7pbc.js@8656 (2.1.327); `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` forcing default permission mode: verified on 2.1.327: when the variable is set, the mode becomes `default` and a notice reads `Permission mode forced to default`, chunk-rthqjjhy.js@3900. Dropped (2026-11-18) for the old plan's P223 source: no source located in external/, openspec/ (088a227c9^), reports/, git history or the user's transcripts.
 
 - [x] **RISK-397** Setup leaves retired rules installed.
-  Verified: grep, claude 2.1.327, 2026-11-18, `ls plugins/claudetto` holds no rules folder and no code offers rules (REQ-SETUP-048 and -049 out), so no retired rule can be left behind.
+  Verified: grep, claude 2.1.327, 2026-11-18, `ls plugins/claudetto` holds no rules folder and no code offers rules (SETUP-048 and -049 out), so no retired rule can be left behind.
   - Category: product defect.
   - Cause: `rulesPart` (`plugins/claudetto/hooks/command.run/useSetup/rules.ts:82-90`) offers only names in `RULES`; commit 378782f3 (2026-11-13) deleted `rules/noNarratingComments.md` and `rules/useEdgeCaseReport.md` and dropped `paths: "**/*"` from the rest, but nothing removes a rule the plugin stopped shipping.
   - Event: both files still sit in `~/.claude/rules/claudetto/` with `paths:` frontmatter and load as `nested_memory` after the first file read and after each compaction (44 rows in one session, about 85 tokens per context).
@@ -215,7 +215,7 @@
   Status: accepted 2026-11-20 (issue #52): Likelihood 1 × Impact 5 = 5, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 1 rests on one report; Likelihood × Impact = 5.
   Evidence: 2026-11-24, claude 2.1.329: with ANTHROPIC_BASE_URL set and no ANTHROPIC_AUTH_TOKEN, vanilla sent the claude.ai login as Authorization: Bearer on 3 of 4 requests in each of 3 runs (reports/2026-11-24-research/pin-2-1-329/r405/README.md).
-  Status: mitigated 2026-11-24 (REQ-GUARDS-085): plugins/claudetto/hooks/settings/base-url.ts drops the credential headers from a model request to a host other than Anthropic's while the session holds the login; 0 of 2 requests carried it in each of 6 runs.
+  Status: mitigated 2026-11-24 (GUARDS-085): plugins/claudetto/hooks/settings/base-url.ts drops the credential headers from a model request to a host other than Anthropic's while the session holds the login; 0 of 2 requests carried it in each of 6 runs.
   Verified: 2026-11-24, claude 2.1.329, reports/2026-11-24-research/pin-2-1-329/accepted-reply-c/run405.sh, vanilla reps 21-23 and claudetto reps 21-26, TOKEN=none, with dummy-token, API-key and apiKeyHelper controls; reports/2026-11-24-research/pin-2-1-329/r405/README.md.
   Source: external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:129; external/2026-10-25/reddit.com-r-claudecode-comments-1xduofw-how-i-made-local-cloud-coding-20261024T061933Z.md:103 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xduofw/how_i_made_local_cloud_coding_workflow_48_gb_mac/>).
 
@@ -297,7 +297,7 @@
   - Impact: 2
   - Existing controls: none.
   - Response: mitigate.
-  - Actions: claudetto runs `/reload-plugins` itself when it turns builtins off (REQ-SETUP-011); a release of claudetto itself loads at the next start.
+  - Actions: claudetto runs `/reload-plugins` itself when it turns builtins off (SETUP-011); a release of claudetto itself loads at the next start.
   - Trigger: A release lands during a session.
   - Owner: setup
   - Status: open (Existing controls: partial at 088a227c).
@@ -317,12 +317,12 @@
   - Impact: 2
   - Existing controls: A setup rerun removes it.
   - Response: mitigate.
-  - Actions: the session-start fill removes the retired key itself after an update (REQ-SETUP-063); no user step.
+  - Actions: the session-start fill removes the retired key itself after an update (SETUP-063); no user step.
   - Trigger: A retired key is in the user settings.
   - Owner: setup
   - Status: open (Existing controls: have at 088a227c).
   - Source: observed in transcript, 2026-11-14 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/294da1a9-e778-41e2-b2d4-d83e20be999a.jsonl:1241).
-  Evidence: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, but no test named 'removes a retired reminder text and keeps one the user wrote' exists. `hooks/settings/__tests__/defaults.test.ts:68-72` now asserts `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` is undefined and no env key ends in `_TEXT` (REQ-SETUP-063); hooks/settings/defaults.ts holds no retired-text removal.
+  Evidence: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto: 332 pass, 0 fail, but no test named 'removes a retired reminder text and keeps one the user wrote' exists. `hooks/settings/__tests__/defaults.test.ts:68-72` now asserts `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` is undefined and no env key ends in `_TEXT` (SETUP-063); hooks/settings/defaults.ts holds no retired-text removal.
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto 341 pass, including `hooks/settings/__tests__/defaults.test.ts:69`, which asserts the fill leaves `CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT` unset; the fill runs at each session start, so no user step is needed.
   Status: mitigated 2026-11-19: the session-start fill removes the retired text (Verified line); it runs in the hook, outside the Bash sandbox.
 
@@ -457,7 +457,7 @@
 
 - [x] **RISK-513** A sandboxed command that needs a network host fails until the host is allowed for that command, because the sandbox denies every unlisted host: `bunx tsc --noEmit` fetching typescript from `registry.npmjs.org` (issue #78), `gh` reaching `api.github.com` (issue #81).
   Category: setup.
-  Cause: REQ-SETUP-024 lists no `allowedDomains` and the fill writes none (`defaults.test.ts:39`), so on 2.1.327 only the hosts in a command's own `allowed_domains` are reachable. The plugins carry no local typescript, so `bunx` downloads it when its copy is missing or stale, and `gh` always calls `api.github.com`.
+  Cause: SETUP-024 lists no `allowedDomains` and the fill writes none (`defaults.test.ts:39`), so on 2.1.327 only the hosts in a command's own `allowed_domains` are reachable. The plugins carry no local typescript, so `bunx` downloads it when its copy is missing or stale, and `gh` always calls `api.github.com`.
   Event: dogfood at be012dcdd, 2026-11-20, session 9c44572c: both tsc runs exited 1 on the denial; the agent re-ran them with `allowed_domains: ["registry.npmjs.org"]`, both exited 0, and it recorded the failed attempt.
   Consequence: one extra Bash call with a domain allowance; no wrong result.
   Likelihood: 2

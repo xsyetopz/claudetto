@@ -61,7 +61,7 @@ const step = async (
 };
 
 test(
-	"a sub-agent step passes straight through and never starts a check (REQ-029)",
+	"a sub-agent step passes straight through and never starts a check (YSK-029)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -79,7 +79,7 @@ test(
 );
 
 test(
-	"a surface that draws no band gets no check (REQ-029)",
+	"a surface that draws no band gets no check (YSK-029)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -94,7 +94,7 @@ test(
 );
 
 test(
-	"a bridge prompt makes the terminal entry not count as a watched band (REQ-029)",
+	"a bridge prompt makes the terminal entry not count as a watched band (YSK-029)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -111,7 +111,7 @@ test(
 );
 
 test(
-	"a turn that already holds an offer starts no second check, the next turn does (REQ-029)",
+	"a turn that already holds an offer starts no second check, the next turn does (YSK-029)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange

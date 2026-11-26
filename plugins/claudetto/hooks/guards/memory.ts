@@ -26,7 +26,7 @@ export const reason = (free: number, min: number): string =>
 
 /**
  * Holds a new Bash, Monitor or Agent call while free memory is under the floor
- * (REQ-GUARDS-020). An unreadable share passes, and a failed read never blocks:
+ * (GUARDS-020). An unreadable share passes, and a failed read never blocks:
  * the hold protects the machine and must not break a session when it cannot measure.
  */
 export function registerMemory(on: On, options: PluginOptions = {}): void {

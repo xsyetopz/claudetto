@@ -153,7 +153,7 @@ test(
 );
 
 test(
-	"Learn more with no shipped explanation runs one more fork and shows its result (REQ-039)",
+	"Learn more with no shipped explanation runs one more fork and shows its result (YSK-039)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -183,7 +183,7 @@ test(
 );
 
 test(
-	"Dismiss on an offer asks without Turn off suggestions on a surface with its own composer (REQ-043)",
+	"Dismiss on an offer asks without Turn off suggestions on a surface with its own composer (YSK-043)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange

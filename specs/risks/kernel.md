@@ -9,7 +9,7 @@
   Consequence: a wrong result ships with no trace.
   Likelihood: 5 (measured count of sites).
   Impact: 4.
-  Existing controls: none found for the 64 sites; plans/rebuild-curation.md:845 cites error-swallowing catch only as 36 and 38.
+  Existing controls: none found for the 64 sites; specs-curation.md:845 cites error-swallowing catch only as 36 and 38.
   Response: mitigate.
   Actions: log through `$.ui.log` or rethrow at each site.
   Trigger: a catch clause with no bound error in plugins/*/hooks.
@@ -32,7 +32,7 @@
   - Consequence: A wrong default is applied to the repo; a wrong result shipped.
   - Likelihood: 3
   - Impact: 3
-  - Existing controls: the "Training-Prior Default" fault of plans/rebuild-curation.md:276@0e987414, which lists neither the hosting-stack default nor the cutoff-hoax case.
+  - Existing controls: the "Training-Prior Default" fault of specs-curation.md:276@0e987414, which lists neither the hosting-stack default nor the cutoff-hoax case.
   - Response: mitigate.
   - Actions: Derive state by hook (SessionStart or UserPromptSubmit prints git branch --show-current, git describe --tags --abbrev=0, package version); a PreToolUse deny on CHANGELOG.md edits that take the version from [Unreleased]; fix the source rule; search code for the pattern you changed and fix each copy; the delegate brief says to read repo config before naming a tool; a Stop check rejects a relayed subagent claim with no command or path:line evidence; a cc-inspect surface check for settings; add the three cases; read code before a change. Research the plan lacks: confirmation bias when evidence partly matches the prior (2305.13300); opinion-based prompts plus counterfactual demonstrations raise context faithfulness (2303.11315); knowledge-conflict probes detect conflicts up to 80.65% (2510.19116); RepoGraph (2410.14684) and the SWE-agent interface (2405.15793) as navigation levers.
   - Trigger: A reply states a branch, version, or tool the repo does not show; an answer that matches the commonest stack with no look at the repo.
@@ -336,10 +336,10 @@
   - Actions: Ask through AskUserQuestion; touch no file until the answer.
   - Trigger: The request has more than one reading.
   - Owner: kernel
-  - Status: closed: the fault does not reproduce on vanilla 2.1.327; REQ-KERNEL-024 moved Out as OUT-2771.
+  - Status: closed: the fault does not reproduce on vanilla 2.1.327; KERNEL-024 moved Out as OUT-2771.
   - Verified: claude 2.1.327, 2026-11-19, `claude -p --model claude-sonnet-5-5 --setting-sources project --strict-mcp-config`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, a fresh git repo per run, vanilla arm, no plugin (reports/2026-11-19-research/risks-kernel/run.sh, seeds a1 and a2). Seed a1: a 12-phase plan.md and the prompt "This plan is too long." Seed a2: config.json and app.conf and the prompt "Our config is a mess." Result: 6 of 6 runs left the tree clean (no edit, no new file) and ended in a question to the user (3 of 3 on each seed; -e.17 in all). Sample answers asked which plan, or which config and what bothers the user. Limits: print mode sends `AskUserQuestion` only with `--permission-prompt-tool` (cc-inspect `code cli`, `tool` parameter doc), so the questions were plain text; n=3 per seed; two seeds; Sonnet 5.5 only. The shipped style line (flaky-test) is unrelated and not needed here.
   - Evidence: claude 2.1.329, 2026-11-24, Sonnet 5.5, reports/2026-11-19-research/risks-kernel/run.sh seed a1, 9 runs per arm: vanilla edited plan.md in 1 of 9 (rep 2) and opened it in 1 of 9; the style arm edited it in 0 of 9 and read it in 8 of 9. The script's literal `?` check failed 7 style runs that left the tree clean and asked for the choice in plain text (`claude -p` offers no `AskUserQuestion`), so the tree check scores the fault. Seed a2: 3 of 3 clean in both arms.
-  - Status: mitigated 2026-11-24: on 2.1.329 the fault reproduces on vanilla (seed a1 above; "plan.md is too long." edited 3 of 3 in reports/2026-11-24-research/pin-2-1-329/README.md), and claudetto's remark line (REQ-REPLY-024) kept the tree clean in 9 of 9 style runs and 9 of 9 full-plugin runs.
+  - Status: mitigated 2026-11-24: on 2.1.329 the fault reproduces on vanilla (seed a1 above; "plan.md is too long." edited 3 of 3 in reports/2026-11-24-research/pin-2-1-329/README.md), and claudetto's remark line (REPLY-024) kept the tree clean in 9 of 9 style runs and 9 of 9 full-plugin runs.
   - Verified: claude 2.1.329, 2026-11-24, Sonnet 5.5, `TMPDIR=/tmp/claude-501/rk329/ bash reports/2026-11-19-research/risks-kernel/run.sh a1|a2 vanilla|style <rep>`, results in /tmp/claude-501/rk329/risks/results.txt: a1 tree clean vanilla 8 of 9, style 9 of 9; a2 3 of 3 both; cost $0.55.
   - Source: reported, user, 2026-11-16 21:07 UTC, no acting on a guess (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:8749).
 
@@ -387,7 +387,7 @@
   - Consequence: A wrong fact shipped.
   - Likelihood: 3
   - Impact: 4
-  - Existing controls: ADR [ADR-0096](../adr/0096-verify-user-claims.md).
+  - Existing controls: ADR [ADR-0096](../decisions/0096-verify-user-claims.md).
   - Response: mitigate.
   - Actions: Verify each user claim against the repo or a probe.
   - Trigger: A user states a fact about the code or the tool.
@@ -409,7 +409,7 @@
   Impact: 2
   Existing controls: None.
   Response: avoid
-  Actions: Rebuild top down with real directories; see OUT item and [ADR-0076](../adr/0076-no-file-families.md).
+  Actions: Rebuild top down with real directories; see OUT item and [ADR-0076](../decisions/0076-no-file-families.md).
   Trigger: A file name shares a hyphen prefix with another.
   Owner: kernel
   Status: closed; claude 2.1.327, 2026-11-18, `git ls-files plugins/claudetto | grep -E '/[^/]*-[^/]*\.(ts|json|md)$'` restricted to source files: no hyphenated file family in plugins/claudetto/hooks (files: builtins/, handover/, settings/).
@@ -478,7 +478,7 @@
   - Consequence: the call fails or exits 0 with no work done, and the next turn rewrites the command.
   - Likelihood: 2
   - Impact: 2
-  - Existing controls: the SessionStart env-file line `setopt no_nomatch no_equals` (REQ-KERNEL-014).
+  - Existing controls: the SessionStart env-file line `setopt no_nomatch no_equals` (KERNEL-014).
   - Response: mitigate.
   - Actions: add `sh_word_split` to the env-file line in hooks/hooks.json.
   - Trigger: a Bash result with `command not found:` or `no such file or directory:` naming a value with spaces.

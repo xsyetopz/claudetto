@@ -4,7 +4,7 @@ export const TOOL_NAME = "read";
 /** The full tool name a `tool.run` or `tool.check` hook matches. */
 export const TOOL_FULL_NAME = "mcp__claudetto__read";
 
-/** What the model reads about the tool (REQ-TOOLS-003). */
+/** What the model reads about the tool (TOOLS-003). */
 export const TOOL_DESCRIPTION =
 	"Read files by absolute path: numbered lines (default 2000; offset, limit), images, .ipynb, PDF text (pages 1-5, max 20). Put every file you need in also: one call reads them all.";
 

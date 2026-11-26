@@ -2,7 +2,7 @@ import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
 
-/** The longest description a kept built-in tool carries (REQ-TOOLS-003). */
+/** The longest description a kept built-in tool carries (TOOLS-003). */
 export const MAX_DESCRIPTION = 200;
 
 /**

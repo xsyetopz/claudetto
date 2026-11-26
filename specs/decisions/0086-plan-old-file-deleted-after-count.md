@@ -6,7 +6,7 @@ date: 2026-11-16
 
 ## Context and Problem Statement
 
-plans/rebuild-curation.md held 1,074 items. The user chose Delete after count.
+specs-curation.md held 1,074 items. The user chose Delete after count.
 
 ## Considered Options
 

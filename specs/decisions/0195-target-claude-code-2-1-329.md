@@ -24,11 +24,11 @@ The 2.1.328 and 2.1.329 release notes (cc-inspect `release notes 2.1.327..2.1.32
 - Headless: environment variables written by a SessionStart hook now survive `claude -p --continue`, and `claude -p` exits 1 with an error on a full disk instead of 0.
 - Skills: a skill with a `model` setting, other than a `context: fork` skill, leaves subagents, forks and compaction on the session's model. `claudetto-spec` sets no `model`, so it is unaffected.
 - Hooks: prompt hooks accept model aliases such as `haiku` in `model`.
-- Rules: a long pause in Code Mode with path-scoped rules is fixed; claudetto ships no rule files ([CC-085](../arc42/08_concepts/instruction-files.md)).
+- Rules: a long pause in Code Mode with path-scoped rules is fixed; claudetto ships no rule files ([CC-085](../architecture/08_concepts/instruction-files.md)).
 
 ## Consequences
 
 - ADR-0176 is superseded. A fact measured on 2.1.327 stays valid until a 2.1.329 or later probe or code read confirms it, following literal anchors because minified names differ between versions.
-- The `claudetto-spec` evals (ADR-0193) ran on 2.1.330: suite 3 and suite 4 score 1.0 with the plugin, in both the interactive tmux probe and `claude -p` eval runs (REQ-SPEC-005, REQ-SPEC-008).
+- The `claudetto-spec` evals (ADR-0193) ran on 2.1.330: suite 3 and suite 4 score 1.0 with the plugin, in both the interactive tmux probe and `claude -p` eval runs (SPEC-005, SPEC-008).
 
 Source: the user's goal message, 2026-11-21 (session 058ea2d3-793b-495e-912a-323a9453747d); cc-inspect `release notes` 2.1.327 to 2.1.329, read 2026-11-21.

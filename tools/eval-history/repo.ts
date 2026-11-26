@@ -1,6 +1,6 @@
 /** Source of the synthetic `tiny-cart` repo that the replayed session works on. */
 
-/** The notes file of REQ-REPLY-145: 213 characters, 151 without the TODO line. */
+/** The notes file of REPLY-145: 213 characters, 151 without the TODO line. */
 export const NOTES = `Release checklist for tiny-cart 0.2.0
 - bump the version in package.json
 - TODO: decide whether the changelog lists internal refactors
@@ -8,7 +8,7 @@ export const NOTES = `Release checklist for tiny-cart 0.2.0
 - announce the release in the team channel
 `;
 
-/** The config of REQ-REPLY-146: the port is 8080. */
+/** The config of REPLY-146: the port is 8080. */
 export const CONFIG = `{ "port": 8080, "host": "127.0.0.1" }
 `;
 

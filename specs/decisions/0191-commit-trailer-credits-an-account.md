@@ -6,7 +6,7 @@ date: 2026-11-19
 
 ## Context and Problem Statement
 
-claudetto's git instructions follow the Linux kernel's rules for AI agents: the agent never adds `Signed-off-by`, the human submitter reviews and certifies the change, and tool use is disclosed (`Documentation/process/coding-assistants.rst` and `generated-content.rst`, torvalds/linux master, read 2026-11-19). Setup filled `attribution.commit` with `Assisted-by: Claude Code` (REQ-GUARDS-063). That line discloses the tool, but no git host credits it to anyone, so the assistance never shows as a contributor.
+claudetto's git instructions follow the Linux kernel's rules for AI agents: the agent never adds `Signed-off-by`, the human submitter reviews and certifies the change, and tool use is disclosed (`Documentation/process/coding-assistants.rst` and `generated-content.rst`, torvalds/linux master, read 2026-11-19). Setup filled `attribution.commit` with `Assisted-by: Claude Code` (GUARDS-063). That line discloses the tool, but no git host credits it to anyone, so the assistance never shows as a contributor.
 
 Facts, checked 2026-11-19:
 
@@ -23,6 +23,6 @@ Setup fills `attribution.commit` with `Co-Authored-By: Claude <noreply@anthropic
 ## Consequences
 
 - Commits made with claudetto list Claude as a co-author on GitHub, and GitLab reads the same trailer.
-- The kernel rule against an agent `Signed-off-by` stays in force through REQ-GUARDS-063.
+- The kernel rule against an agent `Signed-off-by` stays in force through GUARDS-063.
 
 Source: user decision, 2026-11-19 (this session): claudetto's git instructions follow the kernel's AI agent rules in a form git hosts recognise as a contributor.

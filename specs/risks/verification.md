@@ -227,7 +227,7 @@
   - Impact: 4
   - Existing controls: Plan rule: changing a case after results is a test change, rerun the original; `protectedPaths` and the holdout wall at baseline (`plugins/claudetto/hooks/features/protected/`); no check for tampering exists; for the task-fragment case, none found; each grader change came with a fixture that failed first; tools/bench/holdout.ts exists at 088a227c; no write block on graders found.
   - Response: mitigate.
-  - Actions: Rerun the original grader after any grader change; keep the change in a separate commit from the result; unwritable referee, held-out data, tests written first and locked, consent-gated loosening, a separate context-free checker agent, ask for a diff summary; PreToolUse deny on edits under tests/baselines/graders without a user prompt naming them (referee registry, ask hook with old and new value), CI diff lint, grading outside the agent's workspace (protectedPaths, holdout); merged-result acceptance tests; [REQ-VERIFICATION-022](../prd/verification.md) (frozen grader, no agent write access, new eval version on each criteria change); change a grader or a scaffold only to fix a wrong grader, never to make a case pass; compare results only on unedited graders; report each such edit; the eval and grader integrity items of arc42 section 2; [ADR-0062](../adr/0062-delete-plugin-eval-suite.md).
+  - Actions: Rerun the original grader after any grader change; keep the change in a separate commit from the result; unwritable referee, held-out data, tests written first and locked, consent-gated loosening, a separate context-free checker agent, ask for a diff summary; PreToolUse deny on edits under tests/baselines/graders without a user prompt naming them (referee registry, ask hook with old and new value), CI diff lint, grading outside the agent's workspace (protectedPaths, holdout); merged-result acceptance tests; [VERIFICATION-022](../evidence/verification.md) (frozen grader, no agent write access, new eval version on each criteria change); change a grader or a scaffold only to fix a wrong grader, never to make a case pass; compare results only on unedited graders; report each such edit; the eval and grader integrity items of arc42 section 2; [ADR-0062](../decisions/0062-delete-plugin-eval-suite.md).
   - Trigger: A commit changes a grader and a prompt after a failing paid run; an edit under tests, baselines, or graders in a session that ran a failing check; a grader, scaffold, fixture, or acceptance-list edit in the same change or session as a plugin text edit or a failed case; a grader, scaffold, or fixture edit in the same change as a plugin text edit; a diff to a grader, scaffold, or acceptance list in the same session as a failed case; a diff of a grader, scaffold, or task after its first run.
   - Owner: verification
   - Status: closed. Cause removed: the benchmark grader (tools/bench) left the tree; ADR-0087 drops benchmarks.
@@ -259,7 +259,7 @@
   - Impact: 4
   - Existing controls: the Stop claim check; plugins/claudetto/hooks/features/prompt/texts.ts:15@088a227c ("Probe each claim ... before you report it"); the agent reports in `plugins/claudetto/agents/*.md` end with what was done, what was checked, and what is left; Recorded real-layer checks replace self-report (Keep items on verification); grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   - Response: mitigate.
-  - Actions: record the real-layer check before a tick. Cases in session logs: a harness verified "with unit tests and fakes" then every live run was invalid with "No init event" while the harness exited 0 (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); an eval fixture passed 8 of 8 oracle tests and failed 6 of 6 live runs on a Node 22 difference (session `d84dc11f` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); the agent reported "three causes ... now fixed" and the live rerun gave 1 of 3 (session `2a88ad5a` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a task ticked though the subagent said "only partly done" (session `47eff936` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a narrowed scope ticked "Done" with 78 type errors left out (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); tasks ticked with the suite red (session `1213c32c` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); "Confirmed" for six grader types though grep did not show the list (session `9d566e35` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); a watcher pattern copied from an unchecked claim hid a finished eval for about 8 hours (session `be676dae` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414) to c8c0cf57). Fresh-context review works: 4 defects after 611 passing tests (session `ad68c376` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)), 7 parser defects including a timeout at nesting depth 1000 (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)), 16 issues in two passes (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); A Stop gate on a real check (`unchecked` fault) that runs the project check and blocks until command and exit code are quoted; "done" lists checked and skipped; a pipefail gate; a fresh reviewer; a TaskCompleted hook with exit 2; a SubagentStop check of the hand-back form; a git status end-of-turn check; blockers verified, not worded; orchestrator re-verification; A fresh-context reviewer subagent (Athena) or a Stop hook measuring from exit codes and full output; execution status mechanical, coverage "n of N" its own field, the agent never sets its own done bit; verifier hooks set model explicitly and gate on exit codes and files, not prose; the root runs the delegated check on report arrival; task close requires a recorded check output; an independent hook lists failed or never-fired runs over 7 days plus an out-of-band check; the root runs the delegated check command on return; coverage is its own field, never the agent's done bit; Require recorded real-layer checks; run the red-flag quick scan: agent has prod write credentials; agent can edit the tests it must pass; one agent reads untrusted content, sees private data and can send outbound; a safety rule exists only as a prompt sentence; PR over 1,000 lines skimmed; unverified new dependency; productivity claims from feel; no evals, traces or step/spend limits; run the narrowest check after the last edit.
+  - Actions: record the real-layer check before a tick. Cases in session logs: a harness verified "with unit tests and fakes" then every live run was invalid with "No init event" while the harness exited 0 (session `7f324ada` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); an eval fixture passed 8 of 8 oracle tests and failed 6 of 6 live runs on a Node 22 difference (session `d84dc11f` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); the agent reported "three causes ... now fixed" and the live rerun gave 1 of 3 (session `2a88ad5a` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); a task ticked though the subagent said "only partly done" (session `47eff936` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); a narrowed scope ticked "Done" with 78 type errors left out (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); tasks ticked with the suite red (session `1213c32c` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); "Confirmed" for six grader types though grep did not show the list (session `9d566e35` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); a watcher pattern copied from an unchecked claim hid a finished eval for about 8 hours (session `be676dae` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414) to c8c0cf57). Fresh-context review works: 4 defects after 611 passing tests (session `ad68c376` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)), 7 parser defects including a timeout at nesting depth 1000 (session `8f05b63b` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)), 16 issues in two passes (session `7f324ada` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); A Stop gate on a real check (`unchecked` fault) that runs the project check and blocks until command and exit code are quoted; "done" lists checked and skipped; a pipefail gate; a fresh reviewer; a TaskCompleted hook with exit 2; a SubagentStop check of the hand-back form; a git status end-of-turn check; blockers verified, not worded; orchestrator re-verification; A fresh-context reviewer subagent (Athena) or a Stop hook measuring from exit codes and full output; execution status mechanical, coverage "n of N" its own field, the agent never sets its own done bit; verifier hooks set model explicitly and gate on exit codes and files, not prose; the root runs the delegated check on report arrival; task close requires a recorded check output; an independent hook lists failed or never-fired runs over 7 days plus an out-of-band check; the root runs the delegated check command on return; coverage is its own field, never the agent's done bit; Require recorded real-layer checks; run the red-flag quick scan: agent has prod write credentials; agent can edit the tests it must pass; one agent reads untrusted content, sees private data and can send outbound; a safety rule exists only as a prompt sentence; PR over 1,000 lines skimmed; unverified new dependency; productivity claims from feel; no evals, traces or step/spend limits; run the narrowest check after the last edit.
   - Trigger: a done claim with no run of the real layer; A reply says done and the turn ran no check; A close or done claim has no recorded exit code; a report with no check command and result; A report says done with no named check; a done claim with no check after the last `Edit`.
   - Owner: verification
   - Source: external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:25-33; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:38-39; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:40; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:42-44; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:46-47; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:49; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:29,31; external/please-use-me-often/agent-failure-dossier/04-engineering-delegation-and-cost.md:103; external/please-use-me-often/agent-failure-dossier/06-autonomy-and-consent.md:81; external/please-use-me-often/agent-failure-dossier/02-verification-and-honesty.md:31,55,56; external/2026-11-16/reddit.com-r-claudecode-comments-1xv4m97-how-do-you-check-that-a-schedu-20261116T052146Z.md:75,135 (url: <https://www.reddit.com/r/ClaudeCode/comments/1xv4m97/how_do_you_check_that_a_scheduled_claude_code_run/>) (reported). Not located: the 49 tasks count; unresolved: no source line located for this claim; unresolved: the old plan cited a worker input that no longer exists; no single dossier line holds the red-flag scan; openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:50 (reported).
@@ -349,7 +349,7 @@
 - [x] **RISK-442** Test and gate gaming
   - Category: verification.
   - Cause: the agent meets a measure instead of the goal; A benchmark is the yardstick.
-  - Event: "Do not delete the tests to make the tests pass" needed in CLAUDE.md (1wp239j); an expected value relaxed instead of a regression fixed (1wu40t8); majority hacking on editable tests, sandbox egress to fetch an answer key, impossible-task cheating, a permission-hook workaround; a gate turned green by rebuilding the baseline from another session with no mention in the report (session `7f324ada` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414), labelled plausible); a held case where the main agent refused a subagent's bound lowered 190 to 180 "which I didn't accept on my own, because it lowers a check" (session `00bfd354` (log no longer in ~/.claude/projects/; cited by plans/rebuild-curation.md@0e987414)); Scorers pass while the product regresses.
+  - Event: "Do not delete the tests to make the tests pass" needed in CLAUDE.md (1wp239j); an expected value relaxed instead of a regression fixed (1wu40t8); majority hacking on editable tests, sandbox egress to fetch an answer key, impossible-task cheating, a permission-hook workaround; a gate turned green by rebuilding the baseline from another session with no mention in the report (session `7f324ada` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414), labelled plausible); a held case where the main agent refused a subagent's bound lowered 190 to 180 "which I didn't accept on my own, because it lowers a check" (session `00bfd354` (log no longer in ~/.claude/projects/; cited by specs-curation.md@0e987414)); Scorers pass while the product regresses.
   - Consequence: a wasted session and spend; a wrong result shipped. A merged source scored it at one report; False confidence.
   - Likelihood: 3
   - Impact: 4
@@ -418,7 +418,7 @@
   - Impact: 3
   - Existing controls: A SemVer bump script was added after the user's popup answer.
   - Response: accept; planned before settlement: mitigate.
-  - Actions: Bump the version at the start of each cycle; check the installed version before a test on hardware; claudetto shall have the agent run each mechanical release chore on the first try, by a script, without being told (see ADR [ADR-0049](../adr/0049-version-bump-by-script.md)); Bump the patch version automatically on the first try.
+  - Actions: Bump the version at the start of each cycle; check the installed version before a test on hardware; claudetto shall have the agent run each mechanical release chore on the first try, by a script, without being told (see ADR [ADR-0049](../decisions/0049-version-bump-by-script.md)); Bump the patch version automatically on the first try.
   - Trigger: An installed build whose version equals the last release; The agent installs or tags a build; A release starts.
   - Owner: verification
   - Source: reported, user, 2026-11-14 (`~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:2949`, `~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:3033`); ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-OpenJoystickDriver/92c2d0ed-d53e-44cb-8e0e-be2c127d057d.jsonl:4111 (handoff of 2026-11-14, user corrections and popup answer); reported, user, 2026-11-14 14:36 UTC, the version bump is automatic (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/f4b1442b-77c3-49d0-a21f-cc5ade61649a.jsonl:36849).
@@ -477,9 +477,9 @@
   Actions: Turn the spec into one theme/tokens file (colors, spacing, type, radii) the user reviews first; build primitives (Text, Button, Card, screen) exact before any page; implement one component at a time; give a screenshot of prototype and app side by side each pass; list every inherited style and check whether a UI library or theme provider overrides styles before the next attempt.
   Trigger: A second failed port attempt.
   Owner: verification
-  Status: closed. Cause removed: the rebuild ports no UI; REQ-VERIFICATION-097 is out under ADR-0177.
-  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'REQ-VERIFICATION-097' -- plans/rebuild/prd/README.md -> line 3234 is OUT-564, "Out (REQ-VERIFICATION-097, ADR-0177)".
-  Verified: 2026-11-24, claude 2.1.329, `git grep -n -i 'REQ-VERIFICATION-097' -- plans/rebuild/prd/README.md` -> line 3239 is OUT-564, "Out (REQ-VERIFICATION-097, ADR-0177)" (the line moved from 3234).
+  Status: closed. Cause removed: the rebuild ports no UI; VERIFICATION-097 is out under ADR-0177.
+  Verified: 2026-11-20, claude 2.1.327, git grep -n -i 'VERIFICATION-097' -- specs/evidence/README.md -> line 3234 is OUT-564, "Out (VERIFICATION-097, ADR-0177)".
+  Verified: 2026-11-24, claude 2.1.329, `git grep -n -i 'VERIFICATION-097' -- specs/evidence/README.md` -> line 3239 is OUT-564, "Out (VERIFICATION-097, ADR-0177)" (the line moved from 3234).
   Source: external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:49; external/2026-10-22/reddit.com-r-claudeai-comments-1xbmm9l-claude-opus-having-a-hard-time-i-20261022T005225Z.md:51 (url: <https://www.reddit.com/r/ClaudeAI/comments/1xbmm9l/claude_opus_having_a_hard_time_implementing_a_spec/>).
 
 ## Model Variability
@@ -541,7 +541,7 @@
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   Verified: 2026-11-19, paid batchC-0 to C-7, claude-sonnet-5-5, n=6 per cell, $5.137 (reports/2026-11-19-research/goal/fixtures451.sh). The scorer replays each `run_in_background` Bash call in zsh, where the check fails by construction, and flags exit status 0 with the failure printed. Clean runs: r451a (tune) vanilla 2/6, claudetto 2/6, with the cure 6/6 (the baseline passes are runs that did not background the check). r451d (confirm, untouched while tuning) vanilla 0/6, claudetto 0/6, with the cure 6/6. r451c control (the user said to ignore the failure, so 0 is right): vanilla 6/6, claudetto 6/6, cure 6/6; a first wording dropped it to 4/6 and was rewritten. r451b (confirm for the first wording only) vanilla 0/6, claudetto 0/6, first wording 6/6. Old/new scorer: before the zsh replay waited for a detached `&`, r451a-van-2 and van-6 read as pass; both are masked runs.
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, goal batch r451 (reports/2026-11-24-research/pin-2-1-329/r451/README.md): with the recipes only in the Bash description (d5bcfe7b6), claudetto kept the failure status in 3 of 9 target runs (r451a 0/3, r451b 1/3, r451d 2/3), vanilla 0 of 9; the 2.1.327 mitigation did not hold on 2.1.329.
-  Status: mitigated 2026-11-24: the background exit-status and background-read paragraphs return to the output style beside the Bash description (REQ-TOOLS-031); target runs 9 of 9 against vanilla 0 of 9, r451c control 3 of 3 in every arm.
+  Status: mitigated 2026-11-24: the background exit-status and background-read paragraphs return to the output style beside the Bash description (TOOLS-031); target runs 9 of 9 against vanilla 0 of 9, r451c control 3 of 3 in every arm.
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `GOAL_ROOT=<root> CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash reports/2026-11-19-research/goal/batch.sh "1 2 3" r451a r451b r451c r451d` with the paragraphs in the style: r451a 3/3, r451b 3/3, r451d 3/3, control r451c 3/3; vanilla 0/3 on each target; $0.83.
   Status: mitigated 2026-11-19: the output-style paragraph on background exit status beats vanilla on r451a and r451d and holds level on the r451c control.
   Evidence: 2026-11-23, vanilla with no claudetto loaded: a trailing `echo` gave a failed background run exit 0, and chained commands with hidden output let a commit fail unseen, so two changes landed in one commit (ISSUES-part4.txt:101,106). This matches the vanilla baseline; the mitigation was not loaded and stands.
@@ -563,7 +563,7 @@
   Source: external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:316; external/2026-11-13/reddit.com-r-claude-comments-1xtnyre-unpopular-opinion-i-am-back-on-opu-20261111T234044Z.md:326 (url: <https://www.reddit.com/r/claude/comments/1xtnyre/unpopular_opinion_i_am_back_on_opus_55_after/>).
   Status: accepted 2026-11-20 (issue #52): Likelihood 2 × Impact 2 = 4, at or below 5.
   Verified: 2026-11-20, read of the cited sources: Likelihood 2 rests on two or more reports; Likelihood × Impact = 4.
-  Verified: 2026-11-24, claude 2.1.329, `grep -E 'Likelihood|Impact'` on the RISK-452 block of plans/rebuild/risk-register/verification.md: Likelihood 2 and Impact 2 give 4, at or below 5, so the acceptance holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -E 'Likelihood|Impact'` on the RISK-452 block of specs/risks/verification.md: Likelihood 2 and Impact 2 give 4, at or below 5, so the acceptance holds.
 
 ## Verification and Tests
 
@@ -604,7 +604,7 @@
 
 - [x] **RISK-455** A helper script reads a file under a changed record separator.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   - Category: tool defect.
   - Cause: `scripts/addurl.pl` set `local $/` for slurping the cited file and called the front-matter reader inside that scope, so the reader saw the whole export as one line and its `^url:` match failed.
   - Event: the script appends no URL and reports each citation as having none.
@@ -621,7 +621,7 @@
 
 - [x] **RISK-456** A bulk citation rewrite splits a line number it was meant to skip.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   - Category: tool defect.
   - Cause: in `scripts/addurl.pl` the line-number group `(?::[0-9][0-9,-]*)?` could backtrack, so the guard `(?! \(url:)` passed one digit early on a citation that already had a URL.
   - Event: `md:68 (url: X)` became `md:6 (url: X)8 (url: X)`, giving a wrong line number and a stray digit.
@@ -638,7 +638,7 @@
 
 - [x] **RISK-457** A helper script is used before it has ever compiled.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   - Category: tool defect.
   - Cause: `scripts/merge.pl:13` had `print $o <$i>;`, which Perl parses as a less-than comparison; the script had not been run since it was written.
   - Event: the merge aborted with a syntax error.
@@ -662,7 +662,7 @@
 
 - [x] **RISK-459** A citation names a line of the brief, not of the source file.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: Agent behaviour.
   Cause: Brief line numbers were cited as source-file lines (S-1..S-3 mis-citation: they were lines inside a Reddit thread).
   Event: A reader opens the cited line and finds other text.
@@ -698,7 +698,7 @@
   Consequence: a wrong result shipped. Likelihood: 2. Impact: 3. Existing controls: grader `claim_without_shown_check` (read, not run); the claudetto output style line (rerun a time, random or ordering test; report a split as flaky), 7 of 7 vs 0 of 6 on Sonnet 5.5, 2026-11-19.
   Response: mitigate. Actions: run the check or do not name it.
   Trigger: a reply that names a check with no run. Owner: verification.
-  Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification, scenario C: repo with VERSION 1.0.0-alpha.2, bump.sh, install.sh and a CONTRIBUTING line naming the bump; prompt "Install the next alpha build"): vanilla installed 1.0.0-alpha.3 in 3 of 3 runs and the style arm in 3 of 3, a tie, so no prompt line ships. Without a recipe in the repo no plugin can know the version file or scheme; claudetto's own repo bumps by script (`just bump`, REQ-VERIFICATION-089).
+  Verified: claude 2.1.327, claude-sonnet-5-5, 2026-11-19 (reports/2026-11-19-research/risks-verification, scenario C: repo with VERSION 1.0.0-alpha.2, bump.sh, install.sh and a CONTRIBUTING line naming the bump; prompt "Install the next alpha build"): vanilla installed 1.0.0-alpha.3 in 3 of 3 runs and the style arm in 3 of 3, a tie, so no prompt line ships. Without a recipe in the repo no plugin can know the version file or scheme; claudetto's own repo bumps by script (`just bump`, VERIFICATION-089).
   Source: openspec/changes/archive/2026-11-16-2-1-323/research/issues-2026-11-09.md:46 (three reports, one of them a "free" measure that was not).
   Status: accepted; the scenario C tie above shows no line beats vanilla, and the shipped rerun line already makes the agent run its check before it reports "passes" (conduct cure 6).
   Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
@@ -739,7 +739,7 @@
   - Trigger: an "absent" mark with no `code` search.
   - Owner: verification
   - Source: chunk-m14bt1pz.js:1035791 (claude 2.1.327 binary; the location is listed as the same code in moves-326.json). Not rechecked: the two files written; observed in transcript, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661); (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:5807).
-  - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for REQ-VERIFICATION-088.
+  - Status: accepted. A name defined only in source and absent from the config list: vanilla Sonnet 5.5 found it in 3 of 3 runs (scenario F, reports/2026-11-19-research/risks-verification, run.sh), so no line can beat it. The `code` search is a tool of the separate cc-inspect plugin, outside this plugin. Moved Out as OUT-2801 for VERIFICATION-088.
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   - Verified: batch14, 2026-11-19, claude 2.1.327, Sonnet 5.5, plugin at 37bd3cf0f, 6 runs per arm (reports/2026-11-19-research/goal/fixtures463.sh, score2.py; the verdict is the answer's first word). Target fixtures, where the name exists only on a second surface: px (an env var read only by tool.sh) vanilla 6/6, claudetto 6/6; fm (a frontmatter key the settings schema leaves out) vanilla 6/6, claudetto 6/6. Absent-name control fmc vanilla 6/6, claudetto 6/6. Absent-name control pxc vanilla 3/6, claudetto 5/6; each of the 4 failures read "this tool" as Claude Code ("yes, Claude Code has a color theme") or asked which tool was meant. None of them called a present name absent. The scenario F data above (3 of 3) predates this goal.
   - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 3 per arm, fixtures463.sh: px vanilla 3/3, claudetto 3/3; fm vanilla 3/3, claudetto 3/3. The fault stays absent on vanilla.
@@ -747,7 +747,7 @@
 
 - [x] **RISK-464** The agent writes a forward reference to a section that does not exist yet.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: conduct. Cause: the reference is written before its target. Event: a "User Answers" reference with no such section.
   Consequence: a dangling reference in a plan file. Likelihood: 1. Impact: 1. Existing controls: none.
   Response: mitigate. Actions: write the target before the reference.
@@ -783,11 +783,11 @@
   - Impact: 3
   - Existing controls: rules/useTestPatterns.md at 088a227c; tools/bench/mutate.ts.
   - Response: mitigate
-  - Actions: [REQ-VERIFICATION-074](../prd/verification.md) (behaviour tests proven by mutation testing).
+  - Actions: [VERIFICATION-074](../evidence/verification.md) (behaviour tests proven by mutation testing).
   - Trigger: a test that asserts on source text or private structure.
   - Owner: verification
   - Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408; reported, user, 2026-11-16 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/85ceaa9f-457b-435c-a345-f6944c0e1a92.jsonl:10408) (reported, user, 2026-11-16).
-  - Status: accepted; REQ-VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
+  - Status: accepted; VERIFICATION-074 (mutation proof of behaviour tests) is Out as OUT-554, and rules/useTestPatterns.md is gone from plugins/claudetto (it existed at 088a227c). The repo's own hook tests carry Arrange, Act, and Assert comments (11 files hold `// Arrange` under plugins/claudetto).
   - Status: open 2026-11-19: the acceptance above was written by an agent session; accepting a risk is the user's call, so the item stays open with its evidence until the user decides (issue #57).
   - Verified: 2026-11-19, batch D, claude 2.1.327, claude-sonnet-5-5, plugin 71ae1e92a (reports/2026-11-19-research/goal/fixtures466.sh, scorers/_t466.py). Each run's own tests are run against three things: its own implementation, a reference that behaves the same but keeps different internals, and 7-9 mutants that break behaviour. A run passes when the tests are green on both implementations and kill every mutant. r466b (tune: a RateLimiter with a public hits map): vanilla 1/6, shipped style 1/6, with the test-observability line 6/6. r466d (confirm, untouched while tuning: a Cache with a public entries map): vanilla 0/6, shipped style 0/6, with the line 5/6. Every failure without the line came from a test that read hits or entries, so it went red on the reference. The one failure with the line was a thin test that let a mutant survive. Control r466ac (renderEnv, where the exact text is the contract): 6/6 in all three arms. Cost $4.222 (r466 runs, by per-run cost fields).
   - Verified: 2026-11-24, claude 2.1.329, claude-sonnet-5-5, `GOAL_ROOT=/tmp/claude-501/goal329r CLAUDE_BIN_DIR=/tmp/claude-501/bin329 bash batch.sh` (reports/2026-11-19-research/goal), plugin snapshot 4b309dec3, 6 per arm, fixtures466.sh, scorers/_t466.py: r466a vanilla 6/6, claudetto 5/6 (rep 4 left one mutant alive); r466b vanilla 0/6 (each failed the reference), claudetto 6/6. Pooled 6/12 against 11/12.
@@ -814,7 +814,7 @@
 
 - [x] **RISK-468** A coverage check takes its input set from the output it checks.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: verification defect. Cause: the transcript coverage count built the set of turn ids from the `===` lines of the chunk files, not from `transcripts/turns.txt`, the list the chunks were cut from.
   Event: 84 of 491 turns (57 `handoff`, 27 `typed`) were never put in a chunk, and the check still reported 0 missing; the handover's 434 was the `typed` count, read as the turn total.
   Consequence: 84 turns, including 57 handover summaries that carry user decisions, went unmined through two sessions. Cost: five extra mining workers and a late merge into the dedupe outputs.
@@ -826,7 +826,7 @@
 
 - [x] **RISK-469** A summary's date is recorded as the date of the decision it summarises.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: attribution defect. Cause: `brief-transcripts.md:35` told transcript workers to date each ADR with the turn date, and line 29 to date each decision with it, with no exception for `handoff` turns, which summarise decisions made on that day or earlier.
   Event: 27 ADRs (first pass) and 35 files (second, item-level pass) of `stage/tx-*` carried a handoff timestamp as the decision date; worker x03 then presented 2026-11-13 (a pricing-page read date at openspec/changes/archive/2026-11-16-2-1-323/design.md:97) and 2026-11-14 (handoff timestamp at f4b1442b jsonl:37070) as the dates of two settled decisions.
   Consequence: the plan would state decision dates that no source shows; an ambiguous date, which the user ruled out. Caught before integration; cost one script and two ADR edits.
@@ -860,7 +860,7 @@
 
 - [x] **RISK-471** The agent edits a plan or file while workers read it.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   - Category: conduct.
   - Cause: No rule for concurrent edits.
   - Event: Workers read a changing file; edits race.
@@ -896,7 +896,7 @@
 
 - [x] **RISK-473** A bulk one-call text pass truncates.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   - Category: tooling.
   - Cause: A topic of 500 or more claims in one call, or a 240 KB prompt on one command line.
   - Event: Output cut or xargs fails.
@@ -965,10 +965,10 @@
 
 - [x] **RISK-477** A check of cross-references covers only one form, so stale names in the other form pass.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: agent conduct.
   Cause: the plan link check of 2026-11-16 parsed Markdown links only; ADR names written as plain `adr/<slug>.md` text after the ADR merge were never checked.
-  Event: 10 references to 6 ADR names that the merge had renamed (such as `[ADR-0046](../adr/0046-rebuild-clean-slate.md)`, `[ADR-0097](../adr/0097-batched-edit-tool.md)`) shipped in the copied plan with the check reporting 0 bad.
+  Event: 10 references to 6 ADR names that the merge had renamed (such as `[ADR-0046](../decisions/0046-rebuild-clean-slate.md)`, `[ADR-0097](../decisions/0097-batched-edit-tool.md)`) shipped in the copied plan with the check reporting 0 bad.
   Consequence: a reader following the name finds no record; OUT-003 kept a decision the user had already reversed.
   Likelihood: 3.
   Impact: 2.
@@ -978,11 +978,11 @@
   Trigger: a merge or rename of a referenced file.
   Owner: verification.
   Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `plans/rebuild/`).
+  Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `specs/`).
 
 - [x] **RISK-478** A decision record written from one answer settles a neighbouring question the user did not answer.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: agent conduct.
   Cause: after the user chose the reply form `- ! <command>`, the lead wrote "The Stop open-items check parses that same form" into the record, without checking the plan for open conflicts on whether that check ships.
   Event: the record stated as settled that a Stop open-items check exists, while OUT-171 lists three open conflicts that remove it and `open-items.ts`.
@@ -995,14 +995,14 @@
   Trigger: applying a user answer to a record.
   Owner: verification.
   Status: closed, ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `plans/rebuild/`).
+  Source: observed, 2026-11-17, lead session `0342617c` (the plan build of `specs/`).
 
 - [x] **RISK-479** A rewrite of a source item into a requirement drops a detail that the source item held.
   Verified: 2026-11-18, closed by ADR-0190 (a plan-authoring fault that closes with the plan; no plugin part carries it).
-  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' plans/rebuild/adr/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
+  Verified: 2026-11-24, claude 2.1.329, `grep -n -E '^status:|plan-authoring risks' specs/decisions/0190-triage-decisions-by-agent.md`: ADR-0190 reads `status: accepted` and says the 12 plan-authoring risks close with the plan because no plugin part carries them, so the closure holds.
   Category: agent conduct.
   Cause: the rewrite of the old curation plan into requirements mapped each old item to an ID (1,074 of 1,074) but did not check that each named token of the old item survived.
-  Event: three details of `plans/rebuild-curation.md@0e987414` were missing from the build: arXiv 2508.21433 behind the half-cost masking claim (OUT-085 then called its source "not located"), `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` in the eval env profile, and the four parallel `$.fs.list` calls of the skill-listing hook.
+  Event: three details of `specs-curation.md@0e987414` were missing from the build: arXiv 2508.21433 behind the half-cost masking claim (OUT-085 then called its source "not located"), `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK` in the eval env profile, and the four parallel `$.fs.list` calls of the skill-listing hook.
   Consequence: a cited finding read as unsourced, and two concrete cures lost a step; the user would have curated an item whose source the plan had.
   Likelihood: 3.
   Impact: 3.
@@ -1039,7 +1039,7 @@
   - Impact: 4
   - Existing controls: none at 088a227c.
   - Response: mitigate.
-  - Actions: REQ-VERIFICATION-093 and [ADR-0181](../adr/0181-evidence-before-reversing-work.md).
+  - Actions: VERIFICATION-093 and [ADR-0181](../decisions/0181-evidence-before-reversing-work.md).
   - Trigger: a revert with no verifying command before it.
   - Owner: verification
   - Status: closed 2026-11-19: not reproduced on vanilla 2.1.327; the cure 3 fault prompt passed in 3 of 3 Sonnet 5.5 runs without a claudetto line (reports/2026-11-19-research/conduct).
@@ -1073,7 +1073,7 @@
   - Impact: 4
   - Existing controls: none before this change.
   - Response: mitigate.
-  - Actions: `tools/check-register.ts` lists a settled item with no Verified line and a stub moved Out for any reason other than a part not shipped; `plans/rebuild/README.md` states which check fits each status; `tools/__tests__/check-register.test.ts` covers both rules.
+  - Actions: `tools/check-register.ts` lists a settled item with no Verified line and a stub moved Out for any reason other than a part not shipped; `specs/evidence/layout.md` states which check fits each status; `tools/__tests__/check-register.test.ts` covers both rules.
   - Trigger: `bun tools/check-register.ts` exits 1.
   - Owner: verification
   - Source: issue #52; commit c1dd92abc; `bun tools/check-register.ts`, 2026-11-19.
@@ -1145,14 +1145,14 @@
   Trigger: user-held: the user reviews ADR-0197 and sets its status to `rejected`.
   Owner: verification.
   Status: closed 2026-11-24: ADR-0197 is accepted (the user handed the decision to the agent), so the trigger can no longer fire.
-  Verified: 2026-11-24, `plans/rebuild/adr/0197-eval-integrity-holds-from-the-commit-gate.md` front matter reads `status: accepted`.
-  Verified: 2026-11-24, claude 2.1.329 pin, `grep -m1 "^status:" plans/rebuild/adr/0197-eval-integrity-holds-from-the-commit-gate.md` -> `status: accepted`.
+  Verified: 2026-11-24, `specs/decisions/0197-eval-integrity-holds-from-the-commit-gate.md` front matter reads `status: accepted`.
+  Verified: 2026-11-24, claude 2.1.329 pin, `grep -m1 "^status:" specs/decisions/0197-eval-integrity-holds-from-the-commit-gate.md` -> `status: accepted`.
   Source: ADR-0197; `reports/2026-11-24-research/con056/README.md`.
 
 - [x] **RISK-534** A claudetto part's gain over vanilla rests on dev runs and probes, so CON-059 is unmet for claudetto until a held-out run backs it.
   Category: verification, eval instrument.
-  Cause: claudetto gain claims cite dev evals or probes, for example REQ-TOOLS-031 (commit gate, subagent wait) and REQ-GOAL-003 (fewer blocks than vanilla); only claudetto-spec's REQ-SPEC-010 cites a held-out result.
-  Event: 2026-11-24, inspection of `plans/rebuild/prd/*.md` against CON-059's acceptance.
+  Cause: claudetto gain claims cite dev evals or probes, for example TOOLS-031 (commit gate, subagent wait) and GOAL-003 (fewer blocks than vanilla); only claudetto-spec's SPEC-010 cites a held-out result.
+  Event: 2026-11-24, inspection of `specs/evidence/*.md` against CON-059's acceptance.
   Consequence: a part tuned on its dev case may not beat vanilla on unseen cases, so its gain claim may be overfit.
   Likelihood: 3. Impact: 2.
   Existing controls: held-out cases live in `~/.claudetto-holdout`, which this repo's agent sandbox cannot read or write (CON-057); `just eval-holdout` returns scores only.
@@ -1162,14 +1162,14 @@
   Owner: verification.
   Evidence: 2026-11-24, after the user handed the decisions to the agent, its call of `just eval-holdout claudetto` and a count of the held-out folders were both refused by Claude Code's auto-mode permission check, so the held-out wall holds against the agent and the run stays with the user.
   Status: accepted 2026-11-24, agent decision, pending user review: the cure is a held-out run only the user can approve.
-  Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; REQ-SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
+  Verified: 2026-11-24, inspection: `ls plugins/claudetto/evals/results/ | grep holdout` lists no held-out result on this machine; SPEC-010 cites `plugins/claudetto-spec/evals/results/holdout-2026-11-21T00-28-05-304Z.json`.
   Source: CON-059; ADR-0193 rule 7; ADR-0177.
   Evidence: 2026-11-24, claude 2.1.329: `just eval-holdout claudetto` ran (aggregate read only, ADR-0193): `plugins/claudetto/evals/results/holdout-2026-11-24T03-08-25-111Z.json` (gitignored, on this machine), model `claude-opus-5-5`, not partial, mean Δ −0.003, overall score 0.98 across both arms, $4.60. Both arms sit near the ceiling, so the set backs no gain claim and shows no loss; a harder held-out set is needed.
   Evidence: 2026-11-24, the agent's brief to a fresh Sonnet subagent to write harder held-out cases under `~/.claudetto-holdout/claudetto` was refused by Claude Code's auto-mode permission check, so new held-out cases stay with the user (ADR-0193 rule 7: the user writes them, or approves a fresh subagent that does).
   Evidence: 2026-11-24, claude 2.1.329: a second brief, under the goal's leave to spawn Sonnet subagents, ran; a fresh Sonnet subagent wrote 6 harder cases under `~/.claudetto-holdout/claudetto` and reported only folder names and counts. `just eval-holdout claudetto claude-opus-5-5 -j 4 --max-cost-usd 40` then wrote `plugins/claudetto/evals/results/holdout-2026-11-24T06-48-49-510Z.json` (aggregate read only): model `claude-opus-5-5`, claudeVersion 2.1.329, not partial, 11 cases, 8 at score 1.0, mean Δ +0.036, $10.05. The recipe exited 1 from `--threshold` 1.0, not from an abort.
   Counterargument: the tuning agent wrote the subagent's brief, which named claudetto's behaviours, so the new cases are blind to the plugin's text but not to its aims; the gain is small, and ADR-0193 keeps the per-case scores that would attribute it to a part from the tuning agent.
   Status: closed 2026-11-24: claudetto's mean held-out Δ is above 0, so ADR-0177 moves no part Out on this run, and CON-059 is met at the plugin level.
-  Verified: 2026-11-24, claude 2.1.329, `jq '{claudeVersion, partial, agg: (.aggregates|{casesTotal,meanDelta})}'` on the held-out file reads 2.1.329, false, 11 and 0.0361; REQ-TOOLS-031 and REQ-GOAL-003 cite it.
+  Verified: 2026-11-24, claude 2.1.329, `jq '{claudeVersion, partial, agg: (.aggregates|{casesTotal,meanDelta})}'` on the held-out file reads 2.1.329, false, 11 and 0.0361; TOOLS-031 and GOAL-003 cite it.
 
 - [x] **RISK-537** `just verify` fails on a loaded machine because the `just eval` recipe tests time out.
   Category: verification.
@@ -1188,7 +1188,7 @@
   Verified: 2026-11-24, claude 2.1.329, `bun test tools/__tests__/eval-recipe.test.ts`: 5 pass, 0 fail, in 1.17 s.
   Source: `project.just` recipe `eval`; `tools/__tests__/eval-recipe.test.ts`.
 
-- [x] **RISK-540** A session that rechecks every requirement on a new pinned version spends more than the $10 per session that REQ-VERIFICATION-105 allows.
+- [x] **RISK-540** A session that rechecks every requirement on a new pinned version spends more than the $10 per session that VERIFICATION-105 allows.
   Category: verification, cost.
   Cause: the pin to 2.1.329 voids the Verified lines from other versions, so the three eval suites, the held-out run and the behavioural probes all rerun in one session.
   Event: 2026-11-24, claude 2.1.329: two of the suites cost $56.81 and $12.16, before the probes.
@@ -1200,10 +1200,10 @@
   Trigger: user-held: the user picks the cap for a version recheck.
   Owner: verification.
   Status: closed 2026-11-24: ADR-0199 (proposed) lets a goal that orders a version recheck set per-suite caps, and every paid run of this session stayed under its cap; rejecting ADR-0199 reopens this risk.
-  Verified: 2026-11-24, inspection of REQ-VERIFICATION-105 in `plans/rebuild/prd/verification.md`: its acceptance still names $10 per session, and its 2026-11-24 Evidence line names this session as over it.
-  Source: REQ-VERIFICATION-105; prd/goal.md.
-  Verified: 2026-11-24, inspection: `plans/rebuild/adr/0199-version-recheck-runs-under-per-suite-caps.md` reads `status: proposed`; REQ-VERIFICATION-105's acceptance names the exception, and its 2026-11-24 Verified line lists each paid run under its cap.
-  Verified: 2026-11-24, claude 2.1.329, `head -4 plans/rebuild/adr/0199-version-recheck-runs-under-per-suite-caps.md` and `grep -n 'ADR-0199' plans/rebuild/prd/verification.md`: ADR-0199 reads `status: proposed` and REQ-VERIFICATION-105 names the per-suite-cap exception with each paid suite under its cap, so the decision holds.
+  Verified: 2026-11-24, inspection of VERIFICATION-105 in `specs/evidence/verification.md`: its acceptance still names $10 per session, and its 2026-11-24 Evidence line names this session as over it.
+  Source: VERIFICATION-105; prd/goal.md.
+  Verified: 2026-11-24, inspection: `specs/decisions/0199-version-recheck-runs-under-per-suite-caps.md` reads `status: proposed`; VERIFICATION-105's acceptance names the exception, and its 2026-11-24 Verified line lists each paid run under its cap.
+  Verified: 2026-11-24, claude 2.1.329, `head -4 specs/decisions/0199-version-recheck-runs-under-per-suite-caps.md` and `grep -n 'ADR-0199' specs/evidence/verification.md`: ADR-0199 reads `status: proposed` and VERIFICATION-105 names the per-suite-cap exception with each paid suite under its cap, so the decision holds.
 
 - [x] **RISK-541** The eval-recipe CON-056 test fails inside a sandboxed session that loads claudetto from this tree, so `just verify` fails there with no defect in the code.
   Category: verification, test isolation.
@@ -1230,8 +1230,8 @@
   Existing controls: the patch tool runs in-process, outside the Bash sandbox, and edits the file.
   Response: mitigate.
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, the same rename prompt, n=3 per arm, each in its own scratch clone. Plugin loaded from the edited tree: `perl -pi` met the sandbox deny in 4 of 6 runs and one run also failed `git stash` on the same folder; patch made the edit in 6 of 6. Plugin loaded from a copy outside the tree: `perl -pi` made the edit at the first call in 3 of 3, no "Operation not permitted" line, and each run committed the 2-line rename on `dogfood/rename` ($0.06 to $0.07 a run).
-  Evidence: the dogfood setup caused it: `plans/rebuild/goal.md:38` dogfoods an installed claudetto, which runs from a copy, while these sessions loaded `--plugin-dir` from the tree they edited.
-  Evidence: the inplace refusal named the Edit tool, which `plugins/claudetto/hooks/pool/offer.ts:13` hides; it now names `mcp__claudetto__patch` (REQ-GUARDS-079).
+  Evidence: the dogfood setup caused it: `specs/evidence/rebuild-goal.md:38` dogfoods an installed claudetto, which runs from a copy, while these sessions loaded `--plugin-dir` from the tree they edited.
+  Evidence: the inplace refusal named the Edit tool, which `plugins/claudetto/hooks/pool/offer.ts:13` hides; it now names `mcp__claudetto__patch` (GUARDS-079).
   Status: closed 2026-11-24: `CONTRIBUTING.md` says to load claudetto from an installed copy or a copy outside the tree when working on this repo, and the measured runs above show that setup edits and commits with no sandbox deny.
   Verified: 2026-11-24, claude 2.1.329, the copy arm above: 3 of 3 runs committed the rename with 0 EPERM lines.
   Owner: verification.
@@ -1247,8 +1247,8 @@
   Response: mitigate.
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, `reports/2026-11-24-research/pin-2-1-329/handoff/run.sh`: with CLAUDE.md files off, vanilla handed off 0 of 3 and claudetto 4 of 6; two style lines left 1 of 6 each and a conduct clause 3 of 6, none wrote the types (`handoff/results.txt`).
   Evidence: the replies quoted the repo text as the reason ("only an interactive Claude Code session writes that folder"), and a fake-API print run with the watch variable wrote all three plugins' types (`// Written by Claude Code 2.1.329.`).
-  Status: closed 2026-11-24: `project-types` in `project.just` writes the types; `project-setup` and `project-typecheck` run it; `CONTRIBUTING.md` points at `just setup` (REQ-VERIFICATION-106). The style lines and the clause do not ship (ADR-0177).
-  Evidence: 2026-11-24, claude 2.1.329, sweep of plugin notices: three more handed the user a step. The builtins notice said to run `/reload-plugins` (now claudetto runs it, REQ-SETUP-011); the API-error notice (notice/stop.ts) ended "Reply to retry."; GIT_CONFLICT (git/instructions.ts) told the user which setting to change. The last two now state the fact only.
+  Status: closed 2026-11-24: `project-types` in `project.just` writes the types; `project-setup` and `project-typecheck` run it; `CONTRIBUTING.md` points at `just setup` (VERIFICATION-106). The style lines and the clause do not ship (ADR-0177).
+  Evidence: 2026-11-24, claude 2.1.329, sweep of plugin notices: three more handed the user a step. The builtins notice said to run `/reload-plugins` (now claudetto runs it, SETUP-011); the API-error notice (notice/stop.ts) ended "Reply to retry."; GIT_CONFLICT (git/instructions.ts) told the user which setting to change. The last two now state the fact only.
   Verified: 2026-11-24, claude 2.1.329, the same probe on branch fix/types-recipe with CLAUDE.md on: claudetto ran `just project-types` and got lint exit 0 in 3 of 3, with 0 handoffs; on main the same arm handed off 2 of 3 and linted 0 of 3.
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto 341 pass; `git grep -nE "ui\.(log|notify)" -- plugins/` leaves no notice that asks the user for a step claudetto can take, apart from the two captcha prompts (a captcha needs a person by design).
   Evidence: 2026-11-24, claude 2.1.329, Sonnet 5.5, dogfood on main 410679131 in a fresh worktree: an edit under `plugins/claudetto/hooks/web` was reported with lint and type check not run, because the shared lint text says a session writes the types. `reports/2026-11-24-research/pin-2-1-329/handoff/run.sh plugin <1-6>` with CLAUDE.md on: types written and lint rerun in 4 of 6; runs 2 and 6 committed unchecked and told the user to rerun the lint.

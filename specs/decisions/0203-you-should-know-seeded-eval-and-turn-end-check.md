@@ -19,7 +19,7 @@ The repo had no eval for that. A first live measurement scored 2 of 12 seeded po
 
 ## Decision Outcome
 
-Chosen: keep the prompt and add the turn-end check (hooks/check/step.ts, REQ-YOU-SHOULD-KNOW-076). Replay A/B of the prompt variants on the same forked requests gave no gain over the shipped prompt (base 9/12 hits and 0/6 false alarms; iteration 2 9/12 and 1/6; focus 7/12 and 0/6), so both prompt rewrites were reverted. The misses that remained were a timing gap: in a short turn, the consequential command ran at step 4 or 5, after the only check at step 3, and the end of a turn only rechecked a note that was already up.
+Chosen: keep the prompt and add the turn-end check (hooks/check/step.ts, YSK-076). Replay A/B of the prompt variants on the same forked requests gave no gain over the shipped prompt (base 9/12 hits and 0/6 false alarms; iteration 2 9/12 and 1/6; focus 7/12 and 0/6), so both prompt rewrites were reverted. The misses that remained were a timing gap: in a short turn, the consequential command ran at step 4 or 5, after the only check at step 3, and the end of a turn only rechecked a note that was already up.
 
 The eval lives in reports/2026-11-26-release/ysk-seeded: scripted main-agent steps run for real in a temp git repo, and only the plugin's side requests reach the model. Each run clears `seen` first. Three sets:
 
@@ -41,6 +41,6 @@ Verified: replay A/B, claude 2.1.329, 2026-11-26, the tune set, each propose req
 
 Verified: `claude plugin test plugins/claudetto-you-should-know`, claude 2.1.329, 2026-11-26: 119 pass, 0 fail. The turn-end test fails on the HEAD step.ts.
 
-Source: ADR-0177; ADR-0190; REQ-YOU-SHOULD-KNOW-074; user decision through AskUserQuestion, 2026-11-26 (build a seeded eval first and decide on its hit and false-alarm rates).
+Source: ADR-0177; ADR-0190; YSK-074; user decision through AskUserQuestion, 2026-11-26 (build a seeded eval first and decide on its hit and false-alarm rates).
 
 Decision: 2026-11-26, user decision through AskUserQuestion: claudetto-you-should-know ships, with no-note as the vanilla baseline and the seeded hit and false-alarm rates above.

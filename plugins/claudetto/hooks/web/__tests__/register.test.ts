@@ -51,7 +51,7 @@ const host = (
 	return { requested, files };
 };
 
-describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
+describe("TOOLS-020 TOOLS-021 registration", () => {
 	test("the built-in WebFetch and WebSearch are not offered, in any loop", async ($, on) => {
 		// Arrange
 		registerWeb(on);
@@ -130,7 +130,7 @@ describe("REQ-TOOLS-020 REQ-TOOLS-021 registration", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 REQ-TOOLS-021 served calls", () => {
+describe("TOOLS-020 TOOLS-021 served calls", () => {
 	test("web_fetch answers through the host's HTTP and saves the copy in the plugin's data folder", async ($, on) => {
 		// Arrange
 		registerWeb(on);

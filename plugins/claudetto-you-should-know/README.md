@@ -23,6 +23,6 @@ To disable it, run `/plugin` and turn off claudetto-you-should-know, or run `cla
 
 ## Release Notes
 
-- The propose prompt shrank from 33,204 bytes to 11,072 bytes (measured with empty lists). It is rewritten in the plugin's own words, with each rule stated positively and given its reason. The behaviour, the interface and the on-screen texts stay as the bundled plugin has them (REQ-YOU-SHOULD-KNOW-073).
-- An offer no longer stays up after later steps of the same turn make it untrue. While an untouched offer is shown, the plugin asks the model once at each later check step and once when the turn ends whether anything since the offer appeared contradicts it, and withdraws the offer on a DROP answer. An unanswered request, an error or an unclear answer keeps the offer; an explained note is never withdrawn (REQ-YOU-SHOULD-KNOW-075).
-- A turn that ends after steps no check has seen now gets one check at its end. Before, a risky command at step 4 or 5 of a short turn ran after the only check, at step 3, and got no note (REQ-YOU-SHOULD-KNOW-076).
+- The propose prompt shrank from 33,204 bytes to 11,072 bytes (measured with empty lists). It is rewritten in the plugin's own words, with each rule stated positively and given its reason. The behaviour, the interface and the on-screen texts stay as the bundled plugin has them (YSK-073).
+- An offer no longer stays up after later steps of the same turn make it untrue. While an untouched offer is shown, the plugin asks the model once at each later check step and once when the turn ends whether anything since the offer appeared contradicts it, and withdraws the offer on a DROP answer. An unanswered request, an error or an unclear answer keeps the offer; an explained note is never withdrawn (YSK-075).
+- A turn that ends after steps no check has seen now gets one check at its end. Before, a risky command at step 4 or 5 of a short turn ran after the only check, at step 3, and got no note (YSK-076).

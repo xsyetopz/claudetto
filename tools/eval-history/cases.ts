@@ -34,7 +34,7 @@ const DISPUTE_PACKAGE = `{
 `;
 
 /**
- * notes.txt of REQ-REPLY-145, as CRLF lines with blank lines, trailing spaces, accents, an em dash
+ * notes.txt of REPLY-145, as CRLF lines with blank lines, trailing spaces, accents, an em dash
  * and emoji. The header holds a stale count (418) that is not any true size of the file.
  */
 export const NOTES_LINES: readonly string[] = [
@@ -67,7 +67,7 @@ rm -f "$tmp"
 echo "normalized $file"
 `;
 
-/** REQ-REPLY-145: a count after several edits and a whitespace-rewriting script. */
+/** REPLY-145: a count after several edits and a whitespace-rewriting script. */
 export const COUNT_CASE: CaseRepo = {
 	crlf: ["notes.txt"],
 	executable: ["scripts/normalize-notes.sh"],
@@ -118,7 +118,7 @@ export const CORRECTION_CASE: CaseRepo = {
 		"tiny-cart is a cart-pricing library: one module per concern in src/ with a matching test file in test/. config.json sets the demo server to port 8080 on 127.0.0.1 and the README agrees. notes.txt is the 0.2.0 release checklist."
 };
 
-/** REQ-REPLY-146: the app port is spread over config.json, docker-compose.yml and .env.example. */
+/** REPLY-146: the app port is spread over config.json, docker-compose.yml and .env.example. */
 export const DISPUTE_CASE: CaseRepo = {
 	crlf: [],
 	executable: [],

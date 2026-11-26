@@ -4,7 +4,7 @@ import { TOOL_FULL_NAME } from "../texts";
 import { registerPatch } from "../tool";
 import { CWD, disk, refusal, wireDisk, wrap } from "./harness";
 
-describe("REQ-TOOLS-012 Add File refuses an existing path", () => {
+describe("TOOLS-012 Add File refuses an existing path", () => {
 	test("an Add File over an existing file refuses and writes nothing", async ($, on) => {
 		// Arrange
 		const d = disk({ [`${CWD}/notes.txt`]: "Header — kept\r\n[x] done\r\n" });

@@ -5,7 +5,7 @@ import { ARTICLE, fakeDeps, fakeWeb, html, RENDERED, SHELL } from "./fixtures";
 
 const PAGE = "https://news.test/post";
 
-describe("REQ-TOOLS-020 direct path", () => {
+describe("TOOLS-020 direct path", () => {
 	test("returns the main content with a browser User-Agent", async () => {
 		// Arrange
 		const web = fakeWeb({ [PAGE]: html(ARTICLE) });
@@ -99,7 +99,7 @@ describe("REQ-TOOLS-020 direct path", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 size cap, saved copy and paging", () => {
+describe("TOOLS-020 size cap, saved copy and paging", () => {
 	const long = `<article><h1>Long</h1>${Array.from({ length: 60 }, (_, i) => `<p>Paragraph ${i} ${"word ".repeat(20)}</p>`).join("")}</article>`;
 
 	test("caps the reply, saves the full Markdown and names the path and next offset", async () => {
@@ -161,7 +161,7 @@ describe("REQ-TOOLS-020 size cap, saved copy and paging", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 headless fallback", () => {
+describe("TOOLS-020 headless fallback", () => {
 	test("a 403 falls back to the Chrome render", async () => {
 		// Arrange
 		const web = fakeWeb({ [PAGE]: html("Forbidden", 403) });

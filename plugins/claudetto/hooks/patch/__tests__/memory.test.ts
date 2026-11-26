@@ -7,7 +7,7 @@ import { disk, refusal, wireDisk, wrap } from "./harness";
 const FOLDER = "/home/u/.claude/projects/-repo/memory";
 const STOCK = `You have a persistent file-based memory at \`${FOLDER}/\`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).`;
 
-describe("REQ-TOOLS-001 auto-memory under patch", () => {
+describe("TOOLS-001 auto-memory under patch", () => {
 	test("the memory section points writes at patch when patch is offered and stays as it came when not", async ($, on) => {
 		// Arrange
 		wireDisk(on, disk({}));

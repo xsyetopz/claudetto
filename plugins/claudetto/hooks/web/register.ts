@@ -65,7 +65,7 @@ const WEB_TOOLS = new RegExp(
 /**
  * Whether a subagent type is the Hermes agent, bare or namespaced by its
  * plugin (`claudetto:Hermes`). Only Hermes gathers online intelligence
- * (REQ-TOOLS-005).
+ * (TOOLS-005).
  */
 const isHermes = (type: string | undefined): boolean =>
 	type === "Hermes" || type?.endsWith(":Hermes") === true;
@@ -133,7 +133,7 @@ export async function startWeb(
 
 /**
  * Serves `web_fetch` and `web_search` and hides the built-in WebFetch and
- * WebSearch from every loop (REQ-TOOLS-020, REQ-TOOLS-021).
+ * WebSearch from every loop (TOOLS-020, TOOLS-021).
  *
  * @param on The engine's hook registrar.
  */

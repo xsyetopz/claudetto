@@ -52,7 +52,7 @@
   Owner: you-should-know
   Status: mitigated 2026-11-19 (issue #46). Live check: two absence cards in dogfood sessions after the fix, and both were true (0 false of 2).
   Verified: dogfood, claude 2.1.327, 2026-11-19, clone at 26cc57577, session 1bd6ee38: the card "The README never mentions the includeGitInstructions option" followed a grep of the whole README for each userConfig key; grep -c includeGitInstructions plugins/claudetto/README.md in that clone -> 0. Sample of one; the count continues in later dogfood runs.
-  Verified: dogfood, claude 2.1.327, 2026-11-19, clone at ba45d6dcf, same isolated config: during a register audit the card "Many risk entries have no Likelihood or Status line, and some have two Status lines" fired; a parse of plans/rebuild/risk-register/*.md in that tree -> 102 entries with neither line (each a one-line "Moved Out as OUT-N" entry) and 42 with two or more Status lines. Second sample; 0 false of 2.
+  Verified: dogfood, claude 2.1.327, 2026-11-19, clone at ba45d6dcf, same isolated config: during a register audit the card "Many risk entries have no Likelihood or Status line, and some have two Status lines" fired; a parse of specs/risks/*.md in that tree -> 102 entries with neither line (each a one-line "Moved Out as OUT-N" entry) and 42 with two or more Status lines. Second sample; 0 false of 2.
   Verified: claude 2.1.327, 2026-11-19, `claude plugin test plugins/claudetto-you-should-know`: 160 pass, 0 fail.
   Verified: 2026-11-24, claude 2.1.329, `claude plugin test .` in plugins/claudetto-you-should-know: 172 pass, 0 fail. The dogfood samples were not rerun.
   Source: observed in a dogfood session on 2.1.327, 2026-11-19
@@ -92,7 +92,7 @@
   Impact: 2
   Existing controls: The person can dismiss the card, and it clears after two prompts.
   Response: mitigate
-  Actions: Recheck the untouched offer at later check steps and at the main agent's turn end with one fork that answers KEEP or DROP, failing open (REQ-YOU-SHOULD-KNOW-075).
+  Actions: Recheck the untouched offer at later check steps and at the main agent's turn end with one fork that answers KEEP or DROP, failing open (YSK-075).
   Trigger: A card whose line a later step of the same turn contradicted.
   Owner: you-should-know
   Status: closed 2026-11-21. `hooks/check/recheck.ts` withdraws the offer on DROP; every fault keeps it.

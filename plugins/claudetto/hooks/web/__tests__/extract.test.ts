@@ -6,7 +6,7 @@ import { ARTICLE, CHALLENGE, RENDERED, SHELL } from "./fixtures";
 
 const URL = "https://news.test/post";
 
-describe("REQ-TOOLS-020 extraction", () => {
+describe("TOOLS-020 extraction", () => {
 	test("drops nav, header, footer, aside, script and style", () => {
 		// Arrange / Act
 		const { markdown } = extractPage(ARTICLE, URL);
@@ -88,7 +88,7 @@ describe("REQ-TOOLS-020 extraction", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 detection", () => {
+describe("TOOLS-020 detection", () => {
 	test("a script-only shell needs a render and the rendered DOM does not", () => {
 		// Arrange
 		const shell = extractPage(SHELL, URL).markdown;

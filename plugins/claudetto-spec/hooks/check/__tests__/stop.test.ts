@@ -61,7 +61,7 @@ function repo(
 	return probe;
 }
 
-test("REQ-SPEC-016 a hard finding blocks the main agent's first Stop", async ($, on) => {
+test("SPEC-016 a hard finding blocks the main agent's first Stop", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: TEST_ORPHAN });
 
@@ -72,7 +72,7 @@ test("REQ-SPEC-016 a hard finding blocks the main agent's first Stop", async ($,
 	expect(result.block).toEqual(expect.stringContaining("A-9"));
 });
 
-test("REQ-SPEC-016 a Stop that follows a block passes, so the gate cannot loop", async ($, on) => {
+test("SPEC-016 a Stop that follows a block passes, so the gate cannot loop", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: TEST_ORPHAN });
 
@@ -83,7 +83,7 @@ test("REQ-SPEC-016 a Stop that follows a block passes, so the gate cannot loop",
 	expect(result.block).toBeUndefined();
 });
 
-test("REQ-SPEC-016 a subagent's Stop is never blocked", async ($, on) => {
+test("SPEC-016 a subagent's Stop is never blocked", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: TEST_ORPHAN });
 
@@ -97,7 +97,7 @@ test("REQ-SPEC-016 a subagent's Stop is never blocked", async ($, on) => {
 	expect(result.block).toBeUndefined();
 });
 
-test("REQ-SPEC-016 a repo without specs/ runs no git and does not block", async ($, on) => {
+test("SPEC-016 a repo without specs/ runs no git and does not block", async ($, on) => {
 	// Arrange
 	const probe = repo(on, { specs: false, test: TEST_ORPHAN });
 
@@ -109,7 +109,7 @@ test("REQ-SPEC-016 a repo without specs/ runs no git and does not block", async 
 	expect(probe.runs).toBe(0);
 });
 
-test("REQ-SPEC-016 advice findings alone do not block", async ($, on) => {
+test("SPEC-016 advice findings alone do not block", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: "test('nothing', () => {});" });
 
@@ -120,7 +120,7 @@ test("REQ-SPEC-016 advice findings alone do not block", async ($, on) => {
 	expect(result.block).toBeUndefined();
 });
 
-test("REQ-SPEC-016 a clean repo does not block", async ($, on) => {
+test("SPEC-016 a clean repo does not block", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: TEST_CLEAN });
 
@@ -131,7 +131,7 @@ test("REQ-SPEC-016 a clean repo does not block", async ($, on) => {
 	expect(result.block).toBeUndefined();
 });
 
-test("REQ-SPEC-016 a git failure fails open", async ($, on) => {
+test("SPEC-016 a git failure fails open", async ($, on) => {
 	// Arrange
 	repo(on, { specs: true, test: TEST_ORPHAN, gitFails: true });
 
@@ -142,7 +142,7 @@ test("REQ-SPEC-016 a git failure fails open", async ($, on) => {
 	expect(result.block).toBeUndefined();
 });
 
-test("REQ-SPEC-016 a thrown error fails open and is logged", async ($, on) => {
+test("SPEC-016 a thrown error fails open and is logged", async ($, on) => {
 	// Arrange
 	const probe = repo(on, {
 		specs: true,
@@ -158,7 +158,7 @@ test("REQ-SPEC-016 a thrown error fails open and is logged", async ($, on) => {
 	expect(probe.logs.some((m) => m.includes("Stop gate failed"))).toBe(true);
 });
 
-test("REQ-SPEC-016 a reworded requirement's line tells the agent to restore it unless the user named the change", async ($, on) => {
+test("SPEC-016 a reworded requirement's line tells the agent to restore it unless the user named the change", async ($, on) => {
 	// Arrange
 	repo(on, {
 		specs: true,

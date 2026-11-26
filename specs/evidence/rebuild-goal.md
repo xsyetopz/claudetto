@@ -1,8 +1,8 @@
 # Goal
 
-Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `plans/rebuild/`, on vanilla Claude Code 2.1.329 only (ADR-0198), interactive `claude` first, `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
+Rebuild claudetto, three Claude Code plugins (`claudetto`, `claudetto-spec`, `claudetto-you-should-know`), one verified slice at a time merged to `main` (ADR-0196), from the plan in `specs/`, on vanilla Claude Code 2.1.329 only (ADR-0198), interactive `claude` first, `claude -p` second. `claudetto-spec` replaces `claudetto-openspec` (ADR-0192); plugin evals follow ADR-0193.
 
-Read `plans/rebuild/README.md` first. It maps the layout, routing, item format and attribution. Then:
+Read `specs/evidence/layout.md` first. It maps the layout, routing, item format and attribution. Then:
 
 - `prd/README.md`: purpose, scope, and what is out;
 - `prd/<block>.md`: requirements, each with its acceptance check;
@@ -17,7 +17,7 @@ The product:
 - `claudetto-you-should-know` fully recreates `cc-plugin-you-should-know@builtin`. Its prompt is in `reference/you-should-know-prompt.md`.
 - Every `@builtin` plugin gets a runtime-enforced disable.
 - Handover replaces core compaction by default: the `session.compact` hook returns it, with no summarizer call (CTX-843). Renewal comes at a task boundary above 70k, never on a clock (ADR-0178). Under `-p` core refuses `$.session.compact`, so the driver renews (ADR-0184). `/clear` stays and writes a handover first. `CLAUDETTO_*` knobs mirror the core compaction knobs.
-- Root and subagent prompt-cache hits hold at 98-99% (REQ-COST-040).
+- Root and subagent prompt-cache hits hold at 98-99% (COST-040).
 - A component ships only when it beats vanilla Claude Code plus the model on a measured check (ADR-0177).
 - One `perl` call via `Bash`, or a perl tool, replaces many `Edit` calls.
 - Treat each agent fault, sycophancy included, as a medical error: cure it with one general fix across subsystems, never a one-off patch; record it in `risk-register/<block>.md`.
@@ -40,7 +40,7 @@ Rules:
 
 Done means:
 
-- Every `- [ ]` in `plans/rebuild/` is ticked or moved to `prd/README.md` scope Out with a reason.
+- Every `- [ ]` in `specs/` is ticked or moved to `prd/README.md` scope Out with a reason.
 - `claude plugin test` passes.
 - A dogfood session on vanilla 2.1.329 with claudetto installed shows no open risk-register item at Likelihood 3 or higher.
 

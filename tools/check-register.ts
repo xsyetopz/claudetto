@@ -8,13 +8,13 @@
 // An item runs from its `- [ ] **RISK-N**` or `- [x] **RISK-N**` line to the next item. Its status is the text after its
 // last `Status:`, inline ones included (a Status often follows `Owner: X.` on the same line). Settled statuses start
 // with closed, accepted, mitigated, transferred or moved Out; an item with no Status is settled only when its title
-// reads "Moved Out as OUT-N", and then its OUT entry in prd/README.md must give a not-shipped reason.
+// reads "Moved Out as OUT-N", and then its OUT entry in specs/evidence/README.md must give a not-shipped reason.
 // Usage: bun tools/check-register.ts [register-dir] [out-file]   Exits 1 when any item is listed.
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const dir = process.argv[2] ?? "plans/rebuild/risk-register";
-const outFile = process.argv[3] ?? join(dir, "..", "prd", "README.md");
+const dir = process.argv[2] ?? "specs/risks";
+const outFile = process.argv[3] ?? join(dir, "..", "evidence", "README.md");
 const SETTLED = /^\s*(closed|accepted|mitigated|transferred|moved out)/iu;
 const MOVED_TITLE = /^\s*Moved Out as (OUT-\d+)/u;
 const NOT_SHIPPED =

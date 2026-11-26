@@ -2,21 +2,21 @@
 
 ## Requirements Overview
 
-The requirements are in [the PRD](../prd/README.md): purpose, scope, and one file per block.
+The requirements are in [the PRD](../evidence/README.md): purpose, scope, and one file per block.
 
 | Block | Requirements |
 | --- | --- |
-| [`kernel`](../prd/kernel.md) | 28 |
-| [`guards`](../prd/guards.md) | 72 |
-| [`handover`](../prd/handover.md) | 71 |
-| [`delegation`](../prd/delegation.md) | 63 |
-| [`reply`](../prd/reply.md) | 137 |
-| [`cost`](../prd/cost.md) | 43 |
-| [`setup`](../prd/setup.md) | 64 |
-| [`edit`](../prd/edit.md) | 2 |
-| [`openspec`](../prd/openspec.md) | 3 |
-| [`you-should-know`](../prd/you-should-know.md) | 75 |
-| [`verification`](../prd/verification.md) | 92 |
+| [`kernel`](../evidence/kernel.md) | 28 |
+| [`guards`](../evidence/guards.md) | 72 |
+| [`handover`](../evidence/handover.md) | 71 |
+| [`delegation`](../evidence/delegation.md) | 63 |
+| [`reply`](../evidence/reply.md) | 137 |
+| [`cost`](../evidence/cost.md) | 43 |
+| [`setup`](../evidence/setup.md) | 64 |
+| [`edit`](../evidence/edit.md) | 2 |
+| [`openspec`](../evidence/spec.md) | 3 |
+| [`you-should-know`](../evidence/you-should-know.md) | 75 |
+| [`verification`](../evidence/verification.md) | 92 |
 
 ## Quality Goals
 

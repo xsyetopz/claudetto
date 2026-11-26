@@ -4,7 +4,7 @@ export const TOOL_NAME = "patch";
 /** The full tool name a `tool.run` or `tool.check` hook matches. */
 export const TOOL_FULL_NAME = "mcp__claudetto__patch";
 
-/** What the model reads about the tool; at most 200 characters (REQ-TOOLS-003). */
+/** What the model reads about the tool; at most 200 characters (TOOLS-003). */
 export const TOOL_DESCRIPTION =
 	"Create, update, move or delete files, many per call. *** Begin Patch, then *** Add/Update/Delete File: path with @@ anchor, ' ' context, -old, +new lines (no line numbers), then *** End Patch.";
 

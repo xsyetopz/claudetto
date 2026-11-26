@@ -19,6 +19,6 @@ Chosen: Keep the style short with a lower bound, as the user answered. No numeri
 
 ## Consequences
 
-No manifest test holds a floor, and [OUT-019](../prd/README.md) drops the 1,373 cap. The decision is revisited when a measured check (ADR-0177) shows that a shorter Concise.md changes reply behavior; the floor is then the shortest length that kept the behavior.
+No manifest test holds a floor, and [OUT-019](../evidence/README.md) drops the 1,373 cap. The decision is revisited when a measured check (ADR-0177) shows that a shorter Concise.md changes reply behavior; the floor is then the shortest length that kept the behavior.
 
 Source: ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:6480; ~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/65690c8a-827e-4fe5-888a-4269ee65dbd4.jsonl:7889 (the answer is relayed in the handoff User's Words).

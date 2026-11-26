@@ -21,7 +21,7 @@ Chosen: an automatic garbage collector across the system. The user rejected the 
 - Schedule: one collection at session start, at most once per 24 hours, plus one whenever the data volume falls below 15% free. The run is a background process; it never blocks a turn and never raises a hook error.
 - In-use test, per kind. An item that fails any check is skipped, not queued:
   - Files and folders: no open handle (`lsof +D` run by the hook process, which is not inside the Bash sandbox; a sandboxed `lsof` sees only its own children), no live Claude Code session with its cwd inside, and no change within the kind's age limit.
-  - Agent worktrees (`.claude/worktrees`): unlocked, `git status` clean, every commit reachable from a remote branch (REQ-GUARDS-027), and no live session inside.
+  - Agent worktrees (`.claude/worktrees`): unlocked, `git status` clean, every commit reachable from a remote branch (GUARDS-027), and no live session inside.
   - Container engines, through their own CLI: `docker image prune -a`, `docker builder prune -a` and `docker volume prune -a`. These touch only images and volumes that no container references, in any state. A named volume is removed only after claudetto has seen it unattached for 7 days, because Docker records no last-use time; claudetto keeps that record itself. Containers are never removed. The socket of OrbStack and Docker Desktop is outside the Bash sandbox, so the collector runs in the hook process.
   - Claude Code versions: every version other than the running one and the one before it.
 - Scope: the kinds above, plus project build output (`.build`, `target`, `node_modules` of projects untouched for 30 days), `$TMPDIR` folders left by test and probe runs (`TemporaryDirectory.*`, `claude-run`, `ccdocs-cli-test`, `surface`, `bedrock-test`, `mutant`), toolchain caches (Gradle, rustup toolchains, Bun, Konan, Xcode `iOS DeviceSupport`), and stale code-sign clones.
@@ -36,6 +36,6 @@ Measured run, 2026-11-18, by the user's instruction: the three prune commands fr
 - Removing a cache costs a re-download or a rebuild; the log names which.
 - A removed Docker volume is unrecoverable. This is the strongest risk of the decision: a database volume of a compose project that has been idle for 7 days goes away. The 7-day unattached rule and the containers-are-kept rule bound it; a project that needs a volume to outlive that keeps a stopped container that references it.
 - A system-wide run reads paths outside the project; it reads sizes and handles only, never file contents.
-- REQ-GUARDS-072 governs commands the agent runs. The collector is a claudetto process acting on the user's standing instruction, so it is not an agent command.
+- GUARDS-072 governs commands the agent runs. The collector is a claudetto process acting on the user's standing instruction, so it is not an agent command.
 
 Source: user decision, 2026-11-18 (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:671 and :3505); arc42/03_context_and_scope/machine.md CTX-831 to CTX-834; CTX-544; Docker prune run, 2026-11-18 (`docker image prune -a -f`, `docker builder prune -a -f`, `docker volume prune -a -f`, `df -h /System/Volumes/Data`).

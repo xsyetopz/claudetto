@@ -6,7 +6,7 @@ import { fault } from "../shared/fault";
 const BARRED = /fable|mythos|opus/iu;
 
 /**
- * Refuses a subagent spawn that names Fable, Mythos or Opus (REQ-DELEGATION-026).
+ * Refuses a subagent spawn that names Fable, Mythos or Opus (DELEGATION-026).
  * The stock Agent tool's `model` enum offers `opus` and `fable`, so the lead can
  * pick either; subagents run on Sonnet or Haiku.
  */

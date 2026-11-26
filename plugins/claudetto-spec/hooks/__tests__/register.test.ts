@@ -10,7 +10,7 @@ const out = (stdout: string) => ({
 	}
 });
 
-test("REQ-SPEC-001 the tool registers and serves a result", async ($, on) => {
+test("SPEC-001 the tool registers and serves a result", async ($, on) => {
 	// Arrange
 	const registered: string[] = [];
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
@@ -40,7 +40,7 @@ test("REQ-SPEC-001 the tool registers and serves a result", async ($, on) => {
 	expect(result).toEqual(expect.stringContaining('"uncovered": []'));
 });
 
-test("REQ-SPEC-001 the tool's description fits the 200-character tool bound", async ($, on) => {
+test("SPEC-001 the tool's description fits the 200-character tool bound", async ($, on) => {
 	// Arrange
 	const descriptions: string[] = [];
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
@@ -57,7 +57,7 @@ test("REQ-SPEC-001 the tool's description fits the 200-character tool bound", as
 	expect(descriptions[0]?.length).toBeLessThanOrEqual(200);
 });
 
-test("REQ-SPEC-012 git runs with quotePath off and reads HEAD and index texts", async ($, on) => {
+test("SPEC-012 git runs with quotePath off and reads HEAD and index texts", async ($, on) => {
 	// Arrange
 	const argvs: (readonly string[])[] = [];
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));

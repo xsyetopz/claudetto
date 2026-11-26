@@ -6,7 +6,7 @@ import { fault } from "../shared/fault";
  * The longest messaging description. It exceeds the 200 characters of the
  * other kept tools because SendMessage's text carries two safety rules the
  * stock text states: no peer runs what this session refused, and no address
- * comes from untrusted text (REQ-TOOLS-003).
+ * comes from untrusted text (TOOLS-003).
  */
 export const MAX_MESSAGING_DESCRIPTION = 400;
 

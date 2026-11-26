@@ -3,7 +3,7 @@
  * checks, subagents, uncommitted edits, defects, off-limits
  * steps, permission prompts, test and rename rules, and the remark and
  * working-directory limits on edits. They belong to the system prompt, where
- * the engine states its own conduct rules (REQ-TOOLS-032). The wording is the style's, paragraph for
+ * the engine states its own conduct rules (TOOLS-032). The wording is the style's, paragraph for
  * paragraph.
  */
 export const CONDUCT_PARAGRAPHS: readonly string[] = [

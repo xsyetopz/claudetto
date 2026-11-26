@@ -34,7 +34,7 @@ export const DEFAULTS: Json = {
 	outputStyle: "claudetto:Claudetto",
 	showClearContextOnPlanAccept: true,
 	// One commit trailer and never a Signed-off-by, as the Linux kernel's rules for AI agents ask, in the one form
-	// GitHub and GitLab credit to an account: GitHub links noreply@anthropic.com to the `claude` login (REQ-GUARDS-063).
+	// GitHub and GitLab credit to an account: GitHub links noreply@anthropic.com to the `claude` login (GUARDS-063).
 	// A PR body credits no one, so the PR line only discloses the tool.
 	attribution: { commit: CO_AUTHOR, pr: "Assisted-by: Claude Code" },
 	// claudetto's shorter git block replaces the builtin one; the builtin switch also drops the attribution reminder, which claudetto's block carries (hooks/git/instructions.ts).

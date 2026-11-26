@@ -3,8 +3,8 @@ import type { On } from "claude-code";
 import { fault } from "../shared/fault";
 
 /**
- * What the model reads when an in-place edit is refused (REQ-GUARDS-079). It names `patch`, the
- * edit tool claudetto offers, because the Edit tool is hidden (REQ-TOOLS-001) and a reason naming
+ * What the model reads when an in-place edit is refused (GUARDS-079). It names `patch`, the
+ * edit tool claudetto offers, because the Edit tool is hidden (TOOLS-001) and a reason naming
  * it sent the model on to `perl -pi`, which the sandbox refuses in a loaded plugin's folder (RISK-542).
  */
 export const REASON =
@@ -23,7 +23,7 @@ const QUOTED = /'[^']*'|"(?:[^"\\]|\\.)*"/gu;
  * grouping bracket or a loop keyword, or behind a wrapper such as `xargs`,
  * `find -exec` or `env`. The flag is `--in-place` or a cluster that ends in `i`
  * and holds only letters sed takes with it (`-i`, `-Ei`, `-ni`). Perl is not
- * matched: REQ-EDIT-001 allows `perl -0pi -e` and notes the diff stat.
+ * matched: EDIT-001 allows `perl -0pi -e` and notes the diff stat.
  */
 export const IN_PLACE =
 	/(?:^|[;&|({\n]|\b(?:do|then|else|exec|sudo|nohup|time|\w+=\S*|env(?:\s+\w+=\S*)*|xargs(?:\s+-\S+(?:\s+\d+)?)*(?:\s+env(?:\s+\w+=\S*)*)?)|-exec)\s*(?:\S*\/)?sed\s(?:[^;&|\n]*?\s)?(?:-[nErsuz]*i|--in-place)/u;
@@ -41,7 +41,7 @@ export const editsInPlace = (command: string): boolean =>
 
 /**
  * Refuses an in-place sed edit with a pointer to the patch tool
- * (REQ-GUARDS-079). The check runs on the model's own command, before any
+ * (GUARDS-079). The check runs on the model's own command, before any
  * rewrite and with no dependence on a hook's best-effort `if` filter, so a
  * command that Claude Code cannot split is judged like any other.
  */

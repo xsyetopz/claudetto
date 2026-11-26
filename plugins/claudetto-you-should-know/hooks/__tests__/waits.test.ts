@@ -19,7 +19,7 @@ const textOf = async (band: {
 const fresh = (): Box => ({ text: "", filled: [], toasts: [], forks: 0 });
 
 test(
-	"Learn more with no shipped explanation shows One moment… until the explanation arrives (REQ-YOU-SHOULD-KNOW-044)",
+	"Learn more with no shipped explanation shows One moment… until the explanation arrives (YSK-044)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange
@@ -51,7 +51,7 @@ test(
 );
 
 test(
-	"a refused off fill shows the turn-off failure with OK, and OK clears it (REQ-YOU-SHOULD-KNOW-044)",
+	"a refused off fill shows the turn-off failure with OK, and OK clears it (YSK-044)",
 	MOUNT,
 	async ($, on) => {
 		// Arrange

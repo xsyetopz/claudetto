@@ -50,7 +50,7 @@ export const noGit =
 	"Diff stat unavailable outside git; the edited files may have changed.";
 
 /**
- * Shows what a perl in-place edit changed (REQ-EDIT-002). One perl call
+ * Shows what a perl in-place edit changed (EDIT-002). One perl call
  * replaces many Edit calls, and the diff stat makes a typo'd regex that
  * changed nothing, or too much, visible in the same turn.
  */

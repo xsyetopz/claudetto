@@ -56,11 +56,11 @@ async function awaitLoad($: EngineInterface, text: string): Promise<void> {
 }
 
 /**
- * Repairs builtin drift (REQ-SETUP-011) and applies claudetto's own
+ * Repairs builtin drift (SETUP-011) and applies claudetto's own
  * construction to user settings once per fill version, in one read and one
  * write. Core allows one unmatched `session.start` registration per plugin, so
  * both share this hook, and so does the web tools' registration
- * (REQ-TOOLS-020).
+ * (TOOLS-020).
  */
 export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
