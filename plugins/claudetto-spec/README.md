@@ -2,6 +2,21 @@
 
 A spec-first loop for Claude Code: requirements get IDs, tests cite the IDs, failing tests are staged before the implementation, and a tool, `spec_check`, reports coverage from the files.
 
+## Results
+
+Measured on Claude Code 2.1.329 with Haiku 5.5 at high effort and a 100,000-token window, each case run 3 times per arm against vanilla Claude Code (2026-11-26, commit 425e0af0d).
+
+| Suite | Arm | Score | Cost | Turns |
+| --- | --- | --- | --- | --- |
+| `just eval claudetto-spec` (14 cases) | claudetto-spec | 0.967 | $0.29 | 297 |
+| | vanilla | 0.732 | $0.28 | 348 |
+| `just eval-holdout claudetto-spec` | claudetto-spec | 1.000 | $0.14 | 170 |
+| | vanilla | 0.586 | $0.11 | 184 |
+
+claudetto-spec scores higher in fewer turns and costs more: $0.01 more on the suite and $0.03 more on the holdout.
+
+Source: `reports/2026-11-26-release/results.md`.
+
 ## Install
 
 ```sh
