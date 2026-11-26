@@ -2,6 +2,19 @@
 
 claudetto is a Claude Code 2.1.329 plugin that keeps only what measurably beats vanilla Claude Code.
 
+## Results
+
+Measured on Claude Code 2.1.329 with Haiku 5.5 at high effort and a 100,000-token window, each case run 3 times per arm against vanilla Claude Code on the same task (2026-11-26, commit 425e0af0d).
+
+| Suite | Arm | Score | Cost | Turns | Input tokens | Output tokens | Tool calls |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `just eval claudetto` (24 cases) | claudetto | 0.956 | $0.42 | 459 | 7,444,141 | 269,701 | 367 |
+| | vanilla | 0.795 | $2.19 | 587 | 8,950,936 | 317,541 | 494 |
+| `just eval-holdout claudetto` | claudetto | 0.963 | $0.14 | 187 | | | |
+| | vanilla | 0.914 | $0.18 | 243 | | | |
+
+Source: `reports/2026-11-26-release/results.md`. The holdout result keeps scores, cost and turns only (ADR-0193), so its token columns are empty.
+
 ## Install
 
 ```sh
