@@ -473,3 +473,22 @@
   Verified: 2026-11-20, `deny network-outbound` over the 171 dogfood transcripts on this machine: 4 sessions, `registry.npmjs.org` 2 (4ccbdaa3, 9c44572c) and `api.github.com` 2 (69f630f9, d2ace84e); three recovered with one `allowed_domains` re-run, one through a later call, none with the sandbox off.
   Verified: 2026-11-20, issue #83: gh 2.104.0 also calls `cafe.github.com`, denied in 2 sessions (ba07e0d8 and the session driving the goal). `GH_TELEMETRY=log gh issue view 64 --json state` shows the payload is gh's telemetry (`command_invocation` with device ID, command, flags and agent); the command still exited 0 with its data, so the denial changes no result and keeps that data on the machine.
   Source: issues #78, #81 and #83.
+
+- [x] **RISK-561** claudetto's settings fill cut every skill description in the listing to 60 characters, so skills stopped loading on their own.
+  - Category: workflow.
+  - Cause: `skillListingMaxDescChars: 60` in `hooks/settings/defaults.ts`, against ADR-0023's 200; the
+    trigger of a skill whose description opens with other text fell past the cut.
+  - Event: dogfood on main 15cfaabe9, 2026-11-26, claude 2.1.329, Haiku 5.5, a fresh headless feature
+    request with claudetto and claudetto-spec: 0 of 8 runs loaded the spec skill; claudetto-spec alone
+    3 of 6.
+  - Consequence: the user's own skills and claudetto-spec's loop do not start when they should.
+  - Likelihood: 4
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: the fill sets 200, as ADR-0023 decided; the fill replaces the 60 it wrote before.
+  - Trigger: a skill whose trigger text sits past the cap.
+  - Status: mitigated 2026-11-26.
+  - Verified: 2026-11-26, claude 2.1.329, Haiku 5.5, the same prompt 6 times with both plugins: the
+    skill loaded in 4 of 6, all 6 runs' tests pass; `claude plugin test plugins/claudetto` 362 pass.
+  - Source: ADR-0023; user decision through AskUserQuestion, 2026-11-26 (200 characters).

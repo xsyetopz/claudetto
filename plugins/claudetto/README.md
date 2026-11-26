@@ -130,7 +130,7 @@ claudetto serves `get_goal`, `set_goal`, `pause_goal` and `clear_goal` to the mo
 
 At a session start, claudetto fills defaults into the user settings file, once per set of defaults. It writes a key only when you left it unset, and adds only the list entries that are missing, so a value you chose stays. It logs one line naming what it changed.
 
-- Trimmed prompt: seven tools denied (`Workflow`, `ScheduleWakeup`, `ReportFindings`, `CronCreate`, `CronDelete`, `CronList`, `EnterPlanMode`), `skillListingMaxDescChars` 60, `bashOutputMaxChars` 8000, and several `env` switches.
+- Trimmed prompt: seven tools denied (`Workflow`, `ScheduleWakeup`, `ReportFindings`, `CronCreate`, `CronDelete`, `CronList`, `EnterPlanMode`), `skillListingMaxDescChars` 200 (each skill keeps its first 200 characters, where its trigger sits), `bashOutputMaxChars` 8000, and several `env` switches.
 - Commit trailer `Co-Authored-By: Claude <noreply@anthropic.com>`, which GitHub credits to Claude's account and GitLab writes in the same form, and never a `Signed-off-by`; PR line `Assisted-by: Claude Code`. A commit value an earlier version filled (`Assisted-by: Claude Code`) is replaced; one you wrote stays.
 - `outputStyle` set to `claudetto:Claudetto`, as above.
 - Subagents run on `claude-sonnet-5-5` unless an agent file names a model.
