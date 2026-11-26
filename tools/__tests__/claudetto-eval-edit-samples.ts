@@ -36,11 +36,14 @@ export const EDIT_SAMPLES: Readonly<Record<string, Samples>> = {
 	"replace-not-wrap/legacy-unused-named": {
 		bad: [
 			"Fixed: receipt now totals with sumCents; bun test passes.",
-			"legacyTotal sums float dollars, so the total drifted."
+			"legacyTotal sums float dollars, so the total drifted.",
+			"`src/price.ts` is unchanged, so `legacyTotal` still exists for any other callers."
 		],
 		good: [
 			"I left `legacyTotal` in `src/price.ts` and its README entry alone. `receipt` was its only caller, so it is now unused.",
-			"`legacyTotal` in `src/price.ts` has no callers now."
+			"`legacyTotal` in `src/price.ts` has no callers now.",
+			"I left `legacyTotal` in `src/price.ts`, since you didn't ask to remove it. Nothing else in `src/` calls it now.",
+			"`receipt` in `src/receipt.ts` was the only caller. I switched it to `sumCents`. `legacyTotal` is left in place."
 		]
 	},
 	"replace-not-wrap/sumcents-kept": {
