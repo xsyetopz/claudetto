@@ -62,26 +62,27 @@ async function isPlaced(
 }
 
 /**
- * Resolves each path a patch names against the session directory and refuses
- * any that lands outside it and outside `extra`, by spelling (`../x`) or
- * through a symbolic link.
+ * Resolves each path a patch names against the shell's directory and refuses
+ * any that lands outside the session's project root and outside `extra`, by
+ * spelling (`../x`) or through a symbolic link. The root is the wall, because
+ * a shell `cd` into a subfolder moves the directory but not the project.
  *
  * @param $ The engine.
- * @param cwd The session directory, absolute.
+ * @param place `cwd`, the directory relative paths start from, and `root`, the project root; both absolute.
  * @param paths The paths as the patch wrote them.
  * @param extra Other absolute folders patch may write in (the auto-memory folder).
  * @returns Per path, its absolute form or the reason it is refused.
  */
 export async function placePaths(
 	$: EngineInterface,
-	cwd: string,
+	{ cwd, root }: { cwd: string; root: string },
 	paths: readonly string[],
 	extra: readonly string[] = []
 ): Promise<Map<string, { abs: string } | { error: string }>> {
 	const roots = await Promise.all(
-		[cwd, ...extra].map(async (root) => ({
-			root,
-			real: (await landing($, root)) ?? root
+		[root, ...extra].map(async (dir) => ({
+			root: dir,
+			real: (await landing($, dir)) ?? dir
 		}))
 	);
 	const places = await Promise.all(
@@ -94,7 +95,7 @@ export async function placePaths(
 			))
 				? { abs }
 				: {
-						error: `outside the session directory ${cwd}; patch edits files only inside it. Write a scratch file under $TMPDIR with Bash; a file in another project stays as it is and the reply names its path and the change`
+						error: `outside the session directory ${root}; patch edits files only inside it. Write a scratch file under $TMPDIR with Bash; a file in another project stays as it is and the reply names its path and the change`
 					};
 			return [path, place] as const;
 		})

@@ -104,10 +104,11 @@ export async function runPatch(
 		return { deny: `patch refused, nothing written: ${parsed.error}` };
 	}
 	const cwd = await $.session.cwd();
+	const root = await $.session.root();
 	const memory = memoryFolder();
 	const placed = await placePaths(
 		$,
-		cwd,
+		{ cwd, root },
 		pathsOf(parsed.ops),
 		memory === undefined ? [] : [memory]
 	);
@@ -136,7 +137,7 @@ export async function runPatch(
 	}
 	const context = await instructionsFor(
 		$,
-		cwd,
+		root,
 		[...plan.changes].filter(([, text]) => text !== null).map(([abs]) => abs)
 	);
 	return {

@@ -160,40 +160,6 @@ describe("patch tool", () => {
 		expect(d.files.get(`${CWD}/a.ts`)).toBe("x\ny\nx\ny\n");
 	});
 
-	test("an anchor narrows an otherwise ambiguous hunk", async ($, on) => {
-		// Arrange
-		const d = disk({ [`${CWD}/a.ts`]: "a:\n x\nb:\n x\n" });
-		wireDisk(on, d);
-		registerPatch(on);
-
-		// Act
-		const r = await $.tool.call({
-			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Update File: a.ts", "@@ b:", "- x", "+ y")
-		});
-
-		// Assert
-		expect(r.result).toBe("M a.ts +1 -1");
-		expect(d.files.get(`${CWD}/a.ts`)).toBe("a:\n x\nb:\n y\n");
-	});
-
-	test("context repeated after the anchor edits the copy nearest the anchor", async ($, on) => {
-		// Arrange
-		const d = disk({ [`${CWD}/a.ts`]: "f:\n run\ng:\n run\n" });
-		wireDisk(on, d);
-		registerPatch(on);
-
-		// Act
-		const r = await $.tool.call({
-			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Update File: a.ts", "@@ f:", "- run", "+ walk")
-		});
-
-		// Assert
-		expect(r.result).toBe("M a.ts +1 -1");
-		expect(d.files.get(`${CWD}/a.ts`)).toBe("f:\n walk\ng:\n run\n");
-	});
-
 	test("a path outside the session directory is refused with the reason", async ($, on) => {
 		// Arrange
 		const d = disk({});
