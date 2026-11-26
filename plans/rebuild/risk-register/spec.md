@@ -131,6 +131,32 @@
     headings and uncommitted spec diff (`skills/spec/context.sh`), which removes the read-and-discover turns.
   - Verified: 2026-11-25, claude 2.1.329: a skill-frontmatter `effort: medium` left thinking unchanged
     (run 2026-11-25T04-02-12-621Z, ambiguous-headless 6266 thinking tokens against 4882), so it is not used.
+  - Verified: 2026-11-26, claude 2.1.329, fake-API probe (cc-inspect cli): with `CLAUDE_CODE_EFFORT_LEVEL=high`,
+    as `just eval` sets it, the request after the skill still sends `effort: high`; with `--effort high`
+    and no env var it sends `medium`. The 2026-11-25 run never applied the skill's effort, and
+    `claude plugin eval` has no effort flag to measure it, so it stays unused: it would also override
+    a user's own effort.
   - Residual: thinking runs about 860 tokens per run above vanilla (2934 against 2075), and
     ambiguous-headless and feature-discount still cost more than vanilla for a higher score.
   - Source: the two eval runs above, traces under plugins/claudetto-spec/evals/results.
+
+- [x] **RISK-560** In a headless feature request the spec skill built new code against the README and missed the repo's existing code for the same concept.
+  - Category: quality.
+  - Cause: the skill's Turn 1 `cat`s only the specs the request touches and the code and tests they
+    name, so a module the request does not name, which already sets the concept's units, is never read.
+  - Event: `just eval claudetto-spec` on main 0e7a99044, 2026-11-26, claude 2.1.329, Haiku 5.5:
+    `ambiguous-headless` 0.56 with against 0.64 without; all 3 runs built the README's fraction rate,
+    never opened `src/tax.ts` (basis points), and one reply said it had not opened it.
+  - Consequence: new code disagrees with the code beside it, at more cost than vanilla.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: `skills/spec/context.sh` lists up to 200 tracked files; Turn 1 also reads the README and each
+    tracked file that already handles the request's concept.
+  - Trigger: a request for new behaviour whose concept existing code already handles.
+  - Status: mitigated at ad9c656fb.
+  - Verified: 2026-11-26, claude 2.1.329, Haiku 5.5 high, `just eval claudetto-spec -j 4`
+    (`results/2026-11-26T09-07-57-508Z`): `ambiguous-headless` 1.00 against 0.67; suite 0.985 against
+    0.708, cost $0.299 against $0.296; holdout aggregate 1 against 0.579, $0.13 against $0.11.
+  - Source: the eval runs above; traces under plugins/claudetto-spec/evals/results.

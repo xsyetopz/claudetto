@@ -4,16 +4,16 @@ A spec-first loop for Claude Code: requirements get IDs, tests cite the IDs, fai
 
 ## Results
 
-Measured on Claude Code 2.1.329 with Haiku 5.5 at high effort and a 100,000-token window, each case run 3 times per arm against vanilla Claude Code (2026-11-26, commit 425e0af0d).
+Measured on Claude Code 2.1.329 with Haiku 5.5 at high effort and a 100,000-token window, each case run 3 times per arm against vanilla Claude Code (2026-11-26, commit ad9c656fb).
 
 | Suite | Arm | Score | Cost | Turns |
 | --- | --- | --- | --- | --- |
-| `just eval claudetto-spec` (14 cases) | claudetto-spec | 0.967 | $0.29 | 297 |
-| | vanilla | 0.732 | $0.28 | 348 |
-| `just eval-holdout claudetto-spec` | claudetto-spec | 1.000 | $0.14 | 170 |
-| | vanilla | 0.586 | $0.11 | 184 |
+| `just eval claudetto-spec` (14 cases) | claudetto-spec | 0.985 | $0.299 | 297 |
+| | vanilla | 0.708 | $0.296 | 344 |
+| `just eval-holdout claudetto-spec` | claudetto-spec | 1.000 | $0.13 | 168 |
+| | vanilla | 0.579 | $0.11 | 168 |
 
-claudetto-spec scores higher in fewer turns and costs more: $0.01 more on the suite and $0.03 more on the holdout.
+claudetto-spec scores higher and costs more: $0.003 more on the suite and $0.03 more on the holdout. The extra cost is output: the spec and the tests it writes before the code, and the thinking behind them (196,859 output tokens against 182,920 on the suite).
 
 Source: `reports/2026-11-26-release/results.md`.
 
