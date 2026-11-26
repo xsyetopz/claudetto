@@ -1618,3 +1618,33 @@
   Status: mitigated 2026-11-24: `plugins/claudetto/hooks/guards/shell/jvm.ts` (GUARDS-084).
   Verified: 2026-11-24, claude 2.1.329, Sonnet 5.5, `jvm/run.sh` batch b, n=6 per arm, Maven hosts allowed in every arm: the wrap built 6 of 6 with 0 unsandboxed calls and 0 handoffs, $0.048 a run; main 6 of 6 only through 9 unsandboxed calls, $0.064 a run; vanilla 0 of 6, native-services failure, handoff in 6 of 6 (`jvm/results.txt`).
   Source: `reports/2026-11-24-research/pin-2-1-329/jvm/results.txt`; `plugins/claudetto/hooks/guards/shell/jvm.ts`.
+
+- [x] **RISK-586** Two commits chained by `;` with hidden output let a refused first commit pass unseen.
+  Category: guards.
+  Cause: the `;` chain note matched only a check command (test, lint, build), so `git commit … >/dev/null; git commit …` drew no note while a commit-msg hook refused the first commit.
+  Event: ISSUES-part4.txt:106, "The first commit failed. I had chained the commands without stopping on a failure and hidden their output".
+  Consequence: a change meant for its own commit is left out, or folded into the next one.
+  Likelihood: 3. Impact: 2.
+  Existing controls: the `;` note on checks; `set -o pipefail` before a commit or push (`hooks/guards/shell/commit.ts`).
+  Response: mitigate.
+  Actions: `hooks/guards/shell/notes.ts` adds an `&&` note to a commit chained by `;` to a later commit or push; `git commit …; git status` stays quiet.
+  Trigger: a commit missing from a chained series.
+  Owner: guards.
+  Status: mitigated 2026-11-27.
+  Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 379 pass, 0 fail, including notes.test.ts "a commit chained by a semicolon to another commit or a push gets an && note" (failed before the change) and "a check chained by a semicolon gets an && note, and && or a status echo stay quiet".
+  Source: ISSUES-part4.txt:106.
+
+- [x] **RISK-587** A sandboxed `just setup` cannot write `.git/hooks` or `.git/config`.
+  Category: host behaviour.
+  Cause: Claude Code 2.1.329 write-protects these names inside the working tree (`.git`, `hooks`, `config` in the protected-name set at `chunk-r5p371sa.js:234`), because a written hook runs code outside the sandbox.
+  Event: ISSUES-part5.txt:1; ISSUES-2026-11-09-1422.md:48.
+  Consequence: the first setup run fails until it runs unsandboxed.
+  Likelihood: 3. Impact: 1.
+  Existing controls: core's sandbox guidance retries a command unsandboxed on sandbox evidence; the part7 session installed the hooks that way (ISSUES-part7.txt:180).
+  Response: accept.
+  Actions: none; claudetto keeps core's protection, since lifting it would let any sandboxed command plant a git hook.
+  Trigger: a setup that ends without hooks installed.
+  Owner: guards.
+  Status: accepted 2026-11-27: the protection is core's and guards code execution; the retry already completes setup.
+  Verified: 2026-11-27, claude 2.1.329, sandboxed Bash: `echo x > .git/hooks/probe` in this repo failed with "operation not permitted", while the same write and `git config` in a fresh repo under `$TMPDIR` exited 0.
+  Source: ISSUES-part5.txt:1.

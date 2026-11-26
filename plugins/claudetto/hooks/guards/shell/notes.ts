@@ -43,6 +43,12 @@ const CHAINED = new RegExp(
 	"u"
 );
 
+/** A commit followed by `;` and a later commit or push, which then builds on a commit that may have failed. */
+const COMMIT_CHAINED = new RegExp(
+	`(?:^|[;&|(]\\s*)git\\b[^|;&\\n]*?\\scommit\\b${ARGS}(?<!\\\\);(?!;)[^\\n]*\\bgit\\b[^|;&\\n]*?\\s(?:commit|push)\\b`,
+	"u"
+);
+
 /** A command that ends in `; echo ...`, closing group or not. */
 const ENDS_IN_ECHO = /;\s*echo\b[^;&|\n]*(?:\n\})?\s*$/u;
 
@@ -82,6 +88,7 @@ export const zshNotes = (command: string): string[] =>
  * line of at most NOTE_LIMIT characters:
  * a background command ending in `; echo` whose exit code is the echo's; a
  * check piped into a filter or chained by `;`, so the check's status is lost;
+ * a commit chained by `;` to a later commit or push;
  * and, in zsh, an unquoted variable holding spaces, which zsh does not split.
  *
  * @param command The Bash command as the model wrote it.
@@ -106,6 +113,10 @@ export const shellNotes = (command: string, facts: ShellFacts): string[] => {
 	} else if (CHAINED.test(command)) {
 		notes.push(
 			"`check; next` runs next even when the check fails, and the exit code is next's. Chain with `&&` so a failure stops the line and shows."
+		);
+	} else if (COMMIT_CHAINED.test(command)) {
+		notes.push(
+			"`git commit; git commit` runs the next step even when a hook refuses the first commit, and the exit code is the last step's. Chain with `&&`."
 		);
 	}
 	if (facts.isZsh) {

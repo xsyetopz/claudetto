@@ -572,3 +572,19 @@
   - Status: mitigated 2026-11-27.
   - Verified: 2026-11-27, claude 2.1.329, `claude plugin test plugins/claudetto`: 378 pass, 0 fail, including start.test.ts "a status line the user removed after claudetto set it stays removed on later starts".
   - Source: ISSUES-part8.txt:151.
+
+- [x] **RISK-588** The status line shows no colour in an interactive session.
+  - Category: host behaviour.
+  - Cause (suspected 2026-11-09): Claude Code sets `NO_COLOR` for the `statusLine` command, or strips SGR codes; the line drops colour only under a non-empty `NO_COLOR` (`hooks/statusline/line/color.ts:18`).
+  - Event: ISSUES-2026-11-09-1422.md:46.
+  - Consequence: use levels lose their warning colours.
+  - Likelihood: 1
+  - Impact: 2
+  - Existing controls: the line honours `NO_COLOR` (no-color.org).
+  - Response: accept.
+  - Actions: none; neither cause holds on 2.1.329.
+  - Trigger: a status line in plain text with `NO_COLOR` unset.
+  - Owner: setup
+  - Status: closed 2026-11-27: does not reproduce.
+  - Verified: 2026-11-27, claude 2.1.329, interactive session in tmux with a `statusLine` command that logs its environment and prints a red word: the command saw `TERM=tmux-256color` and `COLORTERM=truecolor` and no `NO_COLOR`, and `tmux capture-pane -e` showed `ESC[31mRED` on screen.
+  - Source: ISSUES-2026-11-09-1422.md:46.
