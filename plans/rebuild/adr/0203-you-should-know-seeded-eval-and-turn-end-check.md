@@ -42,3 +42,5 @@ Verified: replay A/B, claude 2.1.329, 2026-11-26, the tune set, each propose req
 Verified: `claude plugin test plugins/claudetto-you-should-know`, claude 2.1.329, 2026-11-26: 119 pass, 0 fail. The turn-end test fails on the HEAD step.ts.
 
 Source: ADR-0177; ADR-0190; REQ-YOU-SHOULD-KNOW-074; user decision through AskUserQuestion, 2026-11-26 (build a seeded eval first and decide on its hit and false-alarm rates).
+
+Decision: 2026-11-26, user decision through AskUserQuestion: claudetto-you-should-know ships, with no-note as the vanilla baseline and the seeded hit and false-alarm rates above.
