@@ -3,7 +3,9 @@ import { expect, test } from "claude-code/testing";
 
 import {
 	type Box,
+	completeTurn,
 	gate,
+	inOrder,
 	MOUNT,
 	offered,
 	PLUGIN,
@@ -152,6 +154,71 @@ test(
 
 		// Assert
 		expect(box.forks).toBe(2);
+	}
+);
+
+const runTurn = async (
+	$: Parameters<typeof offered>[0],
+	last: number
+): Promise<void> => {
+	await inOrder(
+		Array.from({ length: last }, (_, i) => i + 1),
+		(index) => step($, index)
+	);
+	await completeTurn($, "t2");
+	await settle();
+};
+
+test(
+	"a turn that runs past its last check step gets one check when it ends",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const box = fresh();
+		const band = await offered($, on, box, {
+			replies: ["learn: none", "learn: none", REPLY],
+			isOffer: false
+		});
+
+		// Act
+		await runTurn($, 5);
+		await untilShown(band, "Learn more");
+
+		// Assert
+		expect(box.forks).toBe(3);
+		expect(await band.find({ key: "Learn more" })).toBeDefined();
+	}
+);
+
+test(
+	"a turn that ends on a check step gets no check at its end",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const box = fresh();
+		await offered($, on, box, { replies: ["learn: none"], isOffer: false });
+
+		// Act
+		await runTurn($, 6);
+
+		// Assert
+		expect(box.forks).toBe(3);
+	}
+);
+
+test(
+	"a turn shorter than the first check step gets no check at its end",
+	MOUNT,
+	async ($, on) => {
+		// Arrange
+		const box = fresh();
+		await offered($, on, box, { replies: ["learn: none"], isOffer: false });
+
+		// Act
+		await runTurn($, 2);
+
+		// Assert
+		expect(box.forks).toBe(1);
 	}
 );
 

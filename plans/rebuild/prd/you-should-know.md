@@ -563,7 +563,7 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
 ## Recreation
 
 - [x] **REQ-YOU-SHOULD-KNOW-074** claudetto shall ship `claudetto-you-should-know` as a full recreation of `cc-plugin-you-should-know@builtin`, kept and improved, while the builtin is disabled.
-  Acceptance: the plugin reproduces the builtin's triggers, algorithm, user-facing texts and view; the recorded deviations are reworded model prompts (REQ-001/004/005/006/007/009/045), claudetto's own plugin name in the off command (REQ-012, REQ-054), no telemetry (REQ-031, REQ-072), a first check at step 3 before every sixth step (ADR-0190, `FIRST_CHECK` in hooks/shared/constants.ts) and no spinner tip. Verification: inspection.
+  Acceptance: the plugin reproduces the builtin's triggers, algorithm, user-facing texts and view; the recorded deviations are reworded model prompts (REQ-001/004/005/006/007/009/045), claudetto's own plugin name in the off command (REQ-012, REQ-054), no telemetry (REQ-031, REQ-072), a first check at step 3 before every sixth step (ADR-0190, `FIRST_CHECK` in hooks/shared/constants.ts), a check at the end of a turn that ran past its last check step (ADR-0203, REQ-076) and no spinner tip. Verification: inspection.
   Decision: ADR-0190 Prompt text and ADR-0115; the "Compared 2026-11-19" line below lists what matches.
   Basis: user decision. Status: have at 088a227c (plugins/claudetto-you-should-know/ exists with register.ts; plugins/claudetto/hooks/features/setup/settings.ts:65-70 lists `cc-plugin-you-should-know@builtin` in `BUILTIN_PLUGINS_OFF`); whether it recreates every behaviour of the builtin is not compared
   Source: user decision, 2026-11-16 (date of the handoff that records it; day of decision not recorded) (~/.claude/projects/-Users-krystian-CodeProjects-xsyetopz-claudetto/0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:4661).
@@ -576,3 +576,10 @@ Verified (batch, test-checked requirements): `just verify`, claude 2.1.329, 2026
   Basis: reported (bug). Status: have.
   Source: bug report "An offer stays up after later steps of the same turn make it untrue", 2026-11-21.
   Verified: hooks/**tests**/recheck.test.ts, claude 2.1.330, 2026-11-21, `claude plugin test plugins/claudetto-you-should-know`: pass.
+
+- [x] **REQ-YOU-SHOULD-KNOW-076** claudetto shall run one check when a main-agent turn ends after a step no check saw, so a consequential command in the last steps of a short turn still gets its note.
+  Acceptance: a turn whose last step is past step 3 and not a check step gets one check at `turn.complete`, under the same rules as a step's check (no note up, none offered this turn, the band watched, the backoff, one check at a time); a turn that ends on a check step or by step 3, a subagent's turn and a turn with an untouched offer (rechecked instead, REQ-075) get none. Verification: test.
+  Basis: measured (seeded eval, ADR-0203). Status: have 2026-11-26 (hooks/check/step.ts `isEndCheck`, `watchEnd`).
+  Source: ADR-0203; reports/2026-11-26-release/ysk-seeded.
+  Verified: hooks/**tests**/checks.test.ts, claude 2.1.329, 2026-11-26, `claude plugin test plugins/claudetto-you-should-know`: 119 pass, 0 fail; the turn-end test fails on the HEAD step.ts.
+  Verified: seeded A/B, claude 2.1.329, Haiku 5.5, 2026-11-26, 18 cases x 3 runs per arm: hits 12/30 to 25/29, false alarms 2/24 to 1/24, side requests 72 to 99 (ADR-0203).
