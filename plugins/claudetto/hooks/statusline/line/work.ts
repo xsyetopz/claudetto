@@ -90,10 +90,15 @@ const waitingWhat = ({ kind, tool }: Waiting): string => {
 	return `permission${tool === undefined ? "" : ` for ${tool}`}`;
 };
 
-/** `⚑ waiting on you: permission for Bash`, from the prompt a hook saw the engine raise. */
+/**
+ * `⚑ waiting on you: permission for Bash`, from the prompt a hook saw the
+ * engine raise. The next prompt is left out while a subagent runs, because the
+ * session is still working and the lead's turn resumes on the subagent's report.
+ */
 export const waitingText = ({ state, paint }: Ctx): Text => {
 	const waiting = state?.waiting;
-	return waiting === undefined
+	const isBusy = (state?.agents.length ?? 0) > 0;
+	return waiting === undefined || (waiting.kind === "input" && isBusy)
 		? undefined
 		: paint.alert(`⚑ waiting on you: ${waitingWhat(waiting)}`);
 };

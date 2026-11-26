@@ -78,6 +78,37 @@ describe("state file", () => {
 		expect(out).toContain("Doing s");
 	});
 
+	test("an idle lead with a subagent still running shows no wait on the next prompt", async () => {
+		// Arrange
+		const agent = {
+			id: "a",
+			type: "Explore",
+			description: "scan",
+			startedAt: 5,
+			tools: 2
+		};
+		const busy: LiveState = {
+			...EMPTY_STATE,
+			phase: "idle",
+			waiting: { kind: "input" },
+			agents: [agent]
+		};
+		const done: LiveState = { ...busy, agents: [] };
+
+		// Act
+		const whileBusy = await draw({
+			[statePath("/cfg", "s1")]: writeState(busy)
+		});
+		const afterDone = await draw({
+			[statePath("/cfg", "s1")]: writeState(done)
+		});
+
+		// Assert
+		expect(whileBusy).not.toContain("waiting on you");
+		expect(whileBusy).toContain("Explore scan");
+		expect(afterDone).toContain("waiting on you: your next prompt");
+	});
+
 	test("a broken or foreign state file draws as no state", async () => {
 		// Act
 		const broken = await draw({ [statePath("/cfg", "s1")]: "{" });

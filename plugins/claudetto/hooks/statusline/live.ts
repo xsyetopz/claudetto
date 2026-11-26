@@ -101,14 +101,23 @@ function registerPhase(on: On, live: Live): void {
 	});
 }
 
-/** The prompt a tool call raises, cleared when a tool starts running; each started call is counted and named, and a task call updates the list. */
+/**
+ * The prompt a tool call raises, cleared when a tool starts running; each
+ * started call is counted and named, and a task call updates the list. A
+ * permission prompt is recorded at `classic.PermissionRequest`, which fires only
+ * when a dialog opens: an `ask` verdict at `tool.check` goes to the mode's
+ * decider first, and auto mode's classifier settles most with nobody asked.
+ */
 function registerPrompt(on: On, live: Live): void {
 	on("tool.check", { tool: ANY }, async ($, e, next) => {
 		const verdict = await next(e);
-		const asks = verdict.decision === "ask" && e.approver !== "host";
-		if (e.tool_use_id !== undefined && (asks || e.tool === QUESTION_TOOL)) {
+		if (
+			e.tool_use_id !== undefined &&
+			e.tool === QUESTION_TOOL &&
+			verdict.decision !== "deny"
+		) {
 			live.state = waitingOn(live.state, {
-				kind: e.tool === QUESTION_TOOL ? "question" : "permission",
+				kind: "question",
 				tool: e.tool
 			});
 			await save($, live.state);
@@ -116,6 +125,17 @@ function registerPrompt(on: On, live: Live): void {
 		return verdict;
 	}).catch(($, e, next) => {
 		fault($, "status tool check", next.error);
+		return next(e);
+	});
+	on("classic.PermissionRequest", async ($, e, next) => {
+		live.state = waitingOn(live.state, {
+			kind: "permission",
+			tool: e.tool_name
+		});
+		await save($, live.state);
+		return next(e);
+	}).catch(($, e, next) => {
+		fault($, "status permission request", next.error);
 		return next(e);
 	});
 	on("tool.run", async ($, e, next) => {

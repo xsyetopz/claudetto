@@ -16,6 +16,7 @@ const serve = (on: On, result: unknown = "ok") => {
 		return { value: undefined };
 	});
 	on("tool.check", () => ({ decision: "ask" }));
+	on("classic.PermissionRequest", () => ({}));
 	on("tool.run", () => ({ result }));
 	on("agent.spawn", (_$, e) => ({
 		model: "m",
@@ -79,7 +80,7 @@ describe("live state", () => {
 		expect(state()?.waiting).toEqual({ kind: "input" });
 	});
 
-	test("records the permission prompt a call raises, then clears it when a tool runs", async ($, on) => {
+	test("records the permission dialog a call opens, then clears it when a tool runs", async ($, on) => {
 		// Arrange
 		const state = serve(on);
 		const call = {
@@ -91,11 +92,17 @@ describe("live state", () => {
 
 		// Act
 		await $.tool.check(call);
+		const checked = state();
+		await $.classic.PermissionRequest({
+			tool_name: call.tool,
+			tool_input: call.input
+		});
 		const asked = state();
 		await $.tool.run(call);
 		const answered = state();
 
 		// Assert
+		expect(checked?.waiting).toBeUndefined();
 		expect(asked?.waiting).toEqual({
 			kind: "permission",
 			tool: "mcp__claudetto__web_search"
