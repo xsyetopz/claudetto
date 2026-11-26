@@ -17,7 +17,7 @@ The session's working directory, its `specs/` files, the requirement headings in
 
 ## Turn 1: Read
 
-One command that `cat`s every spec the request touches and the code and tests they name, skipping files already shown. Edit works on a file a `cat` showed, so never Read it again.
+One command that `cat`s every spec the request touches, the code and tests they name, the README, and each tracked file listed above that already handles the request's concept (its units, names and rules bind the new code), skipping files already shown. Edit works on a file a `cat` showed, so never Read it again.
 
 ## Clarify
 

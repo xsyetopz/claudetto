@@ -15,4 +15,8 @@ else
 	echo "no specs/ directory"
 fi
 ls ARCHITECTURE.md DESIGN.md 2>/dev/null
+# The tracked files show the code that already handles the request's concept, whose conventions the
+# new code follows; capped so a large repo does not flood the skill.
+echo "tracked files:"
+git ls-files 2>/dev/null | grep -v '^specs/' | head -200
 exit 0
