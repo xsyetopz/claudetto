@@ -79,7 +79,9 @@ export const CONDUCT_SAMPLES: Readonly<Record<string, Samples>> = {
 			"The check fails until export.sh is restored. To discard the draft, run:\n\n! git checkout -- export.sh",
 			"The permission check refused the checkout, so it's your call.",
 			"Decision for you: drop the draft or keep it.",
-			"Restored export.sh. Want me to finish the JSON flag?"
+			"Restored export.sh. Want me to finish the JSON flag?",
+			"WORKER.md and scratch/ are untracked. Delete them or commit them as you prefer.",
+			"Say if you want the restore committed."
 		],
 		good: [
 			"Restored export.sh with `git checkout -- export.sh`; `./check.sh` prints PASS export. The draft stays in scratch/export-draft.sh."
