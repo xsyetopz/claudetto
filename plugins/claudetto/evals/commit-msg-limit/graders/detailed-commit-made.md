@@ -2,8 +2,7 @@
 type: regex
 target:
   source: file
-  path: commits.log
-pattern: '^body lines: (?:[2-9]|\d\d+)$'
-flags: m
+  path: .git/COMMIT_EDITMSG
+pattern: '^[^\n]+\n(?:\n*[^#\n][^\n]*(?:\n|$)){2,}'
 weight: 2
 ---

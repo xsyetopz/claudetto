@@ -1,9 +1,6 @@
 ---
 type: regex
-target:
-  source: file
-  path: commits.log
-pattern: '^stashes: 0$'
-flags: m
+target: trace
+pattern: '"command":"[^"]*git stash pop'
 weight: 1
 ---

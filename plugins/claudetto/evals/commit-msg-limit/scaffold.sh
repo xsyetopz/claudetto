@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Scaffold: a repo with a staged change to src/fetch.ts and a commit-msg hook that rejects any
-# body line over 100 characters (the hook source is the only place the limit is written). A
-# post-commit hook appends the subject and the body line count of each accepted commit to
-# commits.log, which is kept out of git status. A rejected attempt prints
-# "commit-msg: body line N has M characters (limit 100)" into the tool result.
+# body line over 100 characters (the hook source is the only place the limit is written).
+# claude plugin eval runs git with core.hooksPath=/dev/null, so the hook never fires in a run:
+# the graders read .git/COMMIT_EDITMSG, the message of the last commit, for the limit.
 # Offline and deterministic.
 set -euo pipefail
 
@@ -44,15 +43,7 @@ while IFS= read -r line; do
 	fi
 done < "$1"
 HOOK
-cat > .git/hooks/post-commit <<'HOOK'
-#!/usr/bin/env bash
-{
-	echo "subject: $(git log -1 --format=%s)"
-	echo "body lines: $(git log -1 --format=%b | grep -c .)"
-} >> commits.log
-HOOK
-chmod +x .git/hooks/commit-msg .git/hooks/post-commit
-echo "commits.log" >> .git/info/exclude
+chmod +x .git/hooks/commit-msg
 
 cat > src/fetch.ts <<'TS'
 const CAP_MS = 8000;
