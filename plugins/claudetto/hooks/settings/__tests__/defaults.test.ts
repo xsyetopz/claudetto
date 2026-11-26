@@ -131,7 +131,7 @@ describe("defaults fill", () => {
 		const next = parsed(fill?.text);
 
 		// Assert
-		expect(next.skillListingMaxDescChars).toBe(60);
+		expect(next.skillListingMaxDescChars).toBe(200);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).toBe("3");
 		expect(next.env).toMatchObject({ MY_VAR: "1" });

@@ -25,3 +25,5 @@ Chosen option: skillListingMaxDescChars 200 in claudetto's settings (user decisi
 - The baseline already tests the value 200 (plugins/claudetto/hooks/features/surface/surface.test.ts:188@088a227c) and trims to 60 in trim.ts:24; the linter pairing is not in the baseline.
 
 Source: openspec/changes/archive/2026-11-09-release-2-1-319/settings-review.txt:1002-1009; user decision, 2026-11-09 (settings review decisions C9 to C12).
+
+Verified: 2026-11-26, claude 2.1.329, Haiku 5.5: the settings fill had drifted to 60 (hooks/settings/defaults.ts), which cut each skill's trigger; the spec skill loaded in 0 of 6 headless runs of a fresh feature request with claudetto and claudetto-spec, 3 of 6 with claudetto-spec alone. Back at 200: 4 of 6 (RISK-561); user decision through AskUserQuestion, 2026-11-26.

@@ -12,7 +12,8 @@ export const CO_AUTHOR = "Co-Authored-By: Claude <noreply@anthropic.com>";
  * request unless noted):
  * - the seven denied tools take 44,803 to 32,049 bytes; ExitPlanMode stays,
  *   because a plan started with shift-tab is presented through it;
- * - `skillListingMaxDescChars` 60 takes 32,049 to 27,043 bytes;
+ * - `skillListingMaxDescChars` 200 (60 took 32,049 to 27,043 bytes, but cut each skill's trigger,
+ *   so the spec skill loaded in 0 of 6 runs; 2026-11-26, RISK-561);
  *   `disableBundledSkills` is left out, as it saves 854 more bytes and removes
  *   the bundled skills;
  * - `bashOutputMaxChars` 8000 trims a 10.5k-character result, 9,384 bytes;
@@ -29,7 +30,7 @@ export const CO_AUTHOR = "Co-Authored-By: Claude <noreply@anthropic.com>";
  * of `sandbox`, so the two never disagree.
  */
 export const DEFAULTS: Json = {
-	skillListingMaxDescChars: 60,
+	skillListingMaxDescChars: 200,
 	outputStyle: "claudetto:Claudetto",
 	showClearContextOnPlanAccept: true,
 	// One commit trailer and never a Signed-off-by, as the Linux kernel's rules for AI agents ask, in the one form

@@ -2,7 +2,7 @@
 
 claudetto and claudetto-spec ship a small set of skills, commands and agents, because each description sits in every request's listing and the studies in reports/2026-11-21-research/skills-catalog.md find that focused skills beat large bundles and that loaded skills cause failures of their own (307 in one study). An item ships only with an eval case that runs it against vanilla Claude Code 2.1.330 and scores no lower (ADR-0177). The catalog read 15 sources (plans/rebuild/sources.md) and 28 candidates; none reports a measured outcome for a listed skill or agent, so the set below is the catalog's recommendation and each new item starts as "eval first".
 
-The user's settings bound the design: `skillListingMaxDescChars: 60` cuts each listed description at 60 characters, so the trigger sits in those characters; `disableBundledSkills: true` turns off the bundled `/code-review` and `/simplify` and leaves plugin skills listed.
+The user's settings bound the design: `skillListingMaxDescChars: 200` (claudetto's default since 2026-11-26, RISK-561; 60 before) cuts each listed description at 200 characters, so the trigger sits in those characters; `disableBundledSkills: true` turns off the bundled `/code-review` and `/simplify` and leaves plugin skills listed.
 
 ## Set
 
