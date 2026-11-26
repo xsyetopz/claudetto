@@ -53,6 +53,23 @@ export function scaffold(evals: string, name: string): Promise<string> {
 	return made;
 }
 
+/**
+ * Runs, ahead of the tests, the scaffold of each case with a file sample. A scaffold run inside a
+ * test counts against that test's timeout: on a loaded machine it ran past 5 s, bun killed it, and
+ * every later test of the same case read the cached failure.
+ */
+export async function scaffoldFileCases(
+	evals: string,
+	samples: Readonly<Record<string, Samples>>
+): Promise<void> {
+	const names = new Set(
+		Object.entries(samples)
+			.filter(([, s]) => s.goodFile !== undefined || s.badFile !== undefined)
+			.map(([id]) => id.slice(0, id.indexOf("/")))
+	);
+	await Promise.all([...names].map((name) => scaffold(evals, name)));
+}
+
 function applyEdits(text: string, edits: readonly Edit[]): string {
 	let out = text;
 	for (const [from, to] of edits) {
