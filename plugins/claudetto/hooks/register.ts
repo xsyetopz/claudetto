@@ -20,6 +20,7 @@ import { registerMessagingDescribe } from "./pool/messaging";
 import { registerToolOffer } from "./pool/offer";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
+import { registerInterject } from "./prompt/interject";
 import { registerSandbox } from "./prompt/sandbox";
 import { registerReadCheck } from "./read/check";
 import { registerRead } from "./read/tool";
@@ -62,6 +63,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerStatuslineCommand(on);
 	registerWeb(on);
 	registerCompose(on);
+	registerInterject(on);
 	registerSandbox(on);
 	registerStepEffort(on);
 	registerTranscript(on);
