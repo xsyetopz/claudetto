@@ -25,7 +25,7 @@ jobs:
         with:
           bun-version-file: .bun-version
       # uv runs the pinned lizard that bedrock guard bounds sizes with.
-      - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
+      - uses: taiki-e/install-action@fe3acb53a98b62c772db35de75ce0e4595e7ca8c # v2.90.8
         with:
           tool: just@1.59.0,uv@0.13.7
       # A repo whose checks need more on the runner, such as a compiler a test calls, adds those steps in this composite action.
