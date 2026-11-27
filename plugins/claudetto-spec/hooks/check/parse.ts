@@ -85,7 +85,10 @@ function absorb(line: string, draft: Draft): void {
 		return;
 	}
 	const step = STEP.exec(text)?.[1];
-	if (step === undefined) {
+	// Scenario steps carry no full stop, so a stop-ended line before any scenario is the
+	// behaviour sentence even when it opens with a step word ("When a request ...").
+	const isSentence = draft.requirement.scenarios === 0 && /[.!?]$/u.test(text);
+	if (step === undefined || isSentence) {
 		draft.prose.push(text);
 		return;
 	}
