@@ -19,8 +19,6 @@ import {
  */
 const ANY = /^/u;
 
-const ANY_TURN = { turnId: ANY } as const;
-
 /** The state of one session; a hook instance is per session, so the holder lives in the registration. */
 export interface Live {
 	state: LiveState;
@@ -39,24 +37,6 @@ async function save($: EngineInterface, state: LiveState): Promise<void> {
 	} catch (error) {
 		fault($, "status state", error);
 	}
-}
-
-/** The phase: working from a prompt until the turn ends, then idle. Subagent turns are skipped, since the lead's phase is the one shown. */
-function registerPhase(on: On, live: Live): void {
-	on("turn.start", ANY_TURN, async ($, e, next) => {
-		if (e.agentId === undefined) {
-			live.state = { ...live.state, phase: "working" };
-			await save($, live.state);
-		}
-		return next(e);
-	});
-	on("turn.complete", ANY_TURN, async ($, e, next) => {
-		if (e.agentId === undefined) {
-			live.state = { ...live.state, phase: "idle" };
-			await save($, live.state);
-		}
-		return next(e);
-	});
 }
 
 /**
@@ -144,12 +124,11 @@ function registerMeasure(on: On, live: Live): void {
 
 /**
  * Writes what the hooks observe in one session to the file the status line
- * command reads (ADR-0201): the turn phase, the tool call count, the task
- * list, the context rows, and the rate-limit baselines. Each
+ * command reads (ADR-0201): the tool call count, the task list, the context
+ * rows, and the rate-limit baselines. Each
  * change rewrites the whole file into `live`, which the usage pane reads too.
  */
 export function registerLive(on: On, live: Live): void {
-	registerPhase(on, live);
 	registerCalls(on, live);
 	registerEnd(on, live);
 	registerMeasure(on, live);

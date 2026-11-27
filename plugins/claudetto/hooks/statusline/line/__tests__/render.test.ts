@@ -40,7 +40,6 @@ const BASE = {
 const FULL = JSON.stringify({ ...BASE, rate_limits: LIMITS });
 
 const STATE: LiveState = {
-	phase: "working",
 	tools: 42,
 	tasks: [
 		{ id: "1", subject: "Read", status: "completed" },

@@ -4,30 +4,7 @@ import { statusOf } from "../line/main";
 import { EMPTY_STATE } from "../line/state";
 import { serve } from "./serve";
 
-const TURN = { text: "", turnId: "t1" };
-const DONE = {
-	answer: "",
-	durationMs: 1,
-	isAborted: false,
-	turnId: "t1",
-	reason: "answer"
-} as const;
-
 describe("live state", () => {
-	test("is working during a turn and idle once it ends", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-
-		// Act
-		await $.turn.start(TURN);
-		const during = state();
-		await $.turn.complete(DONE);
-
-		// Assert
-		expect(during?.phase).toBe("working");
-		expect(state()?.phase).toBe("idle");
-	});
-
 	test("a permission dialog or a question puts no waiting row on the status line", async ($, on) => {
 		// Arrange
 		const state = serve(on);

@@ -50,7 +50,6 @@ describe("state file", () => {
 	test("a state file the hooks wrote shows the tasks", async () => {
 		// Arrange
 		const state: LiveState = {
-			phase: "working",
 			tools: 7,
 			tasks: [
 				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }

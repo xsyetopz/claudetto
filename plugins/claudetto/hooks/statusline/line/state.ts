@@ -36,7 +36,6 @@ export interface Baseline {
  * status line command reads: stdin carries none of it.
  */
 export interface LiveState {
-	readonly phase: "working" | "idle";
 	/** Tool calls started in the session, by the lead and its subagents. */
 	readonly tools: number;
 	readonly tasks: readonly Task[];
@@ -50,7 +49,6 @@ export interface LiveState {
 
 /** The state of a session that has seen no event yet. */
 export const EMPTY_STATE: LiveState = {
-	phase: "idle",
 	tools: 0,
 	tasks: []
 };
@@ -117,7 +115,6 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 	}
 	const window = num(found["window"]);
 	return {
-		phase: found["phase"] === "working" ? "working" : "idle",
 		tools: num(found["tools"]) ?? 0,
 		tasks: listOf(found["tasks"]).flatMap((item) => taskOf(item) ?? []),
 		...(window === undefined || window <= 0 ? {} : { window }),
@@ -141,7 +138,6 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 /** The text a hook writes for `state`, in the flat shape `readState` reads. */
 export const writeState = (state: LiveState): string =>
 	JSON.stringify({
-		phase: state.phase,
 		tools: state.tools,
 		tasks: state.tasks,
 		context: state.context,
