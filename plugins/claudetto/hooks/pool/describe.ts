@@ -1,9 +1,22 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
 
 /** The longest description a kept built-in tool carries (TOOLS-003). */
 export const MAX_DESCRIPTION = 200;
+
+/** The engine's subagent limit when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is unset (2.1.329). */
+const DEFAULT_CONCURRENT = 20;
+
+/**
+ * The `Agent` line that names the concurrency limit (DELEGATION-072), read as the engine reads
+ * it, so the model spaces its launches instead of meeting the engine's refusal.
+ */
+async function limitLine($: EngineInterface): Promise<string> {
+	const raw = Number(await $.env.get("CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"));
+	const n = Number.isInteger(raw) && raw > 0 ? raw : DEFAULT_CONCURRENT;
+	return `At most ${n} run at once: launch the next after one reports.`;
+}
 
 /**
  * What the model reads about each kept built-in tool. The input schema already
@@ -54,7 +67,12 @@ export function registerToolDescribe(on: On): void {
 		{
 			tool: new RegExp(`^(?:${Object.keys(TOOL_DESCRIPTIONS).join("|")})$`, "u")
 		},
-		(_$, e) => ({ description: TOOL_DESCRIPTIONS[e.tool] ?? e.description })
+		async ($, e) => {
+			const text = TOOL_DESCRIPTIONS[e.tool] ?? e.description;
+			return {
+				description: e.tool === "Agent" ? `${text} ${await limitLine($)}` : text
+			};
+		}
 	).catch(($, e, next) => {
 		fault($, "tool describe", next.error);
 		return next(e);

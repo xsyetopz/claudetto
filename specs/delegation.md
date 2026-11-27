@@ -82,3 +82,11 @@ Then the result carries no second note
 Given a call from the main conversation
 When it runs
 Then the result carries no checkpoint note
+
+## DELEGATION-072 The Agent Tool Names the Concurrency Limit
+
+claudetto adds the concurrent subagent limit, read from `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` with the engine's default of 20, to the `Agent` description, so the model launches within it instead of meeting the engine's "Concurrent subagent limit reached" refusal (ISSUES-2026-11-21).
+
+Given `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 7
+When the engine describes the `Agent` tool
+Then the description names 7
