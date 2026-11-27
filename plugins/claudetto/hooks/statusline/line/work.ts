@@ -1,7 +1,7 @@
 import { type Ctx, type Text, words } from "./ctx";
 import { bar } from "./format";
 import { num, sub } from "./input";
-import type { Task, Waiting } from "./state";
+import type { Task } from "./state";
 
 /** The longest task subject shown, a choice that keeps one to part of a row. */
 const ABOUT_MAX = 40;
@@ -50,23 +50,4 @@ export const tasksText = ({ state, paint }: Ctx): Text => {
 		focus !== undefined &&
 			`${paint.warn(TASK_MARK[focus.status])} ${cut(focus.active ?? focus.subject)}`
 	);
-};
-
-const waitingWhat = ({ kind, tool }: Waiting): string => {
-	if (kind === "question") {
-		return "an answer";
-	}
-	return `permission${tool === undefined ? "" : ` for ${tool}`}`;
-};
-
-/**
- * `⚑ waiting on you: permission for Bash`, from the dialog or question a hook
- * saw the engine raise. The next prompt gets no row: Claude Code's own prompt shows it, and a flag on it
- * reads as a step the user owes while a background shell or subagent is still working.
- */
-export const waitingText = ({ state, paint }: Ctx): Text => {
-	const waiting = state?.waiting;
-	return waiting === undefined || waiting.kind === "input"
-		? undefined
-		: paint.alert(`⚑ waiting on you: ${waitingWhat(waiting)}`);
 };

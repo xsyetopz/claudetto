@@ -1,12 +1,5 @@
 import { num, parse, rec, str } from "./input";
 
-/** What the session is waiting on the person for: a permission prompt, a question, or their next prompt. */
-export interface Waiting {
-	readonly kind: "permission" | "question" | "input";
-	/** The tool whose call raised the prompt; absent for `input`. */
-	readonly tool?: string;
-}
-
 /** A task of the session's list, from `TaskCreate`, `TaskUpdate`, or `TodoWrite`. */
 export interface Task {
 	readonly id: string;
@@ -44,7 +37,6 @@ export interface Baseline {
  */
 export interface LiveState {
 	readonly phase: "working" | "idle";
-	readonly waiting?: Waiting;
 	/** Tool calls started in the session, by the lead and its subagents. */
 	readonly tools: number;
 	readonly tasks: readonly Task[];
@@ -67,15 +59,11 @@ export const EMPTY_STATE: LiveState = {
 export const statePath = (configDir: string, session: string): string =>
 	`${configDir}/claudetto/status/${session.replaceAll(/[^\w.-]/gu, "_")}.json`;
 
-const KINDS: ReadonlySet<string> = new Set(["permission", "question", "input"]);
 const STATUSES: ReadonlySet<string> = new Set([
 	"pending",
 	"in_progress",
 	"completed"
 ]);
-
-const isKind = (kind: string | undefined): kind is Waiting["kind"] =>
-	kind !== undefined && KINDS.has(kind);
 
 const isStatus = (status: string | undefined): status is Task["status"] =>
 	status !== undefined && STATUSES.has(status);
@@ -121,11 +109,6 @@ const baselineOf = (value: unknown): Baseline | undefined => {
 	};
 };
 
-const waitingOf = (kind: string | undefined, tool: string | undefined) =>
-	isKind(kind)
-		? { waiting: { kind, ...(tool === undefined ? {} : { tool }) } }
-		: {};
-
 /** The state in `raw`; a file that is missing, not JSON, or not this shape reads as no state. */
 export const readState = (raw: string | undefined): LiveState | undefined => {
 	const found = raw === undefined ? undefined : parse(raw);
@@ -151,8 +134,7 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 						(item) => baselineOf(item) ?? []
 					)
 				}
-			: {}),
-		...waitingOf(str(found["waitingKind"]), str(found["waitingTool"]))
+			: {})
 	};
 };
 
@@ -160,8 +142,6 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 export const writeState = (state: LiveState): string =>
 	JSON.stringify({
 		phase: state.phase,
-		waitingKind: state.waiting?.kind,
-		waitingTool: state.waiting?.tool,
 		tools: state.tools,
 		tasks: state.tasks,
 		context: state.context,

@@ -41,7 +41,6 @@ const FULL = JSON.stringify({ ...BASE, rate_limits: LIMITS });
 
 const STATE: LiveState = {
 	phase: "working",
-	waiting: { kind: "permission", tool: "Bash" },
 	tools: 42,
 	tasks: [
 		{ id: "1", subject: "Read", status: "completed" },
@@ -74,9 +73,7 @@ describe("status line rows", () => {
 			"ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m · 5h █████░░░░░ 50% on pace ↻"
 		);
 		expect(rows[1]).toContain(" · 7d █░░░░░░░░░ 10% 47% reserve ↻");
-		expect(rows[2]).toBe(
-			"⚒ 42 tools 3.5/min · ☑ 1/3 ██░░░ ◐ Writing tests · ⚑ waiting on you: permission for Bash"
-		);
+		expect(rows[2]).toBe("⚒ 42 tools 3.5/min · ☑ 1/3 ██░░░ ◐ Writing tests");
 	});
 
 	test("never prints a row label or the thinking flag", () => {

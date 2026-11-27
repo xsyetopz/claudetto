@@ -37,7 +37,6 @@ Supersedes the minimal-status-line part of ADR-0190. The rest of ADR-0190 and th
 
 - A user who has their own `statusLine` sees none of this; the plugin leaves it alone and says nothing.
 - The `statusLine` key sits in the user settings file, so Claude Code runs the command in every session, also in one where claudetto is not loaded or was removed. The command prints nothing, and the line stays blank, for a session without a state file; the `session.start` hook writes that file even when the usage read fails. Amended 2026-11-26.
-- A permission prompt the person denies leaves `waiting on you` shown until the next tool run or turn event, since the hooks see no denial event.
 - The command starts a Bun process each time the line refreshes; it reads a few small files, runs `sysctl` and `ps` (about 70 ms together, measured 2026-11-25 on macOS), and prints.
 - The plan phase of ProjectArchitect's line has no source here, so the phase is the hook-observed working or idle.
 
@@ -51,5 +50,6 @@ ISSUES-part9.md and ISSUES-part10.md showed three rows that repeated what the sc
 - The chip band above the prompt is gone; it repeated the context and 7d rows. `/breakdown` still opens the pane.
 - The context bar fills against the window /context measures (`rawMaxTokens`), which is the user's `autoCompactWindow` when that is below the model's limit. A 300k compaction window on a 1M model drew 2% of 1M where compaction runs at 300k.
 - `wireStatusLine` writes the key when the user has none only until claudetto's command has been in the file once (the `statusLineWired` store key). After that a missing key means the user removed it (`/statusline delete`, ISSUES-part8.txt:150), and it stays removed.
+- The `⚑ waiting on you` row is gone for dialogs and questions too (ISSUES-part9.md:271, ISSUES-part10.md:176): core draws both itself, and the status line carries what core does not draw.
 
 Source: ADR-0190; ADR-0177; COST-004.

@@ -47,11 +47,10 @@ describe("state file", () => {
 		expect(out).toBe("");
 	});
 
-	test("a state file the hooks wrote shows the waiting prompt and tasks", async () => {
+	test("a state file the hooks wrote shows the tasks", async () => {
 		// Arrange
 		const state: LiveState = {
 			phase: "working",
-			waiting: { kind: "question", tool: "AskUserQuestion" },
 			tools: 7,
 			tasks: [
 				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }
@@ -62,7 +61,6 @@ describe("state file", () => {
 		const out = await draw({ [statePath("/cfg", "s1")]: writeState(state) });
 
 		// Assert
-		expect(out).toContain("waiting on you: an answer");
 		expect(out).toContain("Doing s");
 	});
 
@@ -88,13 +86,9 @@ describe("state file", () => {
 	test("a broken or foreign state file draws as no state", async () => {
 		// Act
 		const broken = await draw({ [statePath("/cfg", "s1")]: "{" });
-		const foreign = await draw({
-			[statePath("/cfg", "s1")]: '{"waitingKind":"bogus"}'
-		});
 
 		// Assert
 		expect(broken).toBe("⌂ p");
-		expect(foreign).not.toContain("waiting");
 	});
 
 	test("a file an older version wrote, with no tool count or tasks, still draws", async () => {

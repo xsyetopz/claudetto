@@ -12,7 +12,7 @@ import {
 	prText
 } from "./segments";
 import { truncate, width } from "./width";
-import { tasksText, toolsText, waitingText } from "./work";
+import { tasksText, toolsText } from "./work";
 
 /** The gap between two items of a row, as Claude Code separates its own: a space, a middle dot, a space. */
 const SEP = " · ";
@@ -41,7 +41,7 @@ const rowsOf = (ctx: Ctx, split = false): string[] => [
 	...(split
 		? [...row([contextText(ctx), cacheText(ctx)]), ...row(limitTexts(ctx))]
 		: row([contextText(ctx), cacheText(ctx), ...limitTexts(ctx)])),
-	...row([toolsText(ctx), tasksText(ctx), waitingText(ctx)])
+	...row([toolsText(ctx), tasksText(ctx)])
 ];
 
 const fits = (rows: readonly string[], columns: number): boolean =>

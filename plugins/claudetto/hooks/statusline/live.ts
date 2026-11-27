@@ -9,12 +9,8 @@ import {
 	EMPTY_STATE,
 	type LiveState,
 	statePath,
-	type Waiting,
 	writeState
 } from "./line/state";
-
-/** The tool that puts a question to the person, whatever the permission mode says about it. */
-const QUESTION_TOOL = "AskUserQuestion";
 
 /**
  * Matches every value of a string field. These hooks observe every event of their
@@ -45,39 +41,18 @@ async function save($: EngineInterface, state: LiveState): Promise<void> {
 	}
 }
 
-/** `current` with `waiting` as the prompt it waits on. */
-const waitingOn = (current: LiveState, waiting: Waiting): LiveState => ({
-	...current,
-	waiting
-});
-
-/** `current` with no waiting prompt. */
-const answered = (current: LiveState): LiveState => {
-	const { waiting: _dropped, ...rest } = current;
-	return rest;
-};
-
-/** `current` with no permission or question prompt: a tool that starts running was allowed, so the prompt is answered. */
-const answeredCall = (current: LiveState): LiveState =>
-	current.waiting !== undefined && current.waiting.kind !== "input"
-		? answered(current)
-		: current;
-
-/** The phase: working from a prompt until the turn ends, and then waiting on the next prompt. Subagent turns are skipped, since the lead's phase is the one shown. */
+/** The phase: working from a prompt until the turn ends, then idle. Subagent turns are skipped, since the lead's phase is the one shown. */
 function registerPhase(on: On, live: Live): void {
 	on("turn.start", ANY_TURN, async ($, e, next) => {
 		if (e.agentId === undefined) {
-			live.state = { ...answered(live.state), phase: "working" };
+			live.state = { ...live.state, phase: "working" };
 			await save($, live.state);
 		}
 		return next(e);
 	});
 	on("turn.complete", ANY_TURN, async ($, e, next) => {
 		if (e.agentId === undefined) {
-			live.state = {
-				...waitingOn(live.state, { kind: "input" }),
-				phase: "idle"
-			};
+			live.state = { ...live.state, phase: "idle" };
 			await save($, live.state);
 		}
 		return next(e);
@@ -85,45 +60,12 @@ function registerPhase(on: On, live: Live): void {
 }
 
 /**
- * The prompt a tool call raises, cleared when a tool starts running; each
- * started call is counted, and a task call updates the list. A
- * permission prompt is recorded at `classic.PermissionRequest`, which fires only
- * when a dialog opens: an `ask` verdict at `tool.check` goes to the mode's
- * decider first, and auto mode's classifier settles most with nobody asked.
+ * Each started call is counted, and a task call updates the list. A permission
+ * dialog or a question gets no row: Claude Code draws both itself.
  */
-function registerPrompt(on: On, live: Live): void {
-	on("tool.check", { tool: ANY }, async ($, e, next) => {
-		const verdict = await next(e);
-		if (
-			e.tool_use_id !== undefined &&
-			e.tool === QUESTION_TOOL &&
-			verdict.decision !== "deny"
-		) {
-			live.state = waitingOn(live.state, {
-				kind: "question",
-				tool: e.tool
-			});
-			await save($, live.state);
-		}
-		return verdict;
-	}).catch(($, e, next) => {
-		fault($, "status tool check", next.error);
-		return next(e);
-	});
-	on("classic.PermissionRequest", async ($, e, next) => {
-		live.state = waitingOn(live.state, {
-			kind: "permission",
-			tool: e.tool_name
-		});
-		await save($, live.state);
-		return next(e);
-	}).catch(($, e, next) => {
-		fault($, "status permission request", next.error);
-		return next(e);
-	});
+function registerCalls(on: On, live: Live): void {
 	on("tool.run", async ($, e, next) => {
-		const current = answeredCall(live.state);
-		live.state = { ...current, tools: current.tools + 1 };
+		live.state = { ...live.state, tools: live.state.tools + 1 };
 		await save($, live.state);
 		const result = await next(e);
 		const tasks = tasksAfter(live.state.tasks, e.tool, e, result.result);
@@ -202,13 +144,13 @@ function registerMeasure(on: On, live: Live): void {
 
 /**
  * Writes what the hooks observe in one session to the file the status line
- * command reads (ADR-0201): the turn phase, the prompt the session waits on
- * the person for, the tool call count, the task list, the context rows, and the rate-limit baselines. Each
+ * command reads (ADR-0201): the turn phase, the tool call count, the task
+ * list, the context rows, and the rate-limit baselines. Each
  * change rewrites the whole file into `live`, which the usage pane reads too.
  */
 export function registerLive(on: On, live: Live): void {
 	registerPhase(on, live);
-	registerPrompt(on, live);
+	registerCalls(on, live);
 	registerEnd(on, live);
 	registerMeasure(on, live);
 }

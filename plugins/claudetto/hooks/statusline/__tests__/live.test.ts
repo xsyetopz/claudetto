@@ -1,5 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
+import { statusOf } from "../line/main";
+import { EMPTY_STATE } from "../line/state";
 import { serve } from "./serve";
 
 const TURN = { text: "", turnId: "t1" };
@@ -12,7 +14,7 @@ const DONE = {
 } as const;
 
 describe("live state", () => {
-	test("is working during a turn and waiting for the next prompt once it ends", async ($, on) => {
+	test("is working during a turn and idle once it ends", async ($, on) => {
 		// Arrange
 		const state = serve(on);
 
@@ -24,10 +26,9 @@ describe("live state", () => {
 		// Assert
 		expect(during?.phase).toBe("working");
 		expect(state()?.phase).toBe("idle");
-		expect(state()?.waiting).toEqual({ kind: "input" });
 	});
 
-	test("records the permission dialog a call opens, then clears it when a tool runs", async ($, on) => {
+	test("a permission dialog or a question puts no waiting row on the status line", async ($, on) => {
 		// Arrange
 		const state = serve(on);
 		const call = {
@@ -38,41 +39,21 @@ describe("live state", () => {
 		};
 
 		// Act
-		await $.tool.check(call);
-		const checked = state();
-		await $.classic.PermissionRequest({
-			tool_name: call.tool,
-			tool_input: call.input
-		});
-		const asked = state();
-		await $.tool.run(call);
-		const answered = state();
-
-		// Assert
-		expect(checked?.waiting).toBeUndefined();
-		expect(asked?.waiting).toEqual({
-			kind: "permission",
-			tool: "mcp__claudetto__web_search"
-		});
-		expect(answered?.waiting).toBeUndefined();
-	});
-
-	test("records the question AskUserQuestion puts to the person", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-
-		// Act
 		await $.tool.check({
 			tool: "AskUserQuestion",
 			input: {},
 			tool_use_id: "u2"
 		});
+		await $.classic.PermissionRequest({
+			tool_name: call.tool,
+			tool_input: call.input
+		});
+		const out = statusOf("{}", { NO_COLOR: "1", COLUMNS: "200" }, 0, {
+			state: state() ?? EMPTY_STATE
+		});
 
 		// Assert
-		expect(state()?.waiting).toEqual({
-			kind: "question",
-			tool: "AskUserQuestion"
-		});
+		expect(out).not.toContain("waiting");
 	});
 
 	test("counts each started call", async ($, on) => {
