@@ -128,7 +128,7 @@ claudetto serves `get_goal`, `set_goal`, `pause_goal` and `clear_goal` to the mo
 
 ## Settings Defaults
 
-At a session start, claudetto fills defaults into the user settings file, once per set of defaults. It writes a key only when you left it unset, and adds only the list entries that are missing, so a value you chose stays. It logs one line naming what it changed.
+At a session start, claudetto fills its settings into the user settings file, once per set of defaults: each key it names takes its value and missing list entries are added, so an edit you make afterwards holds until the next release changes the set. Permission rules that would prompt for a command claudetto keeps free are removed on every start. It logs one line naming what it changed. `/claudetto-setup` applies the whole set, the status line and the rules again at once, including parts you removed.
 
 - Trimmed prompt: seven tools denied (`Workflow`, `ScheduleWakeup`, `ReportFindings`, `CronCreate`, `CronDelete`, `CronList`, `EnterPlanMode`), `skillListingMaxDescChars` 200 (each skill keeps its first 200 characters, where its trigger sits), `bashOutputMaxChars` 8000, and several `env` switches.
 - Commit trailer `Co-Authored-By: Claude <noreply@anthropic.com>`, which GitHub credits to Claude's account and GitLab writes in the same form, and never a `Signed-off-by`; PR line `Assisted-by: Claude Code`. A commit value an earlier version filled (`Assisted-by: Claude Code`) is replaced; one you wrote stays.

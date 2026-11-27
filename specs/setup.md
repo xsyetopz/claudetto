@@ -233,3 +233,12 @@ claudetto removes the permission rules SETUP-071 names as conflicting on every s
 Given an ask rule `Bash(git branch -D *)` added after the fill
 When the next session starts
 Then that rule is removed and an unrelated ask rule stays
+
+## SETUP-075 Setup Command Applies Everything Now
+
+claudetto registers `/claudetto-setup`, which applies the whole settings fill, the status line and the shipped rules at once, including parts the user removed or edited, because the automatic fill runs once per release and leaves a removed part removed.
+
+Given a session after the fill, with the status line removed and `outputStyle` edited
+When `/claudetto-setup` runs
+Then the settings file holds the construction's `outputStyle` and claudetto's status line
+And the reply names the settings file

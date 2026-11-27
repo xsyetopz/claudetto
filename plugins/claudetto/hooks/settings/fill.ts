@@ -63,13 +63,14 @@ export interface Settled {
 	readonly owned: readonly OwnedKey[] | undefined;
 }
 
-/** Fills when this fill version has not run; otherwise only the conflicting permission rules go. */
+/** Fills when this fill version has not run or `force` is set; otherwise only the conflicting permission rules go. */
 export async function settle(
 	$: EngineInterface,
 	text: string,
-	walls: readonly string[] | undefined
+	walls: readonly string[] | undefined,
+	force = false
 ): Promise<Settled> {
-	if ((await $.store.get(MARK)) === FILL_VERSION) {
+	if (!force && (await $.store.get(MARK)) === FILL_VERSION) {
 		const dropped = dropConflictText(text);
 		return {
 			text: dropped?.text ?? text,

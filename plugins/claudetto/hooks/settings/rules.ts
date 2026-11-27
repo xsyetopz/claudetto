@@ -37,17 +37,18 @@ async function shipped($: EngineInterface): Promise<Map<string, string>> {
 
 /**
  * The text to write at `target`, or undefined to leave it: a missing file is
- * written only on first install (a later absence means the user removed it), and
- * an existing file is replaced only while it still holds what claudetto wrote.
+ * written on first install or a `restore` (otherwise a later absence means the user removed it),
+ * and an existing file is replaced only while it still holds what claudetto wrote.
  */
 async function nextText(
 	$: EngineInterface,
 	target: string,
 	want: string,
-	last: string | undefined
+	last: string | undefined,
+	restore: boolean
 ): Promise<string | undefined> {
 	if (!(await $.fs.exists(target))) {
-		return last === undefined ? want : undefined;
+		return last === undefined || restore ? want : undefined;
 	}
 	const current = await $.fs.read(target);
 	return current !== want && current === last ? want : undefined;
@@ -69,9 +70,12 @@ async function retiredText(
  * loads user rules for every project, and keeps them current across releases.
  * A rule the user edited or removed stays as they left it; a rule a release
  * retires is emptied while it holds claudetto's text, because `$.fs` has no delete.
- * Returns the names written.
+ * `restore` writes a removed rule again, for the setup command. Returns the names written.
  */
-export async function installRules($: EngineInterface): Promise<string[]> {
+export async function installRules(
+	$: EngineInterface,
+	restore = false
+): Promise<string[]> {
 	const dir = `${await configDir($)}/rules/claudetto`;
 	const written = readWritten(await $.store.get(WRITTEN));
 	const rules = await shipped($);
@@ -82,7 +86,7 @@ export async function installRules($: EngineInterface): Promise<string[]> {
 		...[...rules].map(async ([name, want]) => ({
 			name,
 			want,
-			text: await nextText($, `${dir}/${name}`, want, written[name])
+			text: await nextText($, `${dir}/${name}`, want, written[name], restore)
 		})),
 		...retired.map(async ([name, last]) => ({
 			name,
