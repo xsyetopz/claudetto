@@ -170,3 +170,15 @@ Given a fixture run against a fake API that states one requirement
 When three compactions are forced
 Then the requirement is still stated in the context after the last one
 And claudetto's injected bytes per compaction do not grow
+
+## HANDOVER-074 Resume After a Mid-Turn Handover
+
+claudetto ends the handover that answers an automatic compaction with core's instruction to resume the last task without a question, and leaves it off a compaction at a turn boundary, where the next prompt is the user's.
+
+Given an automatic compaction in the middle of a turn
+When the handover answers it
+Then the handover ends with the resume instruction
+
+Given a compaction claudetto starts at a turn boundary
+When the handover answers it
+Then the handover carries no resume instruction

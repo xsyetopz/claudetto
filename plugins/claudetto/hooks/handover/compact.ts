@@ -6,6 +6,13 @@ import { isAutoOff, isOff, knob, writeHandover } from "./writer";
 
 const AUTOMATIC = new Set(["auto", "precompute", "plugin"]);
 
+// Core ends its own auto-compaction summary with this resume instruction (claude 2.1.329,
+// `suppressFollowUpQuestions`); a handover that replaces the summary carries it too, or the model
+// answers the handover and waits for a "continue". A `plugin` compaction runs at a turn boundary,
+// after the model answered, so the next prompt is the user's and gets no resume line.
+const RESUME =
+	"Continue the conversation from where it left off without asking the user any further questions. Resume directly with the next step's tool call, as if the break never happened.";
+
 /**
  * Answers main-loop automatic compactions with the handover so core makes no
  * summarizer call; a manual `/compact` keeps core's summary with the keep line.
@@ -26,7 +33,10 @@ export function registerCompact(on: On): void {
 					: KEEP_LINE;
 			return next({ ...e, instructions });
 		}
-		const { text, usage } = await writeHandover($);
+		const handover = await writeHandover($);
+		const text =
+			e.trigger === "plugin" ? handover.text : `${handover.text}\n\n${RESUME}`;
+		const { usage } = handover;
 		const { context } = await $.session.usage();
 		// Core rejects a hook's messages whose token counts are not numbers (RT-042).
 		const zero = {
