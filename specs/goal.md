@@ -60,3 +60,11 @@ Given a goal earlier than that
 When the feedback row is written
 Then it holds no note
 And the cap comes from `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (default 8)
+
+## GOAL-031 Name a Path Removed After the Goal Was Set
+
+claudetto adds the missing-path note to each stop-block feedback row while a path the goal names is missing, so a path removed after set time reaches the model.
+
+Given a goal whose named path existed at set time and was removed after
+When the goal blocks the stop
+Then the feedback row names the missing path

@@ -1,7 +1,8 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { missingIn, missingNote } from "./command";
 import {
 	capNote,
 	capOf,
@@ -77,6 +78,20 @@ function blockNotes(goal: Goal, cap: number): string[] {
 }
 
 /**
+ * The block's notes plus the missing-path note: a path the goal names can vanish after the goal
+ * is set (a scratch folder the model removed), and without the note the model waits on a
+ * condition nothing can meet.
+ */
+async function notesFor($: EngineInterface, goal: Goal): Promise<string[]> {
+	const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
+	const missing = await missingIn($, goal.condition);
+	return [
+		...blockNotes(goal, cap),
+		...(missing.length > 0 ? [missingNote(missing)] : [])
+	];
+}
+
+/**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
  * evidence or pause. It also notices when the evaluator judged the goal met,
@@ -110,8 +125,7 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 		}
 		tracker.stopping = false;
 		goal.blocks += 1;
-		const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
-		const notes = blockNotes(goal, cap);
+		const notes = await notesFor($, goal);
 		if (notes.length === 0) {
 			return next(e);
 		}
