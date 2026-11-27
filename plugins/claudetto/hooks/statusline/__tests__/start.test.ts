@@ -3,16 +3,33 @@ import { describe, expect, mock, test } from "claude-code/testing";
 
 import { serve } from "./serve";
 
-/** Serves the calls the whole session start makes, with `usage` as the session usage answer. */
+/**
+ * Serves the calls the whole session start makes, with `usage` as the session usage answer. A
+ * `settings.read` answers from the last settings file written, as the engine does once it loads
+ * it; `ownsWrites` also serves `fs.write`, for a test without `serve`.
+ */
 const serveStart = (
 	on: On,
-	usage: () => SessionUsage | Promise<SessionUsage>
+	usage: () => SessionUsage | Promise<SessionUsage>,
+	ownsWrites = false
 ) => {
 	const store = new Map<string, unknown>();
+	let settings: Record<string, unknown> = {};
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("session.usage", async () => ({ value: await usage() }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-	on("settings.read", () => ({ value: {} }));
+	if (ownsWrites) {
+		on("fs.write", (_$, e) => {
+			if (e.path.endsWith("settings.json") && typeof e.text === "string") {
+				const parsed: unknown = JSON.parse(e.text);
+				if (typeof parsed === "object" && parsed !== null) {
+					settings = Object.fromEntries(Object.entries(parsed));
+				}
+			}
+			return { value: undefined };
+		});
+	}
+	on("settings.read", () => ({ value: settings }));
 	on("fs.exists", () => ({ value: false }));
 	on("fs.read", () => ({ value: "" }));
 	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
@@ -30,13 +47,13 @@ describe("live state at session start", () => {
 		const clock = mock.clock(on);
 		on("env.get", () => ({ value: undefined }));
 		on("session.id", () => ({ value: "s1" }));
-		on("fs.write", () => ({ value: undefined }));
 		serveStart(
 			on,
 			() =>
 				new Promise<never>(() => {
 					// never answers
-				})
+				}),
+			true
 		);
 
 		// Act
