@@ -16,6 +16,10 @@ Given a Bash call that failed
 When the terminal draws the call collapsed
 Then the row reads `Ran 1 command (git status --short)` followed by `failed (ctrl+o to expand)`
 
+Given a subagent call with the description `audit specs`
+When the terminal draws the call collapsed
+Then the row reads `Delegated 1 task (audit specs)`
+
 ## TRANSCRIPT-003 Aggregate a Calls-Only Group
 
 claudetto draws a collapsed group of calls as one row that counts the calls per verb and names equal subjects once with `×n`.

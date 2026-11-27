@@ -69,7 +69,12 @@ const KINDS: Record<string, Kind> = {
 	NotebookEdit: { ...FILES, subjects: fileOf("notebook_path", "file_path") },
 	mcp__claudetto__patch: { ...FILES, subjects: patchedFiles },
 	Grep: { verb: "Searched", noun: "pattern", subjects: patternOf },
-	Glob: { verb: "Searched", noun: "pattern", subjects: patternOf }
+	Glob: { verb: "Searched", noun: "pattern", subjects: patternOf },
+	Agent: {
+		verb: "Delegated",
+		noun: "task",
+		subjects: (input) => [text(input["description"])].filter(Boolean)
+	}
 };
 
 /** The tool's name without its `mcp__<server>__` prefix. */

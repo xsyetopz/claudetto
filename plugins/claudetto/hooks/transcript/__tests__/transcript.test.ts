@@ -142,4 +142,27 @@ describe("terminal transcript rows", () => {
 		// Assert
 		expect(await ui.find({ text: /Ran 1 command/u })).toBeUndefined();
 	});
+
+	test("TRANSCRIPT-002 a collapsed subagent call names its task", async ($, on) => {
+		// Arrange
+		const props = {
+			tool_use_id: "t1",
+			...call("Agent", { description: "audit specs", prompt: "…" })
+		};
+
+		// Act
+		registerTranscript(on);
+		const ui = await $.ui.mount({
+			plugin: "engine",
+			surface: "terminal",
+			component: "ToolUse",
+			requestId: "r1",
+			props
+		});
+
+		// Assert
+		expect(
+			await ui.find({ text: /Delegated 1 task \(audit specs\)/u })
+		).toBeDefined();
+	});
 });
