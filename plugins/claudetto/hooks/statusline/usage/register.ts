@@ -6,6 +6,7 @@ import type {
 } from "claude-code";
 
 import { fault } from "../../shared/fault";
+import { START_CAP_MS, within } from "../../shared/within";
 import type { Live } from "../live";
 import { contextLines } from "./context";
 import { limitLines } from "./limit";
@@ -89,17 +90,15 @@ function registerCommand(on: On, view: View): void {
 	// A refused registration is logged here rather than thrown: the
 	// session.start hooks upstream would otherwise report it as their own failure.
 	on("session.start", { cwd: ANY }, async ($, e, next) => {
-		try {
-			await $.command.register({
+		await within($, START_CAP_MS, "usage command register", () =>
+			$.command.register({
 				name: PANE,
 				description:
 					"Show the context window by category and the `5h` and `7d` limits by pace",
 				argumentHint: "[ctx|5h|7d]",
 				immediate: true
-			});
-		} catch (error) {
-			fault($, "usage command register", error);
-		}
+			})
+		);
 		return next(e);
 	});
 

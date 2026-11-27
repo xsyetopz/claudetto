@@ -9,7 +9,7 @@ import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
 import { fault } from "../shared/fault";
 import { fieldOf, stringsOf } from "../shared/field";
-import { within } from "../shared/within";
+import { START_CAP_MS, within } from "../shared/within";
 import { logChanges, record, settle } from "./fill";
 import { startParts } from "./parts";
 import { userSettingsPath } from "./settings";
@@ -28,9 +28,6 @@ const LOAD_WAIT_MS = 3000;
 
 /** Gap between two reads of the engine's settings while waiting, in ms. */
 const POLL_MS = 50;
-
-/** Longest time claudetto's setup holds session start, in ms; above LOAD_WAIT_MS so the load wait fits. */
-const START_CAP_MS = 5000;
 
 /** The store key set once claudetto's status line command was in the user's settings. */
 const WIRED = "statusLineWired";

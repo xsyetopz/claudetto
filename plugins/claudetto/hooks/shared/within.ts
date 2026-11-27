@@ -2,6 +2,9 @@ import type { EngineInterface } from "claude-code";
 
 import { fault } from "./fault";
 
+/** Longest time one claudetto hook holds session start, in ms; above the settings load wait (3000) so that wait fits. */
+export const START_CAP_MS = 5000;
+
 /**
  * Runs `work` and waits for it at most `ms`; past that the hook goes on and `work`
  * finishes on its own, a fault logged under `where`. A typed slash command waits on the whole

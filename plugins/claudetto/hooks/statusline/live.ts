@@ -2,6 +2,7 @@ import type { EngineInterface, On } from "claude-code";
 
 import { configDir } from "../settings/settings";
 import { fault } from "../shared/fault";
+import { START_CAP_MS, within } from "../shared/within";
 import { activityOf, tasksAfter } from "./activity";
 import { baselinesAfter, partsOf } from "./baseline";
 import {
@@ -211,24 +212,26 @@ function registerMeasure(on: On, live: Live): void {
 	// A failed usage read is logged here rather than thrown: the session.start
 	// hooks upstream would otherwise report it as their own failure.
 	on("session.start", { cwd: ANY }, async ($, e, next) => {
-		try {
+		await within($, START_CAP_MS, "status session start", async () => {
 			// The summary breakdown is a free local estimate. Its window is the auto-compact one,
 			// so the first draw fills toward that window and not the model's 1M.
-			const { rateLimits, context } = await $.session.usage({
-				breakdown: "summary"
-			});
-			const now = await $.clock.now();
-			const window = context.breakdown?.rawMaxTokens;
-			live.state = {
-				...live.state,
-				limits: baselinesAfter(live.state.limits ?? [], rateLimits, now),
-				...(window === undefined ? {} : { window })
-			};
-		} catch (error) {
-			fault($, "status session start", error);
-		}
-		// Saved even when the usage read failed: the status line command draws only for a session with this file.
-		await save($, live.state);
+			try {
+				const { rateLimits, context } = await $.session.usage({
+					breakdown: "summary"
+				});
+				const now = await $.clock.now();
+				const window = context.breakdown?.rawMaxTokens;
+				live.state = {
+					...live.state,
+					limits: baselinesAfter(live.state.limits ?? [], rateLimits, now),
+					...(window === undefined ? {} : { window })
+				};
+			} catch (error) {
+				fault($, "status session start", error);
+			}
+			// Saved even when the usage read failed: the status line command draws only for a session with this file.
+			await save($, live.state);
+		});
 		return next(e);
 	});
 	on("session.measure", async ($, e, next) => {

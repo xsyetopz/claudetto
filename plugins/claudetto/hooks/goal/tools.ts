@@ -2,6 +2,7 @@ import type { EngineInterface, On, ToolSpec } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { START_CAP_MS, within } from "../shared/within";
 import { claimOf, judgeClaim, type Use } from "./evidence";
 import { endGoal, setGoal, type Tracker } from "./state";
 
@@ -193,14 +194,14 @@ function registerPolicy(on: On): void {
 export function registerTools(on: On, tracker: Tracker): void {
 	// One registration per matcher value: settings/start.ts holds the unmatched one.
 	on("session.start", { isInteractive: true }, async ($, e, next) => {
-		await registerSpecs($);
+		await within($, START_CAP_MS, "goal tool register", () => registerSpecs($));
 		return next(e);
 	}).catch(($, e, next) => {
 		fault($, "goal tool register", next.error);
 		return next(e);
 	});
 	on("session.start", { isInteractive: false }, async ($, e, next) => {
-		await registerSpecs($);
+		await within($, START_CAP_MS, "goal tool register", () => registerSpecs($));
 		return next(e);
 	}).catch(($, e, next) => {
 		fault($, "goal tool register", next.error);
