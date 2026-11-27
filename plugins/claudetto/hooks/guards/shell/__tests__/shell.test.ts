@@ -1,6 +1,9 @@
-import { describe, expect, test } from "claude-code/testing";
+import { describe, expect, test, type TestBody } from "claude-code/testing";
 
 import { bashWorld } from "./bash-world";
+
+type Dollar = Parameters<TestBody>[0];
+type Mocks = Parameters<TestBody>[1];
 
 describe("shell guard", () => {
 	test("a Bash call reaches the tool with every guard applied", async ($, on) => {
@@ -143,8 +146,8 @@ describe("shell guard", () => {
 
 	/** The command a `gh run list --commit 7e2d3626b` call reaches the Bash tool as; `resolves` says whether git finds the commit. */
 	const ranAs = async (
-		$: Parameters<Parameters<typeof test>[1]>[0],
-		on: Parameters<Parameters<typeof test>[1]>[1],
+		$: Dollar,
+		on: Mocks,
 		resolves: boolean
 	): Promise<string | undefined> => {
 		on("process.run", () => ({

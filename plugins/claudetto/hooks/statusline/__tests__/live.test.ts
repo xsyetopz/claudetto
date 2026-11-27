@@ -1,50 +1,7 @@
-import type { AgentReportInput, AgentSpawnInput, On } from "claude-code";
+import type { AgentReportInput, AgentSpawnInput } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { readState } from "../line/state";
-
-/** Serves the engine calls the live state needs; returns the files written, by path. */
-const serve = (on: On, result: unknown = "ok") => {
-	const files = new Map<string, string>();
-	on("env.get", (_$, e) => ({
-		value: e.name === "CLAUDE_CONFIG_DIR" ? "/cfg" : undefined
-	}));
-	on("session.id", () => ({ value: "s1" }));
-	on("clock.now", () => ({ value: 1_000_000 }));
-	on("fs.write", (_$, e) => {
-		files.set(e.path, e.text);
-		return { value: undefined };
-	});
-	on("tool.check", () => ({ decision: "ask" }));
-	on("classic.PermissionRequest", () => ({}));
-	on("tool.run", () => ({ result }));
-	on("agent.spawn", (_$, e) => ({
-		model: "m",
-		agentId: `id-${e.description}`
-	}));
-	on("agent.report", (_$, e) => ({ text: e.text }));
-	on("turn.start", (_$, e) => ({ turnId: e.turnId }));
-	on("turn.complete", (_$, e) => ({ text: e.answer }));
-	return () => readState(files.get("/cfg/claudetto/status/s1.json"));
-};
-
-/** Serves the calls the whole session start makes, with `usage` as the session usage answer. */
-const serveStart = (on: On, usage: () => unknown) => {
-	const store = new Map<string, unknown>();
-	on("session.start", (_$, e) => ({ cwd: e.cwd }));
-	on("session.usage", () => ({ value: usage() }));
-	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-	on("settings.read", () => ({ value: {} }));
-	on("fs.exists", () => ({ value: false }));
-	on("fs.read", () => ({ value: "" }));
-	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
-	on("store.set", (_$, e) => {
-		store.set(e.key, e.value);
-		return { value: undefined };
-	});
-	on("ui.log", () => ({ value: undefined }));
-	on("command.run", () => ({ text: "Reloaded" }));
-};
+import { serve } from "./serve";
 
 const TURN = { text: "", turnId: "t1" };
 const DONE = {
@@ -56,38 +13,6 @@ const DONE = {
 } as const;
 
 describe("live state", () => {
-	test("session start writes the state file, also when the usage read fails, so the status line draws", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-		serveStart(on, () => {
-			throw new Error("usage unavailable");
-		});
-
-		// Act
-		await $.session.start({ cwd: "/repo", surface: null, isInteractive: true });
-
-		// Assert
-		expect(state()?.phase).toBe("idle");
-	});
-
-	test("session start records the auto-compact window, so the first status line fills toward it", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-		serveStart(on, () => ({
-			rateLimits: [],
-			context: {
-				window: 1_000_000,
-				breakdown: { categories: [], rawMaxTokens: 300_000, totalTokens: 0 }
-			}
-		}));
-
-		// Act
-		await $.session.start({ cwd: "/repo", surface: null, isInteractive: true });
-
-		// Assert
-		expect(state()?.window).toBe(300_000);
-	});
-
 	test("is working during a turn and waiting for the next prompt once it ends", async ($, on) => {
 		// Arrange
 		const state = serve(on);
