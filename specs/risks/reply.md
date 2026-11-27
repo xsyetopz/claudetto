@@ -2448,3 +2448,49 @@ One cure serves every conduct fault (asking when it could act, stopping early, s
   Status: mitigated 2026-11-27 on Opus 5.5; Haiku 5.5 ties vanilla, its misses being closing offers.
   Verified: 2026-11-27, claude 2.1.329, Opus 5.5, `just eval claudetto --case refused-step --runs 6 --model claude-opus-5-5` (plugins/claudetto/evals/results/2026-11-26T22-43-03-446Z): 1.00 with claudetto and 0.83 without, 6 runs each.
   Source: ISSUES-part8.txt:42; ISSUES-part7.txt:176; ISSUES-part3.txt:68.
+
+- [x] **RISK-593** Prompt text phrased as prohibitions ("do not", "never", "no X") steers the model less well than the action to take, and names the unwanted behaviour in every cached request.
+  - Category: reply.
+  - Cause: conduct paragraphs, the output style, agent files, deny reasons and tool descriptions were written as prohibitions.
+  - Event: the user's report of 2026-11-27 that the hooks carry negative prompts; Anthropic's prompting guide, "Control the format of responses": "Tell Claude what to do instead of what not to do".
+  - Consequence: weaker steering and longer prompts in every session.
+  - Likelihood: 3
+  - Impact: 3
+  - Existing controls: none.
+  - Response: mitigate.
+  - Actions: every model-facing instruction under `plugins/claudetto/hooks/`, `output-styles/claudetto.md` and `agents/*.md` now names the action to take, with each rule's meaning kept; the output style stays within REPLY-156 (1323 chars of body).
+  - Trigger: a new prompt string written as a prohibition.
+  - Owner: reply
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, claude 2.1.329, `git grep -i -E "\b(do not|don't|never|must not)\b"` over `hooks`, `output-styles` and `agents` outside `__tests__`: 0 matches; the style body measures 1323 chars.
+  - Source: platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices.
+
+- [x] **RISK-594** A reply that hands back a step the agent could take, or claims a pass with no run after the last edit, reaches the user unchecked.
+  - Category: reply.
+  - Cause: the prompt alone left closing offers in Haiku 5.5 and Opus 5.5 runs; a regex over English words broke on rephrasing.
+  - Event: `refused-step` misses were all closing lines (results `2026-11-26T22-43-03-446Z`).
+  - Consequence: the user is handed work or a false pass.
+  - Likelihood: 4
+  - Impact: 3
+  - Existing controls: the conduct paragraph and output style.
+  - Response: mitigate.
+  - Actions: a `type: prompt` Stop hook on `claude-haiku-5-5` (REPLY-157) returns such a reply once; `stop_hook_active` lets the second stop through, so it cannot loop.
+  - Trigger: a closing offer or unrun pass claim that passes the judge.
+  - Owner: reply
+  - Status: mitigated 2026-11-27.
+  - Verified: 2026-11-27, Haiku 5.5, `refused-step` 1.00 against 0.67, `no-handback` 0.94 against 0.86 (6 runs per arm).
+
+- [x] **RISK-595** The status line repeats state Claude Code already shows, taking width from detail it lacks.
+  - Category: reply.
+  - Cause: a `● working` / `○ idle` segment duplicated the engine's spinner.
+  - Event: the user's report of 2026-11-27.
+  - Consequence: a crowded line on narrow terminals.
+  - Likelihood: 3
+  - Impact: 1
+  - Existing controls: none.
+  - Response: avoid.
+  - Actions: the segment is removed (`hooks/statusline/line/rows.ts`, `segments.ts`).
+  - Trigger: a new segment that restates engine-drawn state.
+  - Owner: reply
+  - Status: closed 2026-11-27.
+  - Verified: 2026-11-27, `claude plugin test plugins/claudetto`: 392 pass, 0 fail.

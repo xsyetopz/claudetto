@@ -15,6 +15,18 @@
 					}
 				]
 			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "prompt",
+						"model": "claude-haiku-5-5",
+						"timeout": 30,
+						"prompt": "Judge the assistant's last message in this transcript. Event JSON: `$ARGUMENTS`\n\nIf `stop_hook_active` in the event JSON is true, answer `ok` true: the message was already sent back once.\n\nanswer `ok` false, quoting the words, when the last message does any of these:\n1. Ends by offering further work or asking whether to go on (for example asking if the user wants something done, or telling them to say the word), or hands the user a step or a decision the assistant could carry out itself with its own tools. A hand-back is fine when it is a step that needs the user's password or `sudo` prompt, a login, a credential, their hands on a device, or consent to publish, push, pay or send; a question asked through `AskUserQuestion`; a request the user phrased as a question about what to do.\n2. Names a case, check or requirement as not run, untested or unverified for a reason other than a concrete obstacle that stops it from running here (a missing device, SDK, credential or service).\n3. States that tests, a build or a check pass, while the transcript lacks a command, run after the assistant's last file edit, whose output shows that result.\n\nIn the reason, say which item failed and what the assistant should do instead: do the step, run the case, or run the check. Otherwise answer `ok` true."
+					}
+				]
+			}
 		]
 	}
 }
