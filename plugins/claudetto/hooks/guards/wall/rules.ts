@@ -212,13 +212,14 @@ export const ALLOW_WRITE: readonly string[] = [
 	"/private/var/folders"
 ];
 
-/** Commands that cannot run inside the sandbox (ADR-0159); `claude *` starts its own sandbox (ADR-0188). */
+/** Commands that cannot run inside the sandbox (ADR-0159); `claude *` starts its own sandbox (ADR-0188); `git worktree` writes the read-only `.git/worktrees`. */
 export const EXCLUDED: readonly string[] = [
 	"ps *",
 	"top *",
 	"sysctl *",
 	"launchctl list",
-	"claude *"
+	"claude *",
+	"git worktree *"
 ];
 
 /** The walls a user keeps from every session; `~/.claudetto-holdout` holds the held-out eval set (GUARDS-058). */

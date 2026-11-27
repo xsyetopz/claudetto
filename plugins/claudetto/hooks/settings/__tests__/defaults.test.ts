@@ -73,6 +73,7 @@ describe("defaults fill", () => {
 		expect(next.sandbox.autoAllowBashIfSandboxed).toBe(true);
 		expect(next.sandbox.allowUnsandboxedCommands).toBe(true);
 		expect(next.sandbox.excludedCommands).toContain("claude *");
+		expect(next.sandbox.excludedCommands).toContain("git worktree *");
 		expect(next.sandbox.network.allowAllUnixSockets).toBe(true);
 		expect(next.sandbox.network.allowedDomains).toBeUndefined();
 		expect(next.sandbox.filesystem.allowWrite).toEqual(
