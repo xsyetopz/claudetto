@@ -197,3 +197,19 @@ Given a key the previous fill recorded in the store (`setup.owned`) that the con
 When the fill runs
 Then the key is deleted only while it holds the value claudetto wrote
 And the notice names values set, replaced and entries removed
+
+## SETUP-072 Engineering Laws as User Rules
+
+claudetto setup installs each engineering law the release ships (`plugins/claudetto/rules/laws/*.md`) as a user rule in `<config>/rules/claudetto/`, so it loads in every project outside the global `CLAUDE.md`, and keeps it current across releases while a user's edit or removal stands.
+
+Given a first session start
+When setup runs
+Then each shipped law is in `<config>/rules/claudetto/`
+
+Given a rule the user edited or removed
+When a later release changes that law
+Then the rule stays as the user left it
+
+Given a rule that still holds the text claudetto wrote
+When a release changes or retires that law
+Then the rule takes the new text, or is emptied when retired

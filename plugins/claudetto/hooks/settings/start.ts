@@ -2,11 +2,10 @@ import type { EngineInterface, On, PluginOptions } from "claude-code";
 
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
-import { startFileTools } from "../pool/file-tools";
 import { fault } from "../shared/fault";
 import { fieldOf, stringsOf } from "../shared/field";
-import { startWeb } from "../web/register";
 import { logChanges, record, settle } from "./fill";
+import { startParts } from "./parts";
 import { userSettingsPath } from "./settings";
 import { namesOwnStatusLine, wireStatusLine } from "./status-line";
 
@@ -42,17 +41,20 @@ async function wired($: EngineInterface, text: string): Promise<string> {
 	return next;
 }
 
-/** Reads `outputStyle` until it equals `want` or `left` ms have passed. */
+/** Reads `outputStyle` until it equals `want` or `gate.isOpen` turns false. */
 async function poll(
 	$: EngineInterface,
 	want: unknown,
-	left: number
+	gate: { isOpen: boolean }
 ): Promise<void> {
-	if (left <= 0 || (await $.settings.read({ key: "outputStyle" })) === want) {
+	if (
+		!gate.isOpen ||
+		(await $.settings.read({ key: "outputStyle" })) === want
+	) {
 		return;
 	}
 	await $.clock.sleep(POLL_MS);
-	await poll($, want, left - POLL_MS);
+	await poll($, want, gate);
 }
 
 /**
@@ -67,7 +69,15 @@ async function awaitLoad($: EngineInterface, text: string): Promise<void> {
 		return;
 	}
 	try {
-		await poll($, want, LOAD_WAIT_MS);
+		// The bound is wall-clock time: a read that waits on the engine's settings reload takes
+		// far longer than POLL_MS, so counting polls let session start run for seconds and, under a
+		// busy loop, for as long as the reads stayed slow ("Running SessionStart hooks" never cleared).
+		const gate = { isOpen: true };
+		try {
+			await Promise.race([poll($, want, gate), $.clock.sleep(LOAD_WAIT_MS)]);
+		} finally {
+			gate.isOpen = false;
+		}
 	} catch {
 		// The wait only saves cache tokens: the file is written and recorded, and the engine loads it after the first request either way.
 	}
@@ -84,22 +94,11 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 	const walls = stringsOf(options["protectedPaths"]);
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
-		try {
-			await startFileTools($);
-		} catch (error) {
-			// The patch and read tools failing to register must not stop the settings repair or the session.
-			fault($, "file tool registration", error);
-		}
-		try {
-			await startWeb($, e);
-		} catch (error) {
-			// The web tools failing to register must not stop the settings repair or the session.
-			fault($, "web tool registration", error);
-		}
+		await startParts($, e);
 		const path = await userSettingsPath($);
 		const repair = repairSettings(await readSettings($, path));
 		if (repair === undefined) {
-			$.ui.log(`claudetto left ${path} alone: it does not hold a JSON object.`);
+			$.ui.log(`Left \`${path}\` alone: it does not hold a JSON object.`);
 			return result;
 		}
 		const settled = await settle($, repair.text, walls);
@@ -111,7 +110,7 @@ export function registerStart(on: On, options: PluginOptions = {}): void {
 			await $.fs.write(path, text);
 		}
 		if (isWired) {
-			$.ui.log(`claudetto set the status line in ${path} to its own script.`);
+			$.ui.log(`Set \`statusLine\` in \`${path}\` to the plugin script.`);
 		}
 		await logChanges($, path, repair.drifted, settled.added, e.isInteractive);
 		await record($, settled);

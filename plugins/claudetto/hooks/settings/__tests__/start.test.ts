@@ -4,7 +4,19 @@ import { describe, expect, test } from "claude-code/testing";
 import { fieldOf } from "../../shared/field";
 
 /** Serves a settings file and a store to a session start; records writes and the store. */
-const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
+const serve = (
+	on: On,
+	file: string,
+	seed: Record<string, unknown> = {},
+	read: (
+		key: unknown,
+		sleep: (ms: number) => Promise<void>
+	) =>
+		| Promise<{ value: Record<string, unknown> }>
+		| { value: Record<string, unknown> } = () => ({
+		value: {}
+	})
+) => {
 	const writes: string[] = [];
 	const commands: string[] = [];
 	const logs: string[] = [];
@@ -15,7 +27,9 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 	on("env.get", (_$, e) => ({
 		value: e.name === "HOME" ? "/home/u" : undefined
 	}));
-	on("settings.read", () => ({ value: {} }));
+	on("settings.read", (h, e) =>
+		read(fieldOf(e, "key"), (ms) => h.clock.sleep(ms))
+	);
 	on("fs.exists", () => ({ value: true }));
 	on("fs.read", () => ({ value: current }));
 	on("fs.write", (_$, e) => {
@@ -43,6 +57,26 @@ const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
 };
 
 describe("settings fill at session start", () => {
+	test("session start returns within the load wait while each engine settings read answers slowly and never with the written value", async ($, on) => {
+		// Arrange
+		serve(on, '{"outputStyle": "Proactive"}', {}, (key, sleep) =>
+			key === "outputStyle"
+				? sleep(1500).then(() => ({ value: {} }))
+				: { value: {} }
+		);
+		const began = Date.now();
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		expect(Date.now() - began).toBeLessThan(4500);
+	});
+
 	test("writes the construction over the user's style", async ($, on) => {
 		// Arrange
 		const { writes } = serve(on, '{"outputStyle": "Proactive"}');
