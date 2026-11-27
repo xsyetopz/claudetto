@@ -61,7 +61,7 @@ export const isNearCap = (blocks: number, cap: number): boolean =>
 
 /** What the model reads beside a block that sits near the cap. */
 export const capNote = (blocks: number, cap: number): string =>
-	`This goal has blocked the turn ${blocks} times in a row; the engine ends the turn after ${cap + 1}. ` +
+	`This goal has blocked the turn ${blocks} times in a row; claudetto pauses it at ${cap}. ` +
 	"Finish the work, or call `clear_goal` with the checks you ran if the condition is met, or call `pause_goal` to pause the goal.";
 
 /** Sets a fresh goal: the block count starts at zero and a pause is over. */

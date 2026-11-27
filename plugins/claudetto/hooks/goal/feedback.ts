@@ -12,6 +12,7 @@ import {
 	TOOLS_NOTE,
 	type Tracker
 } from "./state";
+import { pauseGoal } from "./tools";
 
 /** The head of the row the engine appends each time the goal's Stop hook blocks (probed on 2.1.330). */
 const FEEDBACK = "Stop hook feedback:\n[";
@@ -82,8 +83,11 @@ function blockNotes(goal: Goal, cap: number): string[] {
  * is set (a scratch folder the model removed), and without the note the model waits on a
  * condition nothing can meet.
  */
-async function notesFor($: EngineInterface, goal: Goal): Promise<string[]> {
-	const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
+async function notesFor(
+	$: EngineInterface,
+	goal: Goal,
+	cap: number
+): Promise<string[]> {
 	const missing = await missingIn($, goal.condition);
 	return [
 		...blockNotes(goal, cap),
@@ -92,13 +96,39 @@ async function notesFor($: EngineInterface, goal: Goal): Promise<string[]> {
 }
 
 /**
+ * Pauses the goal and ends the turn once its blocks reach the cap, so the loop stops at the cap
+ * rather than past it, and tells the person how to resume (ISSUES-2026-11-21-0400:15).
+ */
+async function pausedAtCap(
+	$: EngineInterface,
+	tracker: Tracker,
+	cap: number
+): Promise<boolean> {
+	const { goal, turnId } = tracker;
+	if (
+		goal === undefined ||
+		turnId === undefined ||
+		cap === 0 ||
+		goal.blocks < cap
+	) {
+		return false;
+	}
+	pauseGoal($, tracker, "claudetto at the block cap");
+	$.ui.log(
+		`Goal paused after ${goal.blocks} stop blocks in a row: ${goal.condition}. \`/goal\` with the condition resumes it.`
+	);
+	await $.turn.abort({ turnId });
+	return true;
+}
+
+/**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
  * evidence or pause. It also notices when the evaluator judged the goal met,
  * and ends the turn when a goal the model paused or cleared blocks again.
  * The rows are the only signal a plugin gets: `classic.Stop` is taken by the
- * stop notice, and the engine's cap override is not a hook, so claudetto warns
- * and never lifts it (ENGINE(v2.1.330): no hook sees or moves the cap).
+ * stop notice, and the engine's cap override is not a hook (ENGINE(v2.1.330): no hook sees or
+ * moves it), so claudetto pauses the goal at the cap before the override.
  */
 export function registerFeedback(on: On, tracker: Tracker): void {
 	registerTurn(on, tracker);
@@ -125,7 +155,11 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 		}
 		tracker.stopping = false;
 		goal.blocks += 1;
-		const notes = await notesFor($, goal);
+		const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
+		if (await pausedAtCap($, tracker, cap)) {
+			return next(e);
+		}
+		const notes = await notesFor($, goal, cap);
 		if (notes.length === 0) {
 			return next(e);
 		}

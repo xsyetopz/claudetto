@@ -68,3 +68,15 @@ claudetto adds the missing-path note to each stop-block feedback row while a pat
 Given a goal whose named path existed at set time and was removed after
 When the goal blocks the stop
 Then the feedback row names the missing path
+
+## GOAL-032 Pause the Goal at the Block Cap
+
+claudetto pauses the goal and ends the turn when its stop blocks in a row reach the cap, so the loop stops at the cap and the condition stays for `get_goal` and a later `/goal`.
+
+Given a goal one block below the cap
+When the goal blocks the stop again
+Then the goal is paused and the main turn ends
+
+Given a goal more than one block below the cap
+When the goal blocks the stop
+Then the goal stays active and the turn goes on

@@ -113,7 +113,12 @@ function set($: EngineInterface, tracker: Tracker, condition: unknown): string {
 	return `Goal queued: "${condition.trim()}". It starts when this turn ends.`;
 }
 
-function pause($: EngineInterface, tracker: Tracker): string {
+/** Pauses the goal: the condition stays for `get_goal`, and a queued `/goal clear` drops the engine's copy. */
+export function pauseGoal(
+	$: EngineInterface,
+	tracker: Tracker,
+	by = "the model"
+): string {
 	const goal = tracker.goal;
 	if (goal === undefined) {
 		return "No active goal to pause.";
@@ -121,7 +126,7 @@ function pause($: EngineInterface, tracker: Tracker): string {
 	endGoal(tracker, true);
 	tracker.ended = goal.condition;
 	queue($, "clear");
-	$.ui.log(`Goal paused by the model: ${goal.condition}`, {
+	$.ui.log(`Goal paused by ${by}: ${goal.condition}`, {
 		to: "debug"
 	});
 	return `Paused: "${goal.condition}". It stays in \`get_goal\`; \`set_goal\` resumes it.`;
@@ -221,7 +226,7 @@ export function registerTools(on: On, tracker: Tracker): void {
 		return next(e);
 	});
 	on("tool.run", { tool: /^mcp__claudetto__pause_goal$/u }, ($) => ({
-		result: pause($, tracker)
+		result: pauseGoal($, tracker)
 	})).catch(($, e, next) => {
 		fault($, "pause_goal", next.error);
 		return next(e);
