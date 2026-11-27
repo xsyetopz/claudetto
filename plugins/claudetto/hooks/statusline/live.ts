@@ -212,11 +212,17 @@ function registerMeasure(on: On, live: Live): void {
 	// hooks upstream would otherwise report it as their own failure.
 	on("session.start", { cwd: ANY }, async ($, e, next) => {
 		try {
-			const { rateLimits } = await $.session.usage();
+			// The summary breakdown is a free local estimate. Its window is the auto-compact one,
+			// so the first draw fills toward that window and not the model's 1M.
+			const { rateLimits, context } = await $.session.usage({
+				breakdown: "summary"
+			});
 			const now = await $.clock.now();
+			const window = context.breakdown?.rawMaxTokens;
 			live.state = {
 				...live.state,
-				limits: baselinesAfter(live.state.limits ?? [], rateLimits, now)
+				limits: baselinesAfter(live.state.limits ?? [], rateLimits, now),
+				...(window === undefined ? {} : { window })
 			};
 		} catch (error) {
 			fault($, "status session start", error);
