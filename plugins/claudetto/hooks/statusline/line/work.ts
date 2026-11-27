@@ -28,29 +28,15 @@ const toolsText = ({ input, state, paint }: Ctx): Text => {
 	);
 };
 
-/** `⏵ 2 agents 1 done`: the subagents running now and those finished this turn. */
-const agentCountText = ({ state, paint }: Ctx): Text => {
-	const running = state?.agents.length ?? 0;
-	const done = state?.finished.length ?? 0;
-	if (running === 0 && done === 0) {
-		return undefined;
-	}
-	return words(
-		paint.agent(`⏵ ${running} ${running === 1 ? "agent" : "agents"}`),
-		done > 0 && paint.dim(`${done} done`)
-	);
-};
-
 /** `▸ Read main.ts`: the lead's last tool call while a turn runs. */
 const doingText = ({ state, paint }: Ctx): Text =>
 	state?.phase === "working" && state.doing !== undefined
 		? paint.dim(`▸ ${state.doing}`)
 		: undefined;
 
-/** The activity row's items: tool calls, agents, and what the lead does now. */
+/** The activity row's items: tool calls and what the lead does now; Claude Code's footer counts the agents. */
 export const activityTexts = (ctx: Ctx): Text[] => [
 	toolsText(ctx),
-	agentCountText(ctx),
 	doingText(ctx)
 ];
 

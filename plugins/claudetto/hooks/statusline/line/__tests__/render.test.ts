@@ -94,14 +94,6 @@ const RESOURCES: Resources = {
 	top: { name: "node", rss: 1.1 * GIB }
 };
 
-const IDLE: LiveState = {
-	phase: "idle",
-	agents: [],
-	finished: [],
-	tools: 0,
-	tasks: []
-};
-
 const WIDE = { ...PLAIN, COLUMNS: "200" } as const;
 
 describe("status line rows", () => {
@@ -123,9 +115,7 @@ describe("status line rows", () => {
 		);
 		expect(rows[2]).toStartWith("5h █████░░░░░ 50% on pace ↻");
 		expect(rows[2]).toContain(" · 7d █░░░░░░░░░ 10% 47% reserve ↻");
-		expect(rows[3]).toBe(
-			"⚒ 42 tools 3.5/min · ⏵ 1 agent 1 done · ▸ Read main.ts"
-		);
+		expect(rows[3]).toBe("⚒ 42 tools 3.5/min · ▸ Read main.ts");
 		expect(rows[4]).toBe("☑ 1/3 ██░░░ ◐ Writing tests");
 		expect(rows[5]).toBe(
 			"mem ████░ 70% 32.0G · swap 1.0G/2.0G · load 1.9/10 · claude 812M · tree 2.5G 14 procs · top node 1.1G"
@@ -239,23 +229,6 @@ describe("status line rows", () => {
 	test("prints the fallback for stdin that is not a JSON object", () => {
 		// Act and Assert
 		expect(statusOf("not json", PLAIN, NOW)).toBe("missing status");
-	});
-
-	test("counts every agent on the activity row", () => {
-		// Arrange
-		const agents = Array.from({ length: 5 }, (_, i) => ({
-			id: String(i),
-			type: "Explore",
-			description: "",
-			startedAt: NOW,
-			tools: 0
-		}));
-
-		// Act
-		const out = statusOf(FULL, WIDE, NOW, { state: { ...IDLE, agents } });
-
-		// Assert
-		expect(out).toContain("⏵ 5 agents");
 	});
 });
 

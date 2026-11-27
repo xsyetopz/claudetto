@@ -73,7 +73,6 @@ describe("state file", () => {
 
 		// Assert
 		expect(out).toContain("waiting on you: an answer");
-		expect(out).toContain("⏵ 1 agent");
 		expect(out).toContain("Doing s");
 	});
 
@@ -116,7 +115,7 @@ describe("state file", () => {
 		});
 
 		// Assert
-		expect(out).toContain("⏵ 1 agent");
+		expect(out).toContain("⌂ p");
 	});
 
 	test("a session id cannot make the status line read outside the status folder", async () => {
