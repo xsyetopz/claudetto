@@ -20,6 +20,7 @@ export function wire(
 	// Nothing beneath the plugin answers a permission check, so each tool is allowed.
 	on("tool.check", () => ({ decision: "allow" }));
 	on("session.cwd", () => ({ value: CWD }));
+	on("session.id", () => ({ value: "s1" }));
 	on("fs.read", (_$, e) => {
 		const text = files[e.path];
 		if (text === undefined) {

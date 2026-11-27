@@ -152,3 +152,15 @@ claudetto places each instruction it ships on the surface the table names, and a
 Given every line in the output style, agents, skills and hook texts
 When each is checked against the table
 Then a report lists each moved line with its old and new surface
+
+## TOOLS-033 A Repeat Read of Unchanged Text Gets a Short Note
+
+claudetto answers a `read` call that repeats an earlier call of the same agent loop, with the same paths, range and text, with a short note that the earlier result is current, once, as Claude Code's own `Read` does, and gives the full text to the next repeat and to any read after a compaction, because a plugin cannot see whether the earlier result is still in the context.
+
+Given a file read twice with no change
+When the second `read` runs
+Then the result is the short note, and a third `read` returns the text
+
+Given a read, then a compaction
+When the same `read` runs again
+Then the result is the full text

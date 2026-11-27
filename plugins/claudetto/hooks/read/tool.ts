@@ -5,6 +5,7 @@ import { absolute } from "../patch/paths";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
 import { notebook, numbered } from "./render";
+import { Repeats } from "./repeat";
 import {
 	DEFAULT_LIMIT,
 	MAX_PAGES,
@@ -253,12 +254,26 @@ export async function startRead($: EngineInterface): Promise<void> {
 	}
 }
 
-/** Serves its calls; `registerReadCheck` gives it the built-in Read's verdict. */
+/** Serves its calls; `registerReadCheck` gives it the built-in Read's verdict. A repeat read of unchanged text gets a short note once. */
 export function registerRead(on: On): void {
-	on("tool.run", { tool: TOOL_FULL_NAME }, ($, e) => runRead($, e)).catch(
-		($) => {
-			$.ui.log("`read` failed", { to: "debug" });
-			return { deny: "`read` failed; see the debug log" };
-		}
-	);
+	const repeats = new Repeats();
+	on("tool.run", { tool: TOOL_FULL_NAME }, async ($, e) => {
+		const r = await runRead($, e);
+		return "result" in r
+			? { result: repeats.answer(await $.session.id(), e, r.result) }
+			: r;
+	}).catch(($) => {
+		$.ui.log("`read` failed", { to: "debug" });
+		return { deny: "`read` failed; see the debug log" };
+	});
+	// Matched on any trigger: handover/compact.ts holds the one unmatched compaction hook.
+	on("session.compact", { trigger: /^/u }, async (_$, e, next) => {
+		const out = await next(e);
+		repeats.clear();
+		return out;
+	}).catch(($, e, next) => {
+		fault($, "read repeat reset", next.error);
+		repeats.clear();
+		return next(e);
+	});
 }

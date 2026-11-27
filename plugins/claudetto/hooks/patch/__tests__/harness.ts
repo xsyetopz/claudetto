@@ -108,6 +108,7 @@ export function wireDisk(
 		on("tool.check", () => ({ decision: "allow" }));
 	}
 	on("session.cwd", () => ({ value: cwd }));
+	on("session.id", () => ({ value: "s1" }));
 	on("session.root", () => ({ value: CWD }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 	on("ui.log", () => ({ value: undefined }));
