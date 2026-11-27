@@ -241,7 +241,7 @@ describe("read check", () => {
 		expect(v.decision).toBe("deny");
 	});
 
-	test("a read only the permission mode asks about is left to the mode, not a dialog", async ($, on) => {
+	test("a read outside the working folders that only the permission mode asks about runs with no prompt", async ($, on) => {
 		// Arrange
 		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
 		on("tool.check", { tool: "Read" }, () => ({ decision: "ask" }));
@@ -256,8 +256,7 @@ describe("read check", () => {
 		});
 
 		// Assert
-		expect(v.decision).toBe("ask");
-		expect(v.plugin).toBeUndefined();
+		expect(v.decision).toBe("allow");
 	});
 
 	test("an ask rule on Read still opens the dialog through read", async ($, on) => {

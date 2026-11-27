@@ -160,10 +160,13 @@ describe("patch tool", () => {
 		expect(d.files.get(`${CWD}/a.ts`)).toBe("x\ny\nx\ny\n");
 	});
 
-	test("a path outside the session directory is refused with the reason", async ($, on) => {
+	test("a file in another project is written, and one under a sandbox write-denied folder is refused", async ($, on) => {
 		// Arrange
 		const d = disk({});
 		wireDisk(on, d);
+		on("settings.read", () => ({
+			value: { sandbox: { filesystem: { denyWrite: ["~/.ssh"] } } }
+		}));
 		registerPatch(on);
 
 		// Act
@@ -171,15 +174,16 @@ describe("patch tool", () => {
 			tool: TOOL_FULL_NAME,
 			patch: wrap("*** Add File: ../other/x.ts", "+x")
 		});
-		const abs = await $.tool.call({
+		const walled = await $.tool.call({
 			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Add File: /etc/x", "+x")
+			patch: wrap("*** Add File: /home/u/.ssh/config", "+x")
 		});
 
 		// Assert
-		expect(refusal(up)).toContain("outside the session directory `/repo`");
-		expect(refusal(abs)).toContain("outside the session directory `/repo`");
-		expect(d.files.size).toBe(0);
+		expect(refusal(up)).toBeUndefined();
+		expect(d.files.get("/other/x.ts")).toBe("x\n");
+		expect(refusal(walled)).toContain("`/home/u/.ssh`");
+		expect(d.files.has("/home/u/.ssh/config")).toBe(false);
 	});
 
 	test("an absolute path inside the session directory is accepted", async ($, on) => {

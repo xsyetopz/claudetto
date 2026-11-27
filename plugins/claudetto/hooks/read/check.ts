@@ -7,7 +7,11 @@ import { isModesAsk } from "../shared/verdict";
 import { TOOL_FULL_NAME } from "./texts";
 import { readPaths } from "./tool";
 
-/** Gives `read` the verdict the engine gives the built-in Read for each path it names. */
+/**
+ * Gives `read` the deny or rule-made ask the engine gives the built-in Read for each path it
+ * names. The mode's own ask (a path outside the working folders) gives way: reads run free,
+ * and deny rules and the sandbox keep secrets out (ISSUES-part12, a dialog on a `/tmp` image).
+ */
 export function registerReadCheck(on: On): void {
 	on("tool.check", { tool: TOOL_FULL_NAME }, async ($, e, next) => {
 		const verdict = await next(e);
@@ -28,15 +32,9 @@ export function registerReadCheck(on: On): void {
 				})
 			)
 		);
-		const refused = verdicts.find((read) => read.decision !== "allow");
-		// The mode's own ask on Read goes up as heard, to auto mode's classifier and not a dialog.
-		if (
-			refused !== undefined &&
-			isModesAsk(refused) &&
-			verdict.decision === "ask"
-		) {
-			return verdict;
-		}
+		const refused = verdicts.find(
+			(read) => read.decision !== "allow" && !isModesAsk(read)
+		);
 		if (refused !== undefined) {
 			return refused;
 		}

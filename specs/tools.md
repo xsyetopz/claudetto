@@ -66,7 +66,7 @@ When the tool runs it
 Then the reply names each file changed
 And a hunk whose context matches only after trailing-whitespace folding applies
 
-Given a hunk whose context is missing or ambiguous, or a path outside the session directory
+Given a hunk whose context is missing or ambiguous, or a path in the sandbox write deny list
 When the tool runs
 Then the whole patch is refused
 And nothing is written
@@ -97,6 +97,18 @@ Given Add File of a new path
 When the tool runs
 Then it creates the file
 And `count-after-change` scores no lower with claudetto than vanilla
+
+## TOOLS-013 File Tools Reach Other Folders without a Prompt
+
+claudetto lets `read` and `patch` reach a path outside the session's working folders with no permission prompt, so the agent reads a `/tmp` image or fixes a sibling repository itself; a deny or ask rule and the sandbox write deny list still hold.
+
+Given a path outside the working folders that only the permission mode asks about
+When `read` or `patch` is checked for it
+Then the call is allowed
+
+Given a `patch` path under a sandbox write deny list entry such as `~/.ssh`
+When the tool runs
+Then the patch is refused and nothing is written
 
 ## TOOLS-020 Register `web_fetch`
 

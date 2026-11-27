@@ -1,6 +1,5 @@
 import type { EngineInterface, On } from "claude-code";
 
-import { memoryFolder } from "../prompt/memory";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
 import { isModesAsk } from "../shared/verdict";
@@ -103,13 +102,7 @@ export async function runPatch(
 	}
 	const cwd = await $.session.cwd();
 	const root = await $.session.root();
-	const memory = memoryFolder();
-	const placed = await placePaths(
-		$,
-		{ cwd, root },
-		pathsOf(parsed.ops),
-		memory === undefined ? [] : [memory]
-	);
+	const placed = await placePaths($, cwd, pathsOf(parsed.ops));
 	const plan = await applyOps(parsed.ops, {
 		resolve: (path) => placed.get(path) ?? { error: "path not placed" },
 		read: async (abs) => ((await $.fs.exists(abs)) ? $.fs.read(abs) : undefined)
@@ -175,13 +168,9 @@ export function registerPatch(on: On): void {
 			return verdict;
 		}
 		const { isModes, ...edit } = await editVerdict($, files.paths);
-		// The mode's own ask on Edit or Write is the mode's to settle, as is its ask for `patch`:
-		// handed up as heard, it goes to auto mode's classifier, where an ask a hook makes would
-		// open a dialog on every patch.
-		if (isModes && edit.decision === "ask" && verdict.decision === "ask") {
-			return verdict;
-		}
-		if (edit.decision !== "allow") {
+		// The mode's own ask (a path outside the working folders) gives way: file edits run at the
+		// agent's will, and deny or ask rules and the sandbox write deny list still hold.
+		if (edit.decision === "deny" || (edit.decision === "ask" && !isModes)) {
 			return edit;
 		}
 		// A rule written for `patch` itself keeps its ask; the engine's default ask for an MCP tool gives way to the Edit verdict.
