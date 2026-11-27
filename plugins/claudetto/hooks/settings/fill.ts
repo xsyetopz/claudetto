@@ -8,6 +8,7 @@ import {
 	fillSettings
 } from "./defaults";
 import { type OwnedKey, readOwned } from "./owned";
+import { planOf } from "./plan";
 
 /** Store key holding the defaults set last filled, so a user's later edit is never undone. */
 const MARK = "setup.filled";
@@ -61,39 +62,45 @@ export interface Settled {
 	readonly text: string;
 	readonly added: readonly string[];
 	readonly owned: readonly OwnedKey[] | undefined;
+	/** The fill version and plan this fill ran for, stored so a plan change fills again. */
+	readonly mark: string;
 }
 
-/** Fills when this fill version has not run or `force` is set; otherwise only the conflicting permission rules go. */
+/** Fills when this fill version has not run for the user's plan or `force` is set; otherwise only the conflicting permission rules go. */
 export async function settle(
 	$: EngineInterface,
 	text: string,
 	walls: readonly string[] | undefined,
 	force = false
 ): Promise<Settled> {
-	if (!force && (await $.store.get(MARK)) === FILL_VERSION) {
+	const plan = await planOf($);
+	const mark = `${FILL_VERSION} ${plan}`;
+	if (!force && (await $.store.get(MARK)) === mark) {
 		const dropped = dropConflictText(text);
 		return {
 			text: dropped?.text ?? text,
 			added: dropped?.added ?? [],
-			owned: undefined
+			owned: undefined,
+			mark
 		};
 	}
 	const previous = readOwned(await $.store.get(OWNED));
-	const fill = fillSettings(text, walls, previous);
+	const fill = fillSettings(text, walls, previous, plan);
 	return {
 		text: fill?.text ?? text,
 		added: fill?.added ?? [],
-		owned: fill?.owned
+		owned: fill?.owned,
+		mark
 	};
 }
 
-/** After the write, stores the fill version and the keys the fill wrote. */
+/** After the write, stores the fill version with the plan, and the keys the fill wrote. */
 export async function record(
 	$: EngineInterface,
 	settled: Settled
 ): Promise<void> {
 	if (settled.owned !== undefined) {
 		await $.store.set(OWNED, settled.owned);
-		await $.store.set(MARK, FILL_VERSION);
+		await $.store.set(MARK, settled.mark);
 	}
 }

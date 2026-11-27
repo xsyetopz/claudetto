@@ -2,6 +2,7 @@ import { dropConflicts } from "../guards/wall/conflicts";
 import { guardSettings } from "../guards/wall/fill";
 import { FREE, GUARDED, WALLS } from "../guards/wall/rules";
 import { leaves, type OwnedKey, removeStale } from "./owned";
+import { type Plan, planSettings } from "./plan";
 import { indentOf, isRecord, type Json, parseSettings } from "./settings";
 
 /** The commit trailer setup writes: a co-author that git hosts link to Claude's account. */
@@ -49,7 +50,6 @@ export const DEFAULTS: Json = {
 		CLAUDE_CODE_FORK_SUBAGENT: "0",
 		CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS: "1",
 		CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH: "1",
-		CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS: "3",
 		CLAUDE_CODE_SILENT_TURN_REMINDER: "0",
 		CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS: "900000",
 		MAX_MCP_OUTPUT_TOKENS: "10000"
@@ -104,10 +104,13 @@ const combine = (base: Json, extra: Json): Json => {
  * release always builds the same object.
  *
  * @param walls Protected paths for the guard rules and the sandbox.
+ * @param plan The subscription the plan-sized settings are set for.
  * @returns The settings object the fill applies.
  */
-export const construct = (walls: readonly string[] = WALLS): Json =>
-	combine(DEFAULTS, guardSettings(walls));
+export const construct = (
+	walls: readonly string[] = WALLS,
+	plan: Plan = "max5"
+): Json => combine(combine(DEFAULTS, planSettings(plan)), guardSettings(walls));
 
 const show = (value: unknown): string =>
 	typeof value === "string" ? value : JSON.stringify(value);
@@ -161,19 +164,21 @@ const apply = (
  * @param text The user settings text, or undefined when the file does not exist.
  * @param walls Protected paths for the guard rules and the sandbox.
  * @param previous The keys the previous fill recorded as written.
+ * @param plan The subscription the plan-sized settings are set for.
  * @returns The fill, or undefined when the text is not a JSON object.
  */
 export const fillSettings = (
 	text?: string,
 	walls: readonly string[] = WALLS,
-	previous: readonly OwnedKey[] = []
+	previous: readonly OwnedKey[] = [],
+	plan: Plan = "max5"
 ): Fill | undefined => {
 	const held =
 		text === undefined || text.trim() === "" ? {} : parseSettings(text);
 	if (held === undefined) {
 		return undefined;
 	}
-	const wanted = construct(walls);
+	const wanted = construct(walls, plan);
 	const owned = leaves(wanted);
 	const added: string[] = [];
 	const next = removeStale(held, previous, owned, added);

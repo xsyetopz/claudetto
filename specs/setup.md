@@ -78,7 +78,7 @@ claudetto writes the env group: `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`="1", `CLA
 Given claudetto fills the settings
 When the written settings are inspected
 Then each key is present
-And `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is "3" for every plan
+And `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` holds the value SETUP-076 gives the plan
 
 ## SETUP-033 Seven Tools Denied by Name
 
@@ -242,3 +242,15 @@ Given a session after the fill, with the status line removed and `outputStyle` e
 When `/claudetto-setup` runs
 Then the settings file holds the construction's `outputStyle` and claudetto's status line
 And the reply names the settings file
+
+## SETUP-076 Subagent Limit Sized by the Plan
+
+claudetto reads the plan from `oauthAccount` in Claude Code's global config (`.claude.json`) and writes `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` as 2 on Pro, 5 on Max 20x and 3 on Max 5x, Team, Enterprise and API logins, filling again when the plan changes, because each subagent spends the same usage windows as the lead and parallel workers that run long lose their 5-minute cache.
+
+Given a login record with `organizationType` `claude_pro`
+When a session starts
+Then `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is "2"
+
+Given a record changed from Pro to `claude_max` with `organizationRateLimitTier` `default_claude_max_20x` after the fill
+When the next session starts
+Then `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is "5"
