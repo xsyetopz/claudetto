@@ -1,3 +1,5 @@
+import { OPEN_RULES } from "../gh-target";
+
 /**
  * Permission rules and sandbox lists that setup fills into user settings
  * (ADR-0125, ADR-0159, ADR-0188, ADR-0190). Claude Code enforces them, so no hook
@@ -65,10 +67,8 @@ export const ASK: readonly string[] = [
 	]),
 	"Bash(git reset --hard*)",
 	"Bash(git clean *)",
-	"Bash(git branch -D *)",
 	"Bash(git * reset --hard*)",
 	"Bash(git * clean *)",
-	"Bash(git * branch -D *)",
 	"Bash(git push --tags*)",
 	"Bash(git push * --tags*)",
 	"Bash(git push * refs/tags/*)",
@@ -76,8 +76,7 @@ export const ASK: readonly string[] = [
 	"Bash(gh release create*)",
 	"Bash(gh release upload*)",
 	"Bash(gh release edit*)",
-	"Bash(pkill *)",
-	"Bash(killall *)",
+	...OPEN_RULES,
 	"Edit(~/.claude/settings.json)"
 ];
 
@@ -133,20 +132,12 @@ export const GUARDED: readonly Probe[] = [
 	{ command: "git reset --hard", why: "discards uncommitted work" },
 	{ command: "git clean -fd", why: "deletes untracked files" },
 	{
-		command: "git branch -D x",
-		why: "deletes a branch that may hold unmerged commits"
-	},
-	{
 		command: "git -C repo reset --hard",
 		why: "a -C directory does not change what a reset does"
 	},
 	{
 		command: "git -C repo clean -fd",
 		why: "a -C directory does not change what a clean does"
-	},
-	{
-		command: "git -C repo branch -D x",
-		why: "a -C directory does not change what a delete does"
 	},
 	{ command: "git push --tags", why: "publishes every local tag" },
 	{ command: "git push origin --tags", why: "publishes every local tag" },
@@ -157,8 +148,14 @@ export const GUARDED: readonly Probe[] = [
 		command: "gh release edit v1 --draft=false",
 		why: "publishes a draft release"
 	},
-	{ command: "pkill node", why: "ends processes of other sessions" },
-	{ command: "killall node", why: "ends processes of other sessions" },
+	{
+		command: "gh pr create --title x --body y",
+		why: "opens a pull request, which asks unless the gh login owns the target"
+	},
+	{
+		command: "gh issue create --title x --body y",
+		why: "opens an issue, which asks unless the gh login owns the target"
+	},
 	{ command: "git push --force", why: "rewrites remote history" },
 	{
 		command: "git push origin --force",

@@ -266,3 +266,19 @@ And the model's context holds a note naming `$TMPDIR` and `grep`
 Given a short log, a long prose prompt, or a long code listing
 When the prompt is submitted
 Then it enters with no note
+
+## GUARDS-089 Opening a Pull Request or Issue Asks Only Off the User's Repositories
+
+claudetto lets `gh pr create` and `gh issue create` run with no prompt on a repository owned by the user's `gh` login or by an organization that login administers, and asks before one that opens on any other owner, so the only other prompt left is the one an outward-facing post to someone else's repository needs.
+
+Given a `gh pr create` on a repository the `gh` login owns
+When the permission check runs
+Then the call is allowed with no prompt
+
+Given a `gh issue create --repo other/project` on an owner the login neither is nor administers
+When the permission check runs
+Then the call asks, naming the owner
+
+Given the owner cannot be read from `gh`
+When the permission check runs
+Then the call asks

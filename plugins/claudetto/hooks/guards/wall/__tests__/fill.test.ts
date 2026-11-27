@@ -143,7 +143,7 @@ describe("guard rules a session start writes", () => {
 		expect(next.sandbox.filesystem.denyWrite).toContain("~/.zshrc");
 	});
 
-	test("the stash list clear, tag pushes and process kills ask first, and stash saves and reads run free", async ($, on) => {
+	test("the stash list clear, tag pushes and pull request or issue openings ask first, and stash saves and reads run free", async ($, on) => {
 		// Act
 		const next = await filled($, on);
 
@@ -158,8 +158,8 @@ describe("guard rules a session start writes", () => {
 		expect(next.permissions.ask).toEqual(
 			expect.arrayContaining([
 				"Bash(git stash clear*)",
-				"Bash(pkill *)",
-				"Bash(killall *)",
+				"Bash(gh pr create*)",
+				"Bash(gh issue create*)",
 				"Bash(git push --tags*)"
 			])
 		);

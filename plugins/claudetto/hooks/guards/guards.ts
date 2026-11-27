@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerDenial } from "./denial";
+import { registerGhTarget } from "./gh-target";
 import { registerInplace } from "./inplace";
 import { registerMemory } from "./memory";
 import { registerPromptSecrets } from "./redact/prompt";
@@ -19,5 +20,6 @@ export const registerGuards = (on: On, options: PluginOptions = {}): void => {
 	registerNotes(on);
 	registerInplace(on);
 	registerShell(on, options);
+	registerGhTarget(on);
 	registerWall(on, options);
 };
