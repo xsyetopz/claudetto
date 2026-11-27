@@ -153,7 +153,7 @@ Then it keeps a reason comment in as many runs as vanilla
 
 claudetto keeps the Claudetto output style at or under 1364 rendered characters, each line measured by a run against vanilla, with no test that pins its wording.
 
-Given `bun reports/2026-11-25-research/cache-prefix/style.ts claudetto:Claudetto plugins/claudetto`
+Given `bun tools/measure-tools/style.ts claudetto:Claudetto plugins/claudetto`
 When it runs
 Then it reports at most 1364 chars
 

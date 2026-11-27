@@ -379,9 +379,9 @@
   Verified: 2026-11-26, claude 2.1.329, Sonnet 5.5, `TMPDIR=/tmp/claude-501 bash reports/2026-11-24-research/pin-2-1-329/r258/run.sh main style 1..3` on the 1361-char style: no copied trailing comment in 3 of 3 runs.
 
 - [x] **REPLY-156** claudetto shall keep the Claudetto output style at or under 1364 rendered characters, each line measured by a run against vanilla, with no test that pins its wording.
-  Acceptance: `bun reports/2026-11-25-research/cache-prefix/style.ts claudetto:Claudetto plugins/claudetto` reports at most 1364 chars, and `just eval claudetto` on the style beats vanilla on score, cost and turns. Verification: probe and eval.
+  Acceptance: `bun tools/measure-tools/style.ts claudetto:Claudetto plugins/claudetto` reports at most 1364 chars, and `just eval claudetto` on the style beats vanilla on score, cost and turns. Verification: probe and eval.
   Basis: the style rides in every request's cached prefix; 1364 is the hybrid median cap. A wording pin tests text, not behavior (`.claude/rules/behavior-tests.md`), so `tools/__tests__/style-recipes.test.ts` is removed and each line's effect is checked by its probe (REPLY-108, -111, -155, RISK-521, -522).
-  Source: `plugins/claudetto/output-styles/claudetto.md`; `reports/2026-11-25-research/cache-prefix/style.ts`.
+  Source: `plugins/claudetto/output-styles/claudetto.md`; `tools/measure-tools/style.ts`.
   Status: done 2026-11-26.
   Verified: 2026-11-26, claude 2.1.329, `style.ts` reports 1361 chars. `just eval claudetto -j 4 --max-cost-usd 5` (`results/2026-11-25T23-09-48-764Z`, 24 cases, n=3 per arm, $2.58): mean score 0.914 against vanilla 0.809, cost $0.40 against $2.17, 461 turns against 570; two earlier full runs on this style line-up scored 0.898 and 0.954. The run exits 1 on `wrong-design-pushback` (0.70 against 0.80, `first-sentence-names-file`) and `feature-discount` (0.98 against 1.00).
 
