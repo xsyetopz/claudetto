@@ -197,6 +197,10 @@ A status line command takes no clicks, so the band above the prompt carries one 
 
 A window that resets during the session starts its baseline at 0. When the first reading of a session comes after its first response, the "before" part already holds that response's use.
 
+## Transcript Rows
+
+The terminal transcript follows the `agy` tool. A collapsed tool call is one row, such as `● Ran 4 commands (git · bun ×2 · rg)`, `● Edited 1 file (setup.ts)` or `● Ran 1 command (git status --short) failed (ctrl+o to expand)`; the bullet is green, red for a failed call and dim while it runs. A collapsed group of calls is one row that counts them per verb, a collapsed tool result draws nothing, and ctrl+o (or `--verbose`) shows Claude Code's own rows. The message you type is drawn in Claude Code's brand orange. Prompts from other origins, such as task notifications, keep Claude Code's drawing.
+
 ## Shell Start-Up
 
 At a session start, claudetto adds `setopt no_nomatch no_equals sh_word_split` to the session's env file for zsh, so an unmatched glob or a word starting with `=` reaches the command as written, and an unquoted `$VAR` that holds a command with its arguments (`C="echo hi"; $C`) or a list of files splits into words as it does in bash. `${pipestatus[1]}` and 1-based arrays keep their zsh meaning. claudetto also adds a `TRAPDEBUG` function that fills `PIPESTATUS` with bash's 0-based keys before each command, so `${PIPESTATUS[0]}`, which zsh leaves empty without an error, gives the first command's exit code. The trap costs about 0.1 ms per simple command, and under `set -x` it prints its own three lines before each command. The cost: an unquoted variable that holds one path with a space (`ls $d` with `d="My Dir"`) now splits; quote it as `"$d"`. None of 104,848 recorded Bash commands on the measuring machine had that shape.

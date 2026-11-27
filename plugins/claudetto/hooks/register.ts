@@ -28,6 +28,7 @@ import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { newLive, registerLive } from "./statusline/live";
 import { registerUsage } from "./statusline/usage/register";
+import { registerTranscript } from "./transcript/register";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -63,4 +64,5 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerCompose(on);
 	registerSandbox(on);
 	registerStepEffort(on);
+	registerTranscript(on);
 };
