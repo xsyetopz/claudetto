@@ -48,7 +48,9 @@ hooks/
   must pass.
 - A behaviour change updates the requirement it traces to in `specs/<block>.md`, and tests cite its ID
   (such as `REPLY-145`); `spec_check` lists IDs no test cites and citations no spec defines.
-- A release bumps the plugin version first: `just release <plugin>`.
+- A release bumps the plugin version first: `just release <plugin>`. Versions are plain SemVer
+  (`X.Y.Z`). `just bump <plugin|all> [patch|minor|major|X.Y.Z]` raises or sets them; a version with a
+  suffix such as `2.1.329+1` is cut to its core before the bump.
 
 ## Commits
 
