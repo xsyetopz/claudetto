@@ -30,9 +30,14 @@ export const HIDDEN_TOOLS: readonly string[] = [
  * The cross-session messaging tools, offered to the main conversation only:
  * the user asks for another session there, while a subagent's send goes out
  * under its parent's address and its reply reaches the parent, so a subagent
- * gains nothing but the tool bytes (TOOLS-001, TOOLS-002).
+ * gains nothing but the tool bytes (TOOLS-001, TOOLS-002). `notify` reaches the
+ * user, which is the lead's job (KERNEL-035).
  */
-export const MAIN_ONLY_TOOLS: readonly string[] = ["SendMessage", "ListAgents"];
+export const MAIN_ONLY_TOOLS: readonly string[] = [
+	"SendMessage",
+	"ListAgents",
+	"mcp__claudetto__notify"
+];
 
 /**
  * The tools a subagent loses: Monitor, TaskStop and the goal tools. A goal

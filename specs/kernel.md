@@ -49,6 +49,18 @@ Given a capture that records input only while the user presses a device's button
 When the agent is asked to run it
 Then the conduct text passes more runs than vanilla in which the agent asks or ends the turn with the instruction before the capture starts
 
+## KERNEL-035 Reach the User Through a Notify Tool
+
+claudetto serves a `notify` tool that sends the model's line to the user's notification channel with no permission prompt, plus a native banner where the terminal shows no text (ISSUES-part7.txt:164).
+
+Given a session in a terminal with no text channel
+When the model calls `notify` with a line
+Then the channel gets the line, a native notice shows it, and the call ran with no prompt
+
+Given the user turned notifications off
+When the model calls `notify`
+Then the result tells the model the notice was not sent
+
 ## KERNEL-031 Keep a Running Job's Input Unchanged
 
 claudetto makes the agent read what a command writes before it runs the command while a background run it depends on is still going.

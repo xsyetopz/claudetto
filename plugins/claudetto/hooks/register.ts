@@ -14,6 +14,7 @@ import { registerClear } from "./handover/clear";
 import { registerCompact } from "./handover/compact";
 import { registerRenewal } from "./handover/renewal";
 import { registerStopNotice } from "./notice/stop";
+import { registerNotifyTool } from "./notice/tool";
 import { registerPatch } from "./patch/tool";
 import { registerToolDescribe } from "./pool/describe";
 import { registerMessagingDescribe } from "./pool/messaging";
@@ -53,6 +54,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerRenewal(on);
 	registerClear(on);
 	registerStopNotice(on);
+	registerNotifyTool(on);
 	registerSpawn(on);
 	registerCheckpoint(on);
 	registerOffer(on);
