@@ -171,7 +171,7 @@ claudetto draws a status line through a command, `bin/claudetto-statusline`. At 
 The rows carry no labels and run from the broadest figure to the narrowest, items split by ` · ` as Claude Code splits its own:
 
 ```text
-● working · Opus 5.5 medium ↯ fast · ctx █░░░░░░░░░ 9% 90k/1M · cache 98% warm 58m/1h
+Opus 5.5 medium ↯ fast · ctx █░░░░░░░░░ 9% 90k/1M · cache 98% warm 58m/1h
 ⌂ owner/repo · ⎇ main · ⇄ #7 approved · ◔ 20h22m (api 2h30m) · +4491 -336
 5h ██░░░░░░░░ 21% 18% reserve ↻10:29pm · 7d ██████░░░░ 62% 9% deficit runs out Nov 27 at 7:24am ↻Nov 30 at 11:39am
 ⚒ 42 tools 3.5/min · ⏵ 2 agents 1 done · ▸ Read main.ts
@@ -184,13 +184,13 @@ mem █░░░░ 26% 32.0G · swap 1.0G/2.0G · load 2.4/10 · claude 847M ·
 
 | Row | Figures | Source |
 | --- | --- | --- |
-| Turn | phase (`working` or `idle`), model, effort, fast mode, an output style other than the default, the `--agent` name, context bar split by /context's rows in /context's colours with tokens of the window, prompt-cache hit, warmth and misses | hooks (`session.measure` with the free local `/context` estimate); `model`, `effort`, `fast_mode`, `output_style`, `agent`, `context_window`, `prompt_cache` |
+| Turn | model, effort, fast mode, an output style other than the default, the `--agent` name, context bar split by /context's rows in /context's colours with tokens of the window, prompt-cache hit, warmth and misses | hooks (`session.measure` with the free local `/context` estimate); `model`, `effort`, `fast_mode`, `output_style`, `agent`, `context_window`, `prompt_cache` |
 | Place | folder or repository, branch, linked worktree, pull request and review state, session name, wall and API time, lines added and removed, the dollar estimate (only without a rate-limit window) | `workspace`, `worktree`, `pr`, `.git/HEAD`, `session_name`, `cost` |
 | Limits | `5h`, `7d` and spend bars, the use before the session's first reading in the fill colour and since it in Claude's orange, the pace as CodexBar computes it (`on pace` within 2 points of the elapsed share of the window, otherwise the points `in deficit` or `in reserve`), when the use runs out at that rate, and the reset | `rate_limits`; hooks (`session.start`, `session.measure`) |
 | Activity | tool calls started in the session and their rate per minute of wall time, running and finished subagents, the lead's last tool call | hooks (`tool.run`, `agent.spawn`, `agent.report`), `cost.total_duration_ms` |
 | Tasks | tasks done of all, and the one in progress or next | hooks (`TaskCreate`, `TaskUpdate`, `TodoWrite` calls) |
 | Machine | memory in use by the kernel's pressure figure, swap in use, one-minute load over the logical cores, Claude Code's resident memory, the memory and count of the processes under it, and the heaviest of them | `sysctl` on macOS, `/proc/meminfo` on Linux, `ps`, Node's `os` |
-| Waiting | a permission prompt, a question, or your next prompt | hooks (`tool.check`, `turn.complete`) |
+| Waiting | a permission dialog or a question | hooks (`classic.PermissionRequest`, `tool.check`) |
 | Agents | each subagent running or finished this turn with its age, tool calls and last call, three at most and the rest counted | hooks |
 
 A figure the source does not report is left out, and none is estimated: tokens saved against vanilla Claude Code are not shown because nothing measures them, and GPU use is not shown because no source reads it in the time a status line has. Each row fits `COLUMNS` minus 4, with countdowns in place of clock times when it does not, and `NO_COLOR` turns the colour off.

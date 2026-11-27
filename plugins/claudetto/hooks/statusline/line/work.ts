@@ -73,9 +73,8 @@ const waitingWhat = ({ kind, tool }: Waiting): string => {
 
 /**
  * `⚑ waiting on you: permission for Bash`, from the dialog or question a hook
- * saw the engine raise. The next prompt gets no row: the phase already reads
- * `○ idle`, and a flag on it reads as a step the user owes while a background
- * shell or subagent is still working.
+ * saw the engine raise. The next prompt gets no row: Claude Code's own prompt shows it, and a flag on it
+ * reads as a step the user owes while a background shell or subagent is still working.
  */
 export const waitingText = ({ state, paint }: Ctx): Text => {
 	const waiting = state?.waiting;
