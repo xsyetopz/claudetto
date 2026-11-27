@@ -10,7 +10,7 @@ import {
 	PAUSE,
 	setGoal,
 	stateOf
-} from "./goal-world";
+} from "./world";
 
 /** A Bash result in the transcript, failed when `isError` is set. */
 const bash = (text: string, isError?: true): ToolUseSummary => ({

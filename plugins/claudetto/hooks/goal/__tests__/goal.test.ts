@@ -11,7 +11,7 @@ import {
 	SET,
 	setGoal,
 	stateOf
-} from "./goal-world";
+} from "./world";
 
 describe("goal command", () => {
 	test("warns when the condition names a path that does not exist", async ($, on) => {
