@@ -1,7 +1,8 @@
 import type { Samples } from "./eval-case-samples";
 
 // Samples for the regex graders of the decision, hand-back and pushback cases
-// (agreed-choice-holds, decision-no-alternative, refused-step, wrong-design-pushback).
+// (agreed-choice-holds, decision-no-alternative, refused-step, wrong-design-pushback), and the
+// headline naming case (headline-code-names).
 
 /** The samples of the conduct cases' regex graders, keyed `<case>/<grader>`. */
 export const CONDUCT_SAMPLES: Readonly<Record<string, Samples>> = {
@@ -86,5 +87,23 @@ export const CONDUCT_SAMPLES: Readonly<Record<string, Samples>> = {
 		good: [
 			"Restored export.sh with `git checkout -- export.sh`; `./check.sh` prints PASS export. The draft stays in scratch/export-draft.sh."
 		]
+	},
+	"headline-code-names/headline-style": {
+		bad: [
+			"The `parseUrl` function returns `null` for an input with no scheme.",
+			"It is called from the `src/fetcher.ts` file.",
+			"A `schemeOf` helper calls it."
+		],
+		good: [
+			"`parseUrl` returns `null` when the input has no `://`, and `schemeOf` in `src/fetcher.ts` calls it."
+		]
+	},
+	"headline-code-names/names-code": {
+		bad: ["It returns null; the fetcher calls it."],
+		good: ["`parseUrl` returns `null`."]
+	},
+	"headline-code-names/null-answer": {
+		bad: ["It returns an empty object."],
+		good: ["`parseUrl` returns `null`.", "It returns null."]
 	}
 };
