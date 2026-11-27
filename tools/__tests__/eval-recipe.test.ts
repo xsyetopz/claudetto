@@ -54,10 +54,21 @@ withJust(
 
 		// Assert
 		expect(r.exitCode).toBe(0);
-		expect(r.stdout).toContain(
-			"--allow-tools Bash Edit Write mcp__claudetto__patch --scaffold"
-		);
-		expect(r.stdout).not.toContain("--allow-tools Read");
+		const granted =
+			/--allow-tools ((?:\S+ )+)--scaffold/u
+				.exec(r.stdout)?.[1]
+				?.trim()
+				.split(" ") ?? [];
+		expect(
+			[
+				"Bash",
+				"Edit",
+				"Write",
+				"mcp__claudetto__patch",
+				"mcp__claudetto__read"
+			].filter((tool) => !granted.includes(tool))
+		).toEqual([]);
+		expect(granted).not.toContain("Read");
 	}
 );
 

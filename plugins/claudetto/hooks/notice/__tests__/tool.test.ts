@@ -38,7 +38,7 @@ const channel = (on: On, answer: Sent = NO_CHANNEL) => {
 };
 
 describe("notify tool", () => {
-	test("runs with no permission prompt", async ($, on) => {
+	test("KERNEL-035 runs with no permission prompt", async ($, on) => {
 		// Arrange
 		channel(on);
 
@@ -49,7 +49,7 @@ describe("notify tool", () => {
 		expect(verdict.decision).toBe("allow");
 	});
 
-	test("a terminal with no notification channel gets the model's line as a native banner", async ($, on) => {
+	test("KERNEL-035 a terminal with no notification channel gets the model's line as a native banner", async ($, on) => {
 		// Arrange
 		const { sent, runs } = channel(on);
 
@@ -66,7 +66,7 @@ describe("notify tool", () => {
 		expect(result).toBe("Sent.");
 	});
 
-	test("a terminal that shows the text gets no second notice", async ($, on) => {
+	test("KERNEL-035 a terminal that shows the text gets no second notice", async ($, on) => {
 		// Arrange
 		const { sent, runs } = channel(on, { isSent: true, channel: "iterm2" });
 
@@ -78,7 +78,7 @@ describe("notify tool", () => {
 		expect(runs).toEqual([]);
 	});
 
-	test("tells the model when notifications are off", async ($, on) => {
+	test("KERNEL-035 tells the model when notifications are off", async ($, on) => {
 		// Arrange
 		const { runs } = channel(on, { isSent: false, reason: "disabled" });
 
