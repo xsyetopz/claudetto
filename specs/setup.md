@@ -187,10 +187,10 @@ Then `outputStyle` becomes `"claudetto:Claudetto"`
 And records recurse and list entries it names are added
 And a second fill changes nothing
 
-Given a `Bash(...)` rule in `permissions.ask` or `permissions.deny` that matches a command the construction keeps free (`git stash`, `git stash list`, `git push origin main`)
+Given a `Bash(...)` rule in `permissions.ask` or `permissions.deny` that matches a command the construction keeps free (`git stash clear`, `git reset --hard`, `git push origin main`), or the rule `Edit(~/.claude/settings.json)`
 When the fill runs
 Then that rule is removed
-And a rule in `permissions.allow` that matches a command it guards (`git stash clear`, `git push --force`, `claude -p x`) is removed
+And a rule in `permissions.allow` that matches a command it guards (`gh pr create`, `git push --force`, `claude -p x`) is removed
 And rules that conflict with nothing are kept
 
 Given a key the previous fill recorded in the store (`setup.owned`) that the construction no longer names

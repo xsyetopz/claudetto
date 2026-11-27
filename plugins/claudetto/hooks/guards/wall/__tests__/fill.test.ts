@@ -143,33 +143,34 @@ describe("guard rules a session start writes", () => {
 		expect(next.sandbox.filesystem.denyWrite).toContain("~/.zshrc");
 	});
 
-	test("the stash list clear, tag pushes and pull request or issue openings ask first, and stash saves and reads run free", async ($, on) => {
+	test("pull request and issue openings are the only asks, and stash, reset, clean, tag push and release commands run free", async ($, on) => {
 		// Act
 		const next = await filled($, on);
 
 		// Assert
-		for (const free of [
-			"Bash(git stash*)",
-			"Bash(git stash)",
-			"Bash(git stash -*)"
-		]) {
-			expect(next.permissions.ask).not.toContain(free);
-		}
-		expect(next.permissions.ask).toEqual(
-			expect.arrayContaining([
-				"Bash(git stash clear*)",
-				"Bash(gh pr create*)",
-				"Bash(gh issue create*)",
-				"Bash(git push --tags*)"
-			])
-		);
+		expect(next.permissions.ask.toSorted()).toEqual([
+			"Bash(gh issue create*)",
+			"Bash(gh pr create*)"
+		]);
 	});
 
-	test("a stash ask rule an earlier release wrote is removed and an unrelated user ask stays", async ($, on) => {
+	test("ask rules an earlier release wrote are removed and an unrelated user ask stays", async ($, on) => {
 		// Arrange
 		const text = JSON.stringify({
 			permissions: {
-				ask: ["Bash(git stash*)", "Bash(git * stash*)", "Bash(npm publish*)"]
+				ask: [
+					"Bash(git stash*)",
+					"Bash(git * stash clear*)",
+					"Bash(git reset --hard*)",
+					"Bash(git * clean *)",
+					"Bash(git branch -D*)",
+					"Bash(git push * refs/tags/*)",
+					"Bash(gh release create*)",
+					"Bash(pkill *)",
+					"Bash(killall *)",
+					"Edit(~/.claude/settings.json)",
+					"Bash(npm publish*)"
+				]
 			}
 		});
 
@@ -177,12 +178,11 @@ describe("guard rules a session start writes", () => {
 		const next = await filled($, on, text);
 
 		// Assert
-		expect(next.permissions.ask).not.toContain("Bash(git stash*)");
-		expect(next.permissions.ask).not.toContain("Bash(git * stash*)");
-		expect(next.permissions.ask).toContain("Bash(npm publish*)");
-		expect(next.permissions.ask).toContain("Bash(git stash clear*)");
-		expect(next.permissions.ask).not.toContain("Bash(git stash drop*)");
-		expect(next.permissions.ask).not.toContain("Bash(git stash pop*)");
+		expect(next.permissions.ask.toSorted()).toEqual([
+			"Bash(gh issue create*)",
+			"Bash(gh pr create*)",
+			"Bash(npm publish*)"
+		]);
 	});
 
 	test("a deny rule that blocks a free push and an allow that lets a paid run start are removed", async ($, on) => {
@@ -208,7 +208,7 @@ describe("guard rules a session start writes", () => {
 		// Arrange
 		const text = JSON.stringify({
 			permissions: {
-				ask: ["Write(~/.claude/settings.json)", "Write(~/notes.md)"],
+				ask: ["Edit(~/todo.md)", "Write(~/todo.md)", "Write(~/notes.md)"],
 				deny: ["Edit(/etc/hosts)", "Write(/etc/hosts)"]
 			}
 		});
@@ -217,10 +217,8 @@ describe("guard rules a session start writes", () => {
 		const next = await filled($, on, text);
 
 		// Assert
-		expect(next.permissions.ask).toContain("Edit(~/.claude/settings.json)");
-		expect(next.permissions.ask).not.toContain(
-			"Write(~/.claude/settings.json)"
-		);
+		expect(next.permissions.ask).toContain("Edit(~/todo.md)");
+		expect(next.permissions.ask).not.toContain("Write(~/todo.md)");
 		expect(next.permissions.ask).toContain("Write(~/notes.md)");
 		expect(next.permissions.deny).toContain("Edit(/etc/hosts)");
 		expect(next.permissions.deny).not.toContain("Write(/etc/hosts)");

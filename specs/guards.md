@@ -91,10 +91,6 @@ When it writes the settings
 Then it ships no default for `cleanupPeriodDays` or `autoMemoryEnabled`
 And hygiene reads `cleanupPeriodDays` only as a fallback
 
-Given an edit to `~/.claude/settings.json`
-When the agent attempts it
-Then the ask rule `Edit(~/.claude/settings.json)` applies
-
 ## GUARDS-058 Wall Held-Out Validation
 
 claudetto walls held-out validation from the agent with `~/.claudetto-holdout` as the `protectedPaths` default and a sandbox `denyRead`.

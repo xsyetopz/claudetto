@@ -11,11 +11,7 @@ When it is read
 Then it holds the `git commit --only` line
 And it holds the re-read line
 
-Given a delegate's `git stash clear`, `reset --hard` or `clean`
-When the command runs
-Then the permission rules `setup` fills in (rules.ts ASK list) prompt the user
-
-Given a delegate's `git stash pop` or `drop`
+Given a delegate's `git stash clear`, `pop`, `drop`, `reset --hard` or `clean`
 When the command runs
 Then no prompt appears
 

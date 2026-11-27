@@ -60,13 +60,13 @@ Given the release recipe
 When it runs
 Then it changes the version with no ask
 
-## VERIFICATION-090 Publishing Needs Confirmation
+## VERIFICATION-090 Publishing Runs Without a Prompt
 
-claudetto publishes nothing to a marketplace and pushes no release without the user's confirmation, and pushes a branch only after a green check, never forced.
+claudetto adds no permission prompt to a release, a tag push or a publish the task asks for, and pushes a branch only after a green check, never forced.
 
-Given a publish or release push
-When the agent reaches it
-Then the agent asks before publishing
+Given a `gh release create` or `git push --tags` the task asks for
+When the agent runs it
+Then no permission prompt appears
 
 ## VERIFICATION-091 Goal Prompt Within 4,000 Characters
 
