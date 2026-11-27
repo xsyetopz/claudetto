@@ -11,7 +11,7 @@ When it is read
 Then it holds the `git commit --only` line
 And it holds the re-read line
 
-Given a delegate's `git stash clear`, `reset --hard`, `clean` or `branch -D`
+Given a delegate's `git stash clear`, `reset --hard` or `clean`
 When the command runs
 Then the permission rules `setup` fills in (rules.ts ASK list) prompt the user
 
@@ -70,3 +70,19 @@ Given a worker run
 When it proceeds
 Then no turn limit forces a resume
 And delegation asks no confirmation of the user
+
+## DELEGATION-071 Subagent Checkpoint Note
+
+claudetto adds a note to a subagent's tool result each time the subagent's run passes another 10 minutes, so a long-running worker re-reads its task, keeps to its slice and reports early; the call itself runs as made.
+
+Given a subagent that started 10 minutes ago
+When it makes a tool call
+Then the result carries a note naming the minutes worked and asking for the report once the slice is done
+
+Given a subagent that already got the note for this interval
+When it makes another tool call in the same interval
+Then the result carries no second note
+
+Given a call from the main conversation
+When it runs
+Then the result carries no checkpoint note

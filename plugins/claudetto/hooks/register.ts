@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerContext } from "./context/context";
+import { registerCheckpoint } from "./delegation/checkpoint";
 import { registerOffer } from "./delegation/offer";
 import { registerSpawn } from "./delegation/spawn";
 import { registerPerl } from "./edit/perl";
@@ -51,6 +52,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerClear(on);
 	registerStopNotice(on);
 	registerSpawn(on);
+	registerCheckpoint(on);
 	registerOffer(on);
 	registerGoal(on);
 	const live = newLive();
