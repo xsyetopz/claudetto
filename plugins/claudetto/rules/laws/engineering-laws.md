@@ -51,6 +51,7 @@ Debugging is twice as hard as writing the code. Write the plainest code that sol
 ## KISS
 
 The simplest design that meets the request is the easiest to verify. Choose the straightforward construct over the clever one.
+Build a fix on structure the program already has (an exit status, a parsed field, an API value) over a regex of English words or a hand list of names, because wording and lists drift while the structure holds.
 
 ## Law of Demeter
 
