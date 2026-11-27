@@ -7,7 +7,9 @@ import { fieldOf } from "../shared/field";
 import { notebook, numbered } from "./render";
 import { Repeats } from "./repeat";
 import {
+	CHARS_PER_TOKEN,
 	DEFAULT_LIMIT,
+	DEFAULT_MAX_TOKENS,
 	MAX_PAGES,
 	TOOL_DESCRIPTION,
 	TOOL_FULL_NAME,
@@ -128,7 +130,8 @@ const numberField = (input: unknown, key: string): number | undefined => {
 async function contentOf(
 	$: EngineInterface,
 	path: string,
-	input: unknown
+	input: unknown,
+	maxChars: number
 ): Promise<unknown> {
 	const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
 	const mime = IMAGES[ext];
@@ -152,9 +155,19 @@ async function contentOf(
 		numbered(
 			text,
 			numberField(input, "offset"),
-			numberField(input, "limit") ?? DEFAULT_LIMIT
+			numberField(input, "limit") ?? DEFAULT_LIMIT,
+			maxChars
 		)
 	);
+}
+
+/** The characters one file's text may take: the built-in Read's token limit, as the environment sets it. */
+async function maxCharsOf($: EngineInterface): Promise<number> {
+	const raw = Number(
+		await $.env.get("CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS")
+	);
+	const tokens = Number.isInteger(raw) && raw > 0 ? raw : DEFAULT_MAX_TOKENS;
+	return tokens * CHARS_PER_TOKEN;
 }
 
 /** The paths of `also`, the strings only; anything else is no path. */
@@ -217,12 +230,13 @@ export async function runRead(
 	const path = absolute(cwd, given);
 	const more = alsoPaths(input).map((p) => absolute(cwd, p));
 	try {
-		const first = await contentOf($, path, input);
+		const maxChars = await maxCharsOf($);
+		const first = await contentOf($, path, input, maxChars);
 		// One missing file among several reads as its error, so the rest still arrive.
 		const rest = await Promise.all(
 			more.map(async (p) => ({
 				path: p,
-				content: await contentOf($, p, {}).catch((error: unknown) =>
+				content: await contentOf($, p, {}, maxChars).catch((error: unknown) =>
 					failure(p, error)
 				)
 			}))

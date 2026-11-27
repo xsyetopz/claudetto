@@ -16,3 +16,9 @@ export const MAX_PAGES = 20;
 
 /** The longest line shown whole; a longer one is cut with a mark. */
 export const MAX_LINE = 2000;
+
+/** The token budget of one file's text when `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` is unset, as the built-in Read's (2.1.329). */
+export const DEFAULT_MAX_TOKENS = 25_000;
+
+/** Characters per token in the engine's rough estimate, which the budget converts with. */
+export const CHARS_PER_TOKEN = 4;

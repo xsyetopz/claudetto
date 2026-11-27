@@ -164,3 +164,15 @@ Then the result is the short note, and a third `read` returns the text
 Given a read, then a compaction
 When the same `read` runs again
 Then the result is the full text
+
+## TOOLS-034 A Read Stays Within the File Read Token Budget
+
+claudetto cuts a `read` result at the last whole line within `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` (25,000 when unset, as Claude Code's `Read` uses) at four characters a token and names the `offset` to continue from, because a result over that budget fills the context toward autocompact.
+
+Given a file of about 53,000 tokens
+When `read` runs with no range
+Then the result ends at a whole line within the budget with the `offset` to continue
+
+Given `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` set to 100
+When `read` runs on the same file
+Then the result holds the lines that fit in 400 characters

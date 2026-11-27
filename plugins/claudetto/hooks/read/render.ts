@@ -7,12 +7,14 @@ import { DEFAULT_LIMIT, MAX_LINE } from "./texts";
  * @param text The file's text.
  * @param offset The first line to show, 1-based (default 1).
  * @param limit The most lines to show (default {@link DEFAULT_LIMIT}).
+ * @param maxChars The most characters of numbered lines to show; the window ends at the last whole line that fits.
  * @returns The numbered lines, with a closing note when more lines follow or none match.
  */
 export function numbered(
 	text: string,
 	offset = 1,
-	limit = DEFAULT_LIMIT
+	limit = DEFAULT_LIMIT,
+	maxChars = Number.POSITIVE_INFINITY
 ): string {
 	if (text === "") {
 		return "(the file is empty)";
@@ -23,12 +25,19 @@ export function numbered(
 	if (window.length === 0) {
 		return `(\`offset\` ${start} is past the end: the file has ${lines.length} lines)`;
 	}
-	const shown = window.map((line, i) => {
+	const shown: string[] = [];
+	let size = 0;
+	for (const [i, line] of window.entries()) {
 		const cut =
 			line.length > MAX_LINE ? `${line.slice(0, MAX_LINE)}… [line cut]` : line;
-		return `${String(start + i).padStart(6)}\t${cut}`;
-	});
-	const next = start + window.length;
+		const row = `${String(start + i).padStart(6)}\t${cut}`;
+		size += row.length + 1;
+		if (size > maxChars && shown.length > 0) {
+			break;
+		}
+		shown.push(row);
+	}
+	const next = start + shown.length;
 	if (next <= lines.length) {
 		shown.push(
 			`(${lines.length - next + 1} more lines; continue with \`offset\` ${next})`
