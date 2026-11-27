@@ -15,6 +15,7 @@
 
 import type { On } from "claude-code";
 
+import { EXCLUDED } from "../guards/wall/rules";
 import { fault } from "../shared/fault";
 
 /** FNV-1a over UTF-16 code units: a short stable key for one exact block. */
@@ -27,6 +28,11 @@ const keyOf = (text: string): string => {
 	}
 	return h.toString(36);
 };
+
+/** The commands claudetto's fill takes out of the sandbox, as `ps` for `ps *`. */
+const excludedNames = EXCLUDED.map(
+	(rule) => `\`${rule.replace(/ \*$/u, "")}\``
+).join(", ");
 
 /**
  * The 2.1.329 blocks, by the key of their exact text, and the shorter text that
@@ -43,8 +49,7 @@ export const SHORT: Readonly<Record<string, string>> = {
 	// How the sandbox is configured in this session:
 	ipsyg2: "Setup (`~` = `$HOME`, `.` = cwd, `a/{b,c}` = `a/b`, `a/c`):",
 	// You should always default to running commands within the sandbox. ...
-	"4tvy7k":
-		" - Run in the sandbox by default. Set `dangerouslyDisableSandbox: true` only when the user explicitly asks, or when a command just failed with sandbox evidence; commands also fail for other reasons (missing files, wrong arguments, the network).",
+	"4tvy7k": ` - Run in the sandbox by default. Set \`dangerouslyDisableSandbox: true\` only when the user explicitly asks, or when a command just failed with sandbox evidence; commands also fail for other reasons (missing files, wrong arguments, the network).\n - ${excludedNames} run outside the sandbox when the call holds that command alone: give each its own call, with no chain, pipe, redirect, \`cd\` or \`$(...)\`.`,
 	// Evidence of sandbox-caused failures includes: ...
 	oxl1dz:
 		' - Sandbox evidence: "Operation not permitted", access denied outside the allowed paths, a refused host, a Unix socket error.',
