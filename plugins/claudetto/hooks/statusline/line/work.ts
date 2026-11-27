@@ -13,7 +13,7 @@ const cut = (text: string): string =>
 	text.length > ABOUT_MAX ? `${text.slice(0, ABOUT_MAX - 1)}…` : text;
 
 /** `⚒ 42 tools 3.5/min`, the rate over the session's wall time. */
-const toolsText = ({ input, state, paint }: Ctx): Text => {
+export const toolsText = ({ input, state, paint }: Ctx): Text => {
 	if (state === undefined || state.tools === 0) {
 		return undefined;
 	}
@@ -27,18 +27,6 @@ const toolsText = ({ input, state, paint }: Ctx): Text => {
 		rate !== undefined && paint.dim(`${rate}/min`)
 	);
 };
-
-/** `▸ Read main.ts`: the lead's last tool call while a turn runs. */
-const doingText = ({ state, paint }: Ctx): Text =>
-	state?.phase === "working" && state.doing !== undefined
-		? paint.dim(`▸ ${state.doing}`)
-		: undefined;
-
-/** The activity row's items: tool calls and what the lead does now; Claude Code's footer counts the agents. */
-export const activityTexts = (ctx: Ctx): Text[] => [
-	toolsText(ctx),
-	doingText(ctx)
-];
 
 const TASK_MARK: Readonly<Record<Task["status"], string>> = {
 	completed: "✓",

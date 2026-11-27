@@ -3,10 +3,9 @@ import type { EngineInterface, On } from "claude-code";
 import { configDir } from "../settings/settings";
 import { fault } from "../shared/fault";
 import { START_CAP_MS, within } from "../shared/within";
-import { activityOf, tasksAfter } from "./activity";
+import { tasksAfter } from "./activity";
 import { baselinesAfter, partsOf } from "./baseline";
 import {
-	type Agent,
 	EMPTY_STATE,
 	type LiveState,
 	statePath,
@@ -64,28 +63,11 @@ const answeredCall = (current: LiveState): LiveState =>
 		? answered(current)
 		: current;
 
-/** The most finished subagents kept for the line, a choice that bounds its height. */
-const FINISHED_KEPT = 3;
-
-/** `current` after a tool call started by the lead (`agentId` undefined) or by subagent `agentId`. */
-const started = (
-	current: LiveState,
-	agentId: string | undefined,
-	doing: string
-): LiveState => ({
-	...current,
-	tools: current.tools + 1,
-	...(agentId === undefined ? { doing } : {}),
-	agents: current.agents.map((agent) =>
-		agent.id === agentId ? { ...agent, tools: agent.tools + 1, doing } : agent
-	)
-});
-
 /** The phase: working from a prompt until the turn ends, and then waiting on the next prompt. Subagent turns are skipped, since the lead's phase is the one shown. */
 function registerPhase(on: On, live: Live): void {
 	on("turn.start", ANY_TURN, async ($, e, next) => {
 		if (e.agentId === undefined) {
-			live.state = { ...answered(live.state), phase: "working", finished: [] };
+			live.state = { ...answered(live.state), phase: "working" };
 			await save($, live.state);
 		}
 		return next(e);
@@ -104,7 +86,7 @@ function registerPhase(on: On, live: Live): void {
 
 /**
  * The prompt a tool call raises, cleared when a tool starts running; each
- * started call is counted and named, and a task call updates the list. A
+ * started call is counted, and a task call updates the list. A
  * permission prompt is recorded at `classic.PermissionRequest`, which fires only
  * when a dialog opens: an `ask` verdict at `tool.check` goes to the mode's
  * decider first, and auto mode's classifier settles most with nobody asked.
@@ -140,11 +122,8 @@ function registerPrompt(on: On, live: Live): void {
 		return next(e);
 	});
 	on("tool.run", async ($, e, next) => {
-		live.state = started(
-			answeredCall(live.state),
-			e.agentId,
-			activityOf(e.tool, e)
-		);
+		const current = answeredCall(live.state);
+		live.state = { ...current, tools: current.tools + 1 };
 		await save($, live.state);
 		const result = await next(e);
 		const tasks = tasksAfter(live.state.tasks, e.tool, e, result.result);
@@ -159,42 +138,8 @@ function registerPrompt(on: On, live: Live): void {
 	});
 }
 
-/** The subagents: listed from their spawn until their report, then kept as finished until the lead's next turn; all dropped when the session ends so a resumed one never inherits them. */
-function registerAgents(on: On, live: Live): void {
-	on("agent.spawn", { subagentType: ANY }, async ($, e, next) => {
-		const result = await next(e);
-		if (result.agentId !== undefined) {
-			const agent: Agent = {
-				id: result.agentId,
-				type: e.subagentType,
-				description: e.description,
-				startedAt: await $.clock.now(),
-				tools: 0
-			};
-			live.state = { ...live.state, agents: [...live.state.agents, agent] };
-			await save($, live.state);
-		}
-		return result;
-	}).catch(($, e, next) => {
-		fault($, "status agent spawn", next.error);
-		return next(e);
-	});
-	on("agent.report", async ($, e, next) => {
-		const endedAt = await $.clock.now();
-		const done = live.state.agents.find((item) => item.id === e.agentId);
-		const ended: Agent[] =
-			done === undefined ? [] : [{ ...done, endedAt, end: e.status }];
-		live.state = {
-			...live.state,
-			agents: live.state.agents.filter((agent) => agent.id !== e.agentId),
-			finished: [...live.state.finished, ...ended].slice(-FINISHED_KEPT)
-		};
-		await save($, live.state);
-		return next(e);
-	}).catch(($, e, next) => {
-		fault($, "status agent report", next.error);
-		return next(e);
-	});
+/** Drops the state when the session ends, so a resumed one starts its own counts. */
+function registerEnd(on: On, live: Live): void {
 	on("session.end", { sessionId: ANY }, async ($, e, next) => {
 		live.state = EMPTY_STATE;
 		await save($, live.state);
@@ -258,13 +203,12 @@ function registerMeasure(on: On, live: Live): void {
 /**
  * Writes what the hooks observe in one session to the file the status line
  * command reads (ADR-0201): the turn phase, the prompt the session waits on
- * the person for, the subagents with their tool calls, the lead's last tool
- * call, the task list, the context rows, and the rate-limit baselines. Each
+ * the person for, the tool call count, the task list, the context rows, and the rate-limit baselines. Each
  * change rewrites the whole file into `live`, which the usage pane reads too.
  */
 export function registerLive(on: On, live: Live): void {
 	registerPhase(on, live);
 	registerPrompt(on, live);
-	registerAgents(on, live);
+	registerEnd(on, live);
 	registerMeasure(on, live);
 }

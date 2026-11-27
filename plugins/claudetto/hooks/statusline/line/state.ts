@@ -7,25 +7,6 @@ export interface Waiting {
 	readonly tool?: string;
 }
 
-/** How a subagent ended, in `agent.report`'s words. */
-export type AgentEnd = "completed" | "failed" | "stopped";
-
-/** A subagent the engine started: running until its report, then kept a while as finished. */
-export interface Agent {
-	readonly id: string;
-	readonly type: string;
-	readonly description: string;
-	/** Epoch milliseconds of the spawn. */
-	readonly startedAt: number;
-	/** Tool calls the agent started. */
-	readonly tools: number;
-	/** The tool call it started last, as `Read main.ts`. */
-	readonly doing?: string;
-	/** Epoch milliseconds of the report; set once it finished. */
-	readonly endedAt?: number;
-	readonly end?: AgentEnd;
-}
-
 /** A task of the session's list, from `TaskCreate`, `TaskUpdate`, or `TodoWrite`. */
 export interface Task {
 	readonly id: string;
@@ -64,14 +45,8 @@ export interface Baseline {
 export interface LiveState {
 	readonly phase: "working" | "idle";
 	readonly waiting?: Waiting;
-	/** The subagents running now, oldest first. */
-	readonly agents: readonly Agent[];
-	/** The subagents that finished since the lead's turn started, newest last. */
-	readonly finished: readonly Agent[];
 	/** Tool calls started in the session, by the lead and its subagents. */
 	readonly tools: number;
-	/** The lead's last tool call, as `Read main.ts`. */
-	readonly doing?: string;
 	readonly tasks: readonly Task[];
 	/** The rows of the context window by /context's local estimate at the last measure, `used` rows only. */
 	readonly context?: readonly ContextPart[];
@@ -84,8 +59,6 @@ export interface LiveState {
 /** The state of a session that has seen no event yet. */
 export const EMPTY_STATE: LiveState = {
 	phase: "idle",
-	agents: [],
-	finished: [],
 	tools: 0,
 	tasks: []
 };
@@ -95,7 +68,6 @@ export const statePath = (configDir: string, session: string): string =>
 	`${configDir}/claudetto/status/${session.replaceAll(/[^\w.-]/gu, "_")}.json`;
 
 const KINDS: ReadonlySet<string> = new Set(["permission", "question", "input"]);
-const ENDS: ReadonlySet<string> = new Set(["completed", "failed", "stopped"]);
 const STATUSES: ReadonlySet<string> = new Set([
 	"pending",
 	"in_progress",
@@ -105,36 +77,11 @@ const STATUSES: ReadonlySet<string> = new Set([
 const isKind = (kind: string | undefined): kind is Waiting["kind"] =>
 	kind !== undefined && KINDS.has(kind);
 
-const isEnd = (end: string | undefined): end is AgentEnd =>
-	end !== undefined && ENDS.has(end);
-
 const isStatus = (status: string | undefined): status is Task["status"] =>
 	status !== undefined && STATUSES.has(status);
 
 const listOf = (value: unknown): readonly unknown[] =>
 	Array.isArray(value) ? value : [];
-
-const agentOf = (value: unknown): Agent | undefined => {
-	const row = rec(value);
-	const id = str(row?.["id"]);
-	const startedAt = num(row?.["startedAt"]);
-	if (row === undefined || id === undefined || startedAt === undefined) {
-		return undefined;
-	}
-	const doing = str(row["doing"]);
-	const endedAt = num(row["endedAt"]);
-	const end = str(row["end"]);
-	return {
-		id,
-		type: str(row["type"]) ?? "agent",
-		description: str(row["description"]) ?? "",
-		startedAt,
-		tools: num(row["tools"]) ?? 0,
-		...(doing === undefined ? {} : { doing }),
-		...(endedAt === undefined ? {} : { endedAt }),
-		...(isEnd(end) ? { end } : {})
-	};
-};
 
 const taskOf = (value: unknown): Task | undefined => {
 	const row = rec(value);
@@ -185,15 +132,11 @@ export const readState = (raw: string | undefined): LiveState | undefined => {
 	if (found === undefined) {
 		return undefined;
 	}
-	const doing = str(found["doing"]);
 	const window = num(found["window"]);
 	return {
 		phase: found["phase"] === "working" ? "working" : "idle",
-		agents: listOf(found["agents"]).flatMap((item) => agentOf(item) ?? []),
-		finished: listOf(found["finished"]).flatMap((item) => agentOf(item) ?? []),
 		tools: num(found["tools"]) ?? 0,
 		tasks: listOf(found["tasks"]).flatMap((item) => taskOf(item) ?? []),
-		...(doing === undefined ? {} : { doing }),
 		...(window === undefined || window <= 0 ? {} : { window }),
 		...(Array.isArray(found["context"])
 			? {
@@ -219,10 +162,7 @@ export const writeState = (state: LiveState): string =>
 		phase: state.phase,
 		waitingKind: state.waiting?.kind,
 		waitingTool: state.waiting?.tool,
-		agents: state.agents,
-		finished: state.finished,
 		tools: state.tools,
-		doing: state.doing,
 		tasks: state.tasks,
 		context: state.context,
 		window: state.window,

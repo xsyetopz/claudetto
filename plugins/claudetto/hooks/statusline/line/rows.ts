@@ -1,12 +1,10 @@
 import type { Ctx, Text } from "./ctx";
 import { limitTexts } from "./limits";
-import { machineTexts } from "./machine";
 import {
 	branchText,
 	cacheText,
 	contextText,
 	costText,
-	durationText,
 	linesText,
 	modelText,
 	nameText,
@@ -14,7 +12,7 @@ import {
 	prText
 } from "./segments";
 import { truncate, width } from "./width";
-import { activityTexts, tasksText, waitingText } from "./work";
+import { tasksText, toolsText, waitingText } from "./work";
 
 /** The gap between two items of a row, as Claude Code separates its own: a space, a middle dot, a space. */
 const SEP = " · ";
@@ -26,39 +24,44 @@ const row = (items: readonly Text[]): string[] => {
 };
 
 /**
- * Every row, the broadest first: the model and its context, where the work
- * happens, the plan limits, the activity, the tasks, the machine, and what
- * waits on the person. The turn's own phase is core's spinner, so no row repeats it.
+ * Three rows at most: who and where (model, folder, branch, pull request, session, lines), the
+ * budgets (context, cache, plan limits), and the work that waits (tool calls, tasks, a prompt for
+ * the person). Claude Code draws the turn's phase and the running call itself, so no row repeats them.
  */
-const rowsOf = (ctx: Ctx): string[] => [
-	...row([modelText(ctx), contextText(ctx), cacheText(ctx)]),
+const rowsOf = (ctx: Ctx, split = false): string[] => [
 	...row([
+		modelText(ctx),
 		projectText(ctx),
 		branchText(ctx),
 		prText(ctx),
 		nameText(ctx),
-		durationText(ctx),
 		linesText(ctx),
 		costText(ctx)
 	]),
-	...row(limitTexts(ctx)),
-	...row(activityTexts(ctx)),
-	...row([tasksText(ctx)]),
-	...row(machineTexts(ctx)),
-	...row([waitingText(ctx)])
+	...(split
+		? [...row([contextText(ctx), cacheText(ctx)]), ...row(limitTexts(ctx))]
+		: row([contextText(ctx), cacheText(ctx), ...limitTexts(ctx)])),
+	...row([toolsText(ctx), tasksText(ctx), waitingText(ctx)])
 ];
+
+const fits = (rows: readonly string[], columns: number): boolean =>
+	rows.every((line) => width(line) <= columns);
 
 /**
  * The rows that fit `columns`: clock times first, countdowns when any row is
- * too wide, and a row still too wide cut with an ellipsis.
+ * too wide, then the plan limits on a row of their own, and a row still too wide cut with an ellipsis.
  */
 export const renderRows = (
 	ctx: Omit<Ctx, "compact">,
 	columns: number
 ): string[] => {
 	const full = rowsOf({ ...ctx, compact: false });
-	const rows = full.every((line) => width(line) <= columns)
-		? full
-		: rowsOf({ ...ctx, compact: true });
+	if (fits(full, columns)) {
+		return full;
+	}
+	const compact = rowsOf({ ...ctx, compact: true });
+	const rows = fits(compact, columns)
+		? compact
+		: rowsOf({ ...ctx, compact: true }, true);
 	return rows.map((line) => truncate(line, columns));
 };

@@ -152,19 +152,6 @@ export const nameText = ({ input, paint }: Ctx): Text => {
 	return name === undefined ? undefined : paint.bold(name);
 };
 
-/** `◔ 12m (api 4m)`: wall time since the session started and the part spent waiting on the API. */
-export const durationText = ({ input, paint }: Ctx): Text => {
-	const cost = sub(input, "cost");
-	const ms = num(cost?.["total_duration_ms"]);
-	if (ms === undefined) {
-		return undefined;
-	}
-	const api = num(cost?.["total_api_duration_ms"]);
-	return paint.dim(
-		`◔ ${span(ms)}${api === undefined ? "" : ` (api ${span(api)})`}`
-	);
-};
-
 /** `+120 -30` lines of the session, shown once either is non-zero. */
 export const linesText = ({ input, paint }: Ctx): Text => {
 	const cost = sub(input, "cost");

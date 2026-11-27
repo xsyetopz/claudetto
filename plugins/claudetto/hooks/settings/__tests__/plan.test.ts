@@ -8,7 +8,6 @@ const serve = (on: On, files: Record<string, string>) => {
 	const store = new Map<string, unknown>();
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-	on("command.register", () => ({ value: undefined }));
 	on("env.get", (_$, e) => ({
 		value: e.name === "HOME" ? "/home/u" : undefined
 	}));

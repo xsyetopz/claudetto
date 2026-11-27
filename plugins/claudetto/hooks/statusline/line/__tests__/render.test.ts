@@ -1,7 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { statusOf } from "../main";
-import type { Resources } from "../resources";
 import type { LiveState } from "../state";
 import { plain, width } from "../width";
 
@@ -43,29 +42,7 @@ const FULL = JSON.stringify({ ...BASE, rate_limits: LIMITS });
 const STATE: LiveState = {
 	phase: "working",
 	waiting: { kind: "permission", tool: "Bash" },
-	agents: [
-		{
-			id: "a",
-			type: "Explore",
-			description: "find login",
-			startedAt: NOW - 185_000,
-			tools: 5,
-			doing: "Grep foo"
-		}
-	],
-	finished: [
-		{
-			id: "b",
-			type: "Plan",
-			description: "",
-			startedAt: NOW - 400_000,
-			endedAt: NOW - 100_000,
-			end: "completed",
-			tools: 9
-		}
-	],
 	tools: 42,
-	doing: "Read main.ts",
 	tasks: [
 		{ id: "1", subject: "Read", status: "completed" },
 		{
@@ -78,49 +55,28 @@ const STATE: LiveState = {
 	]
 };
 
-const GIB = 1024 ** 3;
-const MIB = 1024 ** 2;
-
-const RESOURCES: Resources = {
-	memPercent: 70,
-	memTotal: 32 * GIB,
-	swapUsed: GIB,
-	swapTotal: 2 * GIB,
-	load: 1.9,
-	cores: 10,
-	claude: 812 * MIB,
-	tree: 2.5 * GIB,
-	procs: 14,
-	top: { name: "node", rss: 1.1 * GIB }
-};
-
 const WIDE = { ...PLAIN, COLUMNS: "200" } as const;
 
 describe("status line rows", () => {
-	test("draws every row with no labels, in Claude Code's own separator", () => {
+	test("draws three rows with no labels: who and where, the budgets, and the work that waits", () => {
 		// Act
 		const rows = statusOf(FULL, WIDE, NOW, {
 			state: STATE,
-			branch: "main",
-			resources: RESOURCES
+			branch: "main"
 		}).split("\n");
 
 		// Assert
-		expect(rows).toHaveLength(7);
+		expect(rows).toHaveLength(3);
 		expect(rows[0]).toBe(
-			"Opus 4.1 high · ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m"
+			"Opus 4.1 high · ⌂ claudetto · ⎇ main · ⇄ #7 approved · work · +12 -3"
 		);
-		expect(rows[1]).toBe(
-			"⌂ claudetto · ⎇ main · ⇄ #7 approved · work · ◔ 12m (api 4m) · +12 -3"
+		expect(rows[1]).toStartWith(
+			"ctx ████░░░░░░ 40% 80k/200k · cache 90% warm 4m/5m · 5h █████░░░░░ 50% on pace ↻"
 		);
-		expect(rows[2]).toStartWith("5h █████░░░░░ 50% on pace ↻");
-		expect(rows[2]).toContain(" · 7d █░░░░░░░░░ 10% 47% reserve ↻");
-		expect(rows[3]).toBe("⚒ 42 tools 3.5/min · ▸ Read main.ts");
-		expect(rows[4]).toBe("☑ 1/3 ██░░░ ◐ Writing tests");
-		expect(rows[5]).toBe(
-			"mem ████░ 70% 32.0G · swap 1.0G/2.0G · load 1.9/10 · claude 812M · tree 2.5G 14 procs · top node 1.1G"
+		expect(rows[1]).toContain(" · 7d █░░░░░░░░░ 10% 47% reserve ↻");
+		expect(rows[2]).toBe(
+			"⚒ 42 tools 3.5/min · ☑ 1/3 ██░░░ ◐ Writing tests · ⚑ waiting on you: permission for Bash"
 		);
-		expect(rows[6]).toBe("⚑ waiting on you: permission for Bash");
 	});
 
 	test("never prints a row label or the thinking flag", () => {
@@ -182,22 +138,35 @@ describe("status line rows", () => {
 
 	test("keeps every row within COLUMNS and falls back to countdowns", () => {
 		// Act
-		const out = statusOf(FULL, { ...PLAIN, COLUMNS: "60" }, NOW, {
+		const out = statusOf(FULL, { ...PLAIN, COLUMNS: "130" }, NOW, {
 			state: STATE,
-			branch: "main",
-			resources: RESOURCES
+			branch: "main"
 		});
 
 		// Assert
 		for (const row of out.split("\n")) {
-			expect(width(row)).toBeLessThanOrEqual(60);
+			expect(width(row)).toBeLessThanOrEqual(130);
 		}
 		expect(out).toContain("↻2h30m");
 	});
 
+	test("a terminal too narrow for the budgets row moves the plan limits to a row of their own", () => {
+		// Act
+		const rows = statusOf(FULL, { ...PLAIN, COLUMNS: "84" }, NOW, {
+			state: STATE,
+			branch: "main"
+		}).split("\n");
+
+		// Assert
+		expect(rows).toHaveLength(4);
+		expect(rows[1]).toStartWith("ctx ");
+		expect(rows[2]).toStartWith("5h ");
+		expect(rows[2]).toContain("↻2h30m");
+	});
+
 	test("paints with ANSI codes unless NO_COLOR is set, and the plain text is the same", () => {
 		// Arrange
-		const seen = { state: STATE, branch: "main", resources: RESOURCES };
+		const seen = { state: STATE, branch: "main" };
 
 		// Act
 		const colored = statusOf(FULL, { COLUMNS: "200" }, NOW, seen);

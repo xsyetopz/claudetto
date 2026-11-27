@@ -47,21 +47,11 @@ describe("state file", () => {
 		expect(out).toBe("");
 	});
 
-	test("a state file the hooks wrote shows the waiting prompt, agents and tasks", async () => {
+	test("a state file the hooks wrote shows the waiting prompt and tasks", async () => {
 		// Arrange
 		const state: LiveState = {
 			phase: "working",
 			waiting: { kind: "question", tool: "AskUserQuestion" },
-			agents: [
-				{
-					id: "a",
-					type: "Explore",
-					description: "scan",
-					startedAt: 5,
-					tools: 2
-				}
-			],
-			finished: [],
 			tools: 7,
 			tasks: [
 				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }
@@ -220,26 +210,5 @@ describe("status from files", () => {
 		// Assert: light-ansi paints the model in a palette slot, never in truecolor.
 		expect(out).toContain("Opus 5.5");
 		expect(out).not.toContain("38;2;");
-	});
-
-	test("adds the machine's figures the probe returns, and draws without them when it fails", async () => {
-		// Arrange
-		const raw = '{"session_id":"s1","model":{"display_name":"Opus 5.5"}}';
-		const env = { NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" };
-		const files = filesOf({
-			[statePath("/cfg", "s1")]: writeState(EMPTY_STATE)
-		});
-
-		// Act
-		const shown = await statusWithFiles(raw, env, 0, files, () =>
-			Promise.resolve({ load: 2, cores: 8 })
-		);
-		const failed = await statusWithFiles(raw, env, 0, files, () =>
-			Promise.reject(new Error("ps"))
-		);
-
-		// Assert
-		expect(shown).toBe("Opus 5.5\nload 2.0/8");
-		expect(failed).toBe("Opus 5.5");
 	});
 });

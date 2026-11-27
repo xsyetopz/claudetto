@@ -1,4 +1,3 @@
-import type { AgentReportInput, AgentSpawnInput } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
 import { serve } from "./serve";
@@ -76,7 +75,7 @@ describe("live state", () => {
 		});
 	});
 
-	test("counts each started call and names the lead's last one", async ($, on) => {
+	test("counts each started call", async ($, on) => {
 		// Arrange
 		const state = serve(on);
 
@@ -94,7 +93,6 @@ describe("live state", () => {
 
 		// Assert
 		expect(state()?.tools).toBe(2);
-		expect(state()?.doing).toBe("Bash git status");
 	});
 
 	test("keeps the task list a TodoWrite call sets", async ($, on) => {
@@ -113,38 +111,6 @@ describe("live state", () => {
 			{ id: "1", subject: "Read", status: "completed", active: "Reading" },
 			{ id: "2", subject: "Test", status: "in_progress", active: "Testing" }
 		]);
-	});
-
-	test("names an MCP call by its own tool and what it was given", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-
-		// Act
-		await $.tool.run({
-			tool: "mcp__claudetto__web_search",
-			tool_use_id: "r4",
-			input: { query: "bun spawn" },
-			query: "bun spawn"
-		});
-
-		// Assert
-		expect(state()?.doing).toBe("web_search bun spawn");
-	});
-
-	test("keeps a long subject within one status line cell by cutting it with an ellipsis", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-
-		// Act
-		await $.tool.run({
-			tool: "Bash",
-			tool_use_id: "r5",
-			command: "x".repeat(200)
-		});
-
-		// Assert
-		expect(state()?.doing?.length).toBeLessThan(100);
-		expect(state()?.doing?.endsWith("…")).toBe(true);
 	});
 
 	test("adds the task TaskCreate reports and drops it again on a deleted TaskUpdate", async ($, on) => {
@@ -169,55 +135,5 @@ describe("live state", () => {
 		// Assert
 		expect(created).toEqual([{ id: "1", subject: "Read", status: "pending" }]);
 		expect(state()?.tasks).toEqual([]);
-	});
-
-	test("lists a subagent from its spawn until its report", async ($, on) => {
-		// Arrange
-		const state = serve(on);
-		const spawn: AgentSpawnInput = {
-			tool_use_id: "u3",
-			prompt: "p",
-			description: "scan",
-			subagentType: "Explore",
-			provider: { plugin: "engine", tier: "core" },
-			parentModel: "claude-opus-5-5",
-			background: false,
-			fork: false
-		};
-
-		// Act
-		await $.agent.spawn(spawn);
-		const running = state()?.agents;
-		const report: AgentReportInput = {
-			agentId: "id-scan",
-			subagentType: "Explore",
-			status: "completed",
-			provider: { plugin: "engine", tier: "core" },
-			text: "done"
-		};
-		await $.agent.report(report);
-
-		// Assert
-		expect(running).toEqual([
-			{
-				id: "id-scan",
-				type: "Explore",
-				description: "scan",
-				startedAt: 1_000_000,
-				tools: 0
-			}
-		]);
-		expect(state()?.agents).toEqual([]);
-		expect(state()?.finished).toEqual([
-			{
-				id: "id-scan",
-				type: "Explore",
-				description: "scan",
-				startedAt: 1_000_000,
-				tools: 0,
-				endedAt: 1_000_000,
-				end: "completed"
-			}
-		]);
 	});
 });

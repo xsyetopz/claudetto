@@ -1,7 +1,6 @@
 import { branchOf, type Reader } from "./branch";
 import { colorOff, paintOf } from "./color";
 import { parse, type Rec, str, sub } from "./input";
-import type { Resources } from "./resources";
 import { renderRows } from "./rows";
 import { type LiveState, readState, statePath } from "./state";
 import { depthOf, themeOf } from "./theme";
@@ -34,7 +33,6 @@ const configDirOf = (env: Env): string | undefined => {
 export interface Seen {
 	readonly state?: LiveState;
 	readonly branch?: string;
-	readonly resources?: Resources;
 	/** The `theme` setting, as Claude Code names its themes. */
 	readonly theme?: string;
 }
@@ -60,7 +58,6 @@ export const statusOf = (
 			input,
 			state: seen.state,
 			branch: seen.branch,
-			resources: seen.resources,
 			paint,
 			now
 		},
@@ -116,11 +113,8 @@ const projectDirOf = (input: Rec): string | undefined => {
 	return str(workspace?.["project_dir"]) ?? str(workspace?.["current_dir"]);
 };
 
-/** Reads the machine's figures; absent when the command passes no probe. */
-export type Probe = () => Promise<Resources>;
-
 /**
- * Reads the session's state file, the branch, the theme and the machine, then renders.
+ * Reads the session's state file, the branch and the theme, then renders.
  * Returns "" when the session has no state file: the `statusLine` setting lives in the
  * user settings file and so runs in every session, but only a session that loaded
  * claudetto has hooks that write the file, and an empty output blanks the line.
@@ -129,8 +123,7 @@ export const statusWithFiles = async (
 	raw: string,
 	env: Env,
 	now: number,
-	read: Reader,
-	probe?: Probe
+	read: Reader
 ): Promise<string> => {
 	const input = parse(raw);
 	if (input === undefined) {
@@ -146,17 +139,15 @@ export const statusWithFiles = async (
 		return "";
 	}
 	const dir = projectDirOf(input);
-	const [branch, theme, resources] = await Promise.all([
+	const [branch, theme] = await Promise.all([
 		dir === undefined ? undefined : branchOf(dir, read),
-		themeOfFiles(env, config, dir, read),
-		probe?.().catch((): Resources => ({}))
+		themeOfFiles(env, config, dir, read)
 	]);
 	const state = readState(text);
 	return statusOf(raw, env, now, {
 		...(state === undefined ? {} : { state }),
 		...(branch === undefined ? {} : { branch }),
-		...(theme === undefined ? {} : { theme }),
-		...(resources === undefined ? {} : { resources })
+		...(theme === undefined ? {} : { theme })
 	});
 };
 
@@ -165,11 +156,10 @@ export const run = async (
 	raw: string,
 	env: Env,
 	now: number,
-	read: Reader,
-	probe?: Probe
+	read: Reader
 ): Promise<string> => {
 	try {
-		return await statusWithFiles(raw, env, now, read, probe);
+		return await statusWithFiles(raw, env, now, read);
 	} catch {
 		// A status line that throws is blanked by the engine; the fallback keeps it drawn.
 		return FALLBACK;

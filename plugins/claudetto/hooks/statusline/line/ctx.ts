@@ -1,14 +1,12 @@
 import type { Paint } from "./color";
 import type { Rec } from "./input";
-import type { Resources } from "./resources";
 import type { LiveState } from "./state";
 
-/** What a segment reads: the stdin JSON, the hook-written state, the machine's figures, and how to draw. */
+/** What a segment reads: the stdin JSON, the hook-written state, and how to draw. */
 export interface Ctx {
 	readonly input: Rec;
 	readonly state: LiveState | undefined;
 	readonly branch: string | undefined;
-	readonly resources: Resources | undefined;
 	readonly paint: Paint;
 	/** Epoch milliseconds. */
 	readonly now: number;

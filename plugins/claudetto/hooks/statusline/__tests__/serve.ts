@@ -17,11 +17,6 @@ export const serve = (on: On, result: unknown = "ok") => {
 	on("tool.check", () => ({ decision: "ask" }));
 	on("classic.PermissionRequest", () => ({}));
 	on("tool.run", () => ({ result }));
-	on("agent.spawn", (_$, e) => ({
-		model: "m",
-		agentId: `id-${e.description}`
-	}));
-	on("agent.report", (_$, e) => ({ text: e.text }));
 	on("turn.start", (_$, e) => ({ turnId: e.turnId }));
 	on("turn.complete", (_$, e) => ({ text: e.answer }));
 	return () => readState(files.get("/cfg/claudetto/status/s1.json"));
