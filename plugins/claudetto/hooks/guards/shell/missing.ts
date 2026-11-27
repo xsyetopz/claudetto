@@ -43,6 +43,9 @@ const NOT_FOUND = [
 const NO_SUCH_FILE =
 	/(?:^|\n)(?:[^\n:]*: )*([^\s:]+): No such file or directory/gu;
 
+/** A lone lookup of one program, `which tshark` or `command -v tshark`, whose exit 1 means it is absent. */
+const LOOKUP = /^\s*(?:which|command -v|type)\s+([\w.+-]+)\s*$/u;
+
 /** Each word in command position: after a line start, `;`, `&`, `|` or `(`, past any `NAME=value` prefixes. */
 const COMMAND_WORD =
 	/(?:^|[;&|(]|\n)\s*(?:[A-Za-z_]\w*=\S*\s+)*([^\s;&|()<>$"'\\=]+)/gu;
@@ -75,7 +78,8 @@ const commandWords = (command: string): string[] =>
 /**
  * The command a Bash answer reports as missing, or undefined: exit 127, or
  * "command not found" in the error text or stderr, or "No such file or directory"
- * for a word in command position. Stdout is not read, because a command that
+ * for a word in command position, or a lone `which` or `command -v` that exited 1
+ * (GUARDS-091). Stdout is not read, because a command that
  * prints those words (a grep of a log) has not lost a tool. A path (`./run.sh`)
  * is a missing file, not an install.
  *
@@ -92,8 +96,12 @@ export const missingCommand = (
 		(word) => word !== undefined
 	);
 	const exit127 = /^Exit code 127\b/mu.test(text);
+	const looked = /^Exit code 1\b/mu.test(text)
+		? LOOKUP.exec(command)?.[1]
+		: undefined;
 	const missing =
 		named ??
+		looked ??
 		[...text.matchAll(NO_SUCH_FILE)]
 			.map(([, word]) => word)
 			.find((word) => word !== undefined && words.includes(word)) ??

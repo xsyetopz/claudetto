@@ -290,3 +290,15 @@ Then the command holds the 40-character SHA that `git rev-parse` gives
 Given a short SHA that git does not resolve to a commit
 When the call reaches the Bash tool
 Then the command stays as written
+
+## GUARDS-091 A Lookup That Finds No Program Gets the Install Note
+
+claudetto adds the install note to a lone `which`, `command -v` or `type` lookup that exits 1, because a missing tool found that way was worked around instead of installed (ISSUES-part3.txt:144, "get tshark").
+
+Given `which tshark` exits 1
+When the call returns
+Then the result carries the note that `tshark` is not installed and names the install step
+
+Given `command -v tshark` prints a path and exits 0
+When the call returns
+Then the result carries no install note
