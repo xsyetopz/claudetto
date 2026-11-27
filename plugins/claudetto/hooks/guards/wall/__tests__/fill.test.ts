@@ -185,6 +185,29 @@ describe("guard rules a session start writes", () => {
 		]);
 	});
 
+	test("SETUP-074 an ask rule on a free command added after the fill is removed on the next start, and a user ask stays", async ($, on) => {
+		// Arrange
+		const file = serve(on, "{}");
+		await $.session.start(START);
+		const held: unknown = JSON.parse(file.text ?? "");
+		if (!isFilled(held)) {
+			throw new Error("settings text is not a JSON object");
+		}
+		held.permissions.ask.push("Bash(git branch -D *)", "Bash(npm publish*)");
+		file.text = JSON.stringify(held);
+
+		// Act
+		await $.session.start(START);
+
+		// Assert
+		const next: unknown = JSON.parse(file.text);
+		expect(isFilled(next) && next.permissions.ask.toSorted()).toEqual([
+			"Bash(gh issue create*)",
+			"Bash(gh pr create*)",
+			"Bash(npm publish*)"
+		]);
+	});
+
 	test("a deny rule that blocks a free push and an allow that lets a paid run start are removed", async ($, on) => {
 		// Arrange
 		const text = JSON.stringify({

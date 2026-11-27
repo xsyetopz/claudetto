@@ -189,6 +189,28 @@ export const fillSettings = (
 	};
 };
 
+/**
+ * The settings text without the permission rules that stop a command claudetto keeps free or let
+ * through one it guards. It runs on every start, since a rule added after the fill (by the user, a
+ * `/permissions` answer or another tool) prompts on every later use until the next fill version.
+ *
+ * @param text The user settings text.
+ * @returns The text and one `removed …` line per dropped rule, or undefined when the text is not a JSON object.
+ */
+export const dropConflictText = (
+	text: string
+): { readonly text: string; readonly added: readonly string[] } | undefined => {
+	const held = text.trim() === "" ? {} : parseSettings(text);
+	if (held === undefined) {
+		return undefined;
+	}
+	const added: string[] = [];
+	dropConflicts(held, added);
+	return added.length === 0
+		? { text, added }
+		: { text: `${JSON.stringify(held, null, indentOf(text))}\n`, added };
+};
+
 /** Whether a fill entry reports a removal or a replacement, not a set default. */
 const isChange = (entry: string): boolean =>
 	entry.startsWith("removed ") || entry.startsWith("replaced ");

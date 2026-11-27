@@ -1,7 +1,12 @@
 import type { EngineInterface } from "claude-code";
 
 import { fault } from "../shared/fault";
-import { FILL_VERSION, fillNotice, fillSettings } from "./defaults";
+import {
+	dropConflictText,
+	FILL_VERSION,
+	fillNotice,
+	fillSettings
+} from "./defaults";
 import { type OwnedKey, readOwned } from "./owned";
 
 /** Store key holding the defaults set last filled, so a user's later edit is never undone. */
@@ -58,14 +63,19 @@ export interface Settled {
 	readonly owned: readonly OwnedKey[] | undefined;
 }
 
-/** Fills when this fill version has not run; the repaired text passes through otherwise. */
+/** Fills when this fill version has not run; otherwise only the conflicting permission rules go. */
 export async function settle(
 	$: EngineInterface,
 	text: string,
 	walls: readonly string[] | undefined
 ): Promise<Settled> {
 	if ((await $.store.get(MARK)) === FILL_VERSION) {
-		return { text, added: [], owned: undefined };
+		const dropped = dropConflictText(text);
+		return {
+			text: dropped?.text ?? text,
+			added: dropped?.added ?? [],
+			owned: undefined
+		};
 	}
 	const previous = readOwned(await $.store.get(OWNED));
 	const fill = fillSettings(text, walls, previous);

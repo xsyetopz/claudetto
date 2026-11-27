@@ -225,3 +225,11 @@ Then the session start returns 5 seconds in
 Given a usage read that never answers
 When a session starts
 Then the session start returns once that hook's 5 seconds and the settings load wait pass
+
+## SETUP-074 Conflicting Permission Rules Removed on Every Start
+
+claudetto removes the permission rules SETUP-071 names as conflicting on every session start, also after the fill version is recorded, because a rule added later (by the user, a dialog answer or another tool) prompts on each use until the next release.
+
+Given an ask rule `Bash(git branch -D *)` added after the fill
+When the next session starts
+Then that rule is removed and an unrelated ask rule stays
