@@ -1,14 +1,23 @@
-import type { On } from "claude-code";
+import type { ModelForkResult, On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
+
+const FORK: ModelForkResult = {
+	isAnswered: true,
+	text: "HANDOVER",
+	usage: {
+		input_tokens: 1,
+		output_tokens: 1,
+		cache_read_input_tokens: 0,
+		cache_creation_input_tokens: 0
+	}
+};
 
 /** Serves a fork that writes "HANDOVER" and a clean git tree to the compaction hook. */
 const serve = (on: On): void => {
 	on("settings.read", () => ({ value: {} }));
 	on("env.get", () => ({ value: undefined }));
 	on("ui.status", () => ({ value: undefined }));
-	on("model.fork", () => ({
-		value: { isAnswered: true, text: "HANDOVER" }
-	}));
+	on("model.fork", () => ({ value: FORK }));
 	on("session.messages", () => ({
 		value: [{ role: "user", text: "fix the parser", toolUses: [] }]
 	}));
