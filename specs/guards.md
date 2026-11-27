@@ -278,3 +278,15 @@ Then the call asks, naming the owner
 Given the owner cannot be read from `gh`
 When the permission check runs
 Then the call asks
+
+## GUARDS-090 A Run Filter on a Short Commit SHA Finds That Commit's Runs
+
+claudetto writes an abbreviated SHA after `gh run list --commit` or `-c` in full before the command runs, because `gh` compares the full SHA and returns no run for a short one, which a watcher reads as "not started yet".
+
+Given an allowed `gh run list --commit 7e2d3626b`
+When the call reaches the Bash tool
+Then the command holds the 40-character SHA that `git rev-parse` gives
+
+Given a short SHA that git does not resolve to a commit
+When the call reaches the Bash tool
+Then the command stays as written

@@ -138,4 +138,52 @@ describe("shell guard", () => {
 		expect(r).toMatchObject({ isError: true });
 		expect(r.text).toContain("PreToolUse hook");
 	});
+
+	const FULL = "7e2d3626b0b3318cce4646f93662990a4999e7de";
+
+	/** The command a `gh run list --commit 7e2d3626b` call reaches the Bash tool as; `resolves` says whether git finds the commit. */
+	const ranAs = async (
+		$: Parameters<Parameters<typeof test>[1]>[0],
+		on: Parameters<Parameters<typeof test>[1]>[1],
+		resolves: boolean
+	): Promise<string | undefined> => {
+		on("process.run", () => ({
+			value: {
+				exitCode: resolves ? 0 : 1,
+				stdout: resolves ? `${FULL}\n` : "",
+				stderr: "",
+				isStdoutTruncated: false,
+				isStderrTruncated: false
+			}
+		}));
+		on("tool.check", () => ({ decision: "allow" }));
+		const seen: string[] = [];
+		on("tool.call", { tool: "Bash" }, (_$, e) => {
+			if (e.tool === "Bash") {
+				seen.push(e.command);
+			}
+			return { result: "ok" };
+		});
+		await $.tool.call({
+			tool: "Bash",
+			command: "gh run list --commit 7e2d3626b -L 1"
+		});
+		return seen[0];
+	};
+
+	test("GUARDS-090 a gh run list filter on a short commit SHA reaches the tool with the full SHA", async ($, on) => {
+		// Act
+		const command = await ranAs($, on, true);
+
+		// Assert
+		expect(command).toContain(`gh run list --commit ${FULL} -L 1`);
+	});
+
+	test("GUARDS-090 a short SHA git does not resolve reaches the tool as written", async ($, on) => {
+		// Act
+		const command = await ranAs($, on, false);
+
+		// Assert
+		expect(command).toContain("gh run list --commit 7e2d3626b -L 1");
+	});
 });
