@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { describe, expect, test } from "claude-code/testing";
+import { describe, expect, mock, test } from "claude-code/testing";
 
 import { fieldOf } from "../../shared/field";
 
@@ -75,6 +75,35 @@ describe("settings fill at session start", () => {
 
 		// Assert
 		expect(Date.now() - began).toBeLessThan(4500);
+	});
+
+	test("session start returns 5 seconds in while a settings file read never answers", async ($, on) => {
+		// Arrange
+		const clock = mock.clock(on);
+		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("env.get", (_$, e) => ({
+			value: e.name === "HOME" ? "/home/u" : undefined
+		}));
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
+		on("fs.exists", () => ({ value: true }));
+		on(
+			"fs.read",
+			() =>
+				new Promise<never>(() => {
+					// never answers
+				})
+		);
+
+		// Act
+		const started = $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+		await clock.advance(5000);
+
+		// Assert
+		expect(await started).toMatchObject({ cwd: "/home/u/p" });
 	});
 
 	test("writes the construction over the user's style", async ($, on) => {

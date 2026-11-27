@@ -1,9 +1,15 @@
-import type { EngineInterface, On, PluginOptions } from "claude-code";
+import type {
+	EngineInterface,
+	On,
+	PluginOptions,
+	SessionStartInput
+} from "claude-code";
 
 import { repairSettings } from "../builtins/builtins";
 import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
 import { fault } from "../shared/fault";
 import { fieldOf, stringsOf } from "../shared/field";
+import { within } from "../shared/within";
 import { logChanges, record, settle } from "./fill";
 import { startParts } from "./parts";
 import { userSettingsPath } from "./settings";
@@ -22,6 +28,9 @@ const LOAD_WAIT_MS = 3000;
 
 /** Gap between two reads of the engine's settings while waiting, in ms. */
 const POLL_MS = 50;
+
+/** Longest time claudetto's setup holds session start, in ms; above LOAD_WAIT_MS so the load wait fits. */
+const START_CAP_MS = 5000;
 
 /** The store key set once claudetto's status line command was in the user's settings. */
 const WIRED = "statusLineWired";
@@ -86,41 +95,57 @@ async function awaitLoad($: EngineInterface, text: string): Promise<void> {
 /**
  * Repairs builtin drift (SETUP-011) and applies claudetto's own
  * construction to user settings once per fill version, in one read and one
- * write. Core allows one unmatched `session.start` registration per plugin, so
- * both share this hook, and so does the web tools' registration
+ * write.
+ */
+async function fillSettings(
+	$: EngineInterface,
+	e: SessionStartInput,
+	options: PluginOptions
+): Promise<void> {
+	const path = await userSettingsPath($);
+	const repair = repairSettings(await readSettings($, path));
+	if (repair === undefined) {
+		$.ui.log(`Left \`${path}\` alone: it does not hold a JSON object.`);
+		return;
+	}
+	const settled = await settle(
+		$,
+		repair.text,
+		stringsOf(options["protectedPaths"])
+	);
+	const text = await wired($, settled.text);
+	const isWired = text !== settled.text;
+	const changed =
+		repair.drifted.length > 0 || settled.added.length > 0 || isWired;
+	if (changed) {
+		await $.fs.write(path, text);
+	}
+	if (isWired) {
+		$.ui.log(`Set \`statusLine\` in \`${path}\` to the plugin script.`);
+	}
+	await logChanges($, path, repair.drifted, settled.added, e.isInteractive);
+	await record($, settled);
+	if (changed) {
+		await awaitLoad($, text);
+	}
+	// Only an explicit turn-on counts: an unset switch is the fill's to set, and a value the fill wrote just now is not read back until the next session.
+	if (ownGitOn(options) && (await builtinGitForced($))) {
+		$.ui.log(GIT_CONFLICT);
+	}
+}
+
+/**
+ * Runs the tool registrations, the rule install and the settings fill at session start. Core
+ * allows one unmatched `session.start` registration per plugin, so they share this hook
  * (TOOLS-020).
  */
 export function registerStart(on: On, options: PluginOptions = {}): void {
-	const walls = stringsOf(options["protectedPaths"]);
 	on("session.start", async ($, e, next) => {
 		const result = await next(e);
-		await startParts($, e);
-		const path = await userSettingsPath($);
-		const repair = repairSettings(await readSettings($, path));
-		if (repair === undefined) {
-			$.ui.log(`Left \`${path}\` alone: it does not hold a JSON object.`);
-			return result;
-		}
-		const settled = await settle($, repair.text, walls);
-		const text = await wired($, settled.text);
-		const isWired = text !== settled.text;
-		const changed =
-			repair.drifted.length > 0 || settled.added.length > 0 || isWired;
-		if (changed) {
-			await $.fs.write(path, text);
-		}
-		if (isWired) {
-			$.ui.log(`Set \`statusLine\` in \`${path}\` to the plugin script.`);
-		}
-		await logChanges($, path, repair.drifted, settled.added, e.isInteractive);
-		await record($, settled);
-		if (changed) {
-			await awaitLoad($, text);
-		}
-		// Only an explicit turn-on counts: an unset switch is the fill's to set, and a value the fill wrote just now is not read back until the next session.
-		if (ownGitOn(options) && (await builtinGitForced($))) {
-			$.ui.log(GIT_CONFLICT);
-		}
+		await within($, START_CAP_MS, "settings fill", async () => {
+			await startParts($, e);
+			await fillSettings($, e, options);
+		});
 		return result;
 		// A failed settings write must not block the session.
 	}).catch(($, e, next) => {

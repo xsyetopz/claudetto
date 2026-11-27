@@ -213,3 +213,11 @@ Then the rule stays as the user left it
 Given a rule that still holds the text claudetto wrote
 When a release changes or retires that law
 Then the rule takes the new text, or is emptied when retired
+
+## SETUP-073 Session Start Held at Most 5 Seconds
+
+claudetto's tool registrations, rule install and settings fill hold the `session.start` dispatch for at most 5 seconds and finish afterwards on their own, because a typed slash command waits on that dispatch and one engine call that never answers kept "Running SessionStart hooks…" on screen for hours.
+
+Given a settings file read that never answers
+When a session starts
+Then the session start returns 5 seconds in
