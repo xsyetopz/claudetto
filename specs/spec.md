@@ -61,14 +61,18 @@ When they run with the plugin
 Then `tool_used: Skill` shows `max: 0`
 And no file under `specs/` is created
 
-## SPEC-007 Contradiction Stops the Skill
+## SPEC-007 A Request Amends the Requirement It Contradicts
 
-When a request contradicts an existing requirement or cannot be met, the skill stops and reports the conflict with the requirement ID instead of editing tests or the spec to fit.
+When a request asks for behaviour an existing requirement contradicts, the agent amends that requirement, its tests and the code and names the ID in the reply, and when two requirements or a requirement and a staged test contradict each other it stops and reports the IDs.
 
 Given the canary case `contradiction`
 When it runs
-Then it passes only when the reply names the conflicting ID
-And no staged test changed
+Then it passes only when `CART-4`, its test and `cartTotal` allow the negative remainder and the reply names `CART-4`
+
+Given the case `implement-conflict` or `contradiction-impossible`
+When it runs
+Then it passes only when the reply names the conflicting IDs
+And no spec or staged test changed
 
 ## SPEC-008 Unknowns Asked or Written as Open
 
@@ -137,9 +141,9 @@ And no entry in another field
 
 ## SPEC-015 Hard Findings Exported
 
-claudetto-spec exports `hardFindings(report: Report): HardFinding[]`, returning the findings that should block completion: malformed specs, `removedIds`, `reworded`, `tampered` and `orphans`.
+claudetto-spec exports `hardFindings(report: Report): HardFinding[]`, returning the findings that should block completion: malformed specs, `tampered` and `orphans`.
 
-Given a report with only advice fields (`inflated`, `uncovered`, `changedSinceStaged`, `citedUnasserted`)
+Given a report with only advice fields (`inflated`, `uncovered`, `changedSinceStaged`, `citedUnasserted`, `removedIds`, `reworded`)
 When `hardFindings` runs
 Then it yields no hard finding
 
@@ -149,12 +153,15 @@ Then each blocking field yields one `{kind, subject, message}` per entry
 
 ## SPEC-016 Stop Blocked Once on Hard Findings
 
-claudetto-spec blocks the main agent's Stop once when the repo has `specs/` and `hardFindings` is non-empty, with a reason holding one line per finding.
+claudetto-spec blocks the main agent's Stop once when the repo has `specs/` and `hardFindings` is non-empty, with a reason holding one line per finding, and shows the person each requirement the session reworded or removed without blocking.
 
 Given a hard finding
 When the first Stop fires
 Then it is blocked with each finding named
-And a reworded requirement's line names the ID and says to restore it unless the user named the change
+
+Given a requirement the session reworded or removed
+When Stop fires
+Then the Stop passes and the person is shown the ID with its session-start wording, once until it changes again
 
 Given `stop_hook_active: true`, a subagent (`agent_id`), advice-only findings, a repo without `specs/` (no git run), a git failure or a thrown error
 When Stop fires

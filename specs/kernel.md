@@ -79,7 +79,7 @@ Then the conduct text passes more runs than vanilla in which the agent runs the 
 
 ## KERNEL-034 Tell the Model When a Usage Limit Is Near
 
-claudetto tells the model once when the 5-hour or 7-day use passes 85 percent, so it commits and writes a handover before the limit stops the session.
+claudetto tells the model once when the 5-hour or 7-day use passes 85 percent to commit finished work and leave what is left to the session handover, writing no handover file.
 
 Given a session whose 5-hour use reads 50 percent
 When the use reads 86 percent at the next prompt

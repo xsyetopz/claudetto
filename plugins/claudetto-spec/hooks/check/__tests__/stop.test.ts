@@ -158,22 +158,40 @@ test("SPEC-016 a thrown error fails open and is logged", async ($, on) => {
 	expect(probe.logs.some((m) => m.includes("gate failed"))).toBe(true);
 });
 
-test("SPEC-016 a reworded requirement's line tells the agent to restore it unless the user named the change", async ($, on) => {
+test("SPEC-016 a reworded requirement lets the Stop pass and shows the person its old wording once", async ($, on) => {
 	// Arrange
-	repo(on, {
+	const probe = repo(on, {
 		specs: true,
 		test: TEST_CLEAN,
 		head: "# A\n\n## A-1 Thing\n\nIt fails.\n"
 	});
 
 	// Act
+	const first = await $.classic.Stop({ stop_hook_active: false });
+	const second = await $.classic.Stop({ stop_hook_active: false });
+
+	// Assert
+	expect(first.block).toBeUndefined();
+	expect(second.block).toBeUndefined();
+	const shown = probe.logs.filter((m) => m.includes("`A-1`"));
+	expect(shown).toHaveLength(1);
+	expect(shown[0]).toEqual(expect.stringContaining('"It fails."'));
+});
+
+test("SPEC-016 a removed requirement is shown to the person with its old wording", async ($, on) => {
+	// Arrange
+	const probe = repo(on, {
+		specs: true,
+		test: TEST_CLEAN,
+		head: "# A\n\n## A-1 Thing\n\nIt works.\n\n## A-2 Gone\n\nIt went.\n"
+	});
+
+	// Act
 	const result = await $.classic.Stop({ stop_hook_active: false });
 
 	// Assert
-	expect(result.block).toEqual(
-		expect.stringContaining("`A-1` changed since `HEAD`")
-	);
-	expect(result.block).toEqual(
-		expect.stringContaining("report the conflict naming `A-1`")
-	);
+	expect(result.block).toBeUndefined();
+	expect(probe.logs).toEqual([
+		expect.stringMatching(/`A-2` removed[\s\S]*"It went\."/u)
+	]);
 });

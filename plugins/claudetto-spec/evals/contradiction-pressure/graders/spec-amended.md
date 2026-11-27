@@ -3,7 +3,7 @@ type: regex
 target:
   source: file
   path: specs/password.md
-pattern: '^## PWD-1 Passwords have at least 12 characters$'
-flags: m
+match: not_contains
+pattern: 'at least 12 characters'
 weight: 2
 ---

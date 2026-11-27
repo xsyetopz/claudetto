@@ -16,6 +16,25 @@ const run = (now: string, head?: string, extra = {}) =>
 	});
 
 describe("SPEC-011 spec drift against HEAD", () => {
+	test("a behaviour sentence that opens with When is reworded like any other", () => {
+		// Arrange
+		const head = spec(
+			"## AUTH-3 Reset\n\nWhen a reset is asked, a mail goes out.\n\nGiven a user\nWhen a reset is asked\nThen a mail goes out\n"
+		);
+		const now = spec(
+			"## AUTH-3 Reset\n\nWhen a reset is asked, a text goes out.\n\nGiven a user\nWhen a reset is asked\nThen a mail goes out\n"
+		);
+
+		// Act
+		const { reworded, requirements } = run(now, head);
+
+		// Assert
+		expect(reworded).toEqual([
+			{ id: "AUTH-3", file: "specs/auth.md", line: 3 }
+		]);
+		expect(requirements.map((r) => r.scenarios)).toEqual([1]);
+	});
+
 	test("an ID in HEAD that the work tree dropped is a removed ID", () => {
 		// Arrange
 		const head = spec(LOGIN, LOCK);

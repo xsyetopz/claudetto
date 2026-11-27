@@ -1,91 +1,131 @@
 import type { EngineInterface, On } from "claude-code";
 
-import { AMEND_RULE, SPECS_DIR, STOP_BLOCK_HEAD } from "../texts";
-import {
-	type Baseline,
-	newFindings,
-	readBaseline,
-	sinceStart,
-	startWording
-} from "./baseline";
+import { SPEC_CHANGE_HEAD, SPECS_DIR, STOP_BLOCK_HEAD } from "../texts";
+import { newFindings, readBaseline, sinceStart } from "./baseline";
 import { gather, LIST_ARGV } from "./gather";
 import { type HardFinding, hardFindings } from "./hard";
-import { checkSpecs } from "./spec";
+import { parseSpec } from "./parse";
+import { isSpecFile } from "./paths";
+import { checkSpecs, type Report } from "./spec";
 
-/** Where a changed requirement's wording is compared from, and what it read there. */
-function changedFrom(f: HardFinding, base: Baseline | undefined): string {
-	if (base === undefined) {
-		return "changed since `HEAD`";
-	}
-	const was = startWording(base, f.subject);
-	return was === undefined
-		? "changed in this session"
-		: `changed in this session; at session start it read "${was}"`;
-}
-
-/** One line the agent acts on: a changed requirement needs the user's explicit word. */
-function lineOf(f: HardFinding, base: Baseline | undefined): string {
-	if (f.kind === "reworded" || f.kind === "removedId") {
-		return `- \`${f.subject}\` ${changedFrom(f, base)} (${f.message}); ${AMEND_RULE}. Unless the request cites \`${f.subject}\` or the spec, restore the spec, the tests citing it and the code, then report the conflict naming \`${f.subject}\` and change nothing else; otherwise quote the request's words that name it`;
-	}
+/** One line the agent acts on. */
+function lineOf(f: HardFinding): string {
 	if (f.kind === "tampered") {
 		return `- ${f.message}; restore the staged test and report honestly why it cannot pass`;
 	}
 	return `- ${f.message}`;
 }
 
+/** The behaviour sentence `id` has in any spec file of `texts`. */
+function wordingIn(
+	texts: ReadonlyMap<string, string>,
+	id: string
+): string | undefined {
+	for (const [file, text] of texts) {
+		if (!isSpecFile(file)) {
+			continue;
+		}
+		const wording = parseSpec(file, text).behaviours.get(id);
+		if (wording !== undefined) {
+			return wording;
+		}
+	}
+	return undefined;
+}
+
+/** A requirement the session changed, as the person reads it, keyed by its current state. */
+interface SpecChange {
+	key: string;
+	line: string;
+}
+
+/** One change per reworded or removed ID, with the wording it had before. */
+function changesOf(
+	report: Report,
+	was: ReadonlyMap<string, string>,
+	now: ReadonlyMap<string, string>
+): SpecChange[] {
+	const before = (id: string): string => {
+		const wording = wordingIn(was, id);
+		return wording === undefined ? "" : `; it read "${wording}"`;
+	};
+	return [
+		...report.reworded.map((r) => ({
+			key: `${r.id} ${wordingIn(now, r.id) ?? ""}`,
+			line: `- \`${r.id}\` (\`${r.file}:${r.line}\`) reworded${before(r.id)}`
+		})),
+		...report.removedIds.map((r) => ({
+			key: `${r.id} removed`,
+			line: `- \`${r.id}\` removed from \`${r.file}\`${before(r.id)}`
+		}))
+	];
+}
+
+/** What a Stop check found: the block text, if any, and the spec changes to show. */
+interface StopCheck {
+	block: string | undefined;
+	changes: SpecChange[];
+}
+
+const NOTHING: StopCheck = { block: undefined, changes: [] };
+
 /**
- * The reason to block a Stop, or `undefined` when nothing blocks.
+ * Checks the repo at a Stop: the hard findings that block, and the requirements the
+ * session reworded or removed, which the person is shown and which never block.
  *
- * A repo without `specs/` costs one `fs.exists` and no git run. A git failure yields
- * `undefined`, so the gate fails open. Advice findings never block. With a session-start
- * baseline, only findings the session caused count, so the user's own edits never do.
- *
- * @param $ The engine interface.
- * @returns The block text listing each hard finding, or `undefined`.
+ * A repo without `specs/` costs one `fs.exists` and no git run. A git failure finds
+ * nothing, so the gate fails open. With a session-start baseline, only what the session
+ * changed counts, so the user's own edits never do.
  */
-export async function stopReason(
-	$: EngineInterface
-): Promise<string | undefined> {
+async function checkAtStop($: EngineInterface): Promise<StopCheck> {
 	if (!(await $.fs.exists(SPECS_DIR))) {
-		return undefined;
+		return NOTHING;
 	}
 	const listed = await $.process.run(LIST_ARGV);
 	if (listed.exitCode !== 0) {
-		return undefined;
+		return NOTHING;
 	}
 	const base = await readBaseline($);
 	const input = await gather($, listed.stdout);
-	const checked = hardFindings(
-		checkSpecs({
-			...(base === undefined ? input : sinceStart(input, base)),
-			path: undefined
-		})
-	);
+	const compared = base === undefined ? input : sinceStart(input, base);
+	const report = checkSpecs({ ...compared, path: undefined });
+	const checked = hardFindings(report);
 	const found =
 		base === undefined ? checked : newFindings(checked, base, input.texts);
-	if (found.length === 0) {
-		return undefined;
-	}
-	return [STOP_BLOCK_HEAD, ...found.map((f) => lineOf(f, base))].join("\n");
+	return {
+		block:
+			found.length === 0
+				? undefined
+				: [STOP_BLOCK_HEAD, ...found.map((f) => lineOf(f))].join("\n"),
+		changes: changesOf(report, compared.head ?? new Map(), input.texts)
+	};
 }
 
 /**
- * Blocks the main agent's Stop once when `spec_check` has a hard finding the session caused.
+ * Blocks the main agent's Stop once when `spec_check` has a hard finding the session
+ * caused, and shows the person each requirement the session reworded or removed.
  *
  * `recordBaseline` at session start sets what counts as the session's own. `stop_hook_active` is true when a Stop hook
  * already blocked this turn, so the gate lets that Stop through and cannot loop. A
- * subagent's hook input carries `agent_id`, and a subagent is never blocked. An error
- * never blocks.
+ * subagent's hook input carries `agent_id`, and a subagent is never blocked. A spec
+ * change is shown once until its wording changes again. An error never blocks.
  *
  * @param on The engine's hook registrar.
  */
 export function registerSpecStop(on: On): void {
+	const shown = new Set<string>();
 	on("classic.Stop", async ($, e, next) => {
 		if (e.stop_hook_active || e.agent_id !== undefined) {
 			return next(e);
 		}
-		const block = await stopReason($);
+		const { block, changes } = await checkAtStop($);
+		const fresh = changes.filter((c) => !shown.has(c.key));
+		if (fresh.length > 0) {
+			for (const c of fresh) {
+				shown.add(c.key);
+			}
+			$.ui.log([SPEC_CHANGE_HEAD, ...fresh.map((c) => c.line)].join("\n"));
+		}
 		return block === undefined ? next(e) : { ...(await next(e)), block };
 	}).catch(($, e, next) => {
 		$.ui.log("`Stop` gate failed", { to: "debug" });

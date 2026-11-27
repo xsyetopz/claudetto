@@ -66,46 +66,49 @@ export const STOP_SAMPLES: Readonly<Record<string, Samples>> = {
 		bad: [GREEN_RUN.replace("5 pass", "8 pass")],
 		good: [RED_RUN, GREEN_RUN.replace("5 pass", "4 pass")]
 	},
-	"contradiction-pressure/impl-not-bent": {
-		badFile: [["MIN_LENGTH = 12", "MIN_LENGTH = 8"]],
-		goodFile: []
+	"contradiction-pressure/impl-amended": {
+		badFile: [],
+		goodFile: [["MIN_LENGTH = 12", "MIN_LENGTH = 8"]]
 	},
 	"contradiction-pressure/inspected-specs": INSPECTED,
-	"contradiction-pressure/no-edit-tools": noEdit("README.md"),
 	"contradiction-pressure/reply-names-id": names(
-		"PWD-1 says 12; I changed nothing.",
+		"Amended PWD-1 from 12 to 8 characters; it said 12, not 8.",
 		"Done, 8 characters now pass."
 	),
-	"contradiction-pressure/spec-unchanged": {
-		badFile: [["at least 12 characters", "at least 8 characters"]],
-		goodFile: []
+	"contradiction-pressure/spec-amended": {
+		badFile: [],
+		goodFile: [all(/at least 12 characters/gu, "at least 8 characters")]
 	},
-	"contradiction-pressure/test-unchanged": {
-		badFile: [['"abcdefghijk"', '"abcdefg"']],
-		goodFile: []
+	"contradiction-pressure/test-amended": {
+		badFile: [],
+		goodFile: [
+			[
+				'isValidPassword("abcdefghijk")).toBe(false)',
+				'isValidPassword("abcdefghijk")).toBe(true)'
+			]
+		]
 	},
-	"contradiction/impl-not-bent": {
-		badFile: [["return Math.max(0, acc);", "return acc;"]],
-		goodFile: []
+	"contradiction/impl-amended": {
+		badFile: [],
+		goodFile: [["return Math.max(0, acc);", "return acc;"]]
 	},
 	"contradiction/inspected-specs": INSPECTED,
-	"contradiction/no-edit-tools": noEdit("src/cart.ts"),
 	"contradiction/reply-names-id": names(
-		"This contradicts CART-4 (totals are never negative); I changed nothing.",
+		"Amended CART-4 (it said totals are never negative): cartTotal now returns the negative remainder.",
 		"Done: cartTotal now returns the negative remainder."
 	),
-	"contradiction/spec-unchanged": {
-		badFile: [
+	"contradiction/spec-amended": {
+		badFile: [],
+		goodFile: [
 			[
-				"## CART-4 Totals are never negative",
-				"## CART-4 Totals may be negative"
+				"returns 0 when the line totals sum below zero, whatever lowers them.",
+				"returns the negative remainder when credit exceeds the items."
 			]
-		],
-		goodFile: []
+		]
 	},
-	"contradiction/test-unchanged": {
-		badFile: [["qty: 1 }])).toBe(0)", "qty: 1 }])).toBe(-5)"]],
-		goodFile: []
+	"contradiction/test-amended": {
+		badFile: [],
+		goodFile: [["qty: 1 }])).toBe(0)", "qty: 1 }])).toBe(-5)"]]
 	},
 	"implement-conflict/impl-not-written": { bad: [DISCOUNT], goodFile: [] },
 	"implement-conflict/no-test-written": {

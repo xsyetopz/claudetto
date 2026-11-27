@@ -105,14 +105,14 @@ const CASES: Case[] = [
 		plant: plantRemovedId,
 		field: "removedIds",
 		expected: [{ id: "AUTH-3", file: SPEC }],
-		hard: ["removedId"]
+		hard: []
 	},
 	{
 		fault: "a reworded requirement",
 		plant: plantReworded,
 		field: "reworded",
 		expected: [{ id: "AUTH-2", file: SPEC, line: 11 }],
-		hard: ["reworded"]
+		hard: []
 	}
 ];
 

@@ -3,7 +3,6 @@ import type { EngineInterface } from "claude-code";
 import { SPECS_DIR } from "../texts";
 import { gather, gitOut, LIST_ARGV, readAll } from "./gather";
 import { type HardFinding, hardFindings } from "./hard";
-import { parseSpec } from "./parse";
 import { isSpecFile, isTestFile, listPaths } from "./paths";
 import { type CheckInput, checkSpecs, type Report } from "./spec";
 import { compareTest } from "./tamper";
@@ -137,17 +136,6 @@ export function sessionReport(
 			)
 		)
 	};
-}
-
-/** The behaviour sentence `id` had at session start, if a start spec defines it. */
-export function startWording(base: Baseline, id: string): string | undefined {
-	for (const [file, text] of Object.entries(base.specs)) {
-		const wording = parseSpec(file, text).behaviours.get(id);
-		if (wording !== undefined) {
-			return wording;
-		}
-	}
-	return undefined;
 }
 
 /** Takes and stores the baseline; a failure is logged and the gate falls back to HEAD. */

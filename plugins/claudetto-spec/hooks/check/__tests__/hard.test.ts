@@ -4,7 +4,7 @@ import { hardFindings } from "../hard";
 import { cleanFixture, plantSkip, report } from "./fixture";
 
 describe("SPEC-015 hardFindings", () => {
-	test("advice fields never block: inflated, uncovered, citation-only and edited tests", () => {
+	test("advice fields never block: inflated, uncovered, citation-only and edited tests, removed and reworded IDs", () => {
 		// Arrange
 		const advice = {
 			...report(cleanFixture()),
@@ -13,7 +13,9 @@ describe("SPEC-015 hardFindings", () => {
 			],
 			uncovered: ["A-2"],
 			changedSinceStaged: ["tests/a.test.ts"],
-			citedUnasserted: [{ id: "A-1", file: "tests/a.test.ts", line: 1 }]
+			citedUnasserted: [{ id: "A-1", file: "tests/a.test.ts", line: 1 }],
+			removedIds: [{ id: "A-3", file: "specs/a.md" }],
+			reworded: [{ id: "A-2", file: "specs/a.md", line: 9 }]
 		};
 
 		// Act
@@ -30,8 +32,6 @@ describe("SPEC-015 hardFindings", () => {
 		const blocking = {
 			...report(fixture),
 			malformed: [{ file: "specs/a.md", line: 7, reason: "bad heading" }],
-			removedIds: [{ id: "A-1", file: "specs/a.md" }],
-			reworded: [{ id: "A-2", file: "specs/a.md", line: 9 }],
 			orphans: ["A-9"]
 		};
 
@@ -41,8 +41,6 @@ describe("SPEC-015 hardFindings", () => {
 		// Assert
 		expect(found.map((h) => [h.kind, h.subject])).toEqual([
 			["malformed", "specs/a.md:7"],
-			["removedId", "A-1"],
-			["reworded", "A-2"],
 			["tampered", "tests/auth.test.ts"],
 			["orphan", "A-9"]
 		]);

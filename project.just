@@ -165,10 +165,11 @@ eval-holdout plugin model="claude-haiku-5-5" *args: eval-preflight
 eval-jev plugin:
     bun --env-file="$(git rev-parse --path-format=absolute --git-common-dir)/../.env" tools/jev-grade.ts plugins/{{ plugin }}/evals/results
 
-# Bump one plugin's patch version, e.g. `just bump claudetto`.
-bump plugin:
-    perl -0pi -e 's/("version":\s*"\d+\.\d+\.)(\d+)"/$1 . ($2 + 1) . "\""/e' plugins/{{ plugin }}/.claude-plugin/plugin.json
-    grep '"version"' plugins/{{ plugin }}/.claude-plugin/plugin.json
+# Bump a plugin's version by SemVer part or set it, e.g. `just bump claudetto`, `just bump all minor`
+# or `just bump claudetto 0.2.0`; `all` is every shipped plugin. A version with a suffix
+# (`2.1.329+1`) is replaced by its X.Y.Z core, then bumped.
+bump plugin version="patch":
+    bun tools/bump.ts {{ version }} {{ if plugin == "all" { shipped } else { "plugins/" + plugin } }}
 
 # Start a release cycle: the patch bump comes first, then the check.
 release plugin: (bump plugin) verify
