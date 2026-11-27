@@ -2,7 +2,7 @@ import type { On } from "claude-code";
 
 import { fault } from "../../shared/fault";
 
-/** The use, in percent, from which the model is told to checkpoint (KERNEL-034): 15 points of a window leave room for a commit and a handover. */
+/** The use, in percent, from which the model is told to checkpoint (KERNEL-034): 15 points of a window leave room for a commit. */
 export const THRESHOLD = 85;
 
 /** The windows the status line shows, by the name the model reads. */
@@ -14,7 +14,7 @@ const WINDOWS: Readonly<Record<string, string>> = {
 /** The line the model reads when a window crosses the threshold. */
 export const lineFor = (name: string, percent: number): string =>
 	`Usage limit: the ${name} window is ${Math.round(percent)}% used. ` +
-	"Checkpoint now: commit finished work and write a handover for what is left, before the limit stops the session.";
+	"Checkpoint now: commit finished work before the limit stops the session. The session handover carries what is left, so write no handover file.";
 
 /** Matches every prompt text, so this hook and the others on `prompt.submit` each hold a matcher. */
 const ANY = /(?:)/u;
