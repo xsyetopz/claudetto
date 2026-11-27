@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { inOrder } from "../../__tests__/in-order";
+import { inOrder } from "../../__tests__/order";
 
 const PASTE =
 	"Count the users on db.internal, user app, password Hk7#qL9vZ2pW.";

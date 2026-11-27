@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { fieldOf } from "../../../shared/field";
-import { bashWorld, contextOf } from "./bash-world";
+import { bashWorld, contextOf } from "./world";
 
 const failed = (text: string) => ({
 	isError: true as const,

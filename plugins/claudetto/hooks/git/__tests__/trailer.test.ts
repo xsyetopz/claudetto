@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, type Engine, expect, test } from "claude-code/testing";
 
-import { inOrder } from "../../guards/__tests__/in-order";
+import { inOrder } from "../../guards/__tests__/order";
 
 const LINE = "Co-Authored-By: Claude <noreply@anthropic.com>";
 

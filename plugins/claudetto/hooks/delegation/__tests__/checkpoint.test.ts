@@ -1,7 +1,7 @@
 import type { AgentInfo, On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { inOrder } from "../../guards/__tests__/in-order";
+import { inOrder } from "../../guards/__tests__/order";
 import { fieldOf, stringsOf } from "../../shared/field";
 
 const MINUTE = 60_000;

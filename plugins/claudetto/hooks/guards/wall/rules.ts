@@ -1,4 +1,4 @@
-import { OPEN_RULES } from "../gh-target";
+import { OPEN_RULES } from "../target";
 
 /**
  * Permission rules and sandbox lists that setup fills into user settings
@@ -44,7 +44,7 @@ export const DENY: readonly string[] = [
 ];
 
 /**
- * The only prompts claudetto adds: a pull request or issue opening, which `gh-target.ts` lets
+ * The only prompts claudetto adds: a pull request or issue opening, which `target.ts` lets
  * through when the user's `gh` login owns the target. Every other command runs at the agent's
  * will, because an ask rule turns into a denial under dontAsk and the agent then cannot do what
  * the user asked (GUARDS-089).

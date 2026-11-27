@@ -23,7 +23,7 @@ import { registerCompose } from "./prompt/compose";
 import { registerSandbox } from "./prompt/sandbox";
 import { registerReadCheck } from "./read/check";
 import { registerRead } from "./read/tool";
-import { registerBaseUrl } from "./settings/base-url";
+import { registerBaseUrl } from "./settings/endpoint";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { newLive, registerLive } from "./statusline/live";

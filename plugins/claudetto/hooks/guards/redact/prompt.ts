@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 
 import { fault } from "../../shared/fault";
-import { registerPromptLog } from "../log-paste";
+import { registerPromptLog } from "../paste";
 import { maskFor, shapesOnly } from "./redact";
 
 /** The origins a person types or pastes into: the terminal, Remote Control, and an SDK host's `-p`. */

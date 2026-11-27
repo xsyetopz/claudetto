@@ -5,7 +5,7 @@ import { builtinGitForced, GIT_CONFLICT, ownGitOn } from "../git/instructions";
 import { fieldOf, stringsOf } from "../shared/field";
 import { logChanges, record, settle } from "./fill";
 import { userSettingsPath } from "./settings";
-import { namesOwnStatusLine, wireStatusLine } from "./status-line";
+import { namesOwnStatusLine, wireStatusLine } from "./statusline";
 
 /** The text of the user settings file, or undefined when it does not exist. */
 async function readSettings(

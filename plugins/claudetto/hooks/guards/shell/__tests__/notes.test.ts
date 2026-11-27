@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { fieldOf } from "../../../shared/field";
-import { bashWorld, contextOf } from "./bash-world";
+import { bashWorld, contextOf } from "./world";
 
 describe("notes on a command that hides its failure", () => {
 	test("a check piped into a filter gets a pipefail note, and pipefail silences it", async ($, on) => {

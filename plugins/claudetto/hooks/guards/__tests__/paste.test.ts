@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { inOrder } from "./in-order";
+import { inOrder } from "./order";
 
 /** The engine beneath the hook: records the text and context each prompt entered with. */
 const engine = (on: On) => {

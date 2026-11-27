@@ -1,6 +1,6 @@
 import type { EngineInterface, SessionStartInput } from "claude-code";
 
-import { startFileTools } from "../pool/file-tools";
+import { startFileTools } from "../pool/files";
 import { fault } from "../shared/fault";
 import { startWeb } from "../web/register";
 import { installRules } from "./rules";

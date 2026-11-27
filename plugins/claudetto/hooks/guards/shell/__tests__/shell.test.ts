@@ -1,6 +1,6 @@
 import { describe, expect, test, type TestBody } from "claude-code/testing";
 
-import { bashWorld } from "./bash-world";
+import { bashWorld } from "./world";
 
 type Dollar = Parameters<TestBody>[0];
 type Mocks = Parameters<TestBody>[1];
