@@ -40,7 +40,7 @@ export async function runSpecCheck(
 		path !== undefined &&
 		!(isSpecFile(path) && listPaths(listed.stdout).includes(path))
 	) {
-		return UNKNOWN_PATH + path;
+		return `${UNKNOWN_PATH}\`${path}\``;
 	}
 	const base = await readBaseline($);
 	const input = await gather($, listed.stdout);
@@ -56,12 +56,9 @@ export async function registerTool($: EngineInterface): Promise<void> {
 	try {
 		await $.tool.register(SPEC_TOOL);
 	} catch (error) {
-		$.ui.log(
-			`claudetto-spec: spec_check registration failed: ${String(error)}`,
-			{
-				to: "debug"
-			}
-		);
+		$.ui.log(`\`spec_check\` registration failed: ${String(error)}`, {
+			to: "debug"
+		});
 	}
 }
 
@@ -70,7 +67,7 @@ export function registerSpecCheck(on: On): void {
 	on("tool.run", { tool: TOOL_FULL_NAME }, async ($, e) => ({
 		result: await runSpecCheck($, e.path)
 	})).catch(($) => {
-		$.ui.log("claudetto-spec: spec_check failed", { to: "debug" });
-		return { deny: "spec_check failed; see the debug log" };
+		$.ui.log("`spec_check` failed", { to: "debug" });
+		return { deny: "`spec_check` failed; see the debug log" };
 	});
 }

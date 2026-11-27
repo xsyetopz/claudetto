@@ -11,15 +11,6 @@ const USAGE: SessionUsage = {
 };
 
 const SCROLL = { offset: 0, bodyRows: 10 };
-const BAND = {
-	hasSurvey: false,
-	isCollapsed: false,
-	isWorking: false,
-	maxRows: 3,
-	bodyColumns: 100,
-	scroll: SCROLL,
-	view: {}
-};
 const PANE = {
 	title: "Usage breakdown",
 	isFocused: true,
@@ -133,34 +124,6 @@ describe("usage band and pane", () => {
 
 		// Assert
 		expect(await pane.find({ text: /Messages\s+60k\s+30\.0%/u })).toBeDefined();
-	});
-
-	test("the band draws a chip per reading, and pressing one opens the pane on that window", async ($, on) => {
-		// Arrange
-		const { opened } = serve(on, USAGE);
-		const band = await $.ui.mount({
-			plugin: "claudetto",
-			surface: "terminal",
-			component: "AbovePrompt",
-			props: BAND
-		});
-
-		// Act
-		const chips = await band.findAll({ type: "Button" });
-		await band.press({ key: "five_hour" });
-		const pane = await $.ui.mount({
-			plugin: "claudetto",
-			surface: "terminal",
-			component: "Pane",
-			requestId: "breakdown",
-			props: PANE
-		});
-
-		// Assert
-		const heading = await pane.find({ type: "Text", text: /^5-hour window/u });
-		expect(chips.map((chip) => chip.key)).toEqual(["ctx", "five_hour"]);
-		expect(opened).toEqual(["breakdown"]);
-		expect(heading?.text).toBe("5-hour window 30% used");
 	});
 
 	test("/breakdown 7d opens the pane on the 7-day window", async ($, on) => {

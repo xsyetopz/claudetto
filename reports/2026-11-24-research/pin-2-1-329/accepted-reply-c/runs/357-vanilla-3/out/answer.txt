@@ -1,8 +1,0 @@
-I wrote `config.schema.json`. I didn't run a validator against `config.example.json`, but I checked the schema against the file's contents by hand.
-
-The schema requires all three keys and rejects any others:
-- **`port`:** an integer from 1 to 65535.
-- **`host`:** a string.
-- **`debug`:** a boolean.
-
-If you want to add optional keys to the config later, remove `"additionalProperties": false` or add them to `properties`.

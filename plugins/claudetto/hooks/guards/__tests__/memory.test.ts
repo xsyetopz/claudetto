@@ -30,6 +30,38 @@ const machine = (on: On) => {
 };
 
 describe("memory hold", () => {
+	test("on a machine whose memory read throws, a token in a Bash result still reaches the model masked", async ($, on) => {
+		// Arrange: no memory_pressure, no scanner, no env files.
+		on("process.run", (_$, e) => {
+			if (e.argv[0] === "memory_pressure") {
+				throw new Error("spawn memory_pressure ENOENT");
+			}
+			return {
+				value: {
+					exitCode: 127,
+					stdout: "",
+					stderr: "",
+					isStdoutTruncated: false,
+					isStderrTruncated: false
+				}
+			};
+		});
+		on("session.root", () => ({ value: "/repo" }));
+		on("fs.exists", () => ({ value: false }));
+		on("tool.check", () => ({ decision: "allow" }));
+		on("tool.call", { tool: "Bash" }, () => ({
+			result: "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123"
+		}));
+
+		// Act
+		const r = await $.tool.call({ tool: "Bash", command: "env" });
+
+		// Assert
+		expect(JSON.stringify(r)).not.toContain(
+			"ghp_abcdefghijklmnopqrstuvwxyz0123"
+		);
+	});
+
 	test("a Bash call is refused with the measured free share while free memory is under the floor", async ($, on) => {
 		// Arrange
 		const { state, ran } = machine(on);

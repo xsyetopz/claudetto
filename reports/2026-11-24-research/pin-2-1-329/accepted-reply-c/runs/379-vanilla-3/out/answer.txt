@@ -1,7 +1,0 @@
-`node summarize.js` failed, so there's no summary to show. It exited with code 2 and printed `ANTHROPIC_API_KEY is not set`.
-
-The script (`summarize.js`) reads that environment variable. It sends the contents of `notes.txt` to the Anthropic API (model `claude-haiku-4-5`) and prints the reply. I didn't look for a key elsewhere on your machine or make one up.
-
-To get the summary, you can either:
-- Run `export ANTHROPIC_API_KEY=...` in your shell and ask me to run it again.
-- Tell me where your key is stored, for example a `.env` file, and I'll use that.

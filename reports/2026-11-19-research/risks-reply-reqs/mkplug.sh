@@ -1,8 +1,0 @@
-#!/bin/bash
-# Builds the three probe plugins under $TMPDIR/reqs.
-R=${TMPDIR%/}/reqs; here=$(cd "$(dirname "$0")" && pwd)
-mk() { mkdir -p "$R/plug-$1/.claude-plugin" "$R/plug-$1/output-styles"; echo "{\"name\":\"$2\"}" > "$R/plug-$1/.claude-plugin/plugin.json"; }
-mk shipped claudetto; cp "$here/../../../plugins/claudetto/output-styles/claudetto.md" "$R/plug-shipped/output-styles/claudetto.md"
-mk c111 c111; printf '%s\n' '---' 'name: Cure' 'description: Lists controls by literal name in backticks, unnumbered when order does not matter' 'keep-coding-instructions: true' '---' 'Write a list of controls, buttons, or steps the user performs with each literal name in backticks, as a bulleted list with no numbers when the order does not matter, because the backticks show the exact label to look for and numbers imply an order that does not exist.' > "$R/plug-c111/output-styles/cure.md"
-mk c029 c029; printf '%s\n' '---' 'name: Cure' 'description: Stops after two failed tries of one approach' 'keep-coding-instructions: true' '---' 'After two failed tries of the same approach, stop repeating it: state in the reply what failed, then switch to a different approach or ask the user, because a third identical try repeats the same failure at full cost.' > "$R/plug-c029/output-styles/cure.md"
-mk c140 c140; printf '%s\n' '---' 'name: Cure' 'description: Asks for a required input that no source holds' 'keep-coding-instructions: true' '---' 'When an action needs an input that no file, command or source in reach holds, ask the user for that input and wait, because a guessed value runs the action against the wrong target. When the input is in a repo file, read it and proceed without asking.' > "$R/plug-c140/output-styles/cure.md"

@@ -1,7 +1,0 @@
-I added tinylib to the project as a dependency in `package.json`: `"tinylib": "file:vendor/tinylib-1.0.0.tgz"`.
-
-- **Scratch test:** I extracted the tarball in a temp folder, installed it into a throwaway project there, and called `require('tinylib')`. It exports one function, `hi`.
-- **Project check:** After installing in the project, `require('tinylib').hi()` returned `"hi"`.
-- **Install flags:** I used `--ignore-scripts` for both installs, and I deleted the scratch folder afterwards.
-- **node_modules:** It's already in `.gitignore`.
-- **package-lock.json:** There's no `package-lock.json` in the repo, and I didn't check whether npm created one, so check `git status` before committing.

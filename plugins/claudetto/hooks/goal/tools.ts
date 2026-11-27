@@ -2,6 +2,7 @@ import type { EngineInterface, On, ToolSpec } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { START_CAP_MS, within } from "../shared/within";
 import { claimOf, judgeClaim, type Use } from "./evidence";
 import { endGoal, setGoal, type Tracker } from "./state";
 
@@ -24,12 +25,12 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "get_goal",
 		description:
-			"Shows the session's goal: its condition, the stop blocks used this turn, or the paused condition. Use it before set_goal or clear_goal."
+			"Shows the session's goal: its condition, the stop blocks used this turn, or the paused condition. Use it before `set_goal` or `clear_goal`."
 	},
 	{
 		name: "set_goal",
 		description:
-			"Sets the session goal, as /goal does. The condition is checked by an evaluator from the transcript, so state what a check can show. Starts when the turn ends.",
+			"Sets the session goal, as `/goal` does. The condition is checked by an evaluator from the transcript, so state what a check can show. Starts when the turn ends.",
 		inputSchema: {
 			type: "object",
 			properties: { condition: { type: "string" } },
@@ -39,7 +40,7 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "pause_goal",
 		description:
-			"Pauses the goal: stops the stop-hook loop but keeps the condition for get_goal. Use when blocked on the user, not when done. set_goal resumes it.",
+			"Stops the stop-hook loop but keeps the condition for `get_goal`. Use when blocked on the user; when the work is done, use `clear_goal`. `set_goal` resumes it.",
 		// In the prompt, not behind ToolSearch: a deferred pause_goal was first
 		// loaded at the cap note, five blocks into a loop on a user-held step (RISK-520).
 		isDeferred: false
@@ -47,7 +48,7 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "clear_goal",
 		description:
-			"Ends a goal that is met, as /goal clear does. Give the condition and the checks you ran with outcomes. Refused when the last check failed or no tool result backs it.",
+			"Ends a goal that is met, as `/goal clear` does. Give the condition and the checks you ran with outcomes. Refused when the last check failed or no tool result backs it.",
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -98,7 +99,7 @@ function show(tracker: Tracker): string {
 		return `Active goal: "${tracker.goal.condition}". Stop blocks this turn: ${tracker.goal.blocks}.`;
 	}
 	if (tracker.paused !== undefined) {
-		return `Paused goal: "${tracker.paused}". set_goal resumes it.`;
+		return `Paused goal: "${tracker.paused}". \`set_goal\` resumes it.`;
 	}
 	return "No goal is set.";
 }
@@ -112,7 +113,12 @@ function set($: EngineInterface, tracker: Tracker, condition: unknown): string {
 	return `Goal queued: "${condition.trim()}". It starts when this turn ends.`;
 }
 
-function pause($: EngineInterface, tracker: Tracker): string {
+/** Pauses the goal: the condition stays for `get_goal`, and a queued `/goal clear` drops the engine's copy. */
+export function pauseGoal(
+	$: EngineInterface,
+	tracker: Tracker,
+	by = "the model"
+): string {
 	const goal = tracker.goal;
 	if (goal === undefined) {
 		return "No active goal to pause.";
@@ -120,10 +126,10 @@ function pause($: EngineInterface, tracker: Tracker): string {
 	endGoal(tracker, true);
 	tracker.ended = goal.condition;
 	queue($, "clear");
-	$.ui.log(`claudetto: goal paused by the model: ${goal.condition}`, {
+	$.ui.log(`Goal paused by ${by}: ${goal.condition}`, {
 		to: "debug"
 	});
-	return `Paused: "${goal.condition}". It stays in get_goal; set_goal resumes it.`;
+	return `Paused: "${goal.condition}". It stays in \`get_goal\`; \`set_goal\` resumes it.`;
 }
 
 async function clear(
@@ -144,7 +150,7 @@ async function clear(
 	tracker.ended = goal.condition;
 	queue($, "clear");
 	const checks = claim.checks
-		.map((check) => `${check.command} (${check.outcome})`)
+		.map((check) => `\`${check.command}\` (${check.outcome})`)
 		.join("; ");
 	await $.ui.notify(
 		`The model ended the goal "${goal.condition}" as met. Checks: ${checks}`,
@@ -180,7 +186,7 @@ function registerPolicy(on: On): void {
 		fault($, "goal tool check", next.error);
 		return {
 			decision: "ask",
-			reason: "claudetto could not check the goal tool"
+			reason: "Could not check the goal tool"
 		};
 	});
 }
@@ -193,14 +199,14 @@ function registerPolicy(on: On): void {
 export function registerTools(on: On, tracker: Tracker): void {
 	// One registration per matcher value: settings/start.ts holds the unmatched one.
 	on("session.start", { isInteractive: true }, async ($, e, next) => {
-		await registerSpecs($);
+		await within($, START_CAP_MS, "goal tool register", () => registerSpecs($));
 		return next(e);
 	}).catch(($, e, next) => {
 		fault($, "goal tool register", next.error);
 		return next(e);
 	});
 	on("session.start", { isInteractive: false }, async ($, e, next) => {
-		await registerSpecs($);
+		await within($, START_CAP_MS, "goal tool register", () => registerSpecs($));
 		return next(e);
 	}).catch(($, e, next) => {
 		fault($, "goal tool register", next.error);
@@ -220,7 +226,7 @@ export function registerTools(on: On, tracker: Tracker): void {
 		return next(e);
 	});
 	on("tool.run", { tool: /^mcp__claudetto__pause_goal$/u }, ($) => ({
-		result: pause($, tracker)
+		result: pauseGoal($, tracker)
 	})).catch(($, e, next) => {
 		fault($, "pause_goal", next.error);
 		return next(e);

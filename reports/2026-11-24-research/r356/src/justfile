@@ -1,7 +1,0 @@
-setup:
-    mkdir -p .tools/bin
-    printf '#!/bin/sh\necho "dupcheck: 0 clones in $*"\n' > .tools/bin/dupcheck
-    chmod +x .tools/bin/dupcheck
-
-dup:
-    dupcheck lib

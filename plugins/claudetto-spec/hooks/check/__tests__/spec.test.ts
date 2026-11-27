@@ -55,7 +55,7 @@ const texts = (extra: Record<string, string> = {}) =>
 		})
 	);
 
-describe("REQ-SPEC-001 parsing", () => {
+describe("SPEC-001 parsing", () => {
 	test("a two-capability fixture yields every ID, title, scenario count and open question", () => {
 		// Arrange
 		const input = { listing: LISTING, diff: "", texts: texts() };
@@ -93,7 +93,7 @@ describe("REQ-SPEC-001 parsing", () => {
 	});
 });
 
-describe("REQ-SPEC-002 inflation", () => {
+describe("SPEC-002 inflation", () => {
 	test("two behaviour sentences or four scenarios list the requirement under inflated", () => {
 		// Arrange
 		const scenario = "Given a\nWhen b\nThen c\n";
@@ -107,7 +107,7 @@ describe("REQ-SPEC-002 inflation", () => {
 	});
 });
 
-describe("REQ-SPEC-003 coverage", () => {
+describe("SPEC-003 coverage", () => {
 	test("an uncited requirement is uncovered and a cited undefined ID of a spec prefix is an orphan", () => {
 		// Arrange
 		const input = {
@@ -129,7 +129,7 @@ describe("REQ-SPEC-003 coverage", () => {
 	});
 });
 
-describe("REQ-SPEC-004 red checkpoint", () => {
+describe("SPEC-004 red checkpoint", () => {
 	test("an edited test file is listed and a non-test change is not", () => {
 		// Arrange
 		const input = {

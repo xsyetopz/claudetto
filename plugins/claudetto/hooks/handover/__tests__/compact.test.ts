@@ -121,7 +121,7 @@ describe("session.compact", () => {
 
 		// Assert
 		expect(lines.length).toBe(1);
-		expect(lines[0]).toStartWith("debug: claudetto handover fork failed:");
+		expect(lines[0]).toStartWith("debug: handover fork failed:");
 		expect(r.messages?.[0]?.text).toContain("- fix the parser");
 	});
 	test("manual compaction keeps core and appends the keep line", async ($, on) => {

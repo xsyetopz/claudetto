@@ -15,6 +15,7 @@
 
 import type { On } from "claude-code";
 
+import { EXCLUDED } from "../guards/wall/rules";
 import { fault } from "../shared/fault";
 
 /** FNV-1a over UTF-16 code units: a short stable key for one exact block. */
@@ -28,6 +29,11 @@ const keyOf = (text: string): string => {
 	return h.toString(36);
 };
 
+/** The commands claudetto's fill takes out of the sandbox, as `ps` for `ps *`. */
+const excludedNames = EXCLUDED.map(
+	(rule) => `\`${rule.replace(/ \*$/u, "")}\``
+).join(", ");
+
 /**
  * The 2.1.329 blocks, by the key of their exact text, and the shorter text that
  * keeps each rule. A block is one paragraph line, or one top-level bullet with
@@ -36,48 +42,47 @@ const keyOf = (text: string): string => {
 export const SHORT: Readonly<Record<string, string>> = {
 	// By default, Bash commands run inside an OS-level sandbox (macOS Seatbelt) ...
 	"1xdi0w3":
-		"The OS sandbox (macOS Seatbelt) wraps each Bash command separately, not the session; its setup is below.",
+		"The OS sandbox (macOS Seatbelt) wraps each `Bash` command separately, not the session; its setup is below.",
 	// The sandbox marks out what this session was given: ...
 	"1jw2rhp":
 		"Your boundary is what the task was given: the paths below, the task's hosts, the credentials the user supplied, even where a limit is unenforced. Reachable keys, other projects and config, machine-control sockets and cloud metadata stay the user's unless the request calls for them. If the given means cannot finish the task, do what you can and say plainly what is missing; that is a complete answer.",
 	// How the sandbox is configured in this session:
-	ipsyg2: "Setup (~ $HOME, . cwd, a/{b,c} = a/b, a/c):",
+	ipsyg2: "Setup (`~` = `$HOME`, `.` = cwd, `a/{b,c}` = `a/b`, `a/c`):",
 	// You should always default to running commands within the sandbox. ...
-	"4tvy7k":
-		" - Run in the sandbox by default. Set `dangerouslyDisableSandbox: true` only when the user explicitly asks, or when a command just failed with sandbox evidence; commands also fail for other reasons (missing files, wrong arguments, the network).",
+	"4tvy7k": ` - Run in the sandbox by default. Set \`dangerouslyDisableSandbox: true\` only when the user explicitly asks, or when a command just failed with sandbox evidence; commands also fail for other reasons (missing files, wrong arguments, the network).\n - ${excludedNames} run outside the sandbox when the call holds that command alone: give each its own call, with no chain, pipe, redirect, \`cd\` or \`$(...)\`.`,
 	// Evidence of sandbox-caused failures includes: ...
 	oxl1dz:
 		' - Sandbox evidence: "Operation not permitted", access denied outside the allowed paths, a refused host, a Unix socket error.',
 	// When you see evidence of sandbox-caused failure: ...
 	"4atp0n":
-		" - On that evidence, put a host named in `<sandbox_violations>` in the re-run's `allowed_domains` (auto mode); otherwise retry with `dangerouslyDisableSandbox: true` at once, not after asking in prose (the retry passes the permission gate). Name the likely restriction briefly and say `/sandbox` manages restrictions.",
+		" - On that evidence, put a host named in `<sandbox_violations>` in the re-run's `allowed_domains` (auto mode); otherwise retry with `dangerouslyDisableSandbox: true` at once (the retry passes the permission gate, so a prose question adds nothing). Name the likely restriction briefly and say `/sandbox` manages restrictions.",
 	// A sandbox denial on a credential, a file or a host that the task does not involve ...
 	psl3dd:
-		" - A denial on a credential, file or host the task does not involve is the boundary at work: tell the user; no unsandboxed retry.",
+		" - A denial on a credential, file or host the task does not involve is the boundary at work: tell the user and keep the command sandboxed.",
 	// Treat each command you execute with `dangerouslyDisableSandbox: true` individually. ...
 	"1esqgpu":
 		" - Each unsandboxed command stands alone; the next one defaults to the sandbox again.",
 	// Do not suggest adding sensitive paths like ~/.bashrc, ...
 	"1fef5ry":
-		" - Never suggest allowlisting sensitive paths (~/.bashrc, ~/.zshrc, ~/.ssh/*, credential files).",
+		" - Keep sensitive paths (`~/.bashrc`, `~/.zshrc`, `~/.ssh/*`, credential files) off every allowlist you suggest.",
 	// Network egress goes through a filtering proxy. ...
 	rvagvw:
 		" - Egress passes a filtering proxy: try the request and read the error; a denial comes in a `<sandbox_violations>` block. In auto mode, list each extra host a command needs in its `allowed_domains`; a denied host goes there on the re-run.",
 	// Opening an app, file or URL with `open`, or scripting another app with `osascript`, ...
 	"1n070x5":
-		' - `open` and `osascript` are blocked here (-10822, -54, -600, "LSOpenURLsWithRole() failed"). That is the sandbox, not your build: no unsandboxed retry; tell the user and give the exact command.',
+		' - `open` and `osascript` are blocked here (-10822, -54, -600, "LSOpenURLsWithRole() failed"). That is the sandbox, not your build: tell the user and give the exact command for them to run.',
 	// On macOS, a sandboxed command can look into and signal only the processes ...
 	n49nda:
-		" - A sandboxed command sees and signals only processes it started: an empty `lsof -i :3000` does not show a free port, `lsof -ti:3000 | xargs kill` can stop nothing and exit 0, psutil gets `AccessDenied`. To find or stop another process, retry as for a sandbox failure, and say in that message that the sandbox hides processes and the retry runs without its protection.",
+		" - A sandboxed command sees and signals only processes it started: an empty `lsof -i :3000` does not show a free port, `lsof -ti:3000 | xargs kill` can stop nothing and exit 0, `psutil` gets `AccessDenied`. To find or stop another process, retry as for a sandbox failure, and say in that message that the sandbox hides processes and the retry runs without its protection.",
 	// For temporary files, always use the `$TMPDIR` environment variable. ...
 	"1uuu8v3":
-		" - Temporary files go under `$TMPDIR` (set, sandbox-writable), never `/tmp`.",
+		" - Temporary files go under `$TMPDIR` (set, sandbox-writable) in place of `/tmp`.",
 	// The repository's `.git/worktrees` is read-only in the sandbox, ...
 	fkw9fy:
 		" - `.git/worktrees` is read-only here except this session's worktrees: `git worktree add`, `move` and `remove`, and renaming a branch another worktree has checked out, fail halfway inside; run them outside the sandbox.",
 	// If a clipboard utility such as `pbcopy`, `xclip`, or `wl-copy` fails ...
 	jumeqb:
-		" - If `pbcopy`, `xclip` or `wl-copy` fails and the user wants the text copied, put it in a fenced block and tell them to run `/copy` (it copies from outside the sandbox), not a file to copy by hand."
+		" - If `pbcopy`, `xclip` or `wl-copy` fails and the user wants the text copied, put it in a fenced block and tell them to run `/copy` (it copies from outside the sandbox) in place of a file to copy by hand."
 };
 
 /** The places a path is written shorter: the folder prefixes and their short names. */

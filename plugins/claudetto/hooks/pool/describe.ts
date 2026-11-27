@@ -1,9 +1,22 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
 
-/** The longest description a kept built-in tool carries (REQ-TOOLS-003). */
+/** The longest description a kept built-in tool carries (TOOLS-003). */
 export const MAX_DESCRIPTION = 200;
+
+/** The engine's subagent limit when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is unset (2.1.329). */
+const DEFAULT_CONCURRENT = 20;
+
+/**
+ * The `Agent` line that names the concurrency limit (DELEGATION-072), read as the engine reads
+ * it, so the model spaces its launches instead of meeting the engine's refusal.
+ */
+async function limitLine($: EngineInterface): Promise<string> {
+	const raw = Number(await $.env.get("CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"));
+	const n = Number.isInteger(raw) && raw > 0 ? raw : DEFAULT_CONCURRENT;
+	return `At most ${n} run at once: launch the next after one reports.`;
+}
 
 /**
  * What the model reads about each kept built-in tool. The input schema already
@@ -12,33 +25,33 @@ export const MAX_DESCRIPTION = 200;
  * Glob and Grep are absent in Claude Code 2.1.330, so they have no entry.
  */
 export const TOOL_DESCRIPTIONS: Readonly<Record<string, string>> = {
-	Bash: "Run a shell command. cd persists only inside the working directories: use absolute paths. Independent commands go in parallel calls, dependent ones in one call joined by &&. timeout ms, max 600000.",
-	Read: "Read a file by absolute file_path: 2000 lines by default, offset and limit for part, cat -n format. Also reads images, PDFs (pages, max 20 per request) and .ipynb notebooks.",
+	Bash: "Run a shell command. `cd` persists only inside the working directories: use absolute paths. Independent commands go in parallel calls, dependent ones in one call via `&&`. `timeout` ms, max 600000.",
+	Read: "Read a file by absolute `file_path`: 2000 lines by default, `offset` and `limit` for part, `cat -n` format. Also reads images, PDFs (`pages`, max 20 per request) and `.ipynb` notebooks.",
 	// An untyped call falls to general-purpose, which agent.offer hides (ADR-0099), and fails (RISK-532).
 	Agent:
-		'Launch a subagent for independent or multi-file work; it knows only your prompt and returns a summary. Set subagent_type to a listed agent: an untyped call fails. Runs in the background by default. A brief calls a permission prompt approved only when the user\'s own words answer it ("approve it"); a request for the job, even naming its command, is no approval: the subagent leaves the prompt unanswered and reports it.',
+		'Launch a subagent for independent or multi-file work; it knows only your prompt and returns a summary. Set `subagent_type` to a listed agent: an untyped call fails. Runs in the background by default. A brief calls a permission prompt approved only when the user\'s own words answer it ("approve it"); a request for the job, even naming its command, is a task: the subagent leaves the prompt unanswered and reports it.',
 	Skill:
-		"Invoke a listed skill by exact name (plugin:skill for plugin skills) with optional args, when a listed skill covers the task. Built-in CLI commands such as /help are not skills.",
+		"Invoke a listed skill by exact name (`plugin:skill` for plugin skills) with optional `args`, when a listed skill covers the task. Built-in CLI commands such as `/help` run as typed.",
 	ToolSearch:
-		"Fetch the schemas of deferred tools so they can be called. query: select:A,B for exact names, or keywords; +term requires it in the name. Fetched tools are callable at once.",
+		"Fetch the schemas of deferred tools so they can be called. `query`: `select:A,B` for exact names, or keywords; `+term` requires it in the name. Fetched tools are callable at once.",
 	AskUserQuestion:
-		"Ask only when blocked on a decision that is the user's. Put a recommended option first, ending its label with (Recommended). multiSelect allows several answers. Never ask 'is the plan ready'.",
+		"Ask only when blocked on the user's decision. Put a recommended option first, ending its label with `(Recommended)`. `multiSelect` allows several answers. Request plan approval with `ExitPlanMode`.",
 	Monitor:
-		"Stream events from a long-running script or ws source, one notification per stdout line. For a single notification use Bash run_in_background. Filter to lines you act on, failures included.",
+		"Stream events from a long-running script or ws source, one notification per stdout line. For a single notification use `Bash` with `run_in_background`. Filter to lines you act on, failures included.",
 	TaskStop:
-		"Stop a running background task, agent or teammate by task_id (its ID or name). Returns success or failure.",
+		"Stop a running background task, agent or teammate by `task_id` (its ID or name). Returns success or failure.",
 	TodoWrite:
-		"Replace the session todo list; send the full list each call. Each item has content, status (pending, in_progress, completed) and activeForm. Keep one item in_progress.",
+		"Replace the session todo list; send the full list each call. Each item has `content`, `status` (`pending`, `in_progress`, `completed`) and `activeForm`. Keep one item `in_progress`.",
 	TaskCreate:
-		"Create a pending task with subject, description and optional activeForm. Use it for work of three or more steps. Check TaskList first for duplicates; set dependencies with TaskUpdate.",
+		"Create a pending task with `subject`, `description` and optional `activeForm`. Use it for work of three or more steps. Check `TaskList` first for duplicates; set dependencies with `TaskUpdate`.",
 	TaskGet:
-		"Get one task by ID: subject, description, status, blocks and blockedBy. Read it before starting or updating the task, and start only when blockedBy is empty.",
+		"Get one task by ID: `subject`, `description`, `status`, `blocks` and `blockedBy`. Read it before starting or updating the task, and start only when `blockedBy` is empty.",
 	TaskList:
-		"List all tasks with id, subject, status, owner and blockedBy. Use it to find pending, unowned, unblocked work; take the lowest ID first. TaskGet returns the full task.",
+		"List all tasks with `id`, `subject`, `status`, `owner` and `blockedBy`. Use it to find pending, unowned, unblocked work; take the lowest ID first. `TaskGet` returns the full task.",
 	TaskUpdate:
-		"Update a task: status (pending, in_progress, completed, deleted), subject, description, owner, addBlocks, addBlockedBy. Mark completed only when fully done. TaskGet first.",
+		"Update a task: `status` (`pending`, `in_progress`, `completed`, `deleted`), `subject`, `description`, `owner`, `addBlocks`, `addBlockedBy`. Mark `completed` when fully done. `TaskGet` first.",
 	ExitPlanMode:
-		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Only for plans that implement code. Resolve open questions with `AskUserQuestion` first."
+		"In plan mode, request approval once the plan file is complete; it reads the plan from that file. Use it for plans that implement code. Resolve open questions with `AskUserQuestion` first."
 };
 
 /**
@@ -54,7 +67,12 @@ export function registerToolDescribe(on: On): void {
 		{
 			tool: new RegExp(`^(?:${Object.keys(TOOL_DESCRIPTIONS).join("|")})$`, "u")
 		},
-		(_$, e) => ({ description: TOOL_DESCRIPTIONS[e.tool] ?? e.description })
+		async ($, e) => {
+			const text = TOOL_DESCRIPTIONS[e.tool] ?? e.description;
+			return {
+				description: e.tool === "Agent" ? `${text} ${await limitLine($)}` : text
+			};
+		}
 	).catch(($, e, next) => {
 		fault($, "tool describe", next.error);
 		return next(e);

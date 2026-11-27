@@ -37,7 +37,7 @@ export function askedBinding(
 		notUnderstood: mk("not_understood"),
 		off: hasOwnComposer(surface)
 			? undefined
-			: guard(() => actions.takeOff(view.line, "row")),
+			: guard(() => actions.takeOff(view.line)),
 		dismiss: guard(actions.timeout)
 	});
 }

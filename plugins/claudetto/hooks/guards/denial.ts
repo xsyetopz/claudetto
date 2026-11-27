@@ -22,7 +22,7 @@ const sourceOf = (verdict: ToolCheckResult): string | undefined => {
 // whose message names a step, such as reading a file, read as a standing
 // block: 2 of 9 runs stopped instead of taking the step (RISK-077).
 const STANDING =
-	"This block is the user's standing choice. When its message names a step inside the task, such as reading a file, take that step and retry; otherwise report what did not run and what it leaves undone, and neither route around the block nor ask the user to run the command or lift the block.";
+	"This block is the user's standing choice. When its message names a step inside the task, such as reading a file, take that step and retry; otherwise report what did not run and what it leaves undone, and leave running the command or lifting the block to the user.";
 
 /**
  * Names the source of a deny that no person made, from core's structured verdict.

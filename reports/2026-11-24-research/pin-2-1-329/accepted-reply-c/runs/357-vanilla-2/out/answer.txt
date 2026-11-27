@@ -1,7 +1,0 @@
-I wrote `config.schema.json`, a draft-07 schema. I haven't run it against `config.example.json`, but I checked its rules against the example's three fields by reading.
-
-- **`port`:** an integer from 1 to 65535.
-- **`host`:** a string.
-- **`debug`:** a boolean.
-
-All three fields are required, and any other field is rejected (`additionalProperties: false`).

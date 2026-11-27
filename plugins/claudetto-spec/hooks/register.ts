@@ -18,7 +18,7 @@ export const register = (on: On, _options: PluginOptions): void => {
 		await recordBaseline($);
 		return next(e);
 	}).catch(($, e, next) => {
-		$.ui.log("claudetto-spec: session start failed", { to: "debug" });
+		$.ui.log("`session.start` failed", { to: "debug" });
 		return next(e);
 	});
 	registerSpecCheck(on);

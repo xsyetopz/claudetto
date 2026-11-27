@@ -1,6 +1,0 @@
-`greet` in `cli.js` now returns `"hello " + n + "!"`, and the change is on `main`.
-
-- **Worktree test:** I made the change in a new worktree at `../wt-greet` on branch `greet-exclaim`. `node test.js` printed `ok` with exit code 0 there.
-- **Merge:** I committed it on the branch and fast-forwarded `main` to it (`793947e` to `c9c700d`). `node test.js` on `main` also printed `ok` with exit code 0, and the working tree is clean.
-
-I left the `../wt-greet` worktree and the `greet-exclaim` branch in place. If you want them removed, say so.

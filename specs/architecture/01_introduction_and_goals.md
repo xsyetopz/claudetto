@@ -1,0 +1,44 @@
+# Introduction and Goals
+
+## Requirements Overview
+
+The requirements are in [the PRD](../evidence/README.md): purpose, scope, and one file per block.
+
+| Block | Requirements |
+| --- | --- |
+| [`kernel`](../evidence/kernel.md) | 28 |
+| [`guards`](../evidence/guards.md) | 72 |
+| [`handover`](../evidence/handover.md) | 71 |
+| [`delegation`](../evidence/delegation.md) | 63 |
+| [`reply`](../evidence/reply.md) | 137 |
+| [`cost`](../evidence/cost.md) | 43 |
+| [`setup`](../evidence/setup.md) | 64 |
+| [`edit`](../evidence/edit.md) | 2 |
+| [`openspec`](../evidence/spec.md) | 3 |
+| [`you-should-know`](../evidence/you-should-know.md) | 75 |
+| [`verification`](../evidence/verification.md) | 92 |
+
+## Quality Goals
+
+The quality scenarios of [section 10](10_quality_requirements.md), in its order:
+
+- [Agent Tool Size](10_quality_requirements.md#agent-tool-size)
+- [Tool Text Size](10_quality_requirements.md#tool-text-size)
+- [Stop Check Quality](10_quality_requirements.md#stop-check-quality)
+- [Reply Register Scoring](10_quality_requirements.md#reply-register-scoring)
+- [Hot Path](10_quality_requirements.md#hot-path)
+- [Repo Gate And Footprint](10_quality_requirements.md#repo-gate-and-footprint)
+- [Cache](10_quality_requirements.md#cache)
+- [Session Length](10_quality_requirements.md#session-length)
+- [Rereads](10_quality_requirements.md#rereads)
+- [Tests And Code](10_quality_requirements.md#tests-and-code)
+- [Prompt Size](10_quality_requirements.md#prompt-size)
+- [Duplication](10_quality_requirements.md#duplication)
+- [Length Targets of the 2.1.325 Goal](10_quality_requirements.md#length-targets-of-the-21325-goal)
+
+## Stakeholders
+
+| Stakeholder | Expectation | Source |
+| --- | --- | --- |
+| The user, `xsyetopz`, owner of the repository and sole user | Coding in Claude Code at the lowest token cost | `plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c` |
+| Claude Code 2.1.327, the host | claudetto uses its official extension points only and patches nothing | `plugins/claudetto/.claude-plugin/plugin.json:4` at `088a227c`; user decision, 2026-11-16 (`0342617c-e428-4c1f-ab72-4ddfcee1365a.jsonl:10743`); user decision, 2026-11-18 (`2cf55002-c3a4-457f-b01c-e854d76d621e.jsonl:7`) |

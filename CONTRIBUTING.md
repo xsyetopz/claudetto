@@ -46,8 +46,8 @@ hooks/
 
 - `just verify` validates, checks gating hooks for `.catch`, typechecks and tests every shipped plugin. It
   must pass.
-- A behaviour change updates the requirement it traces to in `plans/rebuild/prd/`, including any test path
-  the requirement cites.
+- A behaviour change updates the requirement it traces to in `specs/<block>.md`, and tests cite its ID
+  (such as `REPLY-145`); `spec_check` lists IDs no test cites and citations no spec defines.
 - A release bumps the plugin version first: `just release <plugin>`.
 
 ## Commits

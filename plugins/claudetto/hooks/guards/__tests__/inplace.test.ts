@@ -1,7 +1,7 @@
 import type { On } from "claude-code";
 import { describe, expect, test } from "claude-code/testing";
 
-import { inOrder } from "./in-order";
+import { inOrder } from "./order";
 
 /** The Bash tool beneath the plugin's hooks; returns the commands that reached it. */
 const world = (on: On): string[] => {

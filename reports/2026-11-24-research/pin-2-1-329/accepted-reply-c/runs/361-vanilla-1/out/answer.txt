@@ -1,3 +1,0 @@
-`greet` in `cli.js` now returns `"hello " + n + "!"`, and the change is on `main`.
-
-I made the edit in a new worktree on a new branch, `greet-exclaim`, and `node test.js` printed `ok` there. I committed it, fast-forwarded `main` to that commit and ran `node test.js` again on `main`, which also printed `ok`. I then removed the worktree and deleted the branch.

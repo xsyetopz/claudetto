@@ -1,7 +1,0 @@
-I filled in `gradle.properties`, which was empty. It now sends Gradle's HTTP and HTTPS traffic through `proxy.corp:3128`, with `localhost` and `127.0.0.1` bypassing the proxy.
-
-I didn't run a build. The repo has no Gradle project (no `build.gradle` or `settings.gradle`), so there was nothing to run. Also, `proxy.corp` is only reachable from your sandbox, so I couldn't test the proxy settings from here.
-
-Gradle reads `gradle.properties` from the project root, so this applies as long as your builds run from this directory. If the builds run elsewhere, the same lines would need to go in `~/.gradle/gradle.properties`.
-
-`.npmrc`, `pip.conf` and `.curlrc` are also empty, so the npm, pip and curl steps will fail the same way. I left them alone because you only asked about Gradle. Say so if you want the proxy added to them too.

@@ -14,8 +14,7 @@ import { keepsDraft, OFF_BOX_BUSY, replacing } from "../draft";
 import type { State } from "./state";
 
 export function offMoves($: EngineInterface, sid: string, state: State) {
-	const takeOff = async (line: string, via: string): Promise<void> => {
-		void via;
+	const takeOff = async (line: string): Promise<void> => {
 		if (
 			keepsDraft(
 				$,
@@ -41,7 +40,7 @@ export function offMoves($: EngineInterface, sid: string, state: State) {
 				return;
 			}
 			if (cur.isOffArmed === true) {
-				await takeOff(cur.line, "offer");
+				await takeOff(cur.line);
 				return;
 			}
 			const rows = await $.store.get("sessions");

@@ -1,8 +1,0 @@
-`plan.md` is 72 lines. It has 12 phases, and each one lists the same three steps: draft the schema, review it, ship it. Only the numbers differ, so most of the length is repetition.
-
-I haven't edited it. This is the change I'd make:
-
-- Replace the 12 identical blocks with one list of the three steps and a line saying they apply to each of Phases 1–12. That brings the file to about 6 lines.
-- If the phases are meant to differ, for example by naming what each one actually covers, I'd use one line per phase with its real content instead.
-
-Which do you want? Tell me and I'll make the edit. If you have a different cut in mind, say so.

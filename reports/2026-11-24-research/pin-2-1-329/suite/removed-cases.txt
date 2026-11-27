@@ -1,6 +1,0 @@
-claude 2.1.329, default model (claude-opus-5-5, aliases/result.txt), 2026-11-24, cost $3.28
-cases restored from git: delegate-two-files and plist-extract from 1197c2fef^, handback-fix from 42cf8af32^, into an untracked --eval-dir
-claude plugin eval plugins/claudetto --eval-dir evals-329old --allow-tools Read,Glob,Grep,Write,Edit,Bash,Agent,mcp__claudetto__patch --scaffold --ablation with-without --no-publish --keep-temp --trust-plugin -j 4 --max-cost-usd 12
-delegate-two-files	with 1,1,1	without 1,1,1
-handback-fix	with 1,1,1	without 1,1,1
-plist-extract	with 1,1,1	without 1,1,1

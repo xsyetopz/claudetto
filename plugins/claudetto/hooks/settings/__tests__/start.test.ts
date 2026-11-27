@@ -1,48 +1,58 @@
-import type { On } from "claude-code";
-import { describe, expect, test } from "claude-code/testing";
+import { describe, expect, mock, test } from "claude-code/testing";
 
 import { fieldOf } from "../../shared/field";
-
-/** Serves a settings file and a store to a session start; records writes and the store. */
-const serve = (on: On, file: string, seed: Record<string, unknown> = {}) => {
-	const writes: string[] = [];
-	const commands: string[] = [];
-	const logs: string[] = [];
-	const store = new Map<string, unknown>(Object.entries(seed));
-	let current = file;
-	on("session.start", (_$, e) => ({ cwd: e.cwd }));
-	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-	on("env.get", (_$, e) => ({
-		value: e.name === "HOME" ? "/home/u" : undefined
-	}));
-	on("settings.read", () => ({ value: {} }));
-	on("fs.exists", () => ({ value: true }));
-	on("fs.read", () => ({ value: current }));
-	on("fs.write", (_$, e) => {
-		writes.push(e.text);
-		current = e.text;
-		return { value: undefined };
-	});
-	on("store.get", (_$, e) => ({ value: store.get(e.key) }));
-	on("store.set", (_$, e) => {
-		store.set(e.key, e.value);
-		return { value: undefined };
-	});
-	on("ui.log", (_$, e) => {
-		logs.push(e.text);
-		return { value: undefined };
-	});
-	on("command.run", (_$, e) => {
-		commands.push(e.command);
-		return { text: "Reloaded" };
-	});
-	const edit = (text: string): void => {
-		current = text;
-	};
-	return { writes, store, commands, logs, edit };
-};
+import { serve } from "./serve";
 
 describe("settings fill at session start", () => {
+	test("session start returns within the load wait while each engine settings read answers slowly and never with the written value", async ($, on) => {
+		// Arrange
+		serve(on, '{"outputStyle": "Proactive"}', {}, (key, sleep) =>
+			key === "outputStyle"
+				? sleep(1500).then(() => ({ value: {} }))
+				: { value: {} }
+		);
+		const began = Date.now();
+
+		// Act
+		await $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+
+		// Assert
+		expect(Date.now() - began).toBeLessThan(4500);
+	});
+
+	test("session start returns 5 seconds in while a settings file read never answers", async ($, on) => {
+		// Arrange
+		const clock = mock.clock(on);
+		on("session.start", (_$, e) => ({ cwd: e.cwd }));
+		on("env.get", (_$, e) => ({
+			value: e.name === "HOME" ? "/home/u" : undefined
+		}));
+		on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
+		on("fs.exists", () => ({ value: true }));
+		on(
+			"fs.read",
+			() =>
+				new Promise<never>(() => {
+					// never answers
+				})
+		);
+
+		// Act
+		const started = $.session.start({
+			cwd: "/home/u/p",
+			surface: null,
+			isInteractive: true
+		});
+		await clock.advance(5000);
+
+		// Assert
+		expect(await started).toMatchObject({ cwd: "/home/u/p" });
+	});
+
 	test("writes the construction over the user's style", async ($, on) => {
 		// Arrange
 		const { writes } = serve(on, '{"outputStyle": "Proactive"}');
@@ -203,5 +213,23 @@ describe("settings fill at session start", () => {
 
 		// Assert
 		expect(writes.slice(first)).toEqual([]);
+	});
+
+	test("a status line the user removed after claudetto set it stays removed on later starts", async ($, on) => {
+		// Arrange
+		const { writes, edit } = serve(on, "{}");
+		const start = () =>
+			$.session.start({ cwd: "/home/u/p", surface: null, isInteractive: true });
+		await start();
+		edit("{}\n");
+		const removed = writes.length;
+
+		// Act
+		await start();
+
+		// Assert
+		expect(
+			writes.slice(removed).some((text) => text.includes("statusLine"))
+		).toBe(false);
 	});
 });

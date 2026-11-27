@@ -1,6 +1,0 @@
-{"method": "HEAD", "path": "/api/hello", "authorization": false, "scheme": null, "authorization_is_expected_dummy": null, "x_api_key": false, "x_api_key_is_expected_dummy": null}
-{"method": "POST", "path": "/v1/messages", "authorization": true, "scheme": "Bearer", "authorization_is_expected_dummy": false, "x_api_key": false, "x_api_key_is_expected_dummy": null}
-{"method": "POST", "path": "/v1/messages", "authorization": true, "scheme": "Bearer", "authorization_is_expected_dummy": false, "x_api_key": false, "x_api_key_is_expected_dummy": null}
-{"method": "POST", "path": "/v1/messages", "authorization": true, "scheme": "Bearer", "authorization_is_expected_dummy": false, "x_api_key": false, "x_api_key_is_expected_dummy": null}
-{"method": "POST", "path": "/v1/messages", "authorization": true, "scheme": "Bearer", "authorization_is_expected_dummy": false, "x_api_key": false, "x_api_key_is_expected_dummy": null}
-{"method": "POST", "path": "/v1/messages", "authorization": true, "scheme": "Bearer", "authorization_is_expected_dummy": false, "x_api_key": false, "x_api_key_is_expected_dummy": null}

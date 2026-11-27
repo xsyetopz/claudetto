@@ -25,7 +25,7 @@ export function registerAmendSection(on: On): void {
 			]
 		};
 	}).catch(($, e, next) => {
-		$.ui.log("claudetto-spec: prompt compose failed", { to: "debug" });
+		$.ui.log("prompt compose failed", { to: "debug" });
 		return next(e);
 	});
 }

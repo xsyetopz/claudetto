@@ -1,9 +1,0 @@
-a1 full 1 pass=1 cost=0.070502
-a1 full 2 pass=0 cost=0.08160359999999998
-a1 full 3 pass=1 cost=0.0820727
-a1 full 4 pass=0 cost=0.07090199999999999
-a1 full 5 pass=0 cost=0.07133199999999999
-a1 full 6 pass=0 cost=0.08228949999999999
-a2 full 1 pass=1 cost=0.0814932
-a2 full 2 pass=1 cost=0.0809039
-a2 full 3 pass=0 cost=0.08118460000000001

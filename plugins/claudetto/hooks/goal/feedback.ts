@@ -1,7 +1,8 @@
-import type { On } from "claude-code";
+import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { missingIn, missingNote } from "./command";
 import {
 	capNote,
 	capOf,
@@ -11,12 +12,46 @@ import {
 	TOOLS_NOTE,
 	type Tracker
 } from "./state";
+import { pauseGoal } from "./tools";
 
 /** The head of the row the engine appends each time the goal's Stop hook blocks (probed on 2.1.330). */
 const FEEDBACK = "Stop hook feedback:\n[";
 
 /** The notice the engine appends after every Stop hook run (probed on 2.1.330). */
 const SUMMARY = "stop_hook_summary";
+
+/** The attachment the engine appends after its goal hook judged a turn (2.1.330). */
+const STATUS = "goal_status";
+
+/** The condition of a block row: `[condition]: reason`, cut at the first `]: `. */
+function conditionOf(text: string): string | undefined {
+	const end = text.indexOf("]: ", FEEDBACK.length);
+	return end > FEEDBACK.length ? text.slice(FEEDBACK.length, end) : undefined;
+}
+
+/**
+ * Picks up a goal claudetto did not see set: a `/goal` in the launch prompt
+ * runs before the plugin's hooks load, so only its block rows reach claudetto.
+ * The engine's `goal_status` row after a block row marks the block as the goal's.
+ */
+function registerUnseen(on: On, tracker: Tracker): void {
+	on("session.append", { door: "attachment" }, (_$, e, next) => {
+		if (e.message.name !== STATUS) {
+			return next(e);
+		}
+		const condition = tracker.unseen;
+		delete tracker.unseen;
+		if (condition !== undefined && tracker.goal === undefined) {
+			tracker.goal = { condition, blocks: 1 };
+			delete tracker.paused;
+			tracker.stopping = false;
+		}
+		return next(e);
+	}).catch(($, e, next) => {
+		fault($, "goal status row", next.error);
+		return next(e);
+	});
+}
 
 /** Tracks the turn: a prompt resets the block count, a response awaits the Stop hook, a summary with no block means met. */
 function registerTurn(on: On, tracker: Tracker): void {
@@ -51,9 +86,12 @@ function registerTurn(on: On, tracker: Tracker): void {
 	// A Stop hook run that blocked appended its feedback row before this summary;
 	// one that did not judged the condition met, and the engine dropped the goal.
 	on("session.append", { door: "notice" }, (_$, e, next) => {
-		if (e.message.name === SUMMARY && tracker.stopping === true) {
-			endGoal(tracker, false);
-			tracker.stopping = false;
+		if (e.message.name === SUMMARY) {
+			delete tracker.unseen;
+			if (tracker.stopping === true) {
+				endGoal(tracker, false);
+				tracker.stopping = false;
+			}
 		}
 		return next(e);
 	}).catch(($, e, next) => {
@@ -77,28 +115,92 @@ function blockNotes(goal: Goal, cap: number): string[] {
 }
 
 /**
+ * The block's notes plus the missing-path note: a path the goal names can vanish after the goal
+ * is set (a scratch folder the model removed), and without the note the model waits on a
+ * condition nothing can meet.
+ */
+async function notesFor(
+	$: EngineInterface,
+	goal: Goal,
+	cap: number
+): Promise<string[]> {
+	const missing = await missingIn($, goal.condition);
+	return [
+		...blockNotes(goal, cap),
+		...(missing.length > 0 ? [missingNote(missing)] : [])
+	];
+}
+
+/**
+ * Pauses the goal and ends the turn once its blocks reach the cap, so the loop stops at the cap
+ * rather than past it, and tells the person how to resume (ISSUES-2026-11-21-0400:15).
+ */
+async function pausedAtCap(
+	$: EngineInterface,
+	tracker: Tracker,
+	cap: number
+): Promise<boolean> {
+	const { goal, turnId } = tracker;
+	if (
+		goal === undefined ||
+		turnId === undefined ||
+		cap === 0 ||
+		goal.blocks < cap
+	) {
+		return false;
+	}
+	pauseGoal($, tracker, "claudetto at the block cap");
+	$.ui.log(
+		`Goal paused after ${goal.blocks} stop blocks in a row: ${goal.condition}. \`/goal\` with the condition resumes it.`
+	);
+	await $.turn.abort({ turnId });
+	return true;
+}
+
+/**
+ * Handles a block row of no tracked goal: a goal the model paused or cleared
+ * ends the turn, since the engine's clear waits for the turn's end, and a goal
+ * claudetto did not see set leaves its condition for `registerUnseen`.
+ */
+async function untracked(
+	$: EngineInterface,
+	tracker: Tracker,
+	text: string
+): Promise<boolean> {
+	if (
+		tracker.ended !== undefined &&
+		tracker.turnId !== undefined &&
+		text.startsWith(`${FEEDBACK}${tracker.ended}]`)
+	) {
+		await $.turn.abort({ turnId: tracker.turnId });
+		return true;
+	}
+	if (tracker.goal === undefined && text.startsWith(FEEDBACK)) {
+		const condition = conditionOf(text);
+		if (condition !== undefined) {
+			tracker.unseen = condition;
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
  * evidence or pause. It also notices when the evaluator judged the goal met,
  * and ends the turn when a goal the model paused or cleared blocks again.
  * The rows are the only signal a plugin gets: `classic.Stop` is taken by the
- * stop notice, and the engine's cap override is not a hook, so claudetto warns
- * and never lifts it (ENGINE(v2.1.330): no hook sees or moves the cap).
+ * stop notice, and the engine's cap override is not a hook (ENGINE(v2.1.330): no hook sees or
+ * moves it), so claudetto pauses the goal at the cap before the override.
  */
 export function registerFeedback(on: On, tracker: Tracker): void {
 	registerTurn(on, tracker);
+	registerUnseen(on, tracker);
 	on("session.append", { door: "note" }, async ($, e, next) => {
 		const goal = tracker.goal;
 		const text = fieldOf(e.message.content[0], "text");
-		if (
-			typeof text === "string" &&
-			tracker.ended !== undefined &&
-			tracker.turnId !== undefined &&
-			text.startsWith(`${FEEDBACK}${tracker.ended}]`)
-		) {
-			// The model paused or cleared this goal; the engine's clear waits for
-			// the turn's end, so end the turn rather than answer more blocks.
-			await $.turn.abort({ turnId: tracker.turnId });
+		if (typeof text === "string" && (await untracked($, tracker, text))) {
 			return next(e);
 		}
 		if (
@@ -111,7 +213,10 @@ export function registerFeedback(on: On, tracker: Tracker): void {
 		tracker.stopping = false;
 		goal.blocks += 1;
 		const cap = capOf(await $.env.get("CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"));
-		const notes = blockNotes(goal, cap);
+		if (await pausedAtCap($, tracker, cap)) {
+			return next(e);
+		}
+		const notes = await notesFor($, goal, cap);
 		if (notes.length === 0) {
 			return next(e);
 		}

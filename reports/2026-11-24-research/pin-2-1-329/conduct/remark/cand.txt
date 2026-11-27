@@ -1,9 +1,0 @@
-12 style 1 pass=1 cost=0.042804
-12 style 2 pass=1 cost=0.04280400000000001
-12 style 3 pass=1 cost=0.0430068
-13 style 1 pass=1 cost=0.045644199999999996
-13 style 2 pass=1 cost=0.0451782
-13 style 3 pass=1 cost=0.04579419999999999
-14 style 1 pass=1 cost=0.0439316
-14 style 2 pass=1 cost=0.044604700000000004
-14 style 3 pass=1 cost=0.04422480000000001

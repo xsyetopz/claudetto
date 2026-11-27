@@ -1,8 +1,0 @@
-I wrote `config.schema.json`, and `ajv-cli` (draft 2020-12) reports `config.example.json` as valid against it. I didn't run a failing input, so I haven't seen the schema reject anything.
-
-The schema requires all three keys and allows no others:
-- `port` is an integer from 1 to 65535.
-- `host` is a non-empty string.
-- `debug` is a boolean.
-
-Because `additionalProperties` is `false`, any new key added to the config will fail validation until you add it to the schema.

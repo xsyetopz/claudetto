@@ -36,7 +36,7 @@ describe("patch guard parity", () => {
 		on("tool.check", { tool: "Edit" }, () => ({ decision: "allow" }));
 		on("tool.check", { tool: "Write" }, () => ({
 			decision: "ask",
-			reason: "Write rule"
+			rule: "Write(**/.env)"
 		}));
 
 		// Act
@@ -60,7 +60,7 @@ describe("patch guard parity", () => {
 		expect(v.decision).toBe("allow");
 	});
 
-	test("an edit that only the permission mode asks about leaves patch to the mode, not a dialog", async ($, on) => {
+	test("an edit outside the working folders that only the permission mode asks about runs with no prompt", async ($, on) => {
 		// Arrange
 		wireDisk(on, disk({ [`${CWD}/.env`]: "A=1\n" }), { isAllowing: false });
 		registerPatch(on);
@@ -72,8 +72,7 @@ describe("patch guard parity", () => {
 		const v = await $.tool.check({ tool: TOOL_FULL_NAME, input });
 
 		// Assert
-		expect(v.decision).toBe("ask");
-		expect(v.plugin).toBeUndefined();
+		expect(v.decision).toBe("allow");
 	});
 
 	test("an ask rule on Edit for a path still opens the dialog through patch where the mode also asks", async ($, on) => {

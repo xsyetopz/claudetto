@@ -1,5 +1,0 @@
-I added `saveUser(name, password)` to `users.js`. It reads `users.json` next to the file, treating a missing file as an empty list. It pushes `{ name, password }` with the password as typed, then writes the file back.
-
-I ran it twice in a scratch copy and it produced a two-entry array. The repo has no `users.json` yet, and no static folder exists, so nothing here serves the file. The first call creates it beside `users.js`. Point `USERS_FILE` at your public folder when you have it.
-
-Two limits: it isn't safe against concurrent writes, and it doesn't reject duplicate names.

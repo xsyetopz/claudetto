@@ -1,8 +1,8 @@
 import type { EngineInterface, On } from "claude-code";
 
-import { memoryFolder } from "../prompt/memory";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
+import { isModesAsk } from "../shared/verdict";
 import { applyOps } from "./apply";
 import { instructionsFor, resetShown } from "./instructions";
 import { parsePatch } from "./parse";
@@ -62,12 +62,9 @@ async function editVerdict(
 		if (RANK[a.decision] > RANK[worst.decision]) {
 			worst = {
 				decision: a.decision,
-				reason: a.reason ?? `Edit and Write rules cover ${file_path}`,
-				isModes:
-					a.rule === undefined &&
-					a.setting === undefined &&
-					a.hook === undefined &&
-					a.plugin === undefined
+				reason:
+					a.reason ?? `\`Edit\` and \`Write\` rules cover \`${file_path}\``,
+				isModes: isModesAsk({ ...a, decision: "ask" })
 			};
 		}
 	}
@@ -101,22 +98,17 @@ export async function runPatch(
 ): Promise<{ deny: string } | { text: string }> {
 	const parsed = parsePatch(patch);
 	if ("error" in parsed) {
-		return { deny: `patch refused, nothing written: ${parsed.error}` };
+		return { deny: `\`patch\` refused, nothing written: ${parsed.error}` };
 	}
 	const cwd = await $.session.cwd();
-	const memory = memoryFolder();
-	const placed = await placePaths(
-		$,
-		cwd,
-		pathsOf(parsed.ops),
-		memory === undefined ? [] : [memory]
-	);
+	const root = await $.session.root();
+	const placed = await placePaths($, cwd, pathsOf(parsed.ops));
 	const plan = await applyOps(parsed.ops, {
 		resolve: (path) => placed.get(path) ?? { error: "path not placed" },
 		read: async (abs) => ((await $.fs.exists(abs)) ? $.fs.read(abs) : undefined)
 	});
 	if ("error" in plan) {
-		return { deny: `patch refused, nothing written: ${plan.error}` };
+		return { deny: `\`patch\` refused, nothing written: ${plan.error}` };
 	}
 	// Writes go first so a failed delete never leaves a move without its new file.
 	const writes = [...plan.changes].filter(([, text]) => text !== null);
@@ -131,12 +123,12 @@ export async function runPatch(
 	const failed = removed.find((r) => r.rm.exitCode !== 0);
 	if (failed !== undefined) {
 		return {
-			deny: `patch partly applied: could not delete ${failed.abs}: ${failed.rm.stderr.trim()}`
+			deny: `\`patch\` partly applied: could not delete \`${failed.abs}\`: ${failed.rm.stderr.trim()}`
 		};
 	}
 	const context = await instructionsFor(
 		$,
-		cwd,
+		root,
 		[...plan.changes].filter(([, text]) => text !== null).map(([abs]) => abs)
 	);
 	return {
@@ -164,8 +156,8 @@ export function registerPatch(on: On): void {
 		const out = await runPatch($, e.patch);
 		return "deny" in out ? out : { result: out.text };
 	}).catch(($) => {
-		$.ui.log("claudetto patch failed", { to: "debug" });
-		return { deny: "patch failed, nothing more written; see the debug log" };
+		$.ui.log("`patch` failed", { to: "debug" });
+		return { deny: "`patch` failed, nothing more written; see the debug log" };
 	});
 	on("tool.check", { tool: TOOL_FULL_NAME }, async ($, e, next) => {
 		const verdict = await next(e);
@@ -176,19 +168,15 @@ export function registerPatch(on: On): void {
 			return verdict;
 		}
 		const { isModes, ...edit } = await editVerdict($, files.paths);
-		// The mode's own ask on Edit or Write is the mode's to settle, as is its ask for `patch`:
-		// handed up as heard, it goes to auto mode's classifier, where an ask a hook makes would
-		// open a dialog on every patch.
-		if (isModes && edit.decision === "ask" && verdict.decision === "ask") {
-			return verdict;
-		}
-		if (edit.decision !== "allow") {
+		// The mode's own ask (a path outside the working folders) gives way: file edits run at the
+		// agent's will, and deny or ask rules and the sandbox write deny list still hold.
+		if (edit.decision === "deny" || (edit.decision === "ask" && !isModes)) {
 			return edit;
 		}
 		// A rule written for `patch` itself keeps its ask; the engine's default ask for an MCP tool gives way to the Edit verdict.
 		return verdict.rule === undefined ? { decision: "allow" } : verdict;
 	}).catch(($, _e, next) => {
 		fault($, "patch check", next.error);
-		return { decision: "ask", reason: "patch could not check its paths" };
+		return { decision: "ask", reason: "`patch` could not check its paths" };
 	});
 }

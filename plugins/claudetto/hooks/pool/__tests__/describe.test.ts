@@ -50,4 +50,23 @@ describe("tool.describe", () => {
 		// Assert
 		expect(description).toBe(STOCK);
 	});
+
+	test("DELEGATION-072 the Agent text names the concurrent subagent limit the environment sets", async ($, on) => {
+		// Arrange
+		on("tool.describe", (_$, e) => ({ description: e.description }));
+		on("env.get", (_$, e) => ({
+			value: e.name === "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS" ? "7" : undefined
+		}));
+		registerToolDescribe(on);
+
+		// Act
+		const { description } = await $.tool.describe({
+			tool: "Agent",
+			description: STOCK,
+			provider
+		});
+
+		// Assert
+		expect(description).toMatch(/\b7\b/u);
+	});
 });

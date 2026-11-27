@@ -29,7 +29,7 @@ const engine = (on: On): void => {
 	}));
 };
 
-describe("REQ-TOOLS-032 prompt.compose", () => {
+describe("TOOLS-032 prompt.compose", () => {
 	test("shared sections stay ahead of session ones, in the engine's order, and other sections are untouched", async ($, on) => {
 		// Arrange
 		engine(on);

@@ -50,7 +50,7 @@ describe("defaults fill", () => {
 		expect(next.bashOutputMaxChars).toBe(8000);
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER).toBe("0");
-		// REQ-SETUP-063: the reminder is silenced by the flag alone; no `_TEXT` key is written.
+		// SETUP-063: the reminder is silenced by the flag alone; no `_TEXT` key is written.
 		expect(next.env.CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT).toBeUndefined();
 		expect(
 			Object.keys(next.env).filter((key) => key.endsWith("_TEXT"))
@@ -73,6 +73,7 @@ describe("defaults fill", () => {
 		expect(next.sandbox.autoAllowBashIfSandboxed).toBe(true);
 		expect(next.sandbox.allowUnsandboxedCommands).toBe(true);
 		expect(next.sandbox.excludedCommands).toContain("claude *");
+		expect(next.sandbox.excludedCommands).toContain("git worktree *");
 		expect(next.sandbox.network.allowAllUnixSockets).toBe(true);
 		expect(next.sandbox.network.allowedDomains).toBeUndefined();
 		expect(next.sandbox.filesystem.allowWrite).toEqual(
@@ -91,7 +92,7 @@ describe("defaults fill", () => {
 		// Act
 		const next = parsed(fillSettings()?.text);
 
-		// Assert: on 2.1.327 a ToolSearch deny adds 28,025 bytes to the first request and a Skill deny 8,855 (REQ-SETUP-022).
+		// Assert: on 2.1.327 a ToolSearch deny adds 28,025 bytes to the first request and a Skill deny 8,855 (SETUP-022).
 		for (const key of [
 			"disableAllHooks",
 			"disableSkillShellExecution",
@@ -109,7 +110,7 @@ describe("defaults fill", () => {
 		// Act
 		const next = parsed(fillSettings()?.text);
 
-		// Assert: the stall timeout counts silence, and script caps would force the default permission mode (REQ-SETUP-056).
+		// Assert: the stall timeout counts silence, and script caps would force the default permission mode (SETUP-056).
 		expect(next.env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS).toBe("900000");
 		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SCRIPT_CAPS");
 		expect(next.env).not.toHaveProperty("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB");
@@ -151,8 +152,8 @@ describe("defaults fill", () => {
 		expect(next.sandbox.enabled).toBe(true);
 		expect(next.sandbox.excludedCommands[0]).toBe("docker *");
 		expect(next.sandbox.excludedCommands).toContain("claude *");
-		expect(fill?.added).toContain("replaced outputStyle Proactive");
-		expect(fill?.added).toContain("replaced sandbox.enabled false");
+		expect(fill?.added).toContain("replaced `outputStyle` `Proactive`");
+		expect(fill?.added).toContain("replaced `sandbox.enabled` `false`");
 	});
 
 	test("removes the stash ask rules, and the claude -p allow in one fill", () => {
@@ -175,7 +176,7 @@ describe("defaults fill", () => {
 		expect(next.permissions.allow).not.toContain("Bash(claude -p *)");
 		expect(next.permissions.allow).toContain("Read");
 		expect(fill?.added).toContain(
-			"removed permissions.allow Bash(claude -p *)"
+			"removed `permissions.allow` `Bash(claude -p *)`"
 		);
 	});
 
@@ -221,8 +222,8 @@ describe("fill notice", () => {
 		]);
 
 		// Assert
-		expect(added).toEqual(["replaced outputStyle Proactive"]);
-		expect(notice).toContain("replaced outputStyle Proactive");
+		expect(added).toEqual(["replaced `outputStyle` `Proactive`"]);
+		expect(notice).toContain("replaced `outputStyle` `Proactive`");
 		expect(notice).toContain("removed permissions.ask Bash(git stash*)");
 		expect(notice).not.toMatch(/set \d+ value/u);
 	});

@@ -1,9 +1,0 @@
-12 vanilla 1 pass=0 cost=0.0374808
-12 vanilla 2 pass=0 cost=0.036557200000000005
-12 vanilla 3 pass=0 cost=0.0360768
-13 vanilla 1 pass=1 cost=0.0347528
-13 vanilla 2 pass=1 cost=0.0347828
-13 vanilla 3 pass=1 cost=0.0347428
-14 vanilla 1 pass=1 cost=0.0326798
-14 vanilla 2 pass=1 cost=0.0329616
-14 vanilla 3 pass=1 cost=0.0344264

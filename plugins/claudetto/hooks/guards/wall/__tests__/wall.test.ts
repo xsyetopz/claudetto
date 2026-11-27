@@ -60,9 +60,9 @@ describe("wall guard", () => {
 		// Assert
 		expect(ran).toEqual([]);
 		expect(JSON.stringify(r)).toContain("walled off");
-		expect(
-			lines.some((l) => l.startsWith("debug: claudetto wall home failed:"))
-		).toBe(true);
+		expect(lines.some((l) => l.startsWith("debug: wall home failed:"))).toBe(
+			true
+		);
 	});
 
 	test("a Bash call that names no wall runs", async ($, on) => {

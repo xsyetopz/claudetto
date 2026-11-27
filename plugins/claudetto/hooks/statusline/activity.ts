@@ -1,55 +1,5 @@
-import { baseName } from "./line/format";
 import { type Rec, rec, str } from "./line/input";
 import type { Task } from "./line/state";
-
-/** The longest activity kept, a choice that keeps one to part of a row. */
-const ACTIVITY_MAX = 48;
-
-/** The input field that says what each kind of call works on, tried in order. */
-const SUBJECTS = [
-	"file_path",
-	"notebook_path",
-	"path",
-	"command",
-	"pattern",
-	"url",
-	"query",
-	"description",
-	"skill",
-	"prompt"
-] as const;
-
-/** The fields that name a file, shown by their last part. */
-const PATHS: ReadonlySet<string> = new Set([
-	"file_path",
-	"notebook_path",
-	"path"
-]);
-
-/** An MCP tool's own name: `mcp__claudetto__read` is `read`. */
-const shortName = (tool: string): string =>
-	tool.startsWith("mcp__") ? (tool.split("__").at(-1) ?? tool) : tool;
-
-/**
- * What a tool call does, as `Read main.ts` or `Bash git status`, from its name
- * and its call: a built-in's arguments sit on the call itself, an MCP tool's
- * under `input`.
- */
-export const activityOf = (tool: string, call: unknown): string => {
-	const flat = rec(call);
-	const args: Rec = { ...rec(flat?.["input"]), ...flat };
-	const field = SUBJECTS.find((key) => str(args?.[key]) !== undefined);
-	const value = field === undefined ? undefined : str(args?.[field]);
-	const subject =
-		value !== undefined && field !== undefined && PATHS.has(field)
-			? baseName(value)
-			: value;
-	const text =
-		subject === undefined ? shortName(tool) : `${shortName(tool)} ${subject}`;
-	return text.length > ACTIVITY_MAX
-		? `${text.slice(0, ACTIVITY_MAX - 1)}…`
-		: text;
-};
 
 const STATUS: Readonly<Record<string, Task["status"]>> = {
 	pending: "pending",

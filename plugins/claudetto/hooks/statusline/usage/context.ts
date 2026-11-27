@@ -34,7 +34,7 @@ export const contextLines = (
 				` ${wholePercent(breakdown.percentage)}%`,
 				levelColor(breakdown.percentage)
 			),
-			dim(" · local estimate, as /context counts")
+			dim(" · local estimate, as `/context` counts")
 		],
 		barRuns(
 			window.map((row) => ({

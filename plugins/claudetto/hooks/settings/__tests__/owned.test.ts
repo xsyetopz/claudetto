@@ -43,8 +43,8 @@ describe("ownership record", () => {
 		expect(next.outputStyle).toBe("claudetto:Claudetto");
 		expect(fill?.added).toEqual(
 			expect.arrayContaining([
-				"removed env.OLD_SWITCH",
-				"removed legacy.nested"
+				"removed `env.OLD_SWITCH`",
+				"removed `legacy.nested`"
 			])
 		);
 		expect(fill?.added).not.toContain("removed env.CHANGED_SWITCH");

@@ -1,1 +1,0 @@
-Yes. Claude Code honors the `HTTPS_PROXY`/`HTTP_PROXY` environment variables. If you meant a different tool, such as this repo's project, tell me which and I'll check.

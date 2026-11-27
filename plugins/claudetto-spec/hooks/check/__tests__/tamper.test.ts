@@ -20,7 +20,7 @@ const run = (now: string | undefined, index = BASE, file = FILE, extra = {}) =>
 		...extra
 	}).tampered;
 
-describe("REQ-SPEC-012 tamper check on staged test files", () => {
+describe("SPEC-012 tamper check on staged test files", () => {
 	test("a staged test deleted from the work tree is reported as deleted", () => {
 		// Arrange
 		const now = undefined;
@@ -120,7 +120,7 @@ describe("REQ-SPEC-012 tamper check on staged test files", () => {
 	});
 });
 
-describe("REQ-SPEC-012 counting", () => {
+describe("SPEC-012 counting", () => {
 	test("assertion calls of JS and Python styles count, a word that merely contains assert does not", () => {
 		// Arrange
 		const text =

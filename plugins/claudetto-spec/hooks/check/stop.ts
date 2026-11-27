@@ -15,7 +15,7 @@ import { checkSpecs } from "./spec";
 /** Where a changed requirement's wording is compared from, and what it read there. */
 function changedFrom(f: HardFinding, base: Baseline | undefined): string {
 	if (base === undefined) {
-		return "changed since HEAD";
+		return "changed since `HEAD`";
 	}
 	const was = startWording(base, f.subject);
 	return was === undefined
@@ -26,7 +26,7 @@ function changedFrom(f: HardFinding, base: Baseline | undefined): string {
 /** One line the agent acts on: a changed requirement needs the user's explicit word. */
 function lineOf(f: HardFinding, base: Baseline | undefined): string {
 	if (f.kind === "reworded" || f.kind === "removedId") {
-		return `- ${f.subject} ${changedFrom(f, base)} (${f.message}); ${AMEND_RULE}. Unless the request cites ${f.subject} or the spec, restore the spec, the tests citing it and the code, then report the conflict naming ${f.subject} and change nothing else; otherwise quote the request's words that name it`;
+		return `- \`${f.subject}\` ${changedFrom(f, base)} (${f.message}); ${AMEND_RULE}. Unless the request cites \`${f.subject}\` or the spec, restore the spec, the tests citing it and the code, then report the conflict naming \`${f.subject}\` and change nothing else; otherwise quote the request's words that name it`;
 	}
 	if (f.kind === "tampered") {
 		return `- ${f.message}; restore the staged test and report honestly why it cannot pass`;
@@ -88,7 +88,7 @@ export function registerSpecStop(on: On): void {
 		const block = await stopReason($);
 		return block === undefined ? next(e) : { ...(await next(e)), block };
 	}).catch(($, e, next) => {
-		$.ui.log("claudetto-spec: Stop gate failed", { to: "debug" });
+		$.ui.log("`Stop` gate failed", { to: "debug" });
 		return next(e);
 	});
 }

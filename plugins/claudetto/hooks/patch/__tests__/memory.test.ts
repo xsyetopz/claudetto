@@ -2,12 +2,12 @@ import { describe, expect, test } from "claude-code/testing";
 
 import { TOOL_FULL_NAME } from "../texts";
 import { registerPatch } from "../tool";
-import { disk, refusal, wireDisk, wrap } from "./harness";
+import { disk, wireDisk, wrap } from "./harness";
 
 const FOLDER = "/home/u/.claude/projects/-repo/memory";
 const STOCK = `You have a persistent file-based memory at \`${FOLDER}/\`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).`;
 
-describe("REQ-TOOLS-001 auto-memory under patch", () => {
+describe("TOOLS-001 auto-memory under patch", () => {
 	test("the memory section points writes at patch when patch is offered and stays as it came when not", async ($, on) => {
 		// Arrange
 		wireDisk(on, disk({}));
@@ -36,7 +36,7 @@ describe("REQ-TOOLS-001 auto-memory under patch", () => {
 		expect(textOf(notOffered)).toBe(STOCK);
 	});
 
-	test("patch writes inside the memory folder the prompt names, and still refuses its parent", async ($, on) => {
+	test("patch writes inside the memory folder the prompt names", async ($, on) => {
 		// Arrange: the engine creates the folder before the prompt names it.
 		const d = disk({ [`${FOLDER}/MEMORY.md`]: "" });
 		wireDisk(on, d);
@@ -58,14 +58,9 @@ describe("REQ-TOOLS-001 auto-memory under patch", () => {
 			tool: TOOL_FULL_NAME,
 			patch: wrap(`*** Add File: ${FOLDER}/fact.md`, "+one fact")
 		});
-		const parent = await $.tool.call({
-			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Add File: /home/u/.claude/projects/-repo/x.md", "+x")
-		});
 
 		// Assert
 		expect(inside.result).toBe(`A ${FOLDER}/fact.md`);
 		expect(d.files.get(`${FOLDER}/fact.md`)).toBe("one fact\n");
-		expect(refusal(parent)).toContain("outside the session directory");
 	});
 });

@@ -1,6 +1,8 @@
 import type { EngineInterface, On } from "claude-code";
 
 import { fault } from "../shared/fault";
+import { notifyNative } from "./native";
+import { registerWaitNotice } from "./wait";
 
 /**
  * The tail core gives every API-error text for a stream cut after output
@@ -18,16 +20,25 @@ export const RESUME_TEXT =
 const MAX_RESUMES = 2;
 const WINDOW_MS = 10 * 60_000;
 
-/** Raises the native error-stop notice. */
+/**
+ * Raises the error-stop notice on the person's `preferredNotifChannel`, and
+ * natively where that channel shows no text: `auto` found no terminal that
+ * notifies (Terminal.app, tmux, most Linux terminals), or it only rang the
+ * bell. A person who set `notifications_disabled` gets nothing.
+ */
 async function notify(
 	$: EngineInterface,
 	error: string,
 	details?: string
 ): Promise<void> {
-	await $.ui.notify(
-		`The turn stopped on an API error (${error})${details === undefined || details === "" ? "" : `: ${details}`}.`,
-		{ title: "claudetto" }
-	);
+	const text = `The turn stopped on an API error (\`${error}\`)${details === undefined || details === "" ? "" : `: ${details}`}.`;
+	const sent = await $.ui.notify(text, { title: "claudetto" });
+	const isTextless = sent.isSent
+		? sent.channel === "terminal_bell"
+		: sent.reason === "no-channel";
+	if (isTextless) {
+		await notifyNative($, "claudetto", text);
+	}
 }
 
 /**
@@ -42,6 +53,7 @@ async function notify(
  * `preferredNotifChannel` decides the channel.
  */
 export function registerStopNotice(on: On): void {
+	registerWaitNotice(on);
 	const resumed: number[] = [];
 	let cut = false;
 	on("classic.StopFailure", async ($, e, next) => {

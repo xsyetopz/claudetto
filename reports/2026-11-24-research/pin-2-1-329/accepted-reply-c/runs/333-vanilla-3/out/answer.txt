@@ -1,5 +1,0 @@
-I added `saveUser(name, password)` to `users.js`. I haven't run it.
-
-It reads `public/users.json` and appends `{ name, password }` with the password exactly as typed. It then writes the array back. If the file or folder doesn't exist yet, it creates them. The repo has no public folder yet, so I guessed `public/users.json`. If your static folder has a different name, change `USERS_FILE` at the top.
-
-Since the file is public, anyone can fetch every user's password at `/users.json`. I did it your way, as you asked.

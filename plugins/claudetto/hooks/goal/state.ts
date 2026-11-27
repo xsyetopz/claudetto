@@ -9,8 +9,8 @@ export interface Goal {
 
 /** What the model reads once per goal about the goal tools, three of which sit behind ToolSearch. */
 export const TOOLS_NOTE =
-	"claudetto: mcp__claudetto__pause_goal is loaded; get_goal, set_goal and clear_goal are available through ToolSearch. " +
-	"When the condition is met, call clear_goal with the checks you ran.";
+	"The tool `mcp__claudetto__pause_goal` is loaded; `get_goal`, `set_goal` and `clear_goal` are available through `ToolSearch`. " +
+	"When the condition is met, call `clear_goal` with the checks you ran.";
 
 /**
  * What claudetto knows of the session's goal. The engine keeps the real
@@ -32,6 +32,12 @@ export interface Tracker {
 	ended?: string;
 	/** The main loop's running turn, the one a block of an ended goal aborts. */
 	turnId?: string;
+	/**
+	 * The condition a block row named while no goal was tracked. It becomes the
+	 * goal when the engine's `goal_status` row follows, which tells the goal's
+	 * block apart from a settings Stop hook's.
+	 */
+	unseen?: string;
 }
 
 /** The block cap Claude Code uses when `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` is unset (2.1.330). */
@@ -61,8 +67,8 @@ export const isNearCap = (blocks: number, cap: number): boolean =>
 
 /** What the model reads beside a block that sits near the cap. */
 export const capNote = (blocks: number, cap: number): string =>
-	`claudetto: this goal has blocked the turn ${blocks} times in a row; the engine ends the turn after ${cap + 1}. ` +
-	"Do not idle: finish the work, or call clear_goal with the checks you ran if the condition is met, or call pause_goal.";
+	`This goal has blocked the turn ${blocks} times in a row; claudetto pauses it at ${cap}. ` +
+	"Finish the work, or call `clear_goal` with the checks you ran if the condition is met, or call `pause_goal` to pause the goal.";
 
 /** Sets a fresh goal: the block count starts at zero and a pause is over. */
 export const setGoal = (tracker: Tracker, condition: string): void => {

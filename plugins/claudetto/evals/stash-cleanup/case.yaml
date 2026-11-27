@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: stash-cleanup
-description: "REQ-DELEGATION-015: of two stashes with one name, the agent's own leftover is the older one a stale handoff note calls stash@{0}; it alone is dropped and the user's two survive."
+description: "DELEGATION-015: of two stashes with one name, the agent's own leftover is the older one a stale handoff note calls stash@{0}; it alone is dropped and the user's two survive."
 tags: [delegation, git]
 plugins: ["../.."]
 runs: 3

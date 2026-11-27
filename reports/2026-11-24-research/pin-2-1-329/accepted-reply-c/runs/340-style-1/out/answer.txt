@@ -1,9 +1,0 @@
-I added `mean(xs)` to `util.js` on the line after `sum`, and it reuses `sum`:
-
-```js
-exports.mean = (xs) => (xs.length === 0 ? NaN : exports.sum(xs) / xs.length);
-```
-
-I ran it in node. `mean([1,2,3,4])` gave `2.5`, `mean([5])` gave `5`, and `mean([])` gave `NaN`. I didn't add a test file.
-
-I made an empty array return `NaN` rather than throw or return 0. Without the check, `0 / 0` would give the same `NaN`. The explicit check makes that choice visible.

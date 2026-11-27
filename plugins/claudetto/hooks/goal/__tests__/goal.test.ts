@@ -11,7 +11,7 @@ import {
 	SET,
 	setGoal,
 	stateOf
-} from "./goal-world";
+} from "./world";
 
 describe("goal command", () => {
 	test("warns when the condition names a path that does not exist", async ($, on) => {
@@ -41,6 +41,24 @@ describe("goal command", () => {
 });
 
 describe("goal stop cap", () => {
+	test("GOAL-031 a block names a path the goal needs that was removed after the goal was set", async ($, on) => {
+		// Arrange
+		const existing = ["/work/.scratch/report.md"];
+		engine(on, existing);
+		await setGoal($, ".scratch/report.md lists every finding");
+		existing.length = 0;
+		const feedback =
+			"Stop hook feedback:\n[.scratch/report.md lists every finding]: nope";
+
+		// Act
+		const [out] = await blocks($, 1, feedback);
+
+		// Assert
+		expect(JSON.stringify(out?.message?.content)).toContain(
+			".scratch/report.md not found"
+		);
+	});
+
 	test("adds a note to the block feedback from two blocks before the cap", async ($, on) => {
 		// Arrange
 		engine(on);

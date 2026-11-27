@@ -1,2 +1,0 @@
-CLAUDE_CODE_SUBAGENT_MODEL=(unset): exit 0, main claude-opus-5-5, subagent claude-opus-5-5
-CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5: exit 0, main claude-opus-5-5, subagent claude-sonnet-5-5

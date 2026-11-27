@@ -3,7 +3,7 @@ import { describe, expect, test } from "claude-code/testing";
 import { hardFindings } from "../hard";
 import { cleanFixture, plantSkip, report } from "./fixture";
 
-describe("REQ-SPEC-015 hardFindings", () => {
+describe("SPEC-015 hardFindings", () => {
 	test("advice fields never block: inflated, uncovered, citation-only and edited tests", () => {
 		// Arrange
 		const advice = {

@@ -1,3 +1,0 @@
-I cut `plan.md` from 72 lines to 7. All 12 phases had the same three steps (draft the schema, review it, ship it), so I replaced them with one "Phases 1–12" section that describes the steps once.
-
-The catch is that the plan no longer has a separate heading or checklist for each phase. If you track progress per phase, I can restore the per-phase headings and shorten them another way. For example, I could give each phase a one-line summary.

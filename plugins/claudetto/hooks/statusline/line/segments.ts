@@ -11,16 +11,6 @@ import {
 import { num, type Rec, str, sub } from "./input";
 import { windowsOf } from "./limits";
 
-/** `● working` while a turn runs and `○ idle` after it; absent until a hook has written state. */
-export const phaseText = ({ state, paint }: Ctx): Text => {
-	if (state === undefined) {
-		return undefined;
-	}
-	return state.phase === "working"
-		? paint.ok("● working")
-		: paint.dim("○ idle");
-};
-
 /** The output style when it is not the default one. */
 const styleName = (input: Rec): string | undefined => {
 	const name = str(sub(input, "output_style")?.["name"]);
@@ -48,14 +38,24 @@ export const modelText = ({ input, paint }: Ctx): Text => {
 	);
 };
 
-/** `ctx ████░░░░░░ 40% 80k/200k` from `context_window`, its filled cells split by /context's rows in their colours once a hook recorded them. */
+/**
+ * `ctx ████░░░░░░ 40% 80k/200k` from `context_window`, its filled cells split
+ * by /context's rows in their colours once a hook recorded them. Where a hook
+ * recorded a smaller window /context measures against (an `autoCompactWindow`
+ * of 300k on a 1M model), the share and the total are of that window, because
+ * compaction runs there and the model's limit is never reached.
+ */
 export const contextText = ({ input, paint, state }: Ctx): Text => {
 	const context = sub(input, "context_window");
-	const used = num(context?.["used_percentage"]);
-	if (used === undefined) {
+	const reported = num(context?.["used_percentage"]);
+	if (reported === undefined) {
 		return undefined;
 	}
-	const size = num(context?.["context_window_size"]);
+	const model = num(context?.["context_window_size"]);
+	const limit = state?.window;
+	const isSmaller = model !== undefined && limit !== undefined && limit < model;
+	const size = isSmaller ? limit : model;
+	const used = isSmaller ? (reported * model) / limit : reported;
 	return words(
 		paint.dim("ctx"),
 		bar(
@@ -150,19 +150,6 @@ export const prText = ({ input, paint }: Ctx): Text => {
 export const nameText = ({ input, paint }: Ctx): Text => {
 	const name = str(input["session_name"]);
 	return name === undefined ? undefined : paint.bold(name);
-};
-
-/** `◔ 12m (api 4m)`: wall time since the session started and the part spent waiting on the API. */
-export const durationText = ({ input, paint }: Ctx): Text => {
-	const cost = sub(input, "cost");
-	const ms = num(cost?.["total_duration_ms"]);
-	if (ms === undefined) {
-		return undefined;
-	}
-	const api = num(cost?.["total_api_duration_ms"]);
-	return paint.dim(
-		`◔ ${span(ms)}${api === undefined ? "" : ` (api ${span(api)})`}`
-	);
 };
 
 /** `+120 -30` lines of the session, shown once either is non-zero. */

@@ -6,17 +6,17 @@ export const TOOL_FULL_NAME = "mcp__claudetto-spec__spec_check";
 
 /** What the model reads about the tool. */
 export const TOOL_DESCRIPTION =
-	"Checks specs/*.md: malformed or inflated requirements, IDs no test cites or no spec defines, IDs changed since HEAD, staged tests deleted, skipped or losing asserts, and ID tests asserting nothing.";
+	"Checks `specs/*.md`: malformed or inflated requirements, IDs no test cites, no spec defines, IDs changed since `HEAD`, staged tests deleted, skipped or losing asserts, and ID tests asserting nothing.";
 
 /** What the model reads about the tool's input. */
 export const PATH_DESCRIPTION =
-	"One spec file to report on, such as specs/auth.md.";
+	"One spec file to report on, such as `specs/auth.md`.";
 
 /** Returned when `path` names no spec file. */
 export const UNKNOWN_PATH = "no such spec file: ";
 
 /** Returned when git cannot list the files. */
-export const GIT_FAILED = "git ls-files failed: ";
+export const GIT_FAILED = "`git ls-files` failed: ";
 
 /** The directory whose presence turns the Stop gate on. */
 export const SPECS_DIR = "specs";
@@ -30,7 +30,7 @@ export const AMEND_RULE =
 
 /** Opens the reason a Stop is blocked; one line per finding follows. */
 export const STOP_BLOCK_HEAD =
-	"spec_check findings; for each, fix it or tell the user why it stands:";
+	"`spec_check` findings; for each, fix it or tell the user why it stands:";
 
 /** The id of the prompt section a repo with `specs/` gets. */
 export const AMEND_SECTION_ID = "claudetto-spec:amend";
@@ -40,4 +40,4 @@ export const AMEND_SECTION_ID = "claudetto-spec:amend";
  * too, but a request that never loads the skill edits spec, test and code to fit, and the
  * Stop gate's revert then costs more turns than the rule up front.
  */
-export const AMEND_SECTION = `This repository keeps requirements in specs/: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID. The specs as the session found them, with the user's uncommitted edits, are the requirements: code and tests follow each one, also an edit the request does not name.`;
+export const AMEND_SECTION = `This repository keeps requirements in \`specs/\`: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID. The specs as the session found them, with the user's uncommitted edits, are the requirements: code and tests follow each one, also an edit the request does not name.`;

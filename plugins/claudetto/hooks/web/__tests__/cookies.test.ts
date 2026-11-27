@@ -9,7 +9,7 @@ const cookie = (value: string) => () => ({
 	text: ARTICLE
 });
 
-describe("REQ-TOOLS-020 cookie jar", () => {
+describe("TOOLS-020 cookie jar", () => {
 	test("a cookie saved from one host's answer rides that host's next fetch only", async () => {
 		// Arrange
 		const web = fakeWeb({

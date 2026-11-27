@@ -1,7 +1,0 @@
-Yes, I'd rename it. `fn` in `util.js:1` tells a reader nothing, and the function does something specific. It takes an array and returns how many elements are greater than zero. `countPositive` says that directly, and `countPositives` would work as well.
-
-Nothing else in the repo references `fn`. The search found only the definition and the export in `util.js`. A rename would touch just those two lines, with no callers to update. I haven't run anything, and I haven't changed the file.
-
-One caveat is that `x > 0` excludes zero, so "positive" is accurate. A name like `countNonNegative` would be wrong.
-
-If you want it, I'll make the rename.

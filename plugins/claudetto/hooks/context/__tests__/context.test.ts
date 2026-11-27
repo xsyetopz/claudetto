@@ -43,7 +43,7 @@ const bash = (command: string, response: unknown) => ({
 	tool_use_id: "u1"
 });
 
-describe("switch context (REQ-GUARDS-080, issue #95)", () => {
+describe("switch context (GUARDS-080, issue #95)", () => {
 	test("git checkout names HEAD and its distance from the upstream", async ($, on) => {
 		world(on, TRACKED);
 		const r = await $.classic.PostToolUse(
@@ -139,7 +139,7 @@ describe("switch context (REQ-GUARDS-080, issue #95)", () => {
 	});
 });
 
-describe("pipe context (REQ-GUARDS-081, issue #99)", () => {
+describe("pipe context (GUARDS-081, issue #99)", () => {
 	test("an error: line behind a filter is named with the last-stage note", async ($, on) => {
 		world(on, {});
 		const r = await $.classic.PostToolUse(

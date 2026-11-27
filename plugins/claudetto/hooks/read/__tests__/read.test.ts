@@ -1,5 +1,6 @@
 import { describe, expect, test } from "claude-code/testing";
 
+import { registerReadCheck } from "../check";
 import { TOOL_FULL_NAME } from "../texts";
 import { registerRead } from "../tool";
 import { wire } from "./harness";
@@ -38,7 +39,7 @@ describe("read text", () => {
 
 		// Assert
 		expect(r.result).toBe(
-			"     3\tl3\n     4\tl4\n(6 more lines; continue with offset 5)"
+			"     3\tl3\n     4\tl4\n(6 more lines; continue with `offset` 5)"
 		);
 	});
 
@@ -54,7 +55,7 @@ describe("read text", () => {
 		});
 
 		// Assert
-		expect(r.text).toContain("read failed for /repo/none.txt: ");
+		expect(r.text).toContain("`read` failed for `/repo/none.txt`: ");
 	});
 
 	test("reports an empty file and an offset past the end", async ($, on) => {
@@ -76,7 +77,7 @@ describe("read text", () => {
 		// Assert
 		expect(empty.result).toBe("(the file is empty)");
 		expect(past.result).toBe(
-			"(offset 9 is past the end: the file has 1 lines)"
+			"(`offset` 9 is past the end: the file has 1 lines)"
 		);
 	});
 });
@@ -95,7 +96,7 @@ describe("read default window", () => {
 
 		// Assert
 		expect("result" in r && String(r.result)).toContain(
-			"(500 more lines; continue with offset 2001)"
+			"(500 more lines; continue with `offset` 2001)"
 		);
 		expect("result" in r && String(r.result)).toContain("  2000\tl2000");
 	});
@@ -214,7 +215,7 @@ describe("read several files", () => {
 
 		// Assert
 		expect(String(r.result)).toContain("     1\tone");
-		expect(String(r.result)).toContain("read failed for /repo/none.txt: ");
+		expect(String(r.result)).toContain("`read` failed for `/repo/none.txt`: ");
 	});
 });
 
@@ -228,6 +229,7 @@ describe("read check", () => {
 		);
 		wire(on, { "/repo/a.txt": "one\n", "/repo/.env": "k=v\n" });
 		registerRead(on);
+		registerReadCheck(on);
 
 		// Act
 		const v = await $.tool.check({
@@ -237,5 +239,45 @@ describe("read check", () => {
 
 		// Assert
 		expect(v.decision).toBe("deny");
+	});
+
+	test("a read outside the working folders that only the permission mode asks about runs with no prompt", async ($, on) => {
+		// Arrange
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Read" }, () => ({ decision: "ask" }));
+		wire(on, { "/tmp/x.txt": "one\n" });
+		registerRead(on);
+		registerReadCheck(on);
+
+		// Act
+		const v = await $.tool.check({
+			tool: TOOL_FULL_NAME,
+			input: { file_path: "/tmp/x.txt" }
+		});
+
+		// Assert
+		expect(v.decision).toBe("allow");
+	});
+
+	test("an ask rule on Read still opens the dialog through read", async ($, on) => {
+		// Arrange
+		on("tool.check", { tool: TOOL_FULL_NAME }, () => ({ decision: "ask" }));
+		on("tool.check", { tool: "Read" }, () => ({
+			decision: "ask",
+			rule: "Read(/tmp/**)"
+		}));
+		wire(on, { "/tmp/x.txt": "one\n" });
+		registerRead(on);
+		registerReadCheck(on);
+
+		// Act
+		const v = await $.tool.check({
+			tool: TOOL_FULL_NAME,
+			input: { file_path: "/tmp/x.txt" }
+		});
+
+		// Assert
+		expect(v.decision).toBe("ask");
+		expect(v.plugin).toBe("claudetto");
 	});
 });

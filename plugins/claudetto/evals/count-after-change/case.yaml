@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: count-after-change
-description: "REQ-REPLY-145: a count written into the changed file, the README and the reply comes from a count made after the last change, in a long session whose file changed since and whose counting script measures the wrong text."
+description: "REPLY-145: a count written into the changed file, the README and the reply comes from a count made after the last change, in a long session whose file changed since and whose counting script measures the wrong text."
 tags: [reply, count, replay]
 plugins: ["../.."]
 runs: 3

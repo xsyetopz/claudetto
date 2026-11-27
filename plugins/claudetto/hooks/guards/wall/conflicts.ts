@@ -1,5 +1,5 @@
 import { isRecord, type Json } from "../../settings/settings";
-import { FREE, GUARDED } from "./rules";
+import { FREE, FREE_RULES, GUARDED } from "./rules";
 
 /** A `*` that no backslash escapes. */
 const WILDCARD = /(?<!\\)\*/u;
@@ -54,7 +54,9 @@ const matchesAny = (
 };
 
 /** Whether an ask or deny rule would stop a command claudetto keeps free. */
-export const blocksFree = (rule: unknown): boolean => matchesAny(rule, FREE);
+export const blocksFree = (rule: unknown): boolean =>
+	matchesAny(rule, FREE) ||
+	(typeof rule === "string" && FREE_RULES.includes(rule));
 
 /** Whether an allow rule would let through a command claudetto guards. */
 export const allowsGuarded = (rule: unknown): boolean =>
@@ -108,7 +110,9 @@ export function dropConflicts(next: Json, removed: string[]): void {
 		if (dropped.length > 0) {
 			permissions[list] = entries.filter((rule) => !drops(rule));
 			removed.push(
-				...dropped.map((rule) => `removed permissions.${list} ${String(rule)}`)
+				...dropped.map(
+					(rule) => `removed \`permissions.${list}\` \`${String(rule)}\``
+				)
 			);
 		}
 	}

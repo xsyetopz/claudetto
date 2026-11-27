@@ -1,7 +1,7 @@
 import { describe, expect, test } from "claude-code/testing";
 
 import { fieldOf } from "../../../shared/field";
-import { bashWorld, contextOf } from "./bash-world";
+import { bashWorld, contextOf } from "./world";
 
 describe("notes on a command that hides its failure", () => {
 	test("a check piped into a filter gets a pipefail note, and pipefail silences it", async ($, on) => {
@@ -40,6 +40,26 @@ describe("notes on a command that hides its failure", () => {
 		expect(
 			contextOf(await run('git commit -m "fix test"; git status'))
 		).toEqual([]);
+	});
+
+	test("a commit chained by a semicolon to another commit or a push gets an && note", async ($, on) => {
+		// Arrange
+		bashWorld(on);
+		const run = (command: string) => $.tool.call({ tool: "Bash", command });
+
+		// Act
+		const commits = await run(
+			'git commit -qm "fix: a" >/dev/null 2>&1; git add b && git commit -qm "chore: b"'
+		);
+		const push = await run('git commit -m "fix: a"; git push');
+
+		// Assert
+		expect(contextOf(commits)).toHaveLength(1);
+		expect(contextOf(commits)[0]).toContain("&&");
+		expect(contextOf(push)).toHaveLength(1);
+		expect(contextOf(await run('git commit -m "fix: a" && git push'))).toEqual(
+			[]
+		);
 	});
 
 	test("a background command ending in an echo gets a note that a foreground one does not", async ($, on) => {

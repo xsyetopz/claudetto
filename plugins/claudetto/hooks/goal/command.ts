@@ -6,11 +6,11 @@ import { endGoal, setGoal, TOOLS_NOTE, type Tracker } from "./state";
 
 /** The warning for paths in a condition that do not exist. */
 export const missingNote = (missing: readonly string[]): string =>
-	`claudetto: ${missing.join(", ")} not found from the session directory. The evaluator judges from the transcript, so a wrong path never reads as met. ` +
-	"Check the spelling; if the file is meant to be created, ignore this.";
+	`${missing.join(", ")} not found from the session directory. The evaluator judges from the transcript, so a wrong path leaves the goal unmet. ` +
+	"Check the spelling and create the file the goal needs, or call `pause_goal` when nothing in reach can create it.";
 
 /** Which of a condition's paths do not exist; `~` and absolute paths are checked as written. */
-async function missingIn(
+export async function missingIn(
 	$: EngineInterface,
 	condition: string
 ): Promise<string[]> {

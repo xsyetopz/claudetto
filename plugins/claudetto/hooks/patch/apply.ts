@@ -53,7 +53,7 @@ const update = (
 	for (const [n, hunk] of hunks.entries()) {
 		const found = locate(lines, hunk, cursor);
 		if ("error" in found) {
-			return { error: `${path}: hunk ${n + 1}: ${found.error}` };
+			return { error: `\`${path}\`: hunk ${n + 1}: ${found.error}` };
 		}
 		// Context keeps the file's own line, so a whitespace-folded match changes nothing it did not mean to.
 		const kept = lines.slice(found.at, found.at + found.length);
@@ -108,11 +108,11 @@ const applyUpdate = async (
 	const to =
 		op.moveTo === undefined ? { abs: from } : state.files.resolve(op.moveTo);
 	if ("error" in to) {
-		return `${op.moveTo ?? op.path}: ${to.error}`;
+		return `\`${op.moveTo ?? op.path}\`: ${to.error}`;
 	}
 	if (to.abs !== from) {
 		if ((await current(state, to.abs)) !== undefined) {
-			return `${op.moveTo ?? ""}: destination exists`;
+			return `\`${op.moveTo ?? ""}\`: destination exists`;
 		}
 		state.changes.set(from, null);
 	}
@@ -131,16 +131,16 @@ const applyUpdate = async (
 const applyOne = async (state: State, op: FileOp): Promise<string | null> => {
 	const at = state.files.resolve(op.path);
 	if ("error" in at) {
-		return `${op.path}: ${at.error}`;
+		return `\`${op.path}\`: ${at.error}`;
 	}
 	if (op.kind === "add") {
-		// A retyped file loses lines the model never meant to drop (REQ-TOOLS-012), so an
+		// A retyped file loses lines the model never meant to drop (TOOLS-012), so an
 		// existing path, or one this patch deleted, changes through Update hunks instead.
 		if (
 			state.changes.has(at.abs) ||
 			(await state.files.read(at.abs)) !== undefined
 		) {
-			return `${op.path}: exists; change it with *** Update File hunks (-old, +new lines) so the lines you keep stay as they are`;
+			return `\`${op.path}\`: exists; change it with \`*** Update File\` hunks (\`-old\`, \`+new\` lines) so the lines you keep stay as they are`;
 		}
 		state.changes.set(
 			at.abs,
@@ -151,7 +151,7 @@ const applyOne = async (state: State, op: FileOp): Promise<string | null> => {
 	}
 	const old = await current(state, at.abs);
 	if (old === undefined) {
-		return `${op.path}: file not found`;
+		return `\`${op.path}\`: file not found`;
 	}
 	if (op.kind === "delete") {
 		state.changes.set(at.abs, null);

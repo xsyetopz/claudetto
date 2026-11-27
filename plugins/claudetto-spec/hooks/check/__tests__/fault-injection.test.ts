@@ -116,7 +116,7 @@ const CASES: Case[] = [
 	}
 ];
 
-describe("REQ-SPEC-014 fault injection", () => {
+describe("SPEC-014 fault injection", () => {
 	test("the clean fixture reports no finding in any field", () => {
 		// Arrange
 		const fixture = cleanFixture();

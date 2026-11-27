@@ -14,13 +14,13 @@ export const ASKED_WAYS = {
 
 /** The explanation's shape: the parser reads a bold title, a lead, an optional fenced sketch, then a caption. */
 export const explainFormat = (length: string): string => `<reader>
-Write for a smart person who knows nothing about this code and is switching between tasks all day. They remember no term and no detail from earlier, so each sentence has to make sense alone.
+Write for a dumb person who knows nothing about this code and is switching between tasks all day. They remember no term and no detail from earlier, so each sentence has to make sense alone.
 </reader>
 
 <shape>
 ${length}
 Cover one idea, in this order:
-1. A title line: ** then two to six plain words that state the point, then **.
+1. A title line: \`**\` then two to six plain words that state the point, then \`**\`.
 2. One sentence on what the thing is, in everyday words, with a tiny example of what it does or produces. Start from words the person has used, because an unfamiliar name at the start loses them.
 3. The before and after, or the two options, as two short lines that use their own numbers and names. When a small ASCII sketch shows this better than text, put it in a \`\`\` fenced block at most 60 characters wide and 6 lines tall. Otherwise leave the sketch out.
 4. The concrete consequence in their terms (a count, a cost, a wrong number they would have reported), and last, the choice they are making, in one sentence.

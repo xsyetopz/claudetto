@@ -56,12 +56,12 @@ export const judgeClaim = (
 	const last = claim.checks.at(-1);
 	if (last === undefined) {
 		return refuse(
-			"Cite the checks you ran: a command and what it showed. Run one, then call clear_goal again."
+			"Cite the checks you ran: a command and what it showed. Run one, then call `clear_goal` again."
 		);
 	}
 	if (last.outcome === "failed") {
 		return refuse(
-			`Your last check, "${last.command}", failed, so the goal is not met. Fix it and rerun it.`
+			`Your last check, \`${last.command}\`, failed, so the goal is not met. Fix it and rerun it.`
 		);
 	}
 	const backing = uses.filter((use) => !isGoalTool(use.tool));
@@ -74,12 +74,12 @@ export const judgeClaim = (
 		);
 		if (ran?.text === undefined) {
 			return refuse(
-				`"${check.command}" is not a Bash command with a result in the transcript. Run it, then cite its exact text.`
+				`\`${check.command}\` is not a \`Bash\` command with a result in the transcript. Run it, then cite its exact text.`
 			);
 		}
 		if (ran.isError === true) {
 			return refuse(
-				`"${check.command}" errored in the transcript, so it does not show the goal met. Fix it and rerun it.`
+				`\`${check.command}\` errored in the transcript, so it does not show the goal met. Fix it and rerun it.`
 			);
 		}
 	}

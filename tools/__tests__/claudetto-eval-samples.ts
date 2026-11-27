@@ -1,6 +1,9 @@
 import { CODE_SAMPLES } from "./claudetto-eval-code-samples";
 import { CONDUCT_SAMPLES } from "./claudetto-eval-conduct-samples";
 import { COUNT_SAMPLES } from "./claudetto-eval-count-samples";
+import { EDIT_SAMPLES } from "./claudetto-eval-edit-samples";
+import { FAULT_SAMPLES } from "./claudetto-eval-fault-samples";
+import { REPORT_SAMPLES } from "./claudetto-eval-report-samples";
 import { RISK_SAMPLES } from "./claudetto-eval-risk-samples";
 import { call, type Samples } from "./eval-case-samples";
 
@@ -156,5 +159,8 @@ export const CLAUDETTO_SAMPLES: Readonly<Record<string, Samples>> = {
 	...DISPUTE,
 	...CODE_SAMPLES,
 	...CONDUCT_SAMPLES,
-	...RISK_SAMPLES
+	...RISK_SAMPLES,
+	...FAULT_SAMPLES,
+	...REPORT_SAMPLES,
+	...EDIT_SAMPLES
 };

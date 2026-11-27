@@ -78,7 +78,7 @@ export const gitBlock = (attribution: unknown): string =>
 		"",
 		"",
 		"# Git",
-		"- Use `gh` for GitHub work, and run git and `gh` without interactive flags such as `-i`, because no one can answer an editor or a prompt here.",
+		"- Use `gh` for GitHub work, and run `git` and `gh` in their non-interactive form (leave out flags such as `-i`), because nobody can answer an editor or a prompt here.",
 		"- Commit or push when the user asks, on a new branch when the current one is the default branch.",
 		"- Keep files that likely hold secrets (`.env`, `credentials.json`, `.claude/settings.local.json`) out of commits, and warn the user when they ask to commit one.",
 		"- Write `@name` only for a real GitHub login you mean to notify, because GitHub notifies it; put roles, placeholders and code in backticks.",
@@ -88,7 +88,7 @@ export const gitBlock = (attribution: unknown): string =>
 
 /** The session-start notice when both claudetto's and the builtin git instructions are on. */
 export const GIT_CONFLICT =
-	"claudetto: Claude Code's own git instructions are on (includeGitInstructions or CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS), so claudetto's shorter ones stay out to keep one set.";
+	"Claude Code's own git instructions are on (`includeGitInstructions` or `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`), so claudetto's shorter ones are left off to keep one set.";
 
 /**
  * Appends claudetto's git block to the Bash description when its option is on

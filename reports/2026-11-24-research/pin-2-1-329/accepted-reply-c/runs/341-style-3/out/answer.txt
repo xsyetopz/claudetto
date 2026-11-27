@@ -1,9 +1,0 @@
-I wrote `PLAN.md` at the repo root. Nothing in it has been run, and the repo has no importer code yet. It holds only a one-line README and a seed commit.
-
-The plan covers:
-- **Blank ids:** it skips a row when the id is missing, empty or only whitespace.
-- **Zero ids:** it keeps a row whose id is zero. The predicate must not use truthiness checks, because those would drop `0`. That is the main risk.
-- **Logging:** it logs one line per skipped row with the physical, 1-based line number. A header counts as line 1.
-- **Tests:** they go through the public entry point and check the imported rows and the captured log. They cover blank, whitespace, missing, zero, a mixed file, header offset, all-blank and no-blank files.
-
-Three questions are still open and listed in the plan. They are the language and input format, whether spellings like `0.0` count as zero, and whether line numbers include the header. The plan assumes the header is counted.

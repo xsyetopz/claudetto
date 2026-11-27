@@ -47,21 +47,9 @@ describe("state file", () => {
 		expect(out).toBe("");
 	});
 
-	test("a state file the hooks wrote shows the phase, the waiting prompt, agents and tasks", async () => {
+	test("a state file the hooks wrote shows the tasks", async () => {
 		// Arrange
 		const state: LiveState = {
-			phase: "working",
-			waiting: { kind: "question", tool: "AskUserQuestion" },
-			agents: [
-				{
-					id: "a",
-					type: "Explore",
-					description: "scan",
-					startedAt: 5,
-					tools: 2
-				}
-			],
-			finished: [],
 			tools: 7,
 			tasks: [
 				{ id: "1", subject: "s", status: "in_progress", active: "Doing s" }
@@ -72,22 +60,34 @@ describe("state file", () => {
 		const out = await draw({ [statePath("/cfg", "s1")]: writeState(state) });
 
 		// Assert
-		expect(out).toContain("● working");
-		expect(out).toContain("waiting on you: an answer");
-		expect(out).toContain("Explore scan");
 		expect(out).toContain("Doing s");
+	});
+
+	test("a compaction window below the model's limit is the window the context bar fills", async () => {
+		// Arrange
+		const state: LiveState = { ...EMPTY_STATE, window: 300_000 };
+		const usage = {
+			context_window: { used_percentage: 6, context_window_size: 1_000_000 }
+		};
+
+		// Act
+		const capped = await draw(
+			{ [statePath("/cfg", "s1")]: writeState(state) },
+			usage
+		);
+		const plain = await draw({}, usage);
+
+		// Assert
+		expect(capped).toContain("20% 60k/300k");
+		expect(plain).toContain("6% 60k/1M");
 	});
 
 	test("a broken or foreign state file draws as no state", async () => {
 		// Act
 		const broken = await draw({ [statePath("/cfg", "s1")]: "{" });
-		const foreign = await draw({
-			[statePath("/cfg", "s1")]: '{"waitingKind":"bogus"}'
-		});
 
 		// Assert
 		expect(broken).toBe("⌂ p");
-		expect(foreign).not.toContain("waiting");
 	});
 
 	test("a file an older version wrote, with no tool count or tasks, still draws", async () => {
@@ -98,7 +98,7 @@ describe("state file", () => {
 		});
 
 		// Assert
-		expect(out).toContain("⏵ 1 agent");
+		expect(out).toContain("⌂ p");
 	});
 
 	test("a session id cannot make the status line read outside the status folder", async () => {
@@ -176,7 +176,7 @@ describe("status from files", () => {
 		);
 
 		// Assert
-		expect(out).toBe("● working\n⌂ p · ⎇ main");
+		expect(out).toBe("⌂ p · ⎇ main");
 	});
 
 	test("takes the theme from the nearest settings file before the global config", async () => {
@@ -203,26 +203,5 @@ describe("status from files", () => {
 		// Assert: light-ansi paints the model in a palette slot, never in truecolor.
 		expect(out).toContain("Opus 5.5");
 		expect(out).not.toContain("38;2;");
-	});
-
-	test("adds the machine's figures the probe returns, and draws without them when it fails", async () => {
-		// Arrange
-		const raw = '{"session_id":"s1","model":{"display_name":"Opus 5.5"}}';
-		const env = { NO_COLOR: "1", CLAUDE_CONFIG_DIR: "/cfg" };
-		const files = filesOf({
-			[statePath("/cfg", "s1")]: writeState(EMPTY_STATE)
-		});
-
-		// Act
-		const shown = await statusWithFiles(raw, env, 0, files, () =>
-			Promise.resolve({ load: 2, cores: 8 })
-		);
-		const failed = await statusWithFiles(raw, env, 0, files, () =>
-			Promise.reject(new Error("ps"))
-		);
-
-		// Assert
-		expect(shown).toBe("○ idle · Opus 5.5\nload 2.0/8");
-		expect(failed).toBe("○ idle · Opus 5.5");
 	});
 });

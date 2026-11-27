@@ -31,7 +31,7 @@ function describe(err: unknown): string {
 export function fault($: EngineInterface, where: string, err: unknown): void {
 	const why = describe(err);
 	try {
-		$.ui.log(`claudetto-you-should-know ${where} failed: ${why}`, {
+		$.ui.log(`${where} failed: ${why}`, {
 			to: "debug"
 		});
 	} catch {

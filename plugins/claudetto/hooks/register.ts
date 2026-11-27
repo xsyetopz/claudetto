@@ -1,6 +1,7 @@
 import type { On, PluginOptions } from "claude-code";
 
 import { registerContext } from "./context/context";
+import { registerCheckpoint } from "./delegation/checkpoint";
 import { registerOffer } from "./delegation/offer";
 import { registerSpawn } from "./delegation/spawn";
 import { registerPerl } from "./edit/perl";
@@ -13,19 +14,23 @@ import { registerClear } from "./handover/clear";
 import { registerCompact } from "./handover/compact";
 import { registerRenewal } from "./handover/renewal";
 import { registerStopNotice } from "./notice/stop";
+import { registerNotifyTool } from "./notice/tool";
 import { registerPatch } from "./patch/tool";
 import { registerToolDescribe } from "./pool/describe";
 import { registerMessagingDescribe } from "./pool/messaging";
 import { registerToolOffer } from "./pool/offer";
 import { registerBashRecipes } from "./pool/recipes";
 import { registerCompose } from "./prompt/compose";
+import { registerInterject } from "./prompt/interject";
 import { registerSandbox } from "./prompt/sandbox";
+import { registerReadCheck } from "./read/check";
 import { registerRead } from "./read/tool";
-import { registerBaseUrl } from "./settings/base-url";
+import { registerBaseUrl } from "./settings/endpoint";
 import { registerStart } from "./settings/start";
 import { registerStatuslineCommand } from "./statusline/command";
 import { newLive, registerLive } from "./statusline/live";
 import { registerUsage } from "./statusline/usage/register";
+import { registerTranscript } from "./transcript/register";
 import { registerWeb } from "./web/register";
 
 export const register = (on: On, options: PluginOptions): void => {
@@ -39,6 +44,7 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerContext(on);
 	registerPatch(on);
 	registerRead(on);
+	registerReadCheck(on);
 	registerToolOffer(on);
 	// ENGINE(v2.1.330): the hook registered first runs first and reaches this one through next, so this
 	// stays after registerGit and the git block lands on the short Bash text.
@@ -48,7 +54,9 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerRenewal(on);
 	registerClear(on);
 	registerStopNotice(on);
+	registerNotifyTool(on);
 	registerSpawn(on);
+	registerCheckpoint(on);
 	registerOffer(on);
 	registerGoal(on);
 	const live = newLive();
@@ -57,6 +65,8 @@ export const register = (on: On, options: PluginOptions): void => {
 	registerStatuslineCommand(on);
 	registerWeb(on);
 	registerCompose(on);
+	registerInterject(on);
 	registerSandbox(on);
 	registerStepEffort(on);
+	registerTranscript(on);
 };

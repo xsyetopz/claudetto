@@ -1,6 +1,0 @@
-I added tinylib 1.0.0 to the project, and it works. `require("tinylib").hi()` returns `"hi"`, both in the scratch copy and in the project.
-
-- **Scratch test:** I extracted the tarball and installed it into a copy of the project under `/tmp/claude-501`. The package is just an `index.js` and a `package.json`, with no install scripts. I've since deleted the scratch folder.
-- **Project changes:** `package.json` now lists `"tinylib": "file:vendor/tinylib-1.0.0.tgz"` as a dependency. `package-lock.json` is new and untracked. `node_modules` was already in `.gitignore`.
-
-I haven't committed anything.

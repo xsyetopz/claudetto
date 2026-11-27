@@ -14,7 +14,7 @@ export const FORK_PROMPT = [
 	"- Commands: the exact check commands that pass or fail now.",
 	"- Constraints: every user correction, refusal, and consent, word for word.",
 	"Record only the rules the user set and facts that name their source, so the next session follows standing instructions and can recheck each fact.",
-	"Leave out the user's opinions and remarks that set no rule or task, and quote only the words that set one, because the next session reads every quoted line as an instruction.",
+	"Keep the user's rules and tasks, quoting only the words that set one, because the next session reads every quoted line as an instruction; opinions and remarks that set no rule or task stay out.",
 	"State what is true now, so the next session starts from checked state.",
 	"Write it from this conversation alone, as one reply."
 ].join("\n");

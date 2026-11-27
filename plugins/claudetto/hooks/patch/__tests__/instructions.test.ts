@@ -36,7 +36,7 @@ describe("patch tool instructions", () => {
 
 		// Assert
 		expect(first).toBe(
-			`M src/api/x.ts +1 -1\n\nRule ${CWD}/.claude/rules/api.md applies to src/api/x.ts:\nUse the api error type.`
+			`M src/api/x.ts +1 -1\n\nRule \`${CWD}/.claude/rules/api.md\` applies to \`src/api/x.ts\`:\nUse the api error type.`
 		);
 		expect(second).toBe("M src/api/x.ts +1 -1");
 	});
@@ -87,7 +87,7 @@ describe("patch tool instructions", () => {
 
 		// Assert
 		expect(first).toBe(
-			`M pkg/a.ts +1 -1\n\nInstructions ${CWD}/pkg/CLAUDE.md apply to pkg/a.ts:\nPackage rule.`
+			`M pkg/a.ts +1 -1\n\nInstructions \`${CWD}/pkg/CLAUDE.md\` apply to \`pkg/a.ts\`:\nPackage rule.`
 		);
 		expect(second).toBe("M pkg/a.ts +1 -1");
 	});

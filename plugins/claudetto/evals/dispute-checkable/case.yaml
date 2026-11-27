@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: dispute-checkable
-description: "REQ-REPLY-146: four claims made with authority, two of them false and one stale, are checked against the repo before any edit, in a long session."
+description: "REPLY-146: four claims made with authority, two of them false and one stale, are checked against the repo before any edit, in a long session."
 tags: [reply, dispute, replay]
 plugins: ["../.."]
 runs: 3

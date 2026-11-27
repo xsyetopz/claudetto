@@ -5,7 +5,7 @@ import { ARTICLE, fakeDeps, fakeWeb, html, RENDERED, SHELL } from "./fixtures";
 
 const PAGE = "https://news.test/post";
 
-describe("REQ-TOOLS-020 direct path", () => {
+describe("TOOLS-020 direct path", () => {
 	test("returns the main content with a browser User-Agent", async () => {
 		// Arrange
 		const web = fakeWeb({ [PAGE]: html(ARTICLE) });
@@ -79,9 +79,10 @@ describe("REQ-TOOLS-020 direct path", () => {
 		expect(await fetchPage(deps, { url: "https://api.test/a.png" })).toContain(
 			"Unsupported content type"
 		);
-		expect(await fetchPage(deps, { url: "file:///etc/passwd" })).toContain(
-			"Only http and https"
-		);
+		const before = web.seen.length;
+		const file = await fetchPage(deps, { url: "file:///etc/passwd" });
+		expect(file).toContain("file:///etc/passwd");
+		expect(web.seen).toHaveLength(before);
 		expect(await fetchPage(deps, { url: "nope" })).toContain("Not a URL");
 	});
 
@@ -99,7 +100,7 @@ describe("REQ-TOOLS-020 direct path", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 size cap, saved copy and paging", () => {
+describe("TOOLS-020 size cap, saved copy and paging", () => {
 	const long = `<article><h1>Long</h1>${Array.from({ length: 60 }, (_, i) => `<p>Paragraph ${i} ${"word ".repeat(20)}</p>`).join("")}</article>`;
 
 	test("caps the reply, saves the full Markdown and names the path and next offset", async () => {
@@ -114,7 +115,7 @@ describe("REQ-TOOLS-020 size cap, saved copy and paging", () => {
 		// Assert
 		const full = files.get(path) ?? "";
 		expect(full.length).toBeGreaterThan(3000);
-		expect(reply).toContain(`Full Markdown saved: ${path}`);
+		expect(reply).toContain(`Full Markdown saved: \`${path}\``);
 		expect(reply).toContain(`chars 0-1000 of ${full.length}`);
 		expect(reply).toContain("offset=1000");
 		expect(reply.split("\n---\n")[1]).toBe(full.slice(0, 1000));
@@ -161,7 +162,7 @@ describe("REQ-TOOLS-020 size cap, saved copy and paging", () => {
 	});
 });
 
-describe("REQ-TOOLS-020 headless fallback", () => {
+describe("TOOLS-020 headless fallback", () => {
 	test("a 403 falls back to the Chrome render", async () => {
 		// Arrange
 		const web = fakeWeb({ [PAGE]: html("Forbidden", 403) });

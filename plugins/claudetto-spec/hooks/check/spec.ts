@@ -65,7 +65,7 @@ function duplicates(requirements: Requirement[]): Malformed[] {
 			found.push({
 				file: requirement.file,
 				line: requirement.line,
-				reason: `duplicate ID ${requirement.id}, first defined at ${first.file}:${first.line}`
+				reason: `duplicate ID \`${requirement.id}\`, first defined at \`${first.file}:${first.line}\``
 			});
 		}
 	}

@@ -76,7 +76,7 @@ export const standing = (counts: string, upstream: string): string => {
 export const PARTIAL =
 	"The switch is partial: git reported `unable to unlink`, so the working tree may be half-switched. Run `git status` to see which files are in which state.";
 
-/** Where HEAD stands after a switch (REQ-GUARDS-080): its commit, branch and upstream count. */
+/** Where HEAD stands after a switch (GUARDS-080): its commit, branch and upstream count. */
 export async function headNote(
 	$: EngineInterface,
 	cwd: string,
@@ -111,12 +111,12 @@ export async function headNote(
 	return partial ? `${head}. ${PARTIAL}` : head;
 }
 
-/** The note for a filtered pipeline that printed a failure line (REQ-GUARDS-081), or "". */
+/** The note for a filtered pipeline that printed a failure line (GUARDS-081), or "". */
 export const pipeNote = (output: string): string => {
 	const line = FAILURE_LINE.exec(output)?.[0];
 	return line === undefined
 		? ""
-		: `The output holds "${line}". The exit status shown is the last pipe stage's, not that of the command before the pipe, so a clean status does not show that command succeeded.`;
+		: `The output holds "${line}". The exit status shown is the last pipe stage's, not that of the command before the pipe, so confirm that command succeeded by its own output.`;
 };
 
 /** Appends one context entry to what the rest of the chain returned. */
@@ -132,7 +132,7 @@ const withContext = (
 			};
 
 /**
- * Adds context after a Bash call and blocks nothing (REQ-GUARDS-080, REQ-GUARDS-081).
+ * Adds context after a Bash call and blocks nothing (GUARDS-080, GUARDS-081).
  * The classic PostToolUse matcher narrows each hook to its command, so a handler runs
  * only for a `git checkout` / `git switch` or a filtered pipeline. A leaf matcher cannot
  * span stdout and stderr, so the output test stays in the handler.

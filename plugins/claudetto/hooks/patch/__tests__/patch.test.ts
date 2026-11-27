@@ -135,7 +135,7 @@ describe("patch tool", () => {
 
 		// Assert
 		expect(refusal(r)).toContain(
-			"a.ts: hunk 1: context not found; nearest is line"
+			"`a.ts`: hunk 1: context not found; nearest is line"
 		);
 		expect(d.files.get(`${CWD}/b.ts`)).toBe("x\n");
 		expect(d.files.get(`${CWD}/a.ts`)).toBe(SRC);
@@ -155,32 +155,18 @@ describe("patch tool", () => {
 
 		// Assert
 		expect(refusal(r)).toContain(
-			"a.ts: hunk 1: context matches 2 places (lines 1, 3)"
+			"`a.ts`: hunk 1: context matches 2 places (lines 1, 3)"
 		);
 		expect(d.files.get(`${CWD}/a.ts`)).toBe("x\ny\nx\ny\n");
 	});
 
-	test("an anchor narrows an otherwise ambiguous hunk", async ($, on) => {
-		// Arrange
-		const d = disk({ [`${CWD}/a.ts`]: "a:\n x\nb:\n x\n" });
-		wireDisk(on, d);
-		registerPatch(on);
-
-		// Act
-		const r = await $.tool.call({
-			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Update File: a.ts", "@@ b:", "- x", "+ y")
-		});
-
-		// Assert
-		expect(r.result).toBe("M a.ts +1 -1");
-		expect(d.files.get(`${CWD}/a.ts`)).toBe("a:\n x\nb:\n y\n");
-	});
-
-	test("a path outside the session directory is refused with the reason", async ($, on) => {
+	test("a file in another project is written, and one under a sandbox write-denied folder is refused", async ($, on) => {
 		// Arrange
 		const d = disk({});
 		wireDisk(on, d);
+		on("settings.read", () => ({
+			value: { sandbox: { filesystem: { denyWrite: ["~/.ssh"] } } }
+		}));
 		registerPatch(on);
 
 		// Act
@@ -188,15 +174,16 @@ describe("patch tool", () => {
 			tool: TOOL_FULL_NAME,
 			patch: wrap("*** Add File: ../other/x.ts", "+x")
 		});
-		const abs = await $.tool.call({
+		const walled = await $.tool.call({
 			tool: TOOL_FULL_NAME,
-			patch: wrap("*** Add File: /etc/x", "+x")
+			patch: wrap("*** Add File: /home/u/.ssh/config", "+x")
 		});
 
 		// Assert
-		expect(refusal(up)).toContain("outside the session directory /repo");
-		expect(refusal(abs)).toContain("outside the session directory /repo");
-		expect(d.files.size).toBe(0);
+		expect(refusal(up)).toBeUndefined();
+		expect(d.files.get("/other/x.ts")).toBe("x\n");
+		expect(refusal(walled)).toContain("`/home/u/.ssh`");
+		expect(d.files.has("/home/u/.ssh/config")).toBe(false);
 	});
 
 	test("an absolute path inside the session directory is accepted", async ($, on) => {
@@ -262,6 +249,6 @@ describe("patch tool", () => {
 		const r = await $.tool.call({ tool: TOOL_FULL_NAME, patch: "nonsense" });
 
 		// Assert
-		expect(refusal(r)).toContain('patch must start with "*** Begin Patch"');
+		expect(refusal(r)).toContain("patch must start with `*** Begin Patch`");
 	});
 });

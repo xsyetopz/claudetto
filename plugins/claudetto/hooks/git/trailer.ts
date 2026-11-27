@@ -55,7 +55,7 @@ export const lacksTrailer = (command: string, lines: string[]): boolean => {
 
 /** The reason a commit is refused, written as the next step because the model reads it. */
 export const trailerReason = (lines: string[]): string =>
-	`Each commit message ends with ${lines.map((line) => `\`${line}\``).join(", then ")} (the attribution.commit setting), and a commit in this command lacks it. Resend the command with ${lines.length === 1 ? "that line" : "those lines"} at the end of every commit message, for example as a last ${lines.map((line) => `-m "${line}"`).join(" ")}.`;
+	`Each commit message ends with ${lines.map((line) => `\`${line}\``).join(", then ")} (the \`attribution.commit\` setting), and a commit in this command lacks it. Resend the command with ${lines.length === 1 ? "that line" : "those lines"} at the end of every commit message, for example as a last \`${lines.map((line) => `-m "${line}"`).join(" ")}\`.`;
 
 /** The lines each commit must hold while claudetto's git block is the one sent; none while the builtin block is on. */
 async function requiredLines($: EngineInterface): Promise<string[]> {

@@ -1,6 +1,0 @@
-1	f=a/b.ts; echo ${f:t:r}	denials=0 cost=0.00407737 result=b
-2	f=a/b.ts; echo "$(basename "$f" .ts)"	denials=0 cost=0.00147415 result=b
-3	x=(${(f)"$(printf 'a\nb')"}); echo $x	denials=1 cost=0.00177356 result=The command was blocked before it ran, so I have no output to show. The Bash too
-4	print -l a b	denials=0 cost=0.00147175 result=a
-b
-5	for f in a/b.ts; do echo ${${f:t}%.ts}; done	denials=1 cost=0.00177427 result=The command was blocked before it ran, so there is no output. The Bash tool said

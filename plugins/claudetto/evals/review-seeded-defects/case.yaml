@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: review-seeded-defects
-description: "REQ-SKILLS-010, REQ-REPLY-153: a review of the working diff finds 7 seeded defects, one of them visible only against an unchanged caller, and flags none of 5 benign changes."
+description: "SKILLS-010, REPLY-153: a review of the working diff finds 7 seeded defects, one of them visible only against an unchanged caller, and flags none of 5 benign changes."
 tags: [skills, review]
 plugins: ["../.."]
 runs: 3

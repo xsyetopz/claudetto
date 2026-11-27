@@ -25,5 +25,5 @@ const describeError = (err: unknown): string => {
  * it, because a fault dropped in silence reads as a clean result (RISK-001).
  */
 export function fault($: EngineInterface, where: string, err: unknown): void {
-	$.ui.log(`claudetto ${where} failed: ${describeError(err)}`, { to: "debug" });
+	$.ui.log(`${where} failed: ${describeError(err)}`, { to: "debug" });
 }

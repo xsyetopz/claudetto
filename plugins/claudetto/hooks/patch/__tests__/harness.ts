@@ -86,22 +86,30 @@ function wireFs(on: On, d: Disk): void {
 	}));
 }
 
-/** Wires the operations a patch call reaches to `d`; `home` is the user's home folder, `env` any other variable. */
+/** Wires the operations a patch call reaches to `d`; `home` is the user's home folder, `cwd` the shell's directory inside the `/repo` root, `env` any other variable. */
 export function wireDisk(
 	on: On,
 	d: Disk,
 	{
 		home = "/home/u",
 		isAllowing = true,
+		cwd = CWD,
 		env = {}
-	}: { home?: string; isAllowing?: boolean; env?: Record<string, string> } = {}
+	}: {
+		home?: string;
+		isAllowing?: boolean;
+		cwd?: string;
+		env?: Record<string, string>;
+	} = {}
 ): void {
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	// Nothing beneath the plugins answers a permission check, so every tool is allowed unless a test says otherwise.
 	if (isAllowing) {
 		on("tool.check", () => ({ decision: "allow" }));
 	}
-	on("session.cwd", () => ({ value: CWD }));
+	on("session.cwd", () => ({ value: cwd }));
+	on("session.id", () => ({ value: "s1" }));
+	on("session.root", () => ({ value: CWD }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
 	on("ui.log", () => ({ value: undefined }));
 	on("env.get", (_$, e) => ({

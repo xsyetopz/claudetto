@@ -1,14 +1,15 @@
 import type { On } from "claude-code";
 
 import { fault } from "../shared/fault";
+import { registerHeredoc } from "./heredoc";
 
 /**
- * What the model reads when an in-place edit is refused (REQ-GUARDS-079). It names `patch`, the
- * edit tool claudetto offers, because the Edit tool is hidden (REQ-TOOLS-001) and a reason naming
+ * What the model reads when an in-place edit is refused (GUARDS-079). It names `patch`, the
+ * edit tool claudetto offers, because the Edit tool is hidden (TOOLS-001) and a reason naming
  * it sent the model on to `perl -pi`, which the sandbox refuses in a loaded plugin's folder (RISK-542).
  */
 export const REASON =
-	"Use the mcp__claudetto__patch tool for this change, not an in-place sed: patch writes only where its context lines match the file, writes nothing when one fails, and lists each file it changed. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
+	"Use the `mcp__claudetto__patch` tool for this change instead of an in-place `sed`: `patch` writes only where its context lines match the file, writes nothing when one fails, and lists each file it changed. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
 
 /** A heredoc: the start line (kept) and the body up to its delimiter line, which is text, not commands. */
 const HEREDOC =
@@ -23,7 +24,7 @@ const QUOTED = /'[^']*'|"(?:[^"\\]|\\.)*"/gu;
  * grouping bracket or a loop keyword, or behind a wrapper such as `xargs`,
  * `find -exec` or `env`. The flag is `--in-place` or a cluster that ends in `i`
  * and holds only letters sed takes with it (`-i`, `-Ei`, `-ni`). Perl is not
- * matched: REQ-EDIT-001 allows `perl -0pi -e` and notes the diff stat.
+ * matched: EDIT-001 allows `perl -0pi -e` and notes the diff stat.
  */
 export const IN_PLACE =
 	/(?:^|[;&|({\n]|\b(?:do|then|else|exec|sudo|nohup|time|\w+=\S*|env(?:\s+\w+=\S*)*|xargs(?:\s+-\S+(?:\s+\d+)?)*(?:\s+env(?:\s+\w+=\S*)*)?)|-exec)\s*(?:\S*\/)?sed\s(?:[^;&|\n]*?\s)?(?:-[nErsuz]*i|--in-place)/u;
@@ -41,11 +42,12 @@ export const editsInPlace = (command: string): boolean =>
 
 /**
  * Refuses an in-place sed edit with a pointer to the patch tool
- * (REQ-GUARDS-079). The check runs on the model's own command, before any
+ * (GUARDS-079). The check runs on the model's own command, before any
  * rewrite and with no dependence on a hook's best-effort `if` filter, so a
  * command that Claude Code cannot split is judged like any other.
  */
 export function registerInplace(on: On): void {
+	registerHeredoc(on);
 	on("tool.call", { tool: "Bash" }, (_$, e, next) =>
 		e.tool === "Bash" && editsInPlace(e.command) ? { deny: REASON } : next(e)
 	).catch(($, e, next) => {

@@ -10,7 +10,7 @@ export interface BashAnswer {
 
 /** The note for a zero count, within 200 characters. */
 export const GREP_COUNT_NOTE =
-	"`grep -c` exits 1 when the count is 0: zero matches, not a failure. Take the 0 as the answer; do not retry or switch tools.";
+	"`grep -c` exits 1 when the count is 0: zero matches, not a failure. Take the 0 as the answer and carry on with the same tool.";
 
 /** The note for `gh pr checks` that found no check, within 200 characters. */
 export const NO_CHECKS_NOTE =
@@ -18,7 +18,7 @@ export const NO_CHECKS_NOTE =
 
 /** The note for a model call that lacks an API key, within 200 characters. */
 export const API_KEY_NOTE =
-	"This session runs on the Claude Code login and holds no API key. Change the tool to call `claude -p` with the same model and prompt, rerun it, and name the change. Never tell the user to set a key.";
+	"This session runs on the Claude Code login and holds no API key. Change the tool to call `claude -p` with the same model and prompt, rerun it, and name the change as the fix.";
 
 /**
  * A missing Anthropic API key, as a script or SDK reports it: the variable
@@ -43,6 +43,9 @@ const NOT_FOUND = [
 const NO_SUCH_FILE =
 	/(?:^|\n)(?:[^\n:]*: )*([^\s:]+): No such file or directory/gu;
 
+/** A lone lookup of one program, `which tshark` or `command -v tshark`, whose exit 1 means it is absent. */
+const LOOKUP = /^\s*(?:which|command -v|type)\s+([\w.+-]+)\s*$/u;
+
 /** Each word in command position: after a line start, `;`, `&`, `|` or `(`, past any `NAME=value` prefixes. */
 const COMMAND_WORD =
 	/(?:^|[;&|(]|\n)\s*(?:[A-Za-z_]\w*=\S*\s+)*([^\s;&|()<>$"'\\=]+)/gu;
@@ -59,6 +62,14 @@ const textOf = (answer: BashAnswer): string =>
 		.filter((part): part is string => part !== undefined)
 		.join("\n");
 
+// A shell writes its own "command not found" to stderr; the same words in stdout are data the
+// command printed (a grep of a log, a transcript), and a successful grep for them drew a false
+// install note. A missing tool merged into stdout (`2>&1 | tail`) already gets the pipefail note.
+const errorTextOf = (answer: BashAnswer): string =>
+	[answer.text, answer.stderr]
+		.filter((part): part is string => part !== undefined)
+		.join("\n");
+
 const commandWords = (command: string): string[] =>
 	[...command.matchAll(COMMAND_WORD)].flatMap(([, word]) =>
 		word === undefined ? [] : [word]
@@ -66,8 +77,11 @@ const commandWords = (command: string): string[] =>
 
 /**
  * The command a Bash answer reports as missing, or undefined: exit 127, or
- * "command not found" in the output, or "No such file or directory" for a word
- * in command position. A path (`./run.sh`) is a missing file, not an install.
+ * "command not found" in the error text or stderr, or "No such file or directory"
+ * for a word in command position, or a lone `which` or `command -v` that exited 1
+ * (GUARDS-091). Stdout is not read, because a command that
+ * prints those words (a grep of a log) has not lost a tool. A path (`./run.sh`)
+ * is a missing file, not an install.
  *
  * @param command The Bash command as the model wrote it.
  * @param answer What the call returned.
@@ -76,14 +90,18 @@ export const missingCommand = (
 	command: string,
 	answer: BashAnswer
 ): string | undefined => {
-	const text = textOf(answer);
+	const text = errorTextOf(answer);
 	const words = commandWords(command);
 	const named = NOT_FOUND.map((pattern) => pattern.exec(text)?.[1]).find(
 		(word) => word !== undefined
 	);
 	const exit127 = /^Exit code 127\b/mu.test(text);
+	const looked = /^Exit code 1\b/mu.test(text)
+		? LOOKUP.exec(command)?.[1]
+		: undefined;
 	const missing =
 		named ??
+		looked ??
 		[...text.matchAll(NO_SUCH_FILE)]
 			.map(([, word]) => word)
 			.find((word) => word !== undefined && words.includes(word)) ??
@@ -107,8 +125,8 @@ export const missingCommand = (
  */
 export const missingNote = (name: string, hasSetup: boolean): string =>
 	hasSetup
-		? `${name} is not installed. Run \`just setup\`, then rerun the command. Keep the check; do not skip it or rely on another one.`
-		: `${name} is not installed. Install it with the system package manager (brew, apt) and rerun. If that is refused, run the check another way (bunx, an installed binary). Keep the check.`;
+		? `${name} is not installed. Run \`just setup\`, then rerun the command. Keep the check and run that same one.`
+		: `${name} is not installed. Install it with the system package manager (\`brew\`, \`apt\`) and rerun. If that is refused, run the check another way (\`bunx\`, an installed binary). Keep the check.`;
 
 /**
  * Whether a Bash answer is `grep -c` reporting no match: the command counts

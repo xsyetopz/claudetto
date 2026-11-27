@@ -4,6 +4,7 @@ import { fault } from "../../shared/fault";
 import { gateCommit } from "./commit";
 import { proxyJvm } from "./jvm";
 import { limitCommand, minutes } from "./limit";
+import { fullCommits } from "./runs";
 import { closeStdin } from "./stdin";
 
 /**
@@ -61,7 +62,8 @@ export function registerShell(on: On, options: PluginOptions = {}): void {
 		}
 		allowed.set(id, verdict);
 		try {
-			return await next({ ...e, command: guardCommand(e.command, limit) });
+			const command = await fullCommits($, e.command);
+			return await next({ ...e, command: guardCommand(command, limit) });
 		} finally {
 			allowed.delete(id);
 		}

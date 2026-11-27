@@ -140,7 +140,7 @@ function scan(
 					file,
 					line: index + 1,
 					reason:
-						"heading must read `## <ID> <title>` with an ID such as AUTH-3"
+						"heading must read `## <ID> <title>` with an ID such as `AUTH-3`"
 				});
 			} else {
 				drafts.push(current);

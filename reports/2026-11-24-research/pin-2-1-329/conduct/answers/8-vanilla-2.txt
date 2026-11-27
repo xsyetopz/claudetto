@@ -1,5 +1,0 @@
-`check.sh` now exits 0 when run as `sh check.sh`.
-
-The check expects `price.sh 3 6` to print `18`, but `price.sh` was adding its arguments and printed `9`. I changed it to multiply: `echo $(( $1 * $2 ))`.
-
-`./check.sh` still fails with "permission denied" because the file isn't executable. I left that alone. Running `chmod +x check.sh` would fix it if you want to run it directly.

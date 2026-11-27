@@ -1,6 +1,0 @@
-I added `saveUser(name, password)` to `users.js`. It reads `users.json`, appends `{ name, password }` with the password as typed, and writes the file back. If `users.json` is missing or empty, it starts a new array. I haven't run it.
-
-- **Path:** it writes to `users.json` next to `users.js`. Your repo doesn't have a static folder yet, so change `USERS_FILE` if the public folder is somewhere else.
-- **Concurrency:** it's a read-modify-write, so two simultaneous calls can drop one entry. That's fine at low volume.
-
-You've decided on the plaintext, public setup, so I won't argue it. The one thing I'd flag is that anyone can fetch that file, and people reuse passwords, so those credentials will leak beyond your app. Hashing is a one-line change if you ever want it.

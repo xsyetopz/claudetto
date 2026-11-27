@@ -1,7 +1,0 @@
-I wrote `PLAN.md` in the repo root. The repo only has a README ("importer for rows"), so there's no importer code, language or input format to build the plan on. Step 1 of the plan is to confirm those.
-
-- **Behavior:** the importer skips rows whose id is missing, empty or whitespace-only. It keeps `0`, `"0"` and `"00"`, and it keeps every other non-blank id.
-- **Main risk:** a truthiness check like `if (!id)` would drop zero ids. The plan requires an explicit blank test instead.
-- **Logging:** one line per skipped row, with the line number, for example `WARN skipped row at line N: blank id`. The plan defaults to 1-based physical file lines, so the number matches what an editor shows.
-- **Tests:** blank variants, zero ids, one log line per skipped row with the correct number, header-row and position edge cases, an all-blank file, and a regression check for normal ids.
-- **Open questions:** where the logs should go, whether to add a skipped-count summary, and whether whitespace-only counts as blank. The plan assumes it does.

@@ -185,7 +185,7 @@ const messageOf = (error: unknown): string =>
 	error instanceof Error ? error.message : String(error);
 
 const BLOCKED_MESSAGE =
-	"DuckDuckGo blocked the search as automated traffic. Set BRAVE_SEARCH_API_KEY to use Brave Search, or use web_fetch on a known URL.";
+	"DuckDuckGo blocked the search as automated traffic. Set `BRAVE_SEARCH_API_KEY` to use Brave Search, or use `web_fetch` on a known URL.";
 
 /** Brave's API; any failure is an empty list so DuckDuckGo still answers. */
 async function braveSearch(
@@ -247,7 +247,7 @@ async function ddgBrowser(
 	let html = await chrome.render(url);
 	if (html !== undefined && isDdgBlocked(200, html) && deps.interactive) {
 		await deps.notify(
-			"claudetto: DuckDuckGo shows a bot check. Solve it in the Chrome window that opens, then close the window. Waiting up to 3 minutes."
+			"DuckDuckGo shows a bot check. Solve it in the Chrome window that opens, then close the window. Waiting up to 3 minutes."
 		);
 		await chrome.solve(url);
 		html = await chrome.render(url);

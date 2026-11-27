@@ -15,7 +15,7 @@ const searchDeps = (
 	return { ...fake, web, deps: { ...fake.deps, braveKey } };
 };
 
-describe("REQ-TOOLS-021 DuckDuckGo results", () => {
+describe("TOOLS-021 DuckDuckGo results", () => {
 	test("replies with numbered title, destination and snippet lines and leaves the ad out", async () => {
 		// Arrange
 		const { deps } = searchDeps({ [DDG]: html(DDG_RESULTS) });
@@ -47,7 +47,7 @@ describe("REQ-TOOLS-021 DuckDuckGo results", () => {
 	});
 });
 
-describe("REQ-TOOLS-021 search flow", () => {
+describe("TOOLS-021 search flow", () => {
 	test("answers from the DuckDuckGo page and honours max_results", async () => {
 		// Arrange
 		const { deps } = searchDeps({ [DDG]: html(DDG_RESULTS) });
@@ -124,7 +124,7 @@ describe("REQ-TOOLS-021 search flow", () => {
 	});
 });
 
-describe("REQ-TOOLS-021 Brave API", () => {
+describe("TOOLS-021 Brave API", () => {
 	const brave =
 		"https://api.search.brave.com/res/v1/web/search?q=bun%20runtime&count=8";
 	const body = JSON.stringify({

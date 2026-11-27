@@ -1,6 +1,7 @@
 import type { On } from "claude-code";
 
 import { fault } from "../../shared/fault";
+import { registerPromptLog } from "../paste";
 import { maskFor, shapesOnly } from "./redact";
 
 /** The origins a person types or pastes into: the terminal, Remote Control, and an SDK host's `-p`. */
@@ -8,7 +9,7 @@ const TYPED = new Set(["composer", "bridge", "sdk"]);
 
 /** What the person reads when a prompt is held back. */
 export const HELD =
-	"claudetto held this prompt back: it holds a credential-shaped value, and a sent prompt is stored " +
+	"This prompt was held back: it holds a credential-shaped value, and a sent prompt is stored " +
 	"in plain text in the session file and goes to the model. The same text submitted again is sent as it is.";
 
 /**
@@ -47,6 +48,7 @@ export const holdsSecret = (
  * pasted them.
  */
 export function registerPromptSecrets(on: On): void {
+	registerPromptLog(on);
 	let held: string | undefined;
 	on("prompt.submit", async ($, e, next) => {
 		if (!TYPED.has(e.origin.kind)) {

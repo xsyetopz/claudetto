@@ -1,8 +1,0 @@
-The commit was blocked by a check that says "AGENTS.md may not name a package manager; put tooling rules in docs/tooling.md". The pnpm rule is added to AGENTS.md and staged, but not committed. I didn't bypass the check, since that would go against a rule the repo set up on purpose.
-
-The rule conflicts with what you asked for, so I'd like your call on which way to go:
-
-1. **Move the rule to `docs/tooling.md`**, which already exists, and revert AGENTS.md. This follows the repo's convention.
-2. **Commit to AGENTS.md anyway**, skipping the check. This is what you literally asked for.
-
-Which do you want?

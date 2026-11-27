@@ -5,8 +5,11 @@ import { absolute } from "../patch/paths";
 import { fault } from "../shared/fault";
 import { fieldOf } from "../shared/field";
 import { notebook, numbered } from "./render";
+import { Repeats } from "./repeat";
 import {
+	CHARS_PER_TOKEN,
 	DEFAULT_LIMIT,
+	DEFAULT_MAX_TOKENS,
 	MAX_PAGES,
 	TOOL_DESCRIPTION,
 	TOOL_FULL_NAME,
@@ -68,10 +71,10 @@ export function pageRange(
 	const from = Number(m?.[1]);
 	const to = Number(m?.[2] ?? m?.[1]);
 	if (m === null || from < 1 || to < from) {
-		return { error: `pages "${pages}" is not like 3 or 1-5` };
+		return { error: `\`pages\` "${pages}" is not like 3 or 1-5` };
 	}
 	if (to - from + 1 > MAX_PAGES) {
-		return { error: `pages spans over ${MAX_PAGES} pages` };
+		return { error: `\`pages\` spans over ${MAX_PAGES} pages` };
 	}
 	return { from, to };
 }
@@ -127,7 +130,8 @@ const numberField = (input: unknown, key: string): number | undefined => {
 async function contentOf(
 	$: EngineInterface,
 	path: string,
-	input: unknown
+	input: unknown,
+	maxChars: number
 ): Promise<unknown> {
 	const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
 	const mime = IMAGES[ext];
@@ -151,9 +155,19 @@ async function contentOf(
 		numbered(
 			text,
 			numberField(input, "offset"),
-			numberField(input, "limit") ?? DEFAULT_LIMIT
+			numberField(input, "limit") ?? DEFAULT_LIMIT,
+			maxChars
 		)
 	);
+}
+
+/** The characters one file's text may take: the built-in Read's token limit, as the environment sets it. */
+async function maxCharsOf($: EngineInterface): Promise<number> {
+	const raw = Number(
+		await $.env.get("CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS")
+	);
+	const tokens = Number.isInteger(raw) && raw > 0 ? raw : DEFAULT_MAX_TOKENS;
+	return tokens * CHARS_PER_TOKEN;
 }
 
 /** The paths of `also`, the strings only; anything else is no path. */
@@ -174,7 +188,7 @@ export function readPaths(input: unknown): string[] {
 }
 
 const failure = (path: string, error: unknown): string =>
-	`read failed for ${path}: ${error instanceof Error ? error.message : String(error)}`;
+	`\`read\` failed for \`${path}\`: ${error instanceof Error ? error.message : String(error)}`;
 
 const blocksOf = (content: unknown): unknown[] =>
 	Array.isArray(content) ? content : [{ type: "text", text: String(content) }];
@@ -210,18 +224,19 @@ export async function runRead(
 ): Promise<{ deny: string } | { result: unknown }> {
 	const given = fieldOf(input, "file_path");
 	if (typeof given !== "string" || given === "") {
-		return { deny: "read needs file_path" };
+		return { deny: "`read` needs `file_path`" };
 	}
 	const cwd = await $.session.cwd();
 	const path = absolute(cwd, given);
 	const more = alsoPaths(input).map((p) => absolute(cwd, p));
 	try {
-		const first = await contentOf($, path, input);
+		const maxChars = await maxCharsOf($);
+		const first = await contentOf($, path, input, maxChars);
 		// One missing file among several reads as its error, so the rest still arrive.
 		const rest = await Promise.all(
 			more.map(async (p) => ({
 				path: p,
-				content: await contentOf($, p, {}).catch((error: unknown) =>
+				content: await contentOf($, p, {}, maxChars).catch((error: unknown) =>
 					failure(p, error)
 				)
 			}))
@@ -253,41 +268,26 @@ export async function startRead($: EngineInterface): Promise<void> {
 	}
 }
 
-/** Serves its calls, and gives it the verdict the engine gives the built-in Read for the path. */
+/** Serves its calls; `registerReadCheck` gives it the built-in Read's verdict. A repeat read of unchanged text gets a short note once. */
 export function registerRead(on: On): void {
-	on("tool.run", { tool: TOOL_FULL_NAME }, ($, e) => runRead($, e)).catch(
-		($) => {
-			$.ui.log("claudetto read failed", { to: "debug" });
-			return { deny: "read failed; see the debug log" };
-		}
-	);
-	on("tool.check", { tool: TOOL_FULL_NAME }, async ($, e, next) => {
-		const verdict = await next(e);
-		const paths = readPaths(e.input);
-		if (
-			verdict.decision === "deny" ||
-			typeof fieldOf(e.input, "file_path") !== "string"
-		) {
-			return verdict;
-		}
-		const cwd = await $.session.cwd();
-		// Each path gets the verdict the built-in Read would get for it alone.
-		const verdicts = await Promise.all(
-			paths.map((given) =>
-				$.tool.check({
-					tool: "Read",
-					input: { file_path: absolute(cwd, given) }
-				})
-			)
-		);
-		const refused = verdicts.find((read) => read.decision !== "allow");
-		if (refused !== undefined) {
-			return refused;
-		}
-		// A rule written for `read` itself keeps its ask; the engine's default ask for an MCP tool gives way to the Read verdict.
-		return verdict.rule === undefined ? { decision: "allow" } : verdict;
-	}).catch(($, _e, next) => {
-		fault($, "read check", next.error);
-		return { decision: "ask", reason: "read could not check its path" };
+	const repeats = new Repeats();
+	on("tool.run", { tool: TOOL_FULL_NAME }, async ($, e) => {
+		const r = await runRead($, e);
+		return "result" in r
+			? { result: repeats.answer(await $.session.id(), e, r.result) }
+			: r;
+	}).catch(($) => {
+		$.ui.log("`read` failed", { to: "debug" });
+		return { deny: "`read` failed; see the debug log" };
+	});
+	// Matched on any trigger: handover/compact.ts holds the one unmatched compaction hook.
+	on("session.compact", { trigger: /^/u }, async (_$, e, next) => {
+		const out = await next(e);
+		repeats.clear();
+		return out;
+	}).catch(($, e, next) => {
+		fault($, "read repeat reset", next.error);
+		repeats.clear();
+		return next(e);
 	});
 }
