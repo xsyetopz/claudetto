@@ -32,6 +32,12 @@ export interface Tracker {
 	ended?: string;
 	/** The main loop's running turn, the one a block of an ended goal aborts. */
 	turnId?: string;
+	/**
+	 * The condition a block row named while no goal was tracked. It becomes the
+	 * goal when the engine's `goal_status` row follows, which tells the goal's
+	 * block apart from a settings Stop hook's.
+	 */
+	unseen?: string;
 }
 
 /** The block cap Claude Code uses when `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` is unset (2.1.330). */

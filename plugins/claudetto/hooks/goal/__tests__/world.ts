@@ -40,6 +40,11 @@ export const engine = (
 	return { ran, clock };
 };
 
+/** How the transcript files a row of each door; every other door's row is a user row. */
+const ROW_TYPE: Partial<
+	Record<SessionAppendInput["door"], SessionAppendInput["message"]["type"]>
+> = { response: "assistant", attachment: "attachment" };
+
 export const row = (
 	door: SessionAppendInput["door"],
 	text: string,
@@ -49,7 +54,7 @@ export const row = (
 	origin: { kind: "engine" },
 	uuid: `u-${text.length}`,
 	message: {
-		type: door === "response" ? "assistant" : "user",
+		type: ROW_TYPE[door] ?? "user",
 		content: [{ type: "text", text }],
 		...(name === undefined ? {} : { name })
 	}

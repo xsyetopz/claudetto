@@ -80,3 +80,15 @@ Then the goal is paused and the main turn ends
 Given a goal more than one block below the cap
 When the goal blocks the stop
 Then the goal stays active and the turn goes on
+
+## GOAL-033 Track a Goal Set Before the Plugin Loaded
+
+claudetto takes a goal it did not see set, such as a `/goal` in the launch prompt, from the goal's first Stop-hook block, so `get_goal`, `pause_goal` and `clear_goal` act on it.
+
+Given a goal claudetto did not see set
+When the goal blocks the stop and the engine's `goal_status` row follows
+Then `pause_goal` pauses it and `clear_goal` with backed checks ends it
+
+Given a settings Stop hook that blocks the stop
+When no `goal_status` row follows
+Then no goal is tracked

@@ -20,6 +20,39 @@ const FEEDBACK = "Stop hook feedback:\n[";
 /** The notice the engine appends after every Stop hook run (probed on 2.1.330). */
 const SUMMARY = "stop_hook_summary";
 
+/** The attachment the engine appends after its goal hook judged a turn (2.1.330). */
+const STATUS = "goal_status";
+
+/** The condition of a block row: `[condition]: reason`, cut at the first `]: `. */
+function conditionOf(text: string): string | undefined {
+	const end = text.indexOf("]: ", FEEDBACK.length);
+	return end > FEEDBACK.length ? text.slice(FEEDBACK.length, end) : undefined;
+}
+
+/**
+ * Picks up a goal claudetto did not see set: a `/goal` in the launch prompt
+ * runs before the plugin's hooks load, so only its block rows reach claudetto.
+ * The engine's `goal_status` row after a block row marks the block as the goal's.
+ */
+function registerUnseen(on: On, tracker: Tracker): void {
+	on("session.append", { door: "attachment" }, (_$, e, next) => {
+		if (e.message.name !== STATUS) {
+			return next(e);
+		}
+		const condition = tracker.unseen;
+		delete tracker.unseen;
+		if (condition !== undefined && tracker.goal === undefined) {
+			tracker.goal = { condition, blocks: 1 };
+			delete tracker.paused;
+			tracker.stopping = false;
+		}
+		return next(e);
+	}).catch(($, e, next) => {
+		fault($, "goal status row", next.error);
+		return next(e);
+	});
+}
+
 /** Tracks the turn: a prompt resets the block count, a response awaits the Stop hook, a summary with no block means met. */
 function registerTurn(on: On, tracker: Tracker): void {
 	on("turn.start", (_$, e, next) => {
@@ -53,9 +86,12 @@ function registerTurn(on: On, tracker: Tracker): void {
 	// A Stop hook run that blocked appended its feedback row before this summary;
 	// one that did not judged the condition met, and the engine dropped the goal.
 	on("session.append", { door: "notice" }, (_$, e, next) => {
-		if (e.message.name === SUMMARY && tracker.stopping === true) {
-			endGoal(tracker, false);
-			tracker.stopping = false;
+		if (e.message.name === SUMMARY) {
+			delete tracker.unseen;
+			if (tracker.stopping === true) {
+				endGoal(tracker, false);
+				tracker.stopping = false;
+			}
 		}
 		return next(e);
 	}).catch(($, e, next) => {
@@ -122,6 +158,34 @@ async function pausedAtCap(
 }
 
 /**
+ * Handles a block row of no tracked goal: a goal the model paused or cleared
+ * ends the turn, since the engine's clear waits for the turn's end, and a goal
+ * claudetto did not see set leaves its condition for `registerUnseen`.
+ */
+async function untracked(
+	$: EngineInterface,
+	tracker: Tracker,
+	text: string
+): Promise<boolean> {
+	if (
+		tracker.ended !== undefined &&
+		tracker.turnId !== undefined &&
+		text.startsWith(`${FEEDBACK}${tracker.ended}]`)
+	) {
+		await $.turn.abort({ turnId: tracker.turnId });
+		return true;
+	}
+	if (tracker.goal === undefined && text.startsWith(FEEDBACK)) {
+		const condition = conditionOf(text);
+		if (condition !== undefined) {
+			tracker.unseen = condition;
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
  * Counts the goal's Stop-hook blocks per turn and, near the cap, adds a note
  * to the block's feedback row telling the model to finish, clear with
  * evidence or pause. It also notices when the evaluator judged the goal met,
@@ -132,18 +196,11 @@ async function pausedAtCap(
  */
 export function registerFeedback(on: On, tracker: Tracker): void {
 	registerTurn(on, tracker);
+	registerUnseen(on, tracker);
 	on("session.append", { door: "note" }, async ($, e, next) => {
 		const goal = tracker.goal;
 		const text = fieldOf(e.message.content[0], "text");
-		if (
-			typeof text === "string" &&
-			tracker.ended !== undefined &&
-			tracker.turnId !== undefined &&
-			text.startsWith(`${FEEDBACK}${tracker.ended}]`)
-		) {
-			// The model paused or cleared this goal; the engine's clear waits for
-			// the turn's end, so end the turn rather than answer more blocks.
-			await $.turn.abort({ turnId: tracker.turnId });
+		if (typeof text === "string" && (await untracked($, tracker, text))) {
 			return next(e);
 		}
 		if (
