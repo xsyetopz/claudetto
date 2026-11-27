@@ -131,7 +131,7 @@ const apply = (
 			(isRecord(value) && isRecord(current)) ||
 			(Array.isArray(value) && Array.isArray(current));
 		if (current !== undefined && !shaped && current !== value) {
-			added.push(`replaced ${here} ${show(current)}`);
+			added.push(`replaced \`${here}\` \`${show(current)}\``);
 		}
 		if (isRecord(value)) {
 			const target = isRecord(current) ? current : {};
@@ -211,8 +211,8 @@ export const fillNotice = (path: string, added: readonly string[]): string => {
 	}
 	const named = [...groups.values()].map((entries) =>
 		entries.length === 1
-			? entries[0]
-			: `${entries[0]?.split(" ", 1)[0]} (${entries.length} entries)`
+			? `\`${entries[0]}\``
+			: `\`${entries[0]?.split(" ", 1)[0]}\` (${entries.length} entries)`
 	);
 	const parts: string[] = [];
 	if (sets.length > 0) {
@@ -221,7 +221,7 @@ export const fillNotice = (path: string, added: readonly string[]): string => {
 	if (removals.length > 0) {
 		parts.push(removals.join(", "));
 	}
-	return `claudetto changed ${path}: ${parts.join("; ")}.`;
+	return `Changed \`${path}\`: ${parts.join("; ")}.`;
 };
 
 /** FNV-1a hash of a text, as eight hex digits; the hooks worker has no crypto global to rely on. */

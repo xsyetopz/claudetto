@@ -135,7 +135,7 @@ describe("patch tool", () => {
 
 		// Assert
 		expect(refusal(r)).toContain(
-			"a.ts: hunk 1: context not found; nearest is line"
+			"`a.ts`: hunk 1: context not found; nearest is line"
 		);
 		expect(d.files.get(`${CWD}/b.ts`)).toBe("x\n");
 		expect(d.files.get(`${CWD}/a.ts`)).toBe(SRC);
@@ -155,7 +155,7 @@ describe("patch tool", () => {
 
 		// Assert
 		expect(refusal(r)).toContain(
-			"a.ts: hunk 1: context matches 2 places (lines 1, 3)"
+			"`a.ts`: hunk 1: context matches 2 places (lines 1, 3)"
 		);
 		expect(d.files.get(`${CWD}/a.ts`)).toBe("x\ny\nx\ny\n");
 	});
@@ -177,8 +177,8 @@ describe("patch tool", () => {
 		});
 
 		// Assert
-		expect(refusal(up)).toContain("outside the session directory /repo");
-		expect(refusal(abs)).toContain("outside the session directory /repo");
+		expect(refusal(up)).toContain("outside the session directory `/repo`");
+		expect(refusal(abs)).toContain("outside the session directory `/repo`");
 		expect(d.files.size).toBe(0);
 	});
 
@@ -245,6 +245,6 @@ describe("patch tool", () => {
 		const r = await $.tool.call({ tool: TOOL_FULL_NAME, patch: "nonsense" });
 
 		// Assert
-		expect(refusal(r)).toContain('patch must start with "*** Begin Patch"');
+		expect(refusal(r)).toContain("patch must start with `*** Begin Patch`");
 	});
 });

@@ -95,7 +95,7 @@ export async function placePaths(
 			))
 				? { abs }
 				: {
-						error: `outside the session directory ${root}; patch edits files only inside it. Write a scratch file under $TMPDIR with Bash; a file in another project stays as it is and the reply names its path and the change`
+						error: `outside the session directory \`${root}\`; \`patch\` edits files only inside it. Write a scratch file under \`$TMPDIR\` with \`Bash\`; for a file in another project, name its path and the change in your reply and leave the file to its owner`
 					};
 			return [path, place] as const;
 		})

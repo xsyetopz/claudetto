@@ -25,7 +25,7 @@ async function unloadNow(
 	}
 	try {
 		await $.command.run({ command: "reload-plugins" });
-		return "claudetto reloaded the plugins, so they are unloaded now.";
+		return "Reloaded the plugins, so they are unloaded now.";
 	} catch (error) {
 		fault($, "builtin reload", error);
 		return later;
@@ -43,7 +43,7 @@ export async function logChanges(
 	if (drifted.length > 0) {
 		const reload = await unloadNow($, isInteractive);
 		$.ui.log(
-			`claudetto turned off ${drifted.length} builtin plugin(s) in user settings: ${drifted.join(", ")}. ${reload}`
+			`Turned off ${drifted.length} builtin plugin(s) in user settings: ${drifted.map((name) => `\`${name}\``).join(", ")}. ${reload}`
 		);
 	}
 	if (added.length > 0) {

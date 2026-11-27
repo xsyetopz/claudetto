@@ -148,7 +148,7 @@ describe("TOOLS-020 TOOLS-021 served calls", () => {
 
 		// Assert
 		expect(world.requested).toEqual(["https://news.test/post"]);
-		expect(result).toContain("Full Markdown saved: /data/web/");
+		expect(result).toContain("Full Markdown saved: `/data/web/");
 		expect([...world.files.keys()][0]?.startsWith("/data/web/")).toBe(true);
 	});
 

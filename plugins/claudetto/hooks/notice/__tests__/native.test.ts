@@ -56,7 +56,7 @@ describe("native error-stop notice", () => {
 		expect(runs.map((argv) => argv[0])).toEqual(["osascript", "notify-send"]);
 		expect(runs[1]?.slice(1)).toEqual([
 			"claudetto",
-			'The turn stopped on an API error (rate_limit): quota "5h" hit.'
+			'The turn stopped on an API error (`rate_limit`): quota "5h" hit.'
 		]);
 	});
 

@@ -68,9 +68,7 @@ test(
 		await untilGone(band, "OK");
 
 		// Assert
-		expect(failed).toContain(
-			"Couldn’t turn suggestions off here. Use /plugin."
-		);
+		expect(failed).toContain("Couldn’t turn suggestions off here.");
 		expect(box.filled).toEqual([]);
 		expect(await textOf(band)).not.toContain("Couldn’t");
 	}

@@ -12,14 +12,14 @@ List controls or steps the user performs with labels in backticks, unnumbered un
 
 A reusable artifact over 20 lines goes in a file; reply with its path.
 
-End a `run_in_background` check with `set -o pipefail`, `rc=$?` after it, `exit $rc` last, no `&`. Read its output before a reply that depends on it.
+End a `run_in_background` check with `set -o pipefail`, `rc=$?` after it and `exit $rc` as its last word. Read its output before a reply that depends on it.
 
-Comment only what code cannot say; copy no comment that restates its line. Before passing a flag to a program new to this session, take each flag, help flag too, from its docs in the repo (README, docs/): programs differ (`-help`, `--help`).
+Comment only what code cannot say, a copied comment included. Before passing a flag to a program new to this session, take each flag, help flag too, from its docs in the repo (`README`, `docs/`): programs differ (`-help`, `--help`).
 
 Told to stop or be quiet, reply only "Stopped."
 
-Do the whole request yourself, checks included, and nothing it does not name. Asked to write a prompt, goal or plan, edit that file and run none of its steps. The data the user pointed to outranks a count, summary or script describing it: deliver what the data holds, name the mismatch. Give no time estimate, list no undone step, offer no more work; only a real `sudo` prompt is the user's.
+Do the whole request yourself, checks included, and keep to what it names. Asked to write a prompt, goal or plan, edit that file and leave its steps unrun. The data the user pointed to outranks a count, summary or script describing it: deliver what the data holds, name the mismatch. End on what ran and what it showed, durations only as measured; hand the user only a real `sudo` prompt.
 
-Before you use a file this session made, bring it in line with CLAUDE.md.
+Before you use a file this session made, bring it in line with `CLAUDE.md`.
 
 Ask the user's choices in one `AskUserQuestion` call listing the options.

@@ -45,6 +45,10 @@ async function scopedRules(
 	return rules.filter((rule) => rule.globs.length > 0 && rule.text !== "");
 }
 
+/** The label line above an instruction text: which file applies to which touched path. */
+const named = (kind: string, file: string, verb: string, rel: string): string =>
+	`${kind} \`${file}\` ${verb} to \`${rel}\`:`;
+
 /**
  * The instructions a patch's files would have loaded had Read, Write or Edit
  * touched them: path-scoped rules whose `paths` match, and a subdirectory
@@ -89,7 +93,7 @@ export async function instructionsFor(
 			for (const rule of rules) {
 				if (!shown.has(rule.file) && matchesGlobs(rule.globs, rel)) {
 					shown.add(rule.file);
-					out.push(`Rule ${rule.file} applies to ${rel}:\n${rule.text}`);
+					out.push(`${named("Rule", rule.file, "applies", rel)}\n${rule.text}`);
 				}
 			}
 			for (const { dir, name, content } of nested[n] ?? []) {
@@ -97,7 +101,7 @@ export async function instructionsFor(
 				const text = stripComments(content);
 				if (!shown.has(key) && text !== "") {
 					shown.add(key);
-					out.push(`Instructions ${key} apply to ${rel}:\n${text}`);
+					out.push(`${named("Instructions", key, "apply", rel)}\n${text}`);
 				}
 			}
 		}

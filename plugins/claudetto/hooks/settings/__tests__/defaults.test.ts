@@ -151,8 +151,8 @@ describe("defaults fill", () => {
 		expect(next.sandbox.enabled).toBe(true);
 		expect(next.sandbox.excludedCommands[0]).toBe("docker *");
 		expect(next.sandbox.excludedCommands).toContain("claude *");
-		expect(fill?.added).toContain("replaced outputStyle Proactive");
-		expect(fill?.added).toContain("replaced sandbox.enabled false");
+		expect(fill?.added).toContain("replaced `outputStyle` `Proactive`");
+		expect(fill?.added).toContain("replaced `sandbox.enabled` `false`");
 	});
 
 	test("removes the stash ask rules, and the claude -p allow in one fill", () => {
@@ -175,7 +175,7 @@ describe("defaults fill", () => {
 		expect(next.permissions.allow).not.toContain("Bash(claude -p *)");
 		expect(next.permissions.allow).toContain("Read");
 		expect(fill?.added).toContain(
-			"removed permissions.allow Bash(claude -p *)"
+			"removed `permissions.allow` `Bash(claude -p *)`"
 		);
 	});
 
@@ -221,8 +221,8 @@ describe("fill notice", () => {
 		]);
 
 		// Assert
-		expect(added).toEqual(["replaced outputStyle Proactive"]);
-		expect(notice).toContain("replaced outputStyle Proactive");
+		expect(added).toEqual(["replaced `outputStyle` `Proactive`"]);
+		expect(notice).toContain("replaced `outputStyle` `Proactive`");
 		expect(notice).toContain("removed permissions.ask Bash(git stash*)");
 		expect(notice).not.toMatch(/set \d+ value/u);
 	});

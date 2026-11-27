@@ -79,9 +79,10 @@ describe("TOOLS-020 direct path", () => {
 		expect(await fetchPage(deps, { url: "https://api.test/a.png" })).toContain(
 			"Unsupported content type"
 		);
-		expect(await fetchPage(deps, { url: "file:///etc/passwd" })).toContain(
-			"Only http and https"
-		);
+		const before = web.seen.length;
+		const file = await fetchPage(deps, { url: "file:///etc/passwd" });
+		expect(file).toContain("file:///etc/passwd");
+		expect(web.seen).toHaveLength(before);
 		expect(await fetchPage(deps, { url: "nope" })).toContain("Not a URL");
 	});
 
@@ -114,7 +115,7 @@ describe("TOOLS-020 size cap, saved copy and paging", () => {
 		// Assert
 		const full = files.get(path) ?? "";
 		expect(full.length).toBeGreaterThan(3000);
-		expect(reply).toContain(`Full Markdown saved: ${path}`);
+		expect(reply).toContain(`Full Markdown saved: \`${path}\``);
 		expect(reply).toContain(`chars 0-1000 of ${full.length}`);
 		expect(reply).toContain("offset=1000");
 		expect(reply.split("\n---\n")[1]).toBe(full.slice(0, 1000));

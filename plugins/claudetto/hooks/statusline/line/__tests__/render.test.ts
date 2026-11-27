@@ -238,7 +238,7 @@ describe("status line rows", () => {
 
 	test("prints the fallback for stdin that is not a JSON object", () => {
 		// Act and Assert
-		expect(statusOf("not json", PLAIN, NOW)).toBe("claudetto: no status");
+		expect(statusOf("not json", PLAIN, NOW)).toBe("missing status");
 	});
 
 	test("counts every agent on the activity row", () => {

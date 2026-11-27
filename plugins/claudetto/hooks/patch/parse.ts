@@ -77,7 +77,7 @@ const readHunks = (
 		}
 		if (text === EOF_MARK) {
 			if (hunk === undefined) {
-				return { error: `${path}: "${EOF_MARK}" before any hunk` };
+				return { error: `\`${path}\`: \`${EOF_MARK}\` before any hunk` };
 			}
 			hunk.isAtEnd = true;
 			continue;
@@ -85,7 +85,7 @@ const readHunks = (
 		const kind = text === "" ? " " : text.charAt(0);
 		if (kind !== " " && kind !== "-" && kind !== "+") {
 			return {
-				error: `${path}: hunk ${Math.max(hunks.length, 1)}: a line starts with " ", "-" or "+", got "${text}"`
+				error: `\`${path}\`: hunk ${Math.max(hunks.length, 1)}: a line starts with " ", "-" or "+", got "${text}"`
 			};
 		}
 		if (hunk === undefined) {
@@ -108,7 +108,7 @@ const readOp = (
 		const path = line.slice(ADD.length).trim();
 		const added = readAdded(body, i);
 		return "error" in added
-			? { error: `${path}: ${added.error}` }
+			? { error: `\`${path}\`: ${added.error}` }
 			: { op: { kind: "add", path, lines: added.lines }, next: added.next };
 	}
 	if (line.startsWith(DELETE)) {
@@ -130,7 +130,7 @@ const readOp = (
 		return read;
 	}
 	if (read.hunks.length === 0 && moveTo === undefined) {
-		return { error: `${path}: an update needs a hunk or a move` };
+		return { error: `\`${path}\`: an update needs a hunk or a move` };
 	}
 	return {
 		op: { kind: "update", path, moveTo, hunks: read.hunks },
@@ -151,10 +151,10 @@ export function parsePatch(patch: string): Parsed {
 		lines.pop();
 	}
 	if (lines[0]?.trim() !== BEGIN) {
-		return { error: `patch must start with "${BEGIN}"` };
+		return { error: `patch must start with \`${BEGIN}\`` };
 	}
 	if (lines.at(-1)?.trim() !== END) {
-		return { error: `patch must end with "${END}"` };
+		return { error: `patch must end with \`${END}\`` };
 	}
 	const body = lines.slice(1, -1);
 	const ops: FileOp[] = [];
@@ -168,6 +168,6 @@ export function parsePatch(patch: string): Parsed {
 		i = read.next;
 	}
 	return ops.length === 0
-		? { error: "patch holds no file operation" }
+		? { error: "`patch` holds no file operation" }
 		: { ops };
 }

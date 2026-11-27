@@ -182,7 +182,7 @@ export const dynamicWall = (
 
 /** The reason a call is refused, written as the next step because the model reads it. */
 export const wallReason = (wall: string): string =>
-	`${wall} is walled off from every session. Leave it alone; to check a rule that covers it, run the same command on a stand-in folder under the same rule.`;
+	`\`${wall}\` is walled off from every session. Work on paths outside it; to check a rule that covers it, run the same command on a stand-in folder under the same rule.`;
 
 /**
  * Refuses a Bash call that names a walled path (RISK-118). The sandbox

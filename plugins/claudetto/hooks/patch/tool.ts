@@ -63,7 +63,8 @@ async function editVerdict(
 		if (RANK[a.decision] > RANK[worst.decision]) {
 			worst = {
 				decision: a.decision,
-				reason: a.reason ?? `Edit and Write rules cover ${file_path}`,
+				reason:
+					a.reason ?? `\`Edit\` and \`Write\` rules cover \`${file_path}\``,
 				isModes: isModesAsk({ ...a, decision: "ask" })
 			};
 		}
@@ -98,7 +99,7 @@ export async function runPatch(
 ): Promise<{ deny: string } | { text: string }> {
 	const parsed = parsePatch(patch);
 	if ("error" in parsed) {
-		return { deny: `patch refused, nothing written: ${parsed.error}` };
+		return { deny: `\`patch\` refused, nothing written: ${parsed.error}` };
 	}
 	const cwd = await $.session.cwd();
 	const root = await $.session.root();
@@ -114,7 +115,7 @@ export async function runPatch(
 		read: async (abs) => ((await $.fs.exists(abs)) ? $.fs.read(abs) : undefined)
 	});
 	if ("error" in plan) {
-		return { deny: `patch refused, nothing written: ${plan.error}` };
+		return { deny: `\`patch\` refused, nothing written: ${plan.error}` };
 	}
 	// Writes go first so a failed delete never leaves a move without its new file.
 	const writes = [...plan.changes].filter(([, text]) => text !== null);
@@ -129,7 +130,7 @@ export async function runPatch(
 	const failed = removed.find((r) => r.rm.exitCode !== 0);
 	if (failed !== undefined) {
 		return {
-			deny: `patch partly applied: could not delete ${failed.abs}: ${failed.rm.stderr.trim()}`
+			deny: `\`patch\` partly applied: could not delete \`${failed.abs}\`: ${failed.rm.stderr.trim()}`
 		};
 	}
 	const context = await instructionsFor(
@@ -162,8 +163,8 @@ export function registerPatch(on: On): void {
 		const out = await runPatch($, e.patch);
 		return "deny" in out ? out : { result: out.text };
 	}).catch(($) => {
-		$.ui.log("claudetto patch failed", { to: "debug" });
-		return { deny: "patch failed, nothing more written; see the debug log" };
+		$.ui.log("`patch` failed", { to: "debug" });
+		return { deny: "`patch` failed, nothing more written; see the debug log" };
 	});
 	on("tool.check", { tool: TOOL_FULL_NAME }, async ($, e, next) => {
 		const verdict = await next(e);
@@ -187,6 +188,6 @@ export function registerPatch(on: On): void {
 		return verdict.rule === undefined ? { decision: "allow" } : verdict;
 	}).catch(($, _e, next) => {
 		fault($, "patch check", next.error);
-		return { decision: "ask", reason: "patch could not check its paths" };
+		return { decision: "ask", reason: "`patch` could not check its paths" };
 	});
 }

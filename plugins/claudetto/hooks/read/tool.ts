@@ -68,10 +68,10 @@ export function pageRange(
 	const from = Number(m?.[1]);
 	const to = Number(m?.[2] ?? m?.[1]);
 	if (m === null || from < 1 || to < from) {
-		return { error: `pages "${pages}" is not like 3 or 1-5` };
+		return { error: `\`pages\` "${pages}" is not like 3 or 1-5` };
 	}
 	if (to - from + 1 > MAX_PAGES) {
-		return { error: `pages spans over ${MAX_PAGES} pages` };
+		return { error: `\`pages\` spans over ${MAX_PAGES} pages` };
 	}
 	return { from, to };
 }
@@ -174,7 +174,7 @@ export function readPaths(input: unknown): string[] {
 }
 
 const failure = (path: string, error: unknown): string =>
-	`read failed for ${path}: ${error instanceof Error ? error.message : String(error)}`;
+	`\`read\` failed for \`${path}\`: ${error instanceof Error ? error.message : String(error)}`;
 
 const blocksOf = (content: unknown): unknown[] =>
 	Array.isArray(content) ? content : [{ type: "text", text: String(content) }];
@@ -210,7 +210,7 @@ export async function runRead(
 ): Promise<{ deny: string } | { result: unknown }> {
 	const given = fieldOf(input, "file_path");
 	if (typeof given !== "string" || given === "") {
-		return { deny: "read needs file_path" };
+		return { deny: "`read` needs `file_path`" };
 	}
 	const cwd = await $.session.cwd();
 	const path = absolute(cwd, given);
@@ -257,8 +257,8 @@ export async function startRead($: EngineInterface): Promise<void> {
 export function registerRead(on: On): void {
 	on("tool.run", { tool: TOOL_FULL_NAME }, ($, e) => runRead($, e)).catch(
 		($) => {
-			$.ui.log("claudetto read failed", { to: "debug" });
-			return { deny: "read failed; see the debug log" };
+			$.ui.log("`read` failed", { to: "debug" });
+			return { deny: "`read` failed; see the debug log" };
 		}
 	);
 }

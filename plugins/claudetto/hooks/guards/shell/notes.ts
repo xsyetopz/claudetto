@@ -78,7 +78,7 @@ export const zshNotes = (command: string): string[] =>
 		name !== undefined &&
 		new RegExp(String.raw`(?<!["{=\w])\$${name}\b`, "u").test(command)
 			? [
-					`zsh does not split an unquoted $${name} on spaces. Use \${=${name}}, or an array: ${name}=(a b); cmd $${name}.`
+					`\`zsh\` keeps an unquoted \`$${name}\` whole instead of splitting on spaces. Use \`\${=${name}}\`, or an array: \`${name}=(a b); cmd $${name}\`.`
 				]
 			: []
 	);

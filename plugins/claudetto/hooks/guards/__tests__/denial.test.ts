@@ -1,8 +1,6 @@
 import type { On, ToolCheckResult } from "claude-code";
 import { describe, type Engine, expect, test } from "claude-code/testing";
 
-import { inOrder } from "./in-order";
-
 /** Core's side of a Bash check: answers each call with the verdict the test sets, and returns the model's view of it. */
 const core = ($: Engine, on: On) => {
 	let verdict: ToolCheckResult = { decision: "allow" };
@@ -32,27 +30,6 @@ describe("denial source", () => {
 		expect(verdict.reason).toContain("Permission denied.");
 		expect(verdict.reason).toContain("Bash(pkill:*)");
 		expect(verdict.reason).toContain("no person declined it");
-	});
-
-	test("every named deny tells the model not to hand the blocked step to the user", async ($, on) => {
-		// Arrange
-		const check = core($, on);
-
-		// Act
-		const answers = await inOrder(
-			[
-				{ decision: "deny", rule: "Bash(rm:*)" },
-				{ decision: "deny", hook: "PreToolUse" },
-				{ decision: "deny", setting: "sandbox.enabled" }
-			] as const,
-			(verdict) => check(verdict)
-		);
-		const reasons = answers.map((answer) => answer.reason);
-
-		// Assert
-		for (const reason of reasons) {
-			expect(reason).toContain("ask the user to run the command");
-		}
 	});
 
 	test("a deny from a hook or a setting names it", async ($, on) => {

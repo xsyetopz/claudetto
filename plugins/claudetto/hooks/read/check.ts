@@ -44,6 +44,6 @@ export function registerReadCheck(on: On): void {
 		return verdict.rule === undefined ? { decision: "allow" } : verdict;
 	}).catch(($, _e, next) => {
 		fault($, "read check", next.error);
-		return { decision: "ask", reason: "read could not check its path" };
+		return { decision: "ask", reason: "`read` could not check its path" };
 	});
 }

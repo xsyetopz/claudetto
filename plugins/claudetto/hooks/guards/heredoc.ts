@@ -11,7 +11,7 @@ export const MAX_BODY_LINES = 40;
 
 /** What the model reads when a large heredoc file write is refused (GUARDS-086). */
 export const REASON =
-	"Write this file with the `mcp__claudetto__patch` tool (`*** Add File: path`, then `+` lines), not a large heredoc: " +
+	"Write this file with the `mcp__claudetto__patch` tool (`*** Add File: path`, then `+` lines) instead of a large heredoc: " +
 	"a shell mangles quotes, `$` and backticks in a long body, and a resend costs the whole file again. " +
 	"A heredoc up to 40 lines, or one fed to a program's stdin, is fine.";
 

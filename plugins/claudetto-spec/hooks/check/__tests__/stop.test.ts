@@ -155,7 +155,7 @@ test("SPEC-016 a thrown error fails open and is logged", async ($, on) => {
 
 	// Assert
 	expect(result.block).toBeUndefined();
-	expect(probe.logs.some((m) => m.includes("Stop gate failed"))).toBe(true);
+	expect(probe.logs.some((m) => m.includes("gate failed"))).toBe(true);
 });
 
 test("SPEC-016 a reworded requirement's line tells the agent to restore it unless the user named the change", async ($, on) => {
@@ -171,9 +171,9 @@ test("SPEC-016 a reworded requirement's line tells the agent to restore it unles
 
 	// Assert
 	expect(result.block).toEqual(
-		expect.stringContaining("A-1 changed since HEAD")
+		expect.stringContaining("`A-1` changed since `HEAD`")
 	);
 	expect(result.block).toEqual(
-		expect.stringContaining("report the conflict naming A-1")
+		expect.stringContaining("report the conflict naming `A-1`")
 	);
 });

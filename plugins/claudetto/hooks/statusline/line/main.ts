@@ -9,7 +9,7 @@ import { depthOf, themeOf } from "./theme";
 type Env = Readonly<Record<string, string | undefined>>;
 
 /** Printed when stdin is not a JSON object or holds nothing to show, so the line is never empty. */
-const FALLBACK = "claudetto: no status";
+const FALLBACK = "missing status";
 /** The width when `COLUMNS` is absent or not a positive integer; 80 is the classic terminal width. */
 const DEFAULT_COLUMNS = 80;
 /** Columns kept free at the right edge, so a row never meets the `padding` of the `statusLine` setting. */

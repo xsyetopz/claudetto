@@ -108,7 +108,7 @@ export function registerRenewal(on: On): void {
 		}
 		try {
 			await $.session.compact({
-				instructions: "claudetto renewal at a task boundary"
+				instructions: "Renewal at a task boundary"
 			});
 		} catch (error) {
 			fault($, "renewal compaction", error);

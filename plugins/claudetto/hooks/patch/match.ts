@@ -71,7 +71,7 @@ const insertion = (hunk: Hunk, size: number, start: number): Located => {
 	return hunk.anchor === undefined
 		? {
 				error:
-					"a hunk of only added lines needs an @@ anchor or *** End of File"
+					"a hunk of only added lines needs an `@@` anchor or `*** End of File`"
 			}
 		: { at: start, length: 0 };
 };
@@ -133,7 +133,7 @@ export function locate(
 		if (hits.length > 1) {
 			const shown = hits.slice(0, 4).map((h) => h + 1);
 			return {
-				error: `context matches ${hits.length} places (lines ${shown.join(", ")}); add an @@ anchor or more context`
+				error: `context matches ${hits.length} places (lines ${shown.join(", ")}); add an \`@@\` anchor or more context`
 			};
 		}
 	}

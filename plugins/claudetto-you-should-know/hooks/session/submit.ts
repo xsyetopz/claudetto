@@ -51,7 +51,7 @@ export function registerSubmit(on: On, ctx: Ctx): void {
 		}
 		return result;
 	}).catch(($, e, next) => {
-		fault($, "prompt.submit", next.error);
+		fault($, "`prompt.submit`", next.error);
 		return next(e);
 	});
 }
@@ -67,7 +67,7 @@ export function registerCommand(on: On, ctx: Ctx): void {
 		}
 		return next(e);
 	}).catch(($, e, next) => {
-		fault($, "command.run", next.error);
+		fault($, "`command.run`", next.error);
 		return next(e);
 	});
 }

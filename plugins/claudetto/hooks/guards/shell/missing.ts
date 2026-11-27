@@ -10,7 +10,7 @@ export interface BashAnswer {
 
 /** The note for a zero count, within 200 characters. */
 export const GREP_COUNT_NOTE =
-	"`grep -c` exits 1 when the count is 0: zero matches, not a failure. Take the 0 as the answer; do not retry or switch tools.";
+	"`grep -c` exits 1 when the count is 0: zero matches, not a failure. Take the 0 as the answer and carry on with the same tool.";
 
 /** The note for `gh pr checks` that found no check, within 200 characters. */
 export const NO_CHECKS_NOTE =
@@ -18,7 +18,7 @@ export const NO_CHECKS_NOTE =
 
 /** The note for a model call that lacks an API key, within 200 characters. */
 export const API_KEY_NOTE =
-	"This session runs on the Claude Code login and holds no API key. Change the tool to call `claude -p` with the same model and prompt, rerun it, and name the change. Never tell the user to set a key.";
+	"This session runs on the Claude Code login and holds no API key. Change the tool to call `claude -p` with the same model and prompt, rerun it, and name the change as the fix.";
 
 /**
  * A missing Anthropic API key, as a script or SDK reports it: the variable
@@ -117,8 +117,8 @@ export const missingCommand = (
  */
 export const missingNote = (name: string, hasSetup: boolean): string =>
 	hasSetup
-		? `${name} is not installed. Run \`just setup\`, then rerun the command. Keep the check; do not skip it or rely on another one.`
-		: `${name} is not installed. Install it with the system package manager (brew, apt) and rerun. If that is refused, run the check another way (bunx, an installed binary). Keep the check.`;
+		? `${name} is not installed. Run \`just setup\`, then rerun the command. Keep the check and run that same one.`
+		: `${name} is not installed. Install it with the system package manager (\`brew\`, \`apt\`) and rerun. If that is refused, run the check another way (\`bunx\`, an installed binary). Keep the check.`;
 
 /**
  * Whether a Bash answer is `grep -c` reporting no match: the command counts

@@ -44,35 +44,35 @@ export function hardFindings(report: Report): HardFinding[] {
 		found.push({
 			kind: "malformed",
 			subject: `${m.file}:${m.line}`,
-			message: `${m.file}:${m.line} is malformed: ${m.reason}`
+			message: `\`${m.file}:${m.line}\` is malformed: ${m.reason}`
 		});
 	}
 	for (const r of report.removedIds) {
 		found.push({
 			kind: "removedId",
 			subject: r.id,
-			message: `${r.id} was removed from ${r.file}`
+			message: `\`${r.id}\` was removed from \`${r.file}\``
 		});
 	}
 	for (const r of report.reworded) {
 		found.push({
 			kind: "reworded",
 			subject: r.id,
-			message: `${r.id} (${r.file}:${r.line}) was reworded`
+			message: `\`${r.id}\` (\`${r.file}:${r.line}\`) was reworded`
 		});
 	}
 	for (const t of report.tampered) {
 		found.push({
 			kind: "tampered",
 			subject: t.file,
-			message: `${t.file} ${tamperNote(t)} since it was staged`
+			message: `\`${t.file}\` ${tamperNote(t)} since it was staged`
 		});
 	}
 	for (const id of report.orphans) {
 		found.push({
 			kind: "orphan",
 			subject: id,
-			message: `tests cite ${id}, which no spec defines`
+			message: `tests cite \`${id}\`, which no spec defines`
 		});
 	}
 	return found;

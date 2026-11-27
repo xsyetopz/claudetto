@@ -158,7 +158,7 @@ export async function recordBaseline($: EngineInterface): Promise<void> {
 			await $.state.set(BASELINE, base);
 		}
 	} catch (error) {
-		$.ui.log(`claudetto-spec: baseline failed: ${String(error)}`, {
+		$.ui.log(`baseline failed: ${String(error)}`, {
 			to: "debug"
 		});
 	}

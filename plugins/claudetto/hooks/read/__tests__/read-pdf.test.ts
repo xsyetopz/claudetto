@@ -43,7 +43,7 @@ describe("read PDFs", () => {
 
 		// Assert
 		expect(r.text).toBe(
-			"read failed for /repo/d.pdf: PDF text extraction failed: boom"
+			"`read` failed for `/repo/d.pdf`: PDF text extraction failed: boom"
 		);
 	});
 

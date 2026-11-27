@@ -41,7 +41,7 @@ const FAILED_TEXT: Readonly<Record<string, string>> = {
 	publish: "Couldn’t publish that page",
 	blocked: "Not published (blocked by a permission setting)",
 	explain: "Couldn’t write that explanation",
-	turn_off: "Couldn’t turn suggestions off here. Use /plugin."
+	turn_off: "Couldn’t turn suggestions off here. Use `/plugin`."
 };
 
 export function failedRow(

@@ -94,7 +94,7 @@ test("RISK-519 a requirement the agent rewords in the session is named with its 
 	// Assert
 	expect(result.block).toEqual(
 		expect.stringContaining(
-			'A-1 changed in this session; at session start it read "It fails."'
+			'`A-1` changed in this session; at session start it read "It fails."'
 		)
 	);
 });

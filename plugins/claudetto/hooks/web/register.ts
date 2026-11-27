@@ -18,7 +18,7 @@ export const SEARCH_FULL_NAME = `mcp__${PLUGIN}__web_search`;
 export const FETCH_TOOL = {
 	name: "web_fetch",
 	description:
-		"Fetch a URL; returns its main content as compact Markdown. JS-only or blocked pages render in headless Chrome. Output is capped at max_chars; the reply names a saved full copy and the resume offset.",
+		"Fetch a URL; returns its main content as compact Markdown. JS-only or blocked pages render in headless Chrome. Output is capped at `max_chars`; the reply names a saved full copy and the resume `offset`.",
 	inputSchema: {
 		type: "object",
 		properties: {
@@ -40,7 +40,7 @@ export const FETCH_TOOL = {
 export const SEARCH_TOOL = {
 	name: "web_search",
 	description:
-		"Search the web; returns numbered title, URL and snippet lines. Uses Brave Search when BRAVE_SEARCH_API_KEY is set, else DuckDuckGo. Follow a result with web_fetch.",
+		"Search the web; returns numbered title, URL and snippet lines. Uses Brave Search when `BRAVE_SEARCH_API_KEY` is set, else DuckDuckGo. Follow a result with `web_fetch`.",
 	inputSchema: {
 		type: "object",
 		properties: {
@@ -147,7 +147,7 @@ export function registerWeb(on: On): void {
 		})
 	})).catch(($, _e, next) => {
 		fault($, "web_fetch", next.error);
-		return { deny: "web_fetch failed; see the debug log" };
+		return { deny: "`web_fetch` failed; see the debug log" };
 	});
 	on("tool.run", { tool: SEARCH_FULL_NAME }, async ($, e) => {
 		const deps = await makeDeps($, interactive, chromeCache);
@@ -159,7 +159,7 @@ export function registerWeb(on: On): void {
 		};
 	}).catch(($, _e, next) => {
 		fault($, "web_search", next.error);
-		return { deny: "web_search failed; see the debug log" };
+		return { deny: "`web_search` failed; see the debug log" };
 	});
 	on("tool.offer", (_$, e, next) =>
 		REPLACED.has(e.tool) ? { isOffered: false } : next(e)

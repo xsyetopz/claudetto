@@ -9,7 +9,7 @@ import { registerHeredoc } from "./heredoc";
  * it sent the model on to `perl -pi`, which the sandbox refuses in a loaded plugin's folder (RISK-542).
  */
 export const REASON =
-	"Use the mcp__claudetto__patch tool for this change, not an in-place sed: patch writes only where its context lines match the file, writes nothing when one fails, and lists each file it changed. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
+	"Use the `mcp__claudetto__patch` tool for this change instead of an in-place `sed`: `patch` writes only where its context lines match the file, writes nothing when one fails, and lists each file it changed. For one change across many places, `perl -0pi -e` is allowed and shows a diff stat.";
 
 /** A heredoc: the start line (kept) and the body up to its delimiter line, which is text, not commands. */
 const HEREDOC =

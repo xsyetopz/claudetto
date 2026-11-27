@@ -31,7 +31,7 @@ test(
 
 		// Assert
 		expect(lines.length).toBe(1);
-		expect(lines[0]).toStartWith("debug: claudetto-you-should-know");
+		expect(lines[0]).toStartWith("debug: ");
 		expect(lines[0]).toContain("model.fork");
 		expect(await band.find({ key: "Learn more" })).toBeUndefined();
 	}

@@ -31,7 +31,7 @@ async function notify(
 	error: string,
 	details?: string
 ): Promise<void> {
-	const text = `The turn stopped on an API error (${error})${details === undefined || details === "" ? "" : `: ${details}`}.`;
+	const text = `The turn stopped on an API error (\`${error}\`)${details === undefined || details === "" ? "" : `: ${details}`}.`;
 	const sent = await $.ui.notify(text, { title: "claudetto" });
 	const isTextless = sent.isSent
 		? sent.channel === "terminal_bell"

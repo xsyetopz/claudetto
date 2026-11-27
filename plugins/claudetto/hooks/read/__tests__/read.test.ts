@@ -39,7 +39,7 @@ describe("read text", () => {
 
 		// Assert
 		expect(r.result).toBe(
-			"     3\tl3\n     4\tl4\n(6 more lines; continue with offset 5)"
+			"     3\tl3\n     4\tl4\n(6 more lines; continue with `offset` 5)"
 		);
 	});
 
@@ -55,7 +55,7 @@ describe("read text", () => {
 		});
 
 		// Assert
-		expect(r.text).toContain("read failed for /repo/none.txt: ");
+		expect(r.text).toContain("`read` failed for `/repo/none.txt`: ");
 	});
 
 	test("reports an empty file and an offset past the end", async ($, on) => {
@@ -77,7 +77,7 @@ describe("read text", () => {
 		// Assert
 		expect(empty.result).toBe("(the file is empty)");
 		expect(past.result).toBe(
-			"(offset 9 is past the end: the file has 1 lines)"
+			"(`offset` 9 is past the end: the file has 1 lines)"
 		);
 	});
 });
@@ -96,7 +96,7 @@ describe("read default window", () => {
 
 		// Assert
 		expect("result" in r && String(r.result)).toContain(
-			"(500 more lines; continue with offset 2001)"
+			"(500 more lines; continue with `offset` 2001)"
 		);
 		expect("result" in r && String(r.result)).toContain("  2000\tl2000");
 	});
@@ -215,7 +215,7 @@ describe("read several files", () => {
 
 		// Assert
 		expect(String(r.result)).toContain("     1\tone");
-		expect(String(r.result)).toContain("read failed for /repo/none.txt: ");
+		expect(String(r.result)).toContain("`read` failed for `/repo/none.txt`: ");
 	});
 });
 

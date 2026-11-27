@@ -11,7 +11,7 @@ import { fault } from "../shared/fault";
 export const BASH_RECIPES = [
 	"",
 	"",
-	"With `run_in_background`, the completion notice reports only the last command's exit status, so a trailing `echo`, a pipe into `tail`, or `&` hides a failure. End a check with `set -o pipefail` before any pipe, `rc=$?` right after the check, the trailing step, then `exit $rc`; add no `&`. Skip `exit $rc` when the user said to ignore the failure.",
+	"With `run_in_background`, the completion notice reports only the last command's exit status, so a trailing `echo`, a pipe into `tail`, or `&` hides a failure. End a check with `set -o pipefail` before any pipe, `rc=$?` right after the check, the trailing step, then `exit $rc`; end the line at `exit $rc`. Leave out `exit $rc` when the user said the failure is expected.",
 	"",
 	"When the reply depends on a background command, `mcp__claudetto__read` its output path after the other work and before replying, and say what it showed or that it is still running. A server or watcher needs only its start-up line.",
 	"",

@@ -116,7 +116,7 @@ export const pipeNote = (output: string): string => {
 	const line = FAILURE_LINE.exec(output)?.[0];
 	return line === undefined
 		? ""
-		: `The output holds "${line}". The exit status shown is the last pipe stage's, not that of the command before the pipe, so a clean status does not show that command succeeded.`;
+		: `The output holds "${line}". The exit status shown is the last pipe stage's, not that of the command before the pipe, so confirm that command succeeded by its own output.`;
 };
 
 /** Appends one context entry to what the rest of the chain returned. */

@@ -21,7 +21,7 @@ export function numbered(
 	const start = Math.max(1, Math.floor(offset));
 	const window = lines.slice(start - 1, start - 1 + Math.max(1, limit));
 	if (window.length === 0) {
-		return `(offset ${start} is past the end: the file has ${lines.length} lines)`;
+		return `(\`offset\` ${start} is past the end: the file has ${lines.length} lines)`;
 	}
 	const shown = window.map((line, i) => {
 		const cut =
@@ -31,7 +31,7 @@ export function numbered(
 	const next = start + window.length;
 	if (next <= lines.length) {
 		shown.push(
-			`(${lines.length - next + 1} more lines; continue with offset ${next})`
+			`(${lines.length - next + 1} more lines; continue with \`offset\` ${next})`
 		);
 	}
 	return shown.join("\n");

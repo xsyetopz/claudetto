@@ -33,7 +33,7 @@ describe("read path-scoped rules", () => {
 
 		// Assert
 		expect(first.result).toBe(
-			`     1\ta\n\nRule ${CWD}/.claude/rules/api.md applies to src/api/x.ts:\nUse the api error type.`
+			`     1\ta\n\nRule \`${CWD}/.claude/rules/api.md\` applies to \`src/api/x.ts\`:\nUse the api error type.`
 		);
 		expect(second.result).toBe("     1\ta");
 	});

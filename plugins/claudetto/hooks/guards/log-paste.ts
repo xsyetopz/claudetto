@@ -17,9 +17,9 @@ export const LOG_SHARE = 0.6;
 
 /** What the model reads beside a pasted log (GUARDS-087). */
 export const NOTE =
-	"The prompt holds a pasted raw log. It rides in every later request, so do not quote or repeat it. " +
+	"The prompt holds a pasted raw log. It rides in every later request, so refer to it by file and keep it out of your replies. " +
 	'Save it once to a file under `$TMPDIR` (`Bash`, `cat > "$TMPDIR/pasted.log"`), then grep that file for the errors and lines you need. ' +
-	"For a command that prints a log, tee its output to a file under $TMPDIR and grep that.";
+	"For a command that prints a log, tee its output to a file under `$TMPDIR` and grep that.";
 
 /** A line that starts like log output: a timestamp, a level, a logcat tag, a stack frame. */
 const LOG_LINE =

@@ -77,7 +77,7 @@ export const removeStale = (
 	for (const { path, value } of owned) {
 		if (!kept.has(JSON.stringify(path)) && valueAt(next, path) === value) {
 			next = without(next, path);
-			removed.push(`removed ${path.join(".")}`);
+			removed.push(`removed \`${path.join(".")}\``);
 		}
 	}
 	return next;

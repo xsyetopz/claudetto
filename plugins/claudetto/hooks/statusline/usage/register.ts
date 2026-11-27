@@ -93,7 +93,7 @@ function registerCommand(on: On, view: View): void {
 			await $.command.register({
 				name: PANE,
 				description:
-					"Show the context window by category and the 5h and 7d limits by pace",
+					"Show the context window by category and the `5h` and `7d` limits by pace",
 				argumentHint: "[ctx|5h|7d]",
 				immediate: true
 			});

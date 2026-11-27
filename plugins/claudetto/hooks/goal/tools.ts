@@ -24,12 +24,12 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "get_goal",
 		description:
-			"Shows the session's goal: its condition, the stop blocks used this turn, or the paused condition. Use it before set_goal or clear_goal."
+			"Shows the session's goal: its condition, the stop blocks used this turn, or the paused condition. Use it before `set_goal` or `clear_goal`."
 	},
 	{
 		name: "set_goal",
 		description:
-			"Sets the session goal, as /goal does. The condition is checked by an evaluator from the transcript, so state what a check can show. Starts when the turn ends.",
+			"Sets the session goal, as `/goal` does. The condition is checked by an evaluator from the transcript, so state what a check can show. Starts when the turn ends.",
 		inputSchema: {
 			type: "object",
 			properties: { condition: { type: "string" } },
@@ -39,7 +39,7 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "pause_goal",
 		description:
-			"Pauses the goal: stops the stop-hook loop but keeps the condition for get_goal. Use when blocked on the user, not when done. set_goal resumes it.",
+			"Stops the stop-hook loop but keeps the condition for `get_goal`. Use when blocked on the user; when the work is done, use `clear_goal`. `set_goal` resumes it.",
 		// In the prompt, not behind ToolSearch: a deferred pause_goal was first
 		// loaded at the cap note, five blocks into a loop on a user-held step (RISK-520).
 		isDeferred: false
@@ -47,7 +47,7 @@ export const SPECS: readonly ToolSpec[] = [
 	{
 		name: "clear_goal",
 		description:
-			"Ends a goal that is met, as /goal clear does. Give the condition and the checks you ran with outcomes. Refused when the last check failed or no tool result backs it.",
+			"Ends a goal that is met, as `/goal clear` does. Give the condition and the checks you ran with outcomes. Refused when the last check failed or no tool result backs it.",
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -98,7 +98,7 @@ function show(tracker: Tracker): string {
 		return `Active goal: "${tracker.goal.condition}". Stop blocks this turn: ${tracker.goal.blocks}.`;
 	}
 	if (tracker.paused !== undefined) {
-		return `Paused goal: "${tracker.paused}". set_goal resumes it.`;
+		return `Paused goal: "${tracker.paused}". \`set_goal\` resumes it.`;
 	}
 	return "No goal is set.";
 }
@@ -120,10 +120,10 @@ function pause($: EngineInterface, tracker: Tracker): string {
 	endGoal(tracker, true);
 	tracker.ended = goal.condition;
 	queue($, "clear");
-	$.ui.log(`claudetto: goal paused by the model: ${goal.condition}`, {
+	$.ui.log(`Goal paused by the model: ${goal.condition}`, {
 		to: "debug"
 	});
-	return `Paused: "${goal.condition}". It stays in get_goal; set_goal resumes it.`;
+	return `Paused: "${goal.condition}". It stays in \`get_goal\`; \`set_goal\` resumes it.`;
 }
 
 async function clear(
@@ -144,7 +144,7 @@ async function clear(
 	tracker.ended = goal.condition;
 	queue($, "clear");
 	const checks = claim.checks
-		.map((check) => `${check.command} (${check.outcome})`)
+		.map((check) => `\`${check.command}\` (${check.outcome})`)
 		.join("; ");
 	await $.ui.notify(
 		`The model ended the goal "${goal.condition}" as met. Checks: ${checks}`,
@@ -180,7 +180,7 @@ function registerPolicy(on: On): void {
 		fault($, "goal tool check", next.error);
 		return {
 			decision: "ask",
-			reason: "claudetto could not check the goal tool"
+			reason: "Could not check the goal tool"
 		};
 	});
 }

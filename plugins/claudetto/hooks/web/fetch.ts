@@ -64,12 +64,15 @@ function frame(
 ): string {
 	const body = markdown.slice(range.offset, range.offset + range.max);
 	const end = range.offset + body.length;
-	const read = "path" in copy ? `, or mcp__claudetto__read ${copy.path}` : "";
+	const read =
+		"path" in copy ? `, or \`mcp__claudetto__read\` \`${copy.path}\`` : "";
 	const rest =
-		end < markdown.length ? ` More: call again with offset=${end}${read}.` : "";
+		end < markdown.length
+			? ` More: call again with \`offset=${end}\`${read}.`
+			: "";
 	const saved =
 		"path" in copy
-			? `Full Markdown saved: ${copy.path}.`
+			? `Full Markdown saved: \`${copy.path}\`.`
 			: `The Markdown copy could not be saved: ${copy.unsaved}.`;
 	return `${url} (${via}) chars ${range.offset}-${end} of ${markdown.length}. ${saved}${rest}\n---\n${body}`;
 }
@@ -114,7 +117,7 @@ async function solveAndRender(
 	url: URL
 ): Promise<Body | undefined> {
 	await deps.notify(
-		`claudetto: ${url.hostname} shows a captcha. Solve it in the Chrome window that opens, then close the window. Waiting up to 3 minutes.`
+		`${url.hostname} shows a captcha. Solve it in the Chrome window that opens, then close the window. Waiting up to 3 minutes.`
 	);
 	await chrome.solve(url.href);
 	return readDom(await chrome.render(url.href), url.href);
@@ -128,7 +131,7 @@ async function viaChrome(
 	const { chrome } = deps;
 	if (chrome === undefined) {
 		return {
-			reply: `Direct fetch failed (${why}) and no Chrome or Chromium was found to render ${url.href}. Install one or set CHROME_PATH.`
+			reply: `Direct fetch failed (${why}) and no Chrome or Chromium was found to render ${url.href}. Install one or set \`CHROME_PATH\`.`
 		};
 	}
 	let rendered = readDom(await chrome.render(url.href), url.href);
@@ -166,7 +169,7 @@ function parseUrl(text: string): URL | string {
 	}
 	return parsed.protocol === "http:" || parsed.protocol === "https:"
 		? parsed
-		: `Only http and https URLs can be fetched: ${text}`;
+		: `Pass an http or https URL; got: ${text}`;
 }
 
 /** The page's Markdown and the route that got it, or the reply that ends the call. */

@@ -19,7 +19,7 @@ describe("TOOLS-012 Add File refuses an existing path", () => {
 
 		// Assert
 		expect(refusal(r)).toContain(
-			"notes.txt: exists; change it with *** Update File"
+			"`notes.txt`: exists; change it with `*** Update File`"
 		);
 		expect(d.files.get(`${CWD}/notes.txt`)).toBe(
 			"Header — kept\r\n[x] done\r\n"
@@ -43,7 +43,7 @@ describe("TOOLS-012 Add File refuses an existing path", () => {
 		});
 
 		// Assert
-		expect(refusal(r)).toContain("notes.txt: exists");
+		expect(refusal(r)).toContain("`notes.txt`: exists");
 		expect(d.files.get(`${CWD}/notes.txt`)).toBe(
 			"Header — kept\r\n[x] done\r\n"
 		);

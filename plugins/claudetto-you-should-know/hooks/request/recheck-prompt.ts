@@ -20,14 +20,14 @@ ${line}${explanation === undefined ? "" : `\n${explanation}`}
 
 <task>
 Read what happened in the session after the note was shown. Decide whether any of it makes the note untrue or no longer applicable, for example a fix that removes the problem the note names, or a change that settles the choice it describes.
-Answer DROP when something later makes the note untrue or no longer applicable. Answer KEEP when the note still holds or when you cannot tell.
+Answer \`DROP\` when something later makes the note untrue or no longer applicable. Answer \`KEEP\` when the note still holds or when you cannot tell.
 </task>
 
 <format>
-Reply with one word and nothing else: KEEP or DROP.
+Reply with one word and nothing else: \`KEEP\` or \`DROP\`.
 </format>`;
 
-/** Reads the reply strictly: only `KEEP` or `DROP`, alone, counts; anything else is `undefined`. */
+/** Reads the reply strictly: only \`KEEP\` or \`DROP\`, alone, counts; anything else is `undefined`. */
 export function parseVerdict(text: string): Verdict | undefined {
 	const word = text.trim();
 	if (word === "DROP") {

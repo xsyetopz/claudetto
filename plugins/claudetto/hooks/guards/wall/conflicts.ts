@@ -108,7 +108,9 @@ export function dropConflicts(next: Json, removed: string[]): void {
 		if (dropped.length > 0) {
 			permissions[list] = entries.filter((rule) => !drops(rule));
 			removed.push(
-				...dropped.map((rule) => `removed permissions.${list} ${String(rule)}`)
+				...dropped.map(
+					(rule) => `removed \`permissions.${list}\` \`${String(rule)}\``
+				)
 			);
 		}
 	}
