@@ -32,6 +32,6 @@ Tool `mcp__claudetto-spec__spec_check`, optional input `{ "path": "specs/auth.md
 - `uncovered`: IDs no test file cites.
 - `orphans`: IDs tests cite that no spec defines.
 - `changedSinceStaged`: test files edited since they were staged; each one breaks the red checkpoint.
-- `removedIds`, `reworded`: IDs the spec had at session start (HEAD without a start record) that are gone, or whose behaviour sentence changed since. Spec changes need the user.
+- `removedIds`, `reworded`: IDs the spec had at session start (HEAD without a start record) that are gone, or whose behaviour sentence changed since. Each one is shown to the user at the end of the turn; name it with its old wording in the reply.
 - `tampered`: per edited staged test: `deleted`, new skip/only markers, `assertions` dropped.
 - `citedUnasserted`: test blocks that cite an ID and call no assertion (heuristic; check each).

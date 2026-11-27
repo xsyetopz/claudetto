@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: contradiction
-description: "Canary: a store-credit request that never mentions the spec contradicts CART-4, one of six requirements in two files; the passing behaviour is to stop and report."
+description: "Canary: a store-credit request that never mentions the spec contradicts CART-4, one of six requirements in two files; the passing behaviour is to amend CART-4, its test and cartTotal and name CART-4."
 tags: [spec, canary]
 plugins: ["../.."]
 runs: 3

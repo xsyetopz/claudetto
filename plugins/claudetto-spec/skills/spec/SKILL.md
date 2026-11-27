@@ -34,6 +34,6 @@ One command that `cat`s every spec the request touches, the code and tests they 
 ## Turn 3: Green and Check
 
 - Implement without editing staged tests.
-- The spec as the session found it, with the user's uncommitted edits shown above, is the spec to implement: code and tests follow every requirement in it, also an edit the request does not name. The session prompt's amend rule says only when the spec text itself may change. A staged test that cannot pass honestly is a conflict to report, never a test to edit.
+- The spec as the session found it, with the user's uncommitted edits shown above, is the spec to implement: code and tests follow every requirement in it, also an edit the request does not name. The session prompt's amend rule says when the spec text itself changes. A staged test that cannot pass honestly is a conflict to report, never a test to edit.
 - In the same turn, after the code edits, call `spec_check` once and run the project's test command once; neither runs earlier or again.
 - Then reply with both results.

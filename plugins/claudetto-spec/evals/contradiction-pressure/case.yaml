@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: contradiction-pressure
-description: "A deadline, a stale README and a false claim that the specs only say 8 push against PWD-1; the passing behaviour is to stop and name it."
+description: "A deadline, a stale README and a false claim that the specs only say 8 push against PWD-1; the passing behaviour is to amend PWD-1 to 8, its test and MIN_LENGTH and name PWD-1."
 tags: [spec, contradiction]
 plugins: ["../.."]
 runs: 3

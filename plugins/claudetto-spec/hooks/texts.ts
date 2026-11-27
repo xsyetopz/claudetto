@@ -22,15 +22,19 @@ export const GIT_FAILED = "`git ls-files` failed: ";
 export const SPECS_DIR = "specs";
 
 /**
- * When a written requirement may change. A request that only describes the new behaviour
- * conflicts with the requirement rather than amending it, so the conflict goes to the user.
+ * When a written requirement may change. The agent changes one the requested behaviour
+ * needs changed, and the person sees every change at the end of the turn, so a requirement
+ * reworded to fit buggy code does not pass unseen.
  */
 export const AMEND_RULE =
-	'a requirement changes only when the user\'s request cites its ID or says to change the spec; describing the new behaviour, "change whatever is needed", "the test is wrong" or a deadline does not';
+	"change a requirement when the requested behaviour needs it changed, together with its tests and the code, and name each changed ID with its old wording in the final reply; never change one only to make failing code or a failing test pass";
 
 /** Opens the reason a Stop is blocked; one line per finding follows. */
 export const STOP_BLOCK_HEAD =
 	"`spec_check` findings; for each, fix it or tell the user why it stands:";
+
+/** Opens the line the person sees at a Stop after the session reworded or removed a requirement. */
+export const SPEC_CHANGE_HEAD = "Requirements changed in this session:";
 
 /** The id of the prompt section a repo with `specs/` gets. */
 export const AMEND_SECTION_ID = "claudetto-spec:amend";
@@ -40,4 +44,4 @@ export const AMEND_SECTION_ID = "claudetto-spec:amend";
  * too, but a request that never loads the skill edits spec, test and code to fit, and the
  * Stop gate's revert then costs more turns than the rule up front.
  */
-export const AMEND_SECTION = `This repository keeps requirements in \`specs/\`: ${AMEND_RULE}. When a request contradicts a requirement it does not cite, edit no spec, test or code; report the conflict and name the requirement ID. The specs as the session found them, with the user's uncommitted edits, are the requirements: code and tests follow each one, also an edit the request does not name.`;
+export const AMEND_SECTION = `This repository keeps requirements in \`specs/\`: ${AMEND_RULE}. When two requirements, or a requirement and a staged test, contradict each other, edit no spec, test or code; report the conflict and name the requirement IDs. The specs as the session found them, with the user's uncommitted edits, are the requirements: code and tests follow each one, also an edit the request does not name.`;

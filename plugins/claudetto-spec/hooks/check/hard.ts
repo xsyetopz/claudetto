@@ -3,7 +3,7 @@ import type { Report } from "./spec";
 /** A finding that should block completion. */
 export interface HardFinding {
 	/** Which part of the report it came from. */
-	kind: "malformed" | "removedId" | "reworded" | "tampered" | "orphan";
+	kind: "malformed" | "tampered" | "orphan";
 	/** The ID or path it is about. */
 	subject: string;
 	/** One line the agent can act on. */
@@ -30,10 +30,11 @@ function tamperNote(t: Report["tampered"][number]): string {
 /**
  * The findings of a `spec_check` report that should block completion.
  *
- * Hard findings are a malformed spec, an ID removed or reworded since HEAD, a staged test
- * that was deleted, gained a skip or only marker or lost assertions, and an orphan ID.
- * Inflated requirements, uncovered IDs, citation-only tests and plain edits to staged
- * tests are advice, so they stay out. The signature is stable for callers such as a Stop hook.
+ * Hard findings are a malformed spec, a staged test that was deleted, gained a skip or
+ * only marker or lost assertions, and an orphan ID. A requirement removed or reworded is
+ * the agent's to make and is shown to the person, not blocked. Inflated requirements,
+ * uncovered IDs, citation-only tests and plain edits to staged tests are advice, so they
+ * stay out. The signature is stable for callers such as a Stop hook.
  *
  * @param report What `checkSpecs` returned.
  * @returns The blocking findings in report order; empty when the report is clean.
@@ -45,20 +46,6 @@ export function hardFindings(report: Report): HardFinding[] {
 			kind: "malformed",
 			subject: `${m.file}:${m.line}`,
 			message: `\`${m.file}:${m.line}\` is malformed: ${m.reason}`
-		});
-	}
-	for (const r of report.removedIds) {
-		found.push({
-			kind: "removedId",
-			subject: r.id,
-			message: `\`${r.id}\` was removed from \`${r.file}\``
-		});
-	}
-	for (const r of report.reworded) {
-		found.push({
-			kind: "reworded",
-			subject: r.id,
-			message: `\`${r.id}\` (\`${r.file}:${r.line}\`) was reworded`
 		});
 	}
 	for (const t of report.tampered) {

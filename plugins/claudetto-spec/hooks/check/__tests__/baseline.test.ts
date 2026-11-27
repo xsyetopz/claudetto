@@ -22,12 +22,16 @@ interface Repo {
 	index: Map<string, string>;
 }
 
-/** Injects git and the file system over `repo`; `git diff` lists the test when it differs from the index. */
-function mount(on: On, repo: Repo): void {
+/** Injects git and the file system over `repo`; `git diff` lists the test when it differs from the index. Returns the lines shown to the person. */
+function mount(on: On, repo: Repo): string[] {
+	const logs: string[] = [];
 	on("classic.Stop", () => ({}));
 	on("session.start", (_$, e) => ({ cwd: e.cwd }));
 	on("tool.register", (_$, e) => ({ value: { tool: e.name } }));
-	on("ui.log", () => ({ value: undefined }));
+	on("ui.log", (_$, e) => {
+		logs.push(e.text);
+		return { value: undefined };
+	});
 	on("fs.exists", () => ({ value: true }));
 	on("process.run", (_$, e) => {
 		const argv = e.argv.join(" ");
@@ -50,6 +54,7 @@ function mount(on: On, repo: Repo): void {
 	on("fs.read", (_$, e) => ({
 		value: repo.tree.get(e.path.replace(/^.*?(specs|src)\//u, "$1/")) ?? ""
 	}));
+	return logs;
 }
 
 const start = { cwd: "/repo", surface: null, isInteractive: true };
@@ -64,7 +69,7 @@ test("RISK-519 a requirement the user reworded before the session is not the age
 		head: new Map([[SPEC, spec("It works.")]]),
 		index: new Map([[TEST, "test('A-1', () => { expect(1).toBe(1); });"]])
 	};
-	mount(on, repo);
+	const logs = mount(on, repo);
 
 	// Act
 	await $.session.start(start);
@@ -72,9 +77,10 @@ test("RISK-519 a requirement the user reworded before the session is not the age
 
 	// Assert
 	expect(result.block).toBeUndefined();
+	expect(logs.filter((m) => m.includes("`A-1`"))).toEqual([]);
 });
 
-test("RISK-519 a requirement the agent rewords in the session is named with its start wording", async ($, on) => {
+test("RISK-519 a requirement the agent rewords in the session is shown with its start wording", async ($, on) => {
 	// Arrange
 	const repo: Repo = {
 		tree: new Map([
@@ -84,7 +90,7 @@ test("RISK-519 a requirement the agent rewords in the session is named with its 
 		head: new Map([[SPEC, spec("It works.")]]),
 		index: new Map([[TEST, "test('A-1', () => { expect(1).toBe(1); });"]])
 	};
-	mount(on, repo);
+	const logs = mount(on, repo);
 	await $.session.start(start);
 	repo.tree.set(SPEC, spec("It sometimes fails."));
 
@@ -92,11 +98,10 @@ test("RISK-519 a requirement the agent rewords in the session is named with its 
 	const result = await $.classic.Stop({ stop_hook_active: false });
 
 	// Assert
-	expect(result.block).toEqual(
-		expect.stringContaining(
-			'`A-1` changed in this session; at session start it read "It fails."'
-		)
-	);
+	expect(result.block).toBeUndefined();
+	expect(logs).toEqual([
+		expect.stringMatching(/`A-1`[^\n]*reworded; it read "It fails\."/u)
+	]);
 });
 
 test("RISK-519 a todo the user's unstaged test already held is not the agent's tampering", async ($, on) => {
